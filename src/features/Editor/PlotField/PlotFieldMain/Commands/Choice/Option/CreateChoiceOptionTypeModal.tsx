@@ -22,7 +22,7 @@ export default function CreateChoiceOptionTypeModal({
   const { episodeId } = useParams();
   const modalRef = useRef<HTMLDivElement>(null);
   const createChoiceOption = useCreateChoiceOption({
-    plotFieldCommandChoiceId: plotFieldCommandChoiceId,
+    plotFieldCommandChoiceId,
     plotFieldCommandId,
     episodeId: episodeId || "",
     topologyBlockId,

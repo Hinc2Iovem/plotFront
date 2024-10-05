@@ -137,7 +137,7 @@ export default function ChoiceQuestionField({
     delay: 500,
   });
   return (
-    <div className="w-full flex-grow flex gap-[1rem] bg-neutral-magnolia rounded-md shadow-md p-[.5rem] flex-wrap items-center">
+    <div className="w-full flex-grow flex gap-[1rem] bg-neutral-magnolia rounded-md shadow-md p-[.5rem] flex-wrap items-center z-[20]">
       {isAuthor ? (
         <div className="flex-grow bg-white rounded-md shadow-md px-[1rem] py-[.5rem]">
           <h4 className="text-[1.4rem] text-gray-700">Author</h4>

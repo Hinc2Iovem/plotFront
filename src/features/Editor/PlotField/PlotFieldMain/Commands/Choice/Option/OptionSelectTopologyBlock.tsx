@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import { ChoiceOptionVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useUpdateChoiceOptionTopologyBlock from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTopologyBlock";
 import useGetAllTopologyBlocksByEpisodeId from "../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../hooks/TopologyBlock/useGetTopologyBlockById";
+import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "./ChoiceOptionBlocksList";
 
 type OptionSelecteTopologyBlockTypes = {
   setShowAllTopologyBlocks: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,7 +14,12 @@ type OptionSelecteTopologyBlockTypes = {
   showAllTopologyBlocks: boolean;
   setTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
   setShowAllOrders: React.Dispatch<React.SetStateAction<boolean>>;
+  setAllChoiceOptionTypesAndTopologyBlockIds: React.Dispatch<
+    React.SetStateAction<ChoiceOptionTypesAndTopologyBlockIdsTypes[]>
+  >;
   currentTopologyBlockId: string;
+  optionType: ChoiceOptionVariationsTypes;
+  optionText: string;
 };
 
 export default function OptionSelectTopologyBlock({
@@ -23,6 +30,9 @@ export default function OptionSelectTopologyBlock({
   setTopologyBlockId,
   currentTopologyBlockId,
   setShowAllOrders,
+  setAllChoiceOptionTypesAndTopologyBlockIds,
+  optionType,
+  optionText,
 }: OptionSelecteTopologyBlockTypes) {
   const { episodeId } = useParams();
   const { data: topologyBlock } = useGetTopologyBlockById({ topologyBlockId });
@@ -78,6 +88,17 @@ export default function OptionSelectTopologyBlock({
                 setShowAllTopologyBlocks(false);
                 setCurrentTopologyBlockName(tb?.name || "");
                 setTopologyBlockId(tb._id);
+                setAllChoiceOptionTypesAndTopologyBlockIds((prev) => {
+                  return [
+                    ...prev,
+                    {
+                      choiceOptionId,
+                      type: optionType,
+                      option: optionText,
+                      topologyBlockId: topologyBlockId,
+                    },
+                  ];
+                });
                 updateOptionTopologyBlock.mutate({
                   targetBlockId: tb._id,
                   sourceBlockId: currentTopologyBlockId,

@@ -29,7 +29,7 @@ export default function useCreateChoiceOption({
         {
           type,
           topologyBlockId,
-          episodeId
+          episodeId,
         }
       ),
     onSettled: () => {
@@ -41,6 +41,9 @@ export default function useCreateChoiceOption({
           language,
           "option",
         ],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["connection", "episode", episodeId],
       });
       queryClient.invalidateQueries({
         queryKey: ["plotfieldCommand", plotFieldCommandId, "choice"],

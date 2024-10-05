@@ -55,7 +55,7 @@ export default function ChoiceVariationTypeBlock({
 
   return (
     <>
-      <div className="relative flex-grow">
+      <div className="relative flex-grow z-[21]">
         <button
           onClick={(e) => {
             e.stopPropagation();

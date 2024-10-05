@@ -1,9 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { ChoiceOptionVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useGetAllChoiceOptionsByChoiceId from "../../hooks/Choice/ChoiceOption/useGetChoiceAllChoiceOptionsByChoiceId";
 import ChoiceOptionBlock from "./ChoiceOptionBlock";
-import { useQueryClient } from "@tanstack/react-query";
 import PlotfieldInsideChoiceOption from "./PlotfieldInsideChoiceOption/PlotfieldInsideChoiceOption";
-import { ChoiceOptionVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 
 type ChoiceOptionBlockTypes = {
   currentTopologyBlockId: string;

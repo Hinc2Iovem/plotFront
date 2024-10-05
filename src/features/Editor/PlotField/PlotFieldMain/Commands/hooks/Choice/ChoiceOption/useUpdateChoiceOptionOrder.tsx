@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../../api/axios";
 
 type UpdateChoiceOptionOrders = {
@@ -14,7 +14,7 @@ export default function useUpdateChoiceOptionOrder({
   choiceOptionId,
   choiceId,
 }: UpdateChoiceOptionOrders) {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       optionOrder,
@@ -25,12 +25,12 @@ export default function useUpdateChoiceOptionOrder({
           optionOrder,
         }
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["choiceOption", choiceOptionId],
-        exact: true,
-        type: "active",
-      });
-    },
+    // onSuccess: () => {
+    //   queryClient.invalidateQueries({
+    //     queryKey: ["choiceOption", choiceOptionId],
+    //     exact: true,
+    //     type: "active",
+    //   });
+    // },
   });
 }

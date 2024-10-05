@@ -126,9 +126,12 @@ function ChooseReferencedCommandIndex({
         ref={modalRef}
         className={`${
           showAllCommandIndexes ? "" : "hidden"
-        } z-[10] flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem] | containerScroll`}
+        } z-[10] left-0 flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem] | containerScroll`}
       >
-        {amountOfCommands > 0 ? (
+        {(typeof currentReferencedCommandIndex === "number" &&
+          amountOfCommands > 1) ||
+        (typeof currentReferencedCommandIndex !== "number" &&
+          amountOfCommands > 0) ? (
           [...Array.from({ length: amountOfCommands })]?.map((_, i) => {
             return (
               <button
@@ -218,7 +221,7 @@ function ChooseTopologyBlock({
   return (
     <div className="relative flex-grow">
       <button
-        className="text-[1.3rem] outline-gray-300 w-full bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
+        className="text-[1.3rem] h-full outline-gray-300 w-full bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
         onClick={(e) => {
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);

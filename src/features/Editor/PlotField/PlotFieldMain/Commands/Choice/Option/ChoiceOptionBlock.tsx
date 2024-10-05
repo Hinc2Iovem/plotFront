@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import useDebounce from "../../../../../../../hooks/utilities/useDebounce";
 import { TranslationChoiceOptionTypes } from "../../../../../../../types/Additional/TranslationTypes";
+import useGetChoiceOptionById from "../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
 import useUpdateChoiceOptionTranslationText from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
+import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "./ChoiceOptionBlocksList";
+import ChoiceOptionShowPlot from "./ChoiceOptionShowPlot";
+import OptionSelectOrder from "./OptionSelectOrder";
 import OptionSelectSexualOrientationBlock from "./OptionSelectSexualOrientationBlock";
 import OptionSelectTopologyBlock from "./OptionSelectTopologyBlock";
 import OptionCharacteristicBlock from "./OptionVariations/OptionCharacteristicBlock";
 import OptionPremiumBlock from "./OptionVariations/OptionPremiumBlock";
 import OptionRelationshipBlock from "./OptionVariations/OptionRelationshipBlock";
-import useGetChoiceOptionById from "../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
-import OptionSelectOrder from "./OptionSelectOrder";
-import ChoiceOptionShowPlot from "./ChoiceOptionShowPlot";
-import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "./ChoiceOptionBlocksList";
+import useChoiceOptions from "../Context/ChoiceContext";
 
 type ChoiceOptionBlockTypes = {
   currentTopologyBlockId: string;
@@ -52,6 +53,7 @@ export default function ChoiceOptionBlock({
 }: ChoiceOptionBlockTypes) {
   const [showAllSexualOrientationBlocks, setShowAllSexualOrientationBlocks] =
     useState(false);
+  const { addChoiceOption } = useChoiceOptions();
   const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
   const [showAllOrders, setShowAllOrders] = useState(false);
 
@@ -65,6 +67,14 @@ export default function ChoiceOptionBlock({
       setTopologyBlockId(choiceOption?.topologyBlockId || "");
       setSexualOrientationType(choiceOption?.sexualOrientationType || "");
       setCurrentOrder(choiceOption?.optionOrder);
+      addChoiceOption({
+        choiceOption: {
+          optionType: choiceOption.type,
+          optionText: translations[0]?.text,
+          choiceOptionId: choiceOption._id,
+          topologyBlockId: choiceOption.topologyBlockId,
+        },
+      });
       setAllChoiceOptionTypesAndTopologyBlockIds((prev) => {
         return [
           ...prev,
@@ -192,6 +202,11 @@ export default function ChoiceOptionBlock({
                 setCurrentOrder={setCurrentOrder}
               />
               <OptionSelectTopologyBlock
+                setAllChoiceOptionTypesAndTopologyBlockIds={
+                  setAllChoiceOptionTypesAndTopologyBlockIds
+                }
+                optionText={optionText}
+                optionType={type}
                 setTopologyBlockId={setTopologyBlockId}
                 setShowAllTopologyBlocks={setShowAllTopologyBlocks}
                 setShowAllOrders={setShowAllOrders}

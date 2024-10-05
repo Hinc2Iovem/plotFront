@@ -5,6 +5,7 @@ import useUpdateChoiceIsAuthor from "../hooks/Choice/useUpdateChoiceIsAuthor";
 import ChoiceQuestionField from "./ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./ChoiceVariationTypeBlock";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
+import useChoiceOptions from "./Context/ChoiceContext";
 
 type CommandChoiceFieldTypes = {
   plotFieldCommandId: string;
@@ -29,7 +30,7 @@ export default function CommandChoiceField({
   const [isAuthor, setIsAuthor] = useState<boolean>();
   const [choiceVariationTypes, setChoiceVariationTypes] =
     useState<ChoiceVariationsTypes>("" as ChoiceVariationsTypes);
-
+  const { setChoiceId } = useChoiceOptions();
   const { data: commandChoice } = useGetCommandChoice({
     plotFieldCommandId,
   });
@@ -37,6 +38,7 @@ export default function CommandChoiceField({
   useEffect(() => {
     if (commandChoice) {
       setCommandChoiceId(commandChoice._id);
+      setChoiceId({ choiceId: commandChoice._id });
       if (commandChoice.timeLimit) {
         setTimeLimit(commandChoice.timeLimit);
       }
