@@ -53,8 +53,10 @@ export default function CreatingCommandViaButtonClick({
   // });
 
   const [value, setValue] = useState("");
+
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
+  console.log(showCreateCharacterModal);
 
   // const [characterName, setCharacterName] = useState("");
 
