@@ -1,7 +1,7 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { ChoiceOptionVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useGetAllChoiceOptionsByChoiceId from "../../hooks/Choice/ChoiceOption/useGetChoiceAllChoiceOptionsByChoiceId";
+import useChoiceOptions from "../Context/ChoiceContext";
 import ChoiceOptionBlock from "./ChoiceOptionBlock";
 import PlotfieldInsideChoiceOption from "./PlotfieldInsideChoiceOption/PlotfieldInsideChoiceOption";
 
@@ -25,22 +25,9 @@ export default function ChoiceOptionBlocksList({
   amountOfOptions,
   choiceId,
 }: ChoiceOptionBlockTypes) {
-  const queryClient = useQueryClient();
-  const [
-    allChoiceOptionTypesAndTopologyBlockIds,
-    setAllChoiceOptionTypesAndTopologyBlockIds,
-  ] = useState<ChoiceOptionTypesAndTopologyBlockIdsTypes[]>([]);
+  const { setChoiceOptions, getAllChoiceOptionsByChoiceId } =
+    useChoiceOptions();
   const [showOptionPlot, setShowOptionPlot] = useState(false);
-  const [showedOptionPlotTopologyBlockId, setShowedOptionPlotTopologyBlockId] =
-    useState("");
-
-  const [optionOrderToRevalidate, setOptionOrderToRevalidate] = useState<
-    number | undefined
-  >();
-  const [optionOrderIdNotToRevalidate, setOptionOrderIdNotToRevalidate] =
-    useState("");
-  const [optionOrderIdToRevalidate, setOptionOrderIdToRevalidate] =
-    useState("");
 
   const { data: allChoiceOptionBlocks } = useGetAllChoiceOptionsByChoiceId({
     plotFieldCommandChoiceId: plotFieldCommandId,
@@ -48,25 +35,14 @@ export default function ChoiceOptionBlocksList({
   });
 
   useEffect(() => {
-    if (
-      optionOrderIdNotToRevalidate?.trim().length &&
-      typeof optionOrderToRevalidate === "number"
-    ) {
-      queryClient.invalidateQueries({
-        queryKey: ["choiceOption", optionOrderIdToRevalidate],
-        exact: true,
-        type: "active",
-      });
+    if (allChoiceOptionBlocks) {
+      setChoiceOptions({ choiceId, choiceOptions: allChoiceOptionBlocks });
     }
-  }, [
-    optionOrderIdNotToRevalidate,
-    optionOrderToRevalidate,
-    optionOrderIdToRevalidate,
-  ]);
+  }, [allChoiceOptionBlocks]);
 
   return (
     <section
-      className={`${allChoiceOptionBlocks?.length ? "" : "hidden"} w-full ${
+      className={`w-full ${
         showOptionPlot
           ? ""
           : "grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] items-center"
@@ -75,37 +51,18 @@ export default function ChoiceOptionBlocksList({
       <PlotfieldInsideChoiceOption
         choiceId={choiceId}
         showOptionPlot={showOptionPlot}
-        showedOptionPlotTopologyBlockId={showedOptionPlotTopologyBlockId}
-        allChoiceOptionTypesAndTopologyBlockIds={
-          allChoiceOptionTypesAndTopologyBlockIds
-        }
-        plotFieldCommandId={plotFieldCommandId}
         setShowOptionPlot={setShowOptionPlot}
-        setShowedOptionPlotTopologyBlockId={setShowedOptionPlotTopologyBlockId}
-        setAllChoiceOptionTypesAndTopologyBlockIds={
-          setAllChoiceOptionTypesAndTopologyBlockIds
-        }
       />
 
-      {allChoiceOptionBlocks?.map((co) => (
+      {getAllChoiceOptionsByChoiceId({ choiceId })?.map((co) => (
         <ChoiceOptionBlock
+          key={co.choiceOptionId}
           showOptionPlot={showOptionPlot}
+          choiceId={choiceId}
           plotFieldCommandId={plotFieldCommandId}
           currentTopologyBlockId={currentTopologyBlockId}
           amountOfOptions={amountOfOptions}
           setShowOptionPlot={setShowOptionPlot}
-          setShowedOptionPlotTopologyBlockId={
-            setShowedOptionPlotTopologyBlockId
-          }
-          setAllChoiceOptionTypesAndTopologyBlockIds={
-            setAllChoiceOptionTypesAndTopologyBlockIds
-          }
-          setOptionOrderToRevalidate={setOptionOrderToRevalidate}
-          setOptionOrderIdNotToRevalidate={setOptionOrderIdNotToRevalidate}
-          setOptionOrderIdToRevalidate={setOptionOrderIdToRevalidate}
-          optionOrderIdNotToRevalidate={optionOrderIdNotToRevalidate}
-          optionOrderToRevalidate={optionOrderToRevalidate}
-          key={co._id}
           {...co}
         />
       ))}

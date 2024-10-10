@@ -30,8 +30,10 @@ export default function CommandSayField({
 
   useEffect(() => {
     if (commandSay) {
-      setCommandSayType(commandSay.type);
       setCommandSayId(commandSay._id);
+      if (!sayType?.length) {
+        setCommandSayType(commandSay.type);
+      }
     }
   }, [commandSay]);
 

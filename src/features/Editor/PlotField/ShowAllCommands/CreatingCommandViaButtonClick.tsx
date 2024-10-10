@@ -56,8 +56,6 @@ export default function CreatingCommandViaButtonClick({
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
 
-  console.log(showCreateCharacterModal);
-
   // const [characterName, setCharacterName] = useState("");
 
   // const allCharacterNames = useMemo(() => {

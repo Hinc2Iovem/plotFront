@@ -4,6 +4,7 @@ import { TopologyBlockTypes } from "../../../../../../../types/TopologyBlock/Top
 
 type GetTopologyBlocksTypes = {
   topologyBlockId: string;
+  moreThanZeroLenShow?: boolean;
 };
 
 export const getTopologyBlockById = async ({
@@ -16,10 +17,12 @@ export const getTopologyBlockById = async ({
 
 export default function useGetTopologyBlockById({
   topologyBlockId,
+  moreThanZeroLenShow = true,
 }: GetTopologyBlocksTypes) {
   return useQuery({
     queryKey: ["topologyBlock", topologyBlockId],
-    queryFn: async () => getTopologyBlockById({ topologyBlockId }),
-    enabled: !!topologyBlockId,
+    queryFn: async () =>
+      getTopologyBlockById({ topologyBlockId, moreThanZeroLenShow }),
+    enabled: !!topologyBlockId && moreThanZeroLenShow,
   });
 }

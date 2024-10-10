@@ -26,7 +26,7 @@ export default function OptionSelectSexualOrientationBlock({
   const [
     currentSexualOrientationBlockName,
     setCurrentSexualOrientationBlockName,
-  ] = useState(sexualOrientation);
+  ] = useState(sexualOrientation || "combined");
 
   useEffect(() => {
     if (sexualOrientation) {
@@ -61,7 +61,7 @@ export default function OptionSelectSexualOrientationBlock({
         className="text-[1.3rem] text-white outline-gray-300 shadow-md rounded-md px-[1rem] py-[.5rem] | rainbowBtn"
         type="button"
       >
-        {currentSexualOrientationBlockName || "Текущая Ветка"}
+        {currentSexualOrientationBlockName || "Orientation"}
       </button>
       <aside
         ref={modalRef}

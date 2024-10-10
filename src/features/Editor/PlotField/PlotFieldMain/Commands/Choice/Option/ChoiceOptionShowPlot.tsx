@@ -1,16 +1,19 @@
+import useChoiceOptions from "../Context/ChoiceContext";
+
 type ChoiceOptionShowPlotTypes = {
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowedOptionPlotTopologyBlockId: React.Dispatch<
-    React.SetStateAction<string>
-  >;
   topologyBlockId: string;
+  choiceId: string;
+  choiceOptionId: string;
 };
 
 export default function ChoiceOptionShowPlot({
   setShowOptionPlot,
-  setShowedOptionPlotTopologyBlockId,
   topologyBlockId,
+  choiceId,
+  choiceOptionId,
 }: ChoiceOptionShowPlotTypes) {
+  const { updateCurrentlyOpenChoiceOption } = useChoiceOptions();
   return (
     <div className="relative self-end pr-[.2rem] pb-[.2rem]">
       <button
@@ -18,7 +21,11 @@ export default function ChoiceOptionShowPlot({
           e.stopPropagation();
           if (topologyBlockId) {
             setShowOptionPlot(true);
-            setShowedOptionPlotTopologyBlockId(topologyBlockId);
+            updateCurrentlyOpenChoiceOption({
+              topologyBlockId,
+              choiceId,
+              choiceOptionId,
+            });
           } else {
             console.error("Choose TopologyBlock,firstly");
           }

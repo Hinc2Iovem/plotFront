@@ -5,6 +5,7 @@ import useGetTopologyBlockById from "./PlotFieldMain/Commands/hooks/TopologyBloc
 import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
 import ShowAllCommandsPlotfield from "./ShowAllCommands/ShowAllCommandsPlotfield";
 import usePlotfieldCommands from "./Context/PlotFieldContext";
+import useTopologyBlocks from "../Flowchart/Context/TopologyBlockContext";
 
 type PlotFieldProps = {
   topologyBlockId: string;
@@ -30,7 +31,7 @@ export default function PlotField({
   setExpansionDivDirection,
 }: PlotFieldProps) {
   const { setCurrentAmountOfCommands } = usePlotfieldCommands();
-
+  const { updateTopologyBlock } = useTopologyBlocks();
   const { data: currentTopologyBlock } = useGetTopologyBlockById({
     topologyBlockId,
   });
@@ -42,6 +43,8 @@ export default function PlotField({
         amountOfCommands:
           currentTopologyBlock.topologyBlockInfo.amountOfCommands,
       });
+
+      updateTopologyBlock({ newTopologyBlock: currentTopologyBlock });
     }
   }, [currentTopologyBlock]);
 

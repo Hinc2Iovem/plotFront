@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import useUpdateChoiceOptionOrder from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionOrder";
+import useChoiceOptions from "../Context/ChoiceContext";
 
 type OptionSelecteTopologyBlockTypes = {
   setShowAllOrders: React.Dispatch<React.SetStateAction<boolean>>;
@@ -8,13 +9,7 @@ type OptionSelecteTopologyBlockTypes = {
   choiceId: string;
   choiceOptionId: string;
   showAllOrders: boolean;
-  optionOrder?: number;
   amountOfOptions: number;
-  setOptionOrderToRevalidate: React.Dispatch<
-    React.SetStateAction<number | undefined>
-  >;
-  setCurrentOrder: React.Dispatch<React.SetStateAction<number | undefined>>;
-  setOptionOrderIdNotToRevalidate: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function OptionSelectOrder({
@@ -22,13 +17,10 @@ export default function OptionSelectOrder({
   choiceOptionId,
   setShowAllOrders,
   showAllOrders,
-  optionOrder,
   amountOfOptions,
   setShowAllTopologyBlocks,
-  setOptionOrderIdNotToRevalidate,
-  setOptionOrderToRevalidate,
-  setCurrentOrder,
 }: OptionSelecteTopologyBlockTypes) {
+  const { updateChoiceOptionOrder, getChoiceOptionById } = useChoiceOptions();
   const modalRef = useRef<HTMLDivElement>(null);
 
   const updateOptionOrder = useUpdateChoiceOptionOrder({
@@ -53,7 +45,10 @@ export default function OptionSelectOrder({
         className="text-[1.3rem] self-end outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap"
         type="button"
       >
-        {typeof optionOrder === "number" ? optionOrder : "Порядок Ответа"}
+        {typeof getChoiceOptionById({ choiceId, choiceOptionId })
+          ?.optionOrder === "number"
+          ? getChoiceOptionById({ choiceId, choiceOptionId })?.optionOrder
+          : "Порядок Ответа"}
       </button>
       <aside
         ref={modalRef}
@@ -68,13 +63,16 @@ export default function OptionSelectOrder({
               type="button"
               onClick={() => {
                 setShowAllOrders(false);
-                setOptionOrderIdNotToRevalidate(choiceOptionId);
-                setOptionOrderToRevalidate(i);
-                setCurrentOrder(i);
+                updateChoiceOptionOrder({
+                  choiceId,
+                  choiceOptionId,
+                  optionOrder: i,
+                });
                 updateOptionOrder.mutate({ optionOrder: i });
               }}
               className={`${
-                optionOrder === i
+                getChoiceOptionById({ choiceId, choiceOptionId })
+                  ?.optionOrder === i
                   ? "bg-primary-pastel-blue text-white"
                   : "text-gray-700 bg-white"
               } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}

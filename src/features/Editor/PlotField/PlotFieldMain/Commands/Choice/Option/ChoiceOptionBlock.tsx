@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import useDebounce from "../../../../../../../hooks/utilities/useDebounce";
-import { TranslationChoiceOptionTypes } from "../../../../../../../types/Additional/TranslationTypes";
 import useGetChoiceOptionById from "../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
 import useUpdateChoiceOptionTranslationText from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
-import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "./ChoiceOptionBlocksList";
+import useChoiceOptions, {
+  ChoiceOptionItemTypes,
+} from "../Context/ChoiceContext";
 import ChoiceOptionShowPlot from "./ChoiceOptionShowPlot";
 import OptionSelectOrder from "./OptionSelectOrder";
 import OptionSelectSexualOrientationBlock from "./OptionSelectSexualOrientationBlock";
@@ -11,124 +12,78 @@ import OptionSelectTopologyBlock from "./OptionSelectTopologyBlock";
 import OptionCharacteristicBlock from "./OptionVariations/OptionCharacteristicBlock";
 import OptionPremiumBlock from "./OptionVariations/OptionPremiumBlock";
 import OptionRelationshipBlock from "./OptionVariations/OptionRelationshipBlock";
-import useChoiceOptions from "../Context/ChoiceContext";
 
 type ChoiceOptionBlockTypes = {
   currentTopologyBlockId: string;
   plotFieldCommandId: string;
   showOptionPlot: boolean;
   amountOfOptions: number;
-  setOptionOrderToRevalidate: React.Dispatch<
-    React.SetStateAction<number | undefined>
-  >;
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowedOptionPlotTopologyBlockId: React.Dispatch<
-    React.SetStateAction<string>
-  >;
-  setOptionOrderIdNotToRevalidate: React.Dispatch<React.SetStateAction<string>>;
-  setOptionOrderIdToRevalidate: React.Dispatch<React.SetStateAction<string>>;
-  setAllChoiceOptionTypesAndTopologyBlockIds: React.Dispatch<
-    React.SetStateAction<ChoiceOptionTypesAndTopologyBlockIdsTypes[]>
-  >;
-  optionOrderIdNotToRevalidate: string;
-  optionOrderToRevalidate: number | undefined;
-} & TranslationChoiceOptionTypes;
+  choiceId: string;
+} & ChoiceOptionItemTypes;
 
 export default function ChoiceOptionBlock({
-  type,
+  optionType,
+  choiceId,
   choiceOptionId,
-  translations,
   showOptionPlot,
   plotFieldCommandId,
   currentTopologyBlockId,
   amountOfOptions,
-  optionOrderIdNotToRevalidate,
-  optionOrderToRevalidate,
-  setOptionOrderIdNotToRevalidate,
-  setOptionOrderToRevalidate,
-  setOptionOrderIdToRevalidate,
+  optionText,
   setShowOptionPlot,
-  setShowedOptionPlotTopologyBlockId,
-  setAllChoiceOptionTypesAndTopologyBlockIds,
 }: ChoiceOptionBlockTypes) {
+  const {
+    updateChoiceOptionText,
+    getChoiceOptionText,
+    getChoiceOptionById,
+    updateChoiceOptionOrder,
+    updateChoiceOptionTopologyBlockId,
+  } = useChoiceOptions();
+
   const [showAllSexualOrientationBlocks, setShowAllSexualOrientationBlocks] =
     useState(false);
-  const { addChoiceOption } = useChoiceOptions();
   const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
   const [showAllOrders, setShowAllOrders] = useState(false);
 
   const { data: choiceOption } = useGetChoiceOptionById({ choiceOptionId });
-  const [topologyBlockId, setTopologyBlockId] = useState("");
   const [sexualOrientationType, setSexualOrientationType] = useState("");
-  const [currentOrder, setCurrentOrder] = useState<number | undefined>();
 
   useEffect(() => {
     if (choiceOption) {
-      setTopologyBlockId(choiceOption?.topologyBlockId || "");
       setSexualOrientationType(choiceOption?.sexualOrientationType || "");
-      setCurrentOrder(choiceOption?.optionOrder);
-      addChoiceOption({
-        choiceOption: {
-          optionType: choiceOption.type,
-          optionText: translations[0]?.text,
-          choiceOptionId: choiceOption._id,
-          topologyBlockId: choiceOption.topologyBlockId,
-        },
+      updateChoiceOptionOrder({
+        choiceId,
+        choiceOptionId,
+        optionOrder: choiceOption?.optionOrder as number,
       });
-      setAllChoiceOptionTypesAndTopologyBlockIds((prev) => {
-        return [
-          ...prev,
-          {
-            type: choiceOption.type,
-            topologyBlockId: choiceOption?.topologyBlockId || "",
-            option: translations[0]?.text || "",
-            choiceOptionId,
-          },
-        ];
+      updateChoiceOptionTopologyBlockId({
+        choiceId,
+        choiceOptionId,
+        topologyBlockId: choiceOption.topologyBlockId,
+        topologyBlockName:
+          getChoiceOptionById({ choiceId, choiceOptionId })
+            ?.topologyBlockName || "",
       });
     }
   }, [choiceOption]);
 
-  useEffect(() => {
-    if (
-      optionOrderIdNotToRevalidate?.trim().length &&
-      typeof optionOrderToRevalidate === "number"
-    ) {
-      if (
-        choiceOption?.optionOrder === optionOrderToRevalidate &&
-        choiceOptionId !== optionOrderIdNotToRevalidate
-      ) {
-        setCurrentOrder(undefined);
-        setOptionOrderIdToRevalidate(choiceOption?._id || "");
-      }
-    }
-  }, [optionOrderIdNotToRevalidate, optionOrderToRevalidate, choiceOptionId]);
-
-  const [optionText, setOptionText] = useState("");
-
-  useEffect(() => {
-    if (translations) {
-      translations.map((ot) => {
-        if (ot.textFieldName === "choiceOption") {
-          setOptionText(ot.text);
-        }
-      });
-    }
-  }, [translations]);
-
-  const debouncedValue = useDebounce({ value: optionText, delay: 700 });
+  const debouncedValue = useDebounce({
+    value: getChoiceOptionText({ choiceId, choiceOptionId }),
+    delay: 700,
+  });
 
   const updateOptionTextTranslation = useUpdateChoiceOptionTranslationText({
     choiceOptionId,
     option: debouncedValue,
-    type,
+    type: optionType,
     choiceId: plotFieldCommandId,
     language: "russian",
   });
 
   useEffect(() => {
     if (
-      (translations[0]?.text || "") !== debouncedValue &&
+      (optionText || "") !== debouncedValue &&
       debouncedValue?.trim().length
     ) {
       updateOptionTextTranslation.mutate();
@@ -145,18 +100,24 @@ export default function ChoiceOptionBlock({
       <div className="w-full flex justify-between flex-col h-full">
         <input
           type="text"
-          value={optionText}
-          onChange={(e) => setOptionText(e.target.value)}
+          value={getChoiceOptionText({ choiceId, choiceOptionId })}
+          onChange={(e) => {
+            updateChoiceOptionText({
+              choiceId,
+              id: choiceOptionId,
+              optionText: e.target.value,
+            });
+          }}
           placeholder="Ответ"
           className="w-full text-[1.4rem] text-gray-700 rounded-md outline-gray-300 shadow-md bg-white px-[1rem]"
         />
 
         <div className="p-[.2rem] flex flex-col gap-[1rem]">
-          {type === "premium" ? (
+          {optionType === "premium" ? (
             <OptionPremiumBlock choiceOptionId={choiceOptionId} />
-          ) : type === "characteristic" ? (
+          ) : optionType === "characteristic" ? (
             <OptionCharacteristicBlock choiceOptionId={choiceOptionId} />
-          ) : type === "relationship" ? (
+          ) : optionType === "relationship" ? (
             <OptionRelationshipBlock choiceOptionId={choiceOptionId} />
           ) : null}
           <div className="flex justify-between w-full">
@@ -182,10 +143,12 @@ export default function ChoiceOptionBlock({
             >
               <ChoiceOptionShowPlot
                 setShowOptionPlot={setShowOptionPlot}
-                setShowedOptionPlotTopologyBlockId={
-                  setShowedOptionPlotTopologyBlockId
+                topologyBlockId={
+                  getChoiceOptionById({ choiceId, choiceOptionId })
+                    ?.topologyBlockId || ""
                 }
-                topologyBlockId={topologyBlockId}
+                choiceId={choiceId}
+                choiceOptionId={choiceOptionId}
               />
               <OptionSelectOrder
                 amountOfOptions={amountOfOptions}
@@ -193,27 +156,23 @@ export default function ChoiceOptionBlock({
                 choiceOptionId={choiceOptionId}
                 setShowAllOrders={setShowAllOrders}
                 showAllOrders={showAllOrders}
-                optionOrder={currentOrder}
                 setShowAllTopologyBlocks={setShowAllTopologyBlocks}
-                setOptionOrderToRevalidate={setOptionOrderToRevalidate}
-                setOptionOrderIdNotToRevalidate={
-                  setOptionOrderIdNotToRevalidate
-                }
-                setCurrentOrder={setCurrentOrder}
               />
               <OptionSelectTopologyBlock
-                setAllChoiceOptionTypesAndTopologyBlockIds={
-                  setAllChoiceOptionTypesAndTopologyBlockIds
-                }
-                optionText={optionText}
-                optionType={type}
-                setTopologyBlockId={setTopologyBlockId}
+                choiceId={choiceId}
                 setShowAllTopologyBlocks={setShowAllTopologyBlocks}
                 setShowAllOrders={setShowAllOrders}
                 showAllTopologyBlocks={showAllTopologyBlocks}
                 choiceOptionId={choiceOptionId}
                 currentTopologyBlockId={currentTopologyBlockId}
-                topologyBlockId={topologyBlockId}
+                topologyBlockId={
+                  getChoiceOptionById({ choiceId, choiceOptionId })
+                    ?.topologyBlockId || ""
+                }
+                topologyBlockName={
+                  getChoiceOptionById({ choiceId, choiceOptionId })
+                    ?.topologyBlockName || ""
+                }
               />
             </div>
           </div>

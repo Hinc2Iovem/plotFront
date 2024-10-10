@@ -1,25 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import { ChoiceOptionVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useUpdateChoiceOptionTopologyBlock from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTopologyBlock";
 import useGetAllTopologyBlocksByEpisodeId from "../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../hooks/TopologyBlock/useGetTopologyBlockById";
-import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "./ChoiceOptionBlocksList";
+import useChoiceOptions from "../Context/ChoiceContext";
 
 type OptionSelecteTopologyBlockTypes = {
   setShowAllTopologyBlocks: React.Dispatch<React.SetStateAction<boolean>>;
   topologyBlockId: string;
   choiceOptionId: string;
   showAllTopologyBlocks: boolean;
-  setTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
   setShowAllOrders: React.Dispatch<React.SetStateAction<boolean>>;
-  setAllChoiceOptionTypesAndTopologyBlockIds: React.Dispatch<
-    React.SetStateAction<ChoiceOptionTypesAndTopologyBlockIdsTypes[]>
-  >;
   currentTopologyBlockId: string;
-  optionType: ChoiceOptionVariationsTypes;
-  optionText: string;
+  choiceId: string;
+  topologyBlockName: string;
 };
 
 export default function OptionSelectTopologyBlock({
@@ -27,16 +22,21 @@ export default function OptionSelectTopologyBlock({
   choiceOptionId,
   setShowAllTopologyBlocks,
   showAllTopologyBlocks,
-  setTopologyBlockId,
   currentTopologyBlockId,
   setShowAllOrders,
-  setAllChoiceOptionTypesAndTopologyBlockIds,
-  optionType,
-  optionText,
+  choiceId,
+  topologyBlockName,
 }: OptionSelecteTopologyBlockTypes) {
+  const { updateChoiceOptionTopologyBlockId } = useChoiceOptions();
+  const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState(
+    topologyBlockName || ""
+  );
   const { episodeId } = useParams();
-  const { data: topologyBlock } = useGetTopologyBlockById({ topologyBlockId });
-  const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState("");
+  const { data: topologyBlock } = useGetTopologyBlockById({
+    topologyBlockId,
+    moreThanZeroLenShow: topologyBlockName?.length > 0,
+  });
+
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -87,21 +87,15 @@ export default function OptionSelectTopologyBlock({
               onClick={() => {
                 setShowAllTopologyBlocks(false);
                 setCurrentTopologyBlockName(tb?.name || "");
-                setTopologyBlockId(tb._id);
-                setAllChoiceOptionTypesAndTopologyBlockIds((prev) => {
-                  return [
-                    ...prev,
-                    {
-                      choiceOptionId,
-                      type: optionType,
-                      option: optionText,
-                      topologyBlockId: topologyBlockId,
-                    },
-                  ];
+                updateChoiceOptionTopologyBlockId({
+                  choiceId,
+                  choiceOptionId,
+                  topologyBlockId: tb._id,
+                  topologyBlockName: tb?.name || "",
                 });
                 updateOptionTopologyBlock.mutate({
                   targetBlockId: tb._id,
-                  sourceBlockId: currentTopologyBlockId,
+                  sourceBlockId: topologyBlockId,
                 });
               }}
               className={`${topologyBlockId === tb._id ? "hidden" : ""} ${

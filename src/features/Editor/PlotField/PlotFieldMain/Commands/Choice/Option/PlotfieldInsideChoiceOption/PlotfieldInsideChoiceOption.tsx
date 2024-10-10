@@ -8,37 +8,30 @@ import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
 import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
 import ChoiceOptionInputField from "./ChoiceOptionInputField";
+import useChoiceOptions from "../../Context/ChoiceContext";
 
 type PlotfieldInsideChoiceOptionTypes = {
-  showedOptionPlotTopologyBlockId: string;
-  allChoiceOptionTypesAndTopologyBlockIds: ChoiceOptionTypesAndTopologyBlockIdsTypes[];
   showOptionPlot: boolean;
   choiceId: string;
-  plotFieldCommandId: string;
-  setShowedOptionPlotTopologyBlockId: React.Dispatch<
-    React.SetStateAction<string>
-  >;
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
-  setAllChoiceOptionTypesAndTopologyBlockIds: React.Dispatch<
-    React.SetStateAction<ChoiceOptionTypesAndTopologyBlockIdsTypes[]>
-  >;
 };
 
 export default function PlotfieldInsideChoiceOption({
-  showedOptionPlotTopologyBlockId,
-  allChoiceOptionTypesAndTopologyBlockIds,
   showOptionPlot,
   choiceId,
-  plotFieldCommandId,
-  setShowedOptionPlotTopologyBlockId,
   setShowOptionPlot,
 }: PlotfieldInsideChoiceOptionTypes) {
+  const {
+    getCurrentlyOpenChoiceOption,
+    getAllChoiceOptionsByChoiceId,
+    getCurrentlyOpenChoiceOptionPlotId,
+  } = useChoiceOptions();
+
   const { data: topologyBlock } = useGetTopologyBlockById({
-    topologyBlockId: showedOptionPlotTopologyBlockId,
+    topologyBlockId:
+      getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
   });
   // const [showMessage, setShowMessage] = useState("");
-  const [showAllCommands, setShowAllCommands] = useState(false);
-  console.log(showAllCommands);
 
   const [currentAmountOfCommands, setCurrentAmountOfCommands] =
     useState<number>(0);
@@ -52,7 +45,8 @@ export default function PlotfieldInsideChoiceOption({
   }, [topologyBlock]);
 
   const createCommand = useCreateBlankCommand({
-    topologyBlockId: showedOptionPlotTopologyBlockId,
+    topologyBlockId:
+      getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
   });
 
   const handleCreateCommand = () => {
@@ -60,7 +54,8 @@ export default function PlotfieldInsideChoiceOption({
     createCommand.mutate({
       _id,
       commandOrder: currentAmountOfCommands,
-      topologyBlockId: showedOptionPlotTopologyBlockId,
+      topologyBlockId:
+        getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
     });
     setCurrentAmountOfCommands((prev) => prev + 1);
     if (createCommand.isError) {
@@ -78,36 +73,38 @@ export default function PlotfieldInsideChoiceOption({
         onClick={(e) => {
           e.stopPropagation();
           setShowOptionPlot(false);
-          setShowedOptionPlotTopologyBlockId("");
-          // setAllChoiceOptionTypesAndTopologyBlockIds([]);
         }}
         className="w-[2.5rem] h-[1rem] bg-white rounded-md shadow-sm absolute right-[-.3rem] top-[-.3rem] hover:shadow-md transition-shadow"
       ></button>
       <form onSubmit={(e) => e.preventDefault()}>
-        {allChoiceOptionTypesAndTopologyBlockIds.map((op, i) => (
+        {getAllChoiceOptionsByChoiceId({ choiceId }).map((op, i) => (
           <ChoiceOptionInputField
             key={
-              "optionValueInput-" + op.topologyBlockId + "-" + op.type + "-" + i
+              "optionValueInput-" +
+              op.topologyBlockId +
+              "-" +
+              op.optionType +
+              "-" +
+              i
             }
-            option={op.option || ""}
+            option={op.optionText || ""}
             topologyBlockId={op.topologyBlockId || ""}
-            type={op.type}
+            type={op.optionType}
             choiceOptionId={op.choiceOptionId}
             choiceId={choiceId}
-            plotFieldCommandId={plotFieldCommandId}
-            currentTopologyBlockId={showedOptionPlotTopologyBlockId}
           />
         ))}
       </form>
       <header className="w-full flex gap-[.5rem] relative px-[1rem] py-[.9rem] flex-wrap">
-        {allChoiceOptionTypesAndTopologyBlockIds.map((op, i) => (
+        {getAllChoiceOptionsByChoiceId({ choiceId }).map((op, i) => (
           <OptionVariationButton
-            key={op.topologyBlockId + "-" + op.type + "-" + i}
-            setShowedOptionPlotTopologyBlockId={
-              setShowedOptionPlotTopologyBlockId
-            }
-            showedOptionPlotTopologyBlockId={showedOptionPlotTopologyBlockId}
+            key={op.topologyBlockId + "-" + op.optionType + "-" + i}
             {...op}
+            choiceId={choiceId}
+            type={op.optionType}
+            showedOptionPlotTopologyBlockId={getCurrentlyOpenChoiceOptionPlotId(
+              { choiceId }
+            )}
           />
         ))}
       </header>
@@ -116,7 +113,6 @@ export default function PlotfieldInsideChoiceOption({
         <div className="flex w-full bg-white rounded-md shadow-sm itesm-center  px-[1rem] py-[.5rem]">
           <div className="flex gap-[1rem]">
             <ButtonHoverPromptModal
-              onClick={() => setShowAllCommands(true)}
               contentName="Все команды"
               positionByAbscissa="left"
               asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
@@ -145,7 +141,9 @@ export default function PlotfieldInsideChoiceOption({
         <PlotFieldMain
           showAllCommands={false}
           renderedAsSubPlotfield={true}
-          topologyBlockId={showedOptionPlotTopologyBlockId}
+          topologyBlockId={
+            getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || ""
+          }
         />
       </main>
     </section>
@@ -153,24 +151,31 @@ export default function PlotfieldInsideChoiceOption({
 }
 
 type OptionVariationButtonTypes = {
-  setShowedOptionPlotTopologyBlockId: React.Dispatch<
-    React.SetStateAction<string>
-  >;
   showedOptionPlotTopologyBlockId: string;
+  choiceId: string;
 } & ChoiceOptionTypesAndTopologyBlockIdsTypes;
 
 function OptionVariationButton({
-  setShowedOptionPlotTopologyBlockId,
   showedOptionPlotTopologyBlockId,
   type,
   topologyBlockId,
+  choiceOptionId,
+  choiceId,
 }: OptionVariationButtonTypes) {
+  const {
+    updateCurrentlyOpenChoiceOption,
+    getCurrentlyOpenChoiceOptionPlotId,
+  } = useChoiceOptions();
   return (
     <button
       onClick={(e) => {
         e.stopPropagation();
         if (topologyBlockId) {
-          setShowedOptionPlotTopologyBlockId(topologyBlockId);
+          updateCurrentlyOpenChoiceOption({
+            topologyBlockId,
+            choiceId,
+            choiceOptionId,
+          });
         } else {
           console.log("Выберите Топологический Блок");
           // setShowOptionPlot(false);
@@ -179,7 +184,8 @@ function OptionVariationButton({
         }
       }}
       className={`${
-        topologyBlockId === showedOptionPlotTopologyBlockId
+        topologyBlockId === showedOptionPlotTopologyBlockId ||
+        getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
           ? "bg-primary-pastel-blue text-white focus-within:outline-white"
           : "bg-white"
       } ${

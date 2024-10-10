@@ -7,6 +7,9 @@ export type TopologyBlockTypes = {
   name?: string;
   topologyBlockInfo: {
     amountOfCommands: number;
+    amountOfChildBlocks: number;
+    amountOfParentBlocks: number;
+    amountOfAchievements: number;
   };
 };
 
