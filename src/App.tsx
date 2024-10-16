@@ -19,7 +19,7 @@ import { useEffect } from "react";
 
 export default function App() {
   useEffect(() => {
-    localStorage.setItem("theme", "light");
+    localStorage.setItem("theme", "dark");
 
     const selectedTheme = localStorage.getItem("theme");
 
