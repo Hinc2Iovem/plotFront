@@ -28,11 +28,13 @@ export default function Missing() {
 
   return (
     <article>
-      <DivBgColor />
-      <h1 className="text-gray-700 text-[3.5rem] text-center">
+      <DivBgColor bgColor="bg-primary" />
+      <h1 className="text-text-light text-[3.5rem] text-center">
         Page wasn't found
       </h1>
-      <p className="text-[1.5rem]">You will be redirected in {seconds}</p>
+      <p className="text-[1.5rem] text-text-light opacity-70">
+        You will be redirected in {seconds}
+      </p>
     </article>
   );
 }

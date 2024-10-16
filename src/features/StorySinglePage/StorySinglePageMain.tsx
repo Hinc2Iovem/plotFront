@@ -42,7 +42,7 @@ export default function StorySinglePageMain() {
           setTitle("");
           setShowModal(true);
         }}
-        className="text-[2.5rem] w-fit bg-white px-[1rem] py-[.5rem] rounded-md shadow-md self-end hover:scale-[1.01] active:scale-[0.99]"
+        className="text-[2.5rem] w-fit bg-secondary px-[1rem] py-[.5rem] rounded-md shadow-md self-end hover:scale-[1.01] active:scale-[0.99]"
       >
         Создать новый сезон
       </button>
@@ -52,13 +52,13 @@ export default function StorySinglePageMain() {
       >
         <form
           onSubmit={handleSubmit}
-          className={`w-full bg-white rounded-md shadow-sm flex flex-col gap-[1rem] p-[1rem]`}
+          className={`w-full bg-secondary rounded-md shadow-sm flex flex-col gap-[1rem] p-[1rem]`}
         >
           <input
             type="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="text-[2rem] text-gray-700 border-double border-l-neutral-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none"
+            className="text-[2rem] text-gray-700 border-double border-l-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none"
             placeholder="Название Сезона"
           />
 

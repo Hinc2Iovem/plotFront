@@ -22,7 +22,7 @@ export default function OptionSelectOrder({
 }: OptionSelecteTopologyBlockTypes) {
   const { updateChoiceOptionOrder, getChoiceOptionById } = useChoiceOptions();
   const modalRef = useRef<HTMLDivElement>(null);
-
+  const theme = localStorage.getItem("theme");
   const updateOptionOrder = useUpdateChoiceOptionOrder({
     choiceOptionId,
     choiceId,
@@ -42,7 +42,9 @@ export default function OptionSelectOrder({
           setShowAllOrders((prev) => !prev);
           setShowAllTopologyBlocks(false);
         }}
-        className="text-[1.3rem] self-end outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap"
+        className={`text-[1.3rem] self-end ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } text-text-light hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker hover:bg-primary-darker shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
         type="button"
       >
         {typeof getChoiceOptionById({ choiceId, choiceOptionId })
@@ -54,7 +56,7 @@ export default function OptionSelectOrder({
         ref={modalRef}
         className={`${
           showAllOrders ? "" : "hidden"
-        } overflow-y-auto max-h-[15rem] z-[2] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem] | containerScroll`}
+        } overflow-y-auto max-h-[15rem] z-[2] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] | containerScroll`}
       >
         {amountOfOptions > 0 ? (
           [...Array.from({ length: amountOfOptions })]?.map((_, i) => (
@@ -73,9 +75,11 @@ export default function OptionSelectOrder({
               className={`${
                 getChoiceOptionById({ choiceId, choiceOptionId })
                   ?.optionOrder === i
-                  ? "bg-primary-pastel-blue text-white"
-                  : "text-gray-700 bg-white"
-              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                  ? "bg-primary-darker text-text-light"
+                  : "text-text-dark bg-secondary"
+              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } hover:bg-primary-darker focus-within:bg-primary-darker hover:text-text-dark shadow-md transition-all rounded-md`}
             >
               {i}
             </button>
@@ -86,7 +90,9 @@ export default function OptionSelectOrder({
             onClick={() => {
               setShowAllOrders(false);
             }}
-            className={` px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+            className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } text-text-dark hover:bg-primary-darker focus-within:bg-primary-darker  hover:text-text-dark shadow-md transition-all rounded-md`}
           >
             Пусто
           </button>

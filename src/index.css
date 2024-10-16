@@ -31,6 +31,86 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-background-clip: text;
-  -webkit-text-fill-color: none;
+  -webkit-text-fill-color: rgb(var(--text-light));
   transition: background-color 5000s ease-in-out 0s;
+}
+
+textarea {
+  background-color: rgb(var(--secondary));
+}
+
+.light {
+  --primary: 238, 245, 255;
+  --primary-darker: 190, 225, 253;
+  --secondary: 255 255 255;
+  --secondary-darker: 249 250 255;
+  --dark-blue: 70 61 255;
+  --dark-dark-blue: 1 41 89;
+
+  --black: 0 0 0;
+  --white: 255 255 255;
+
+  --text-light: 75 85 99;
+  --text-dark: 255 255 255;
+
+  --light-gray: 209 213 219;
+  --lightest-gray: 243 244 246;
+  --second-lightest-gray: 229 231 235;
+  --dark-mid-gray: 75 85 99;
+
+  --green-light: 187 247 208;
+  --green-mid-light: 134 239 172;
+  --green-mid: 74 222 128;
+
+  --red-light: 254 202 202;
+  --red-mid-light: 252 165 165;
+  --red-mid: 248 113 113;
+
+  --orange-light: 254 215 170;
+  --orange-mid-light: 253 186 116;
+  --orange-mid: 251 146 60;
+
+  --lightest-yellow: 254 249 195;
+
+  background: rgba(var(--primary));
+}
+
+.dark {
+  --primary: 50 51 56;
+  --primary-darker: 44 45 49;
+  --secondary: 30 31 35;
+  --secondary-darker: 10 30 30;
+  --dark-blue: 70 61 255;
+  --dark-dark-blue: 1 41 89;
+
+  --black: 0 0 0;
+  --white: 255 255 255;
+
+  --text-light: 255 255 255;
+  --text-dark: 75 85 99;
+
+  --light-gray: 209 213 219;
+  --lightest-gray: 243 244 246;
+  --second-lightest-gray: 229 231 235;
+  --dark-mid-gray: 75 85 99;
+
+  --green-light: 187 247 208;
+  --green-mid-light: 134 239 172;
+  --green-mid: 74 222 128;
+
+  --red-light: 254 202 202;
+  --red-mid-light: 252 165 165;
+  --red-mid: 248 113 113;
+
+  --orange-light: 254 215 170;
+  --orange-mid-light: 253 186 116;
+  --orange-mid: 251 146 60;
+
+  --lightest-yellow: 254 249 195;
+
+  background: rgba(var(--primary));
+}
+
+input {
+  background: rgba(var(--secondary));
 }

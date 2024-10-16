@@ -50,7 +50,7 @@ export default function AppearanceTypeDropDown({
 
   useOutOfModal({ modalRef, setShowModal, showModal });
   return (
-    <div className="bg-white rounded-md shadow-md relative">
+    <div className="bg-secondary rounded-md shadow-md relative">
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -64,7 +64,7 @@ export default function AppearanceTypeDropDown({
         ref={modalRef}
         className={`${
           showModal ? "" : "hidden"
-        } overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem]`}
+        } overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem]`}
       >
         {APPEARANCE_TYPES.map((ct) => (
           <button
@@ -80,9 +80,9 @@ export default function AppearanceTypeDropDown({
             }}
             className={`${
               ct === valueToEng
-                ? "bg-primary-pastel-blue text-white"
-                : " text-gray-600 bg-white"
-            } text-[1.4rem] outline-gray-300 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md`}
+                ? "bg-primary-darker text-text-dark"
+                : " text-gray-600 bg-secondary"
+            } text-[1.4rem] outline-gray-300 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md`}
           >
             {ct}
           </button>

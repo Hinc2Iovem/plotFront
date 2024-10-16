@@ -26,7 +26,7 @@ export default function EmotionHeaderCharacters({
 }: EmotionHeaderCharacterTypes) {
   const { storyId } = useParams();
   const modalRef = useRef<HTMLDivElement>(null);
-
+  const theme = localStorage.getItem("theme");
   const { data: characters } = useGetTranslationCharacters({
     storyId: storyId || "",
     language: "russian",
@@ -60,15 +60,17 @@ export default function EmotionHeaderCharacters({
           setShowModal(false);
           setShowCharacterModal(true);
         }}
-        className="text-[1.5rem] px-[1rem] py-[.5rem] outline-gray-400 bg-white rounded-md shadow-md hover:bg-primary-pastel-blue hover:text-white transition-all active:scale-[0.98]"
+        className="text-[1.5rem] focus-within:text-text-light focus-within:bg-primary-darker px-[1rem] text-text-dark hover:text-text-light py-[.5rem] outline-gray-400 bg-secondary rounded-md shadow-md hover:bg-primary-darker transition-all active:scale-[0.98]"
       >
         Имя Персонажа
       </button>
 
       <p
-        className={`${
-          characterName ? "" : "hidden"
-        } text-[1.5rem] border-b-[2px] border-gray-700 border-dotted text-center rounded-md`}
+        className={`${characterName ? "" : "hidden"} text-[1.5rem] ${
+          theme === "light"
+            ? ""
+            : "text-text-light opacity-80 hover:opacity-100 transition-opacity cursor-default"
+        } border-b-[2px] border-gray-700 border-dotted text-center rounded-md`}
       >
         {characterName}
       </p>
@@ -78,7 +80,7 @@ export default function EmotionHeaderCharacters({
         id="scrollBar"
         className={`${showCharacterModal ? "" : "hidden"} ${
           characterName ? "translate-y-[1rem]" : "translate-y-[2rem]"
-        } absolute top-1/2 z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+        } absolute top-1/2 z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
       >
         {(!characterName && (characters?.length || 0) > 0) ||
         (characterName && (characters?.length || 0) > 1) ? (
@@ -96,7 +98,7 @@ export default function EmotionHeaderCharacters({
             onClick={() => {
               setShowCharacterModal(false);
             }}
-            className="text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+            className="text-start focus-within:text-text-light focus-within:bg-primary-darker text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all rounded-md"
           >
             Пусто
           </button>

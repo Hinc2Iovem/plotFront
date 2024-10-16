@@ -27,6 +27,7 @@ export default function ProfileLeftSide({
   expandedTranslationSide,
 }: ProfileLeftSideTypes) {
   const { userId: staffId } = useGetDecodedJWTValues();
+  const currentTheme = localStorage.getItem("theme");
   const { data: staff } = useGetStaffMember({ staffId: staffId ?? "" });
 
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
@@ -51,13 +52,20 @@ export default function ProfileLeftSide({
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
   return (
     <div
       className={`${
         expandedTranslationSide ? "hidden" : ""
       } flex gap-[1rem] sm:flex-col sm:w-[20rem] w-full h-full flex-shrink-0 flex-wrap`}
     >
-      <div className="w-[20rem] flex-grow h-[20rem] relative bg-white rounded-md shadow-sm border-white border-[3px]">
+      <div
+        className={`w-[20rem] flex-grow h-[20rem] relative ${
+          currentTheme === "light"
+            ? "bg-secondary border-secondary"
+            : "bg-primary border-primary"
+        } rounded-md shadow-sm border-[3px]`}
+      >
         {staff?.imgUrl ? (
           <img
             src={staff.imgUrl}
@@ -72,11 +80,15 @@ export default function ProfileLeftSide({
           />
         )}
       </div>
-      <div className="flex gap-[1rem] flex-col flex-grow sm:bg-none bg-neutral-alabaster p-[1rem] justify-center shadow-sm">
-        <div className="w-full p-[1rem] bg-white rounded-md shadow-sm">
+      <div
+        className={`flex gap-[1rem] flex-col flex-grow sm:bg-none ${
+          currentTheme === "light" ? "bg-secondary" : "bg-primary"
+        } rounded-md p-[1rem] justify-center shadow-sm`}
+      >
+        <div className="w-full p-[1rem] bg-secondary rounded-md text-text-light shadow-sm">
           <h3 className="text-[1.5rem] text-center">{staff?.username}</h3>
         </div>
-        <div className="w-full p-[1rem] bg-white rounded-md shadow-sm flex gap-[.5rem] items-center justify-center">
+        <div className="w-full p-[1rem] bg-secondary rounded-md text-text-light shadow-sm flex gap-[.5rem] items-center justify-center">
           <h3 className="text-[1.5rem] text-center">Роль:</h3>
           {staff?.roles.map((r) => (
             <RenderStaffRoles key={r} role={r} />

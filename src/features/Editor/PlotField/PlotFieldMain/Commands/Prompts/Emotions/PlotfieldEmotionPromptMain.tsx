@@ -25,6 +25,7 @@ export default function PlotfieldEmotionPromptMain({
   modalPosition,
 }: PlotfieldEmotionPromptMainTypes) {
   const emotionsRef = useRef<HTMLDivElement>(null);
+  const theme = localStorage.getItem("theme");
   useOutOfModal({
     modalRef: emotionsRef,
     setShowModal: setShowEmotionModal,
@@ -35,7 +36,7 @@ export default function PlotfieldEmotionPromptMain({
       ref={emotionsRef}
       className={`${showEmotionModal ? "" : "hidden"} translate-y-[.5rem] ${
         modalPosition ? modalPosition : "right-0"
-      } absolute z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+      } absolute z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
     >
       {allEmotions?.length ? (
         allEmotions?.map((c) => (
@@ -54,7 +55,9 @@ export default function PlotfieldEmotionPromptMain({
           onClick={() => {
             setShowEmotionModal(false);
           }}
-          className="whitespace-nowrap w-full flex-wrap text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+          className={`whitespace-nowrap ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } w-full flex-wrap text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-darker hover:text-text-light text-text-dark focus-within:text-text-light focus-within:bg-primary-darker transition-all rounded-md`}
         >
           Пусто
         </button>

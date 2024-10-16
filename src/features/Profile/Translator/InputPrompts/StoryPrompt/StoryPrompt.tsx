@@ -69,13 +69,13 @@ export default function StoryPrompt({
 
   return (
     <form
-      className="bg-white rounded-md shadow-sm relative"
+      className="bg-secondary rounded-md shadow-sm relative"
       onSubmit={(e) => e.preventDefault()}
     >
       <input
         type="text"
         ref={storyInputRef}
-        className="w-full rounded-md shadow-md bg-white text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
+        className="w-full rounded-md shadow-md bg-secondary text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
         placeholder="История"
         onClick={(e) => {
           e.stopPropagation();
@@ -97,7 +97,7 @@ export default function StoryPrompt({
         ref={modalStoriesRef}
         className={`${
           showStories ? "" : "hidden"
-        } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+        } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
       >
         {(allStories?.length || 0) > 0 && !isLoading ? (
           allStories?.map((s, i) => (
@@ -122,7 +122,7 @@ export default function StoryPrompt({
             onClick={() => {
               setShowStories(false);
             }}
-            className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+            className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
           >
             Загрузка...
           </button>
@@ -132,7 +132,7 @@ export default function StoryPrompt({
             onClick={() => {
               setShowStories(false);
             }}
-            className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+            className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
           >
             Нету Подходящих Историй
           </button>
@@ -187,7 +187,7 @@ function StoryPromptButton({
         setStoryValue(storyTitle);
         setShowStories(false);
       }}
-      className="text-[1.4rem] focus-within:bg-primary-pastel-blue transition-all focus-within:text-white outline-none text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md relative"
+      className="text-[1.4rem] focus-within:bg-primary-darker transition-all focus-within:text-text-dark outline-none text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md relative"
     >
       {storyTitle}
       {currentLanguage && translateToLanguage ? (

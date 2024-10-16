@@ -25,7 +25,7 @@ export default function ChoiceOptionInputField({
     getChoiceOptionText,
     getCurrentlyOpenChoiceOptionPlotId,
   } = useChoiceOptions();
-
+  const theme = localStorage.getItem("theme");
   const debouncedValue = useDebounce({
     delay: 700,
     value: getChoiceOptionText({ choiceId, choiceOptionId }),
@@ -67,9 +67,11 @@ export default function ChoiceOptionInputField({
             optionText: e.target.value,
           });
         }}
-        className={`outline-none text-[1.5rem] text-gray-600 bg-white rounded-md shadow-sm px-[1rem] py-[.5rem] w-[calc(100%-2.5rem)] focus-within:shadow-inner transition-shadow`}
+        className={`${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } text-[1.5rem] text-text-light bg-secondary rounded-md shadow-sm px-[1rem] py-[.5rem] w-[calc(100%-2.5rem)] focus-within:shadow-inner transition-shadow`}
       />
-      <p className="bg-white rounded-md shadow-sm text-[1.3rem] text-gray-600 px-[1rem] py-[.5rem]">
+      <p className="bg-secondary rounded-md shadow-sm text-[1.3rem] text-text-light px-[1rem] py-[.5rem]">
         {topologyBlock?.name}
       </p>
     </div>

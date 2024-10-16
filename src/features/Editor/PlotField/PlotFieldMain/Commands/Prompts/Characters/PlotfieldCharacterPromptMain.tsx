@@ -23,7 +23,7 @@ export default function PlotfieldCharacterPromptMain({
 }: PlotfieldCharacterPromptMainTypes) {
   const { storyId } = useParams();
   const modalRef = useRef<HTMLDivElement>(null);
-
+  const theme = localStorage.getItem("theme");
   const { data: allCharacters } =
     useGetCharacterTranslationByTextFieldNameAndSearch({
       storyId: storyId ?? "",
@@ -43,7 +43,7 @@ export default function PlotfieldCharacterPromptMain({
       ref={modalRef}
       className={`${showCharacterModal ? "" : "hidden"} ${
         !allCharacters?.length && characterDebouncedValue ? "hidden" : ""
-      } translate-y-[2rem] absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[15rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+      } translate-y-[2rem] absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[15rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
     >
       {allCharacters?.length ? (
         allCharacters?.map((c) => (
@@ -59,7 +59,9 @@ export default function PlotfieldCharacterPromptMain({
       ) : !characterDebouncedValue?.trim().length ? (
         <button
           type="button"
-          className={`text-start outline-gray-300 text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md`}
+          className={`text-start ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } focus-within:bg-primary-darker focus-within:text-text-light text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all rounded-md`}
         >
           Пусто
         </button>

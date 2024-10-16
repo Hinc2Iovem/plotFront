@@ -36,7 +36,7 @@ export default function EmotionHeaderCharacterNames({
             setCharacterId(characterId);
             setShowCharacterModal(false);
           }}
-          className="rounded-md flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
+          className="rounded-md focus-within:text-text-light focus-within:bg-primary-darker text-text-dark hover:text-text-light flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary transition-all "
         >
           <p className="text-[1.3rem] rounded-md">
             {currentCharacterName.length > 20
@@ -56,7 +56,7 @@ export default function EmotionHeaderCharacterNames({
             setCharacterId(characterId);
             setShowCharacterModal(false);
           }}
-          className="text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+          className="text-start focus-within:text-text-light focus-within:bg-primary-darker text-text-dark hover:text-text-light text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary transition-all rounded-md"
         >
           {currentCharacterName.length > 20
             ? currentCharacterName.substring(0, 20) + "..."

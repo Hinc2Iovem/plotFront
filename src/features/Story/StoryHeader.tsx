@@ -80,7 +80,7 @@ export default function StoryHeader({
 
   return (
     <>
-      <header className="flex justify-between mt-[1rem] p-[1rem] bg-white rounded-md shadow-md">
+      <header className="flex justify-between mt-[1rem] p-[1rem] bg-secondary rounded-md shadow-md">
         <form onSubmit={(e) => e.preventDefault()} noValidate>
           <input
             type="text"
@@ -114,7 +114,7 @@ export default function StoryHeader({
       <aside
         className={`${
           showCreatingModal ? "top-[10rem]" : "-top-[100%]"
-        } bg-white md:w-[40rem] w-[30rem] transition-all md:h-[40rem] min-h-[30rem] h-fit rounded-md fixed z-[10] left-1/2 -translate-x-1/2`}
+        } bg-secondary md:w-[40rem] w-[30rem] transition-all md:h-[40rem] min-h-[30rem] h-fit rounded-md fixed z-[10] left-1/2 -translate-x-1/2`}
       >
         <form
           onSubmit={handleSubmit}
@@ -125,7 +125,7 @@ export default function StoryHeader({
             onChange={(e) => setTitle(e.target.value)}
             type="text"
             placeholder="Тайтл Истории"
-            className="text-[1.5rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-accent-marine-blue rounded-md text-gray-600 font-medium"
+            className="text-[1.5rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-dark-dark-blue rounded-md text-gray-600 font-medium"
           />
           <textarea
             value={description}
@@ -133,14 +133,14 @@ export default function StoryHeader({
             placeholder="Описание Истории"
             cols={30}
             rows={10}
-            className="text-[1.5rem] max-h-[35rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-accent-marine-blue rounded-md text-gray-600 font-medium"
+            className="text-[1.5rem] max-h-[35rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-dark-dark-blue rounded-md text-gray-600 font-medium"
           />
           <input
             value={genres}
             onChange={(e) => setGenres(e.target.value)}
             type="text"
             placeholder="Жанры Истории"
-            className="text-[1.5rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-accent-marine-blue rounded-md text-gray-600 font-medium"
+            className="text-[1.5rem] w-full outline-none p-[1rem] border-[2px] border-dotted border-dark-dark-blue rounded-md text-gray-600 font-medium"
           />
           <button
             type="submit"

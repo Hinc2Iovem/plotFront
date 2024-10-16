@@ -46,7 +46,7 @@ export default function CreateSoundField({
   return (
     <aside
       ref={modalRef}
-      className={`bg-white ${
+      className={`bg-secondary ${
         showModal ? "" : "hidden"
       } translate-y-[3.3rem] z-10 shadow-md text-gray-600 w-full rounded-md absolute p-[1rem]`}
     >

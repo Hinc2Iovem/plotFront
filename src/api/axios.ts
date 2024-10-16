@@ -3,7 +3,7 @@ import axios from "axios";
 const BASE_URL =
   import.meta.env.VITE_NODE_ENV === "production"
     ? import.meta.env.VITE_PROD_PORT
-    : "http://localhost:3500";
+    : "http://localhost:3000";
 
 console.log(BASE_URL);
 

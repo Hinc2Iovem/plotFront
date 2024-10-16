@@ -31,6 +31,10 @@ import useUpdateCommandName from "../hooks/useUpdateCommandName";
 import useCreateWait from "../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
+import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
+import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
+import useConditionBlocks from "../Condition/Context/ConditionContext";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -71,7 +75,10 @@ export default function PlotfieldBlank({
   isElse,
 }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
+  const { episodeId } = useParams();
 
+  const { getTopologyBlock } = useTopologyBlocks();
+  const { addConditionBlock } = useConditionBlocks();
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
 
@@ -153,7 +160,10 @@ export default function PlotfieldBlank({
   const createCall = useCreateCall({ plotFieldCommandId });
   const createChoice = useCreateChoice({ plotFieldCommandId, topologyBlockId });
   const createCommandIf = useCreateCommandIf({ plotFieldCommandId });
-  const createCondition = useCreateCondition({ plotFieldCommandId });
+  const createCondition = useCreateCondition({
+    plotFieldCommandId,
+    episodeId: episodeId || "",
+  });
   const createCutScene = useCreateCutScene({ plotFieldCommandId });
   const createEffect = useCreateEffect({ plotFieldCommandId });
   const createGetItem = useCreateGetItem({
@@ -330,7 +340,38 @@ export default function PlotfieldBlank({
       } else if (allCommands === "choice") {
         createChoice.mutate();
       } else if (allCommands === "condition") {
-        createCondition.mutate();
+        const targetBlockId = generateMongoObjectId();
+        const conditionBlockId = generateMongoObjectId();
+        addConditionBlock({
+          plotfieldCommandId: plotFieldCommandId,
+          conditionBlock: {
+            conditionBlockId,
+            conditionType: "else",
+            isElse: true,
+            orderOfExecution: null,
+            targetBlockId,
+            topologyBlockName: makeTopologyBlockName({
+              name: getTopologyBlock()?.name || "",
+              amountOfOptions:
+                getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+            }),
+            conditionName: "",
+            conditionValue: null,
+          },
+        });
+
+        createCondition.mutate({
+          coordinatesX: getTopologyBlock().coordinatesX,
+          coordinatesY: getTopologyBlock().coordinatesY,
+          sourceBlockName: makeTopologyBlockName({
+            name: getTopologyBlock()?.name || "",
+            amountOfOptions:
+              getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+          }),
+          targetBlockId,
+          topologyBlockId,
+          conditionBlockId,
+        });
       } else if (allCommands === "cutscene") {
         createCutScene.mutate();
       } else if (allCommands === "effect") {
@@ -420,7 +461,7 @@ export default function PlotfieldBlank({
   });
 
   return (
-    <div className="shadow-sm shadow-gray-300 bg-white rounded-md relative w-full">
+    <div className="shadow-sm shadow-gray-300 bg-secondary rounded-md relative w-full">
       <form
         className="px-[1rem] py-[.5rem] w-full relative"
         onSubmit={handleFormSubmit}
@@ -441,14 +482,14 @@ export default function PlotfieldBlank({
               setShowPromptValues(true);
             }
           }}
-          className="outline-none text-[1.5rem] text-gray-600 w-full"
+          className="outline-none text-[1.5rem] text-text-light w-full"
         />
         <aside
           ref={promptRef}
           className={`${
             showPromptValues && !showCreateCharacterModal ? "" : "hidden"
           } 
-        z-[1000] w-full bg-white shadow-md rounded-md absolute left-0 max-h-[20rem] translate-y-[1rem] overflow-auto | containerScroll
+        z-[1000] w-full bg-secondary shadow-md rounded-md absolute left-0 max-h-[20rem] translate-y-[1rem] overflow-auto | containerScroll
         `}
         >
           <ul className="flex flex-col gap-[1rem] p-[1rem]">
@@ -460,7 +501,7 @@ export default function PlotfieldBlank({
                     setValue(pv);
                     setShowPromptValues(false);
                   }}
-                  className="outline-gray-300 text-start w-full hover:bg-primary-light-blue hover:text-white text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
+                  className="text-text-dark hover:text-text-light hover:bg-primary focus-within:text-text-light focus-within:bg-primary text-start w-full text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
                 >
                   {pv}
                 </button>
@@ -471,7 +512,7 @@ export default function PlotfieldBlank({
                 onClick={() => {
                   setShowPromptValues(false);
                 }}
-                className="outline-gray-300 text-start w-full hover:bg-primary-light-blue hover:text-white text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
+                className="text-text-dark hover:text-text-light hover:bg-primary focus-within:text-text-light focus-within:bg-primary text-start w-full text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
               >
                 Такой команды или персонажа не существует
               </button>

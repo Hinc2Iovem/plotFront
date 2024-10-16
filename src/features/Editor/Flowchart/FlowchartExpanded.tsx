@@ -60,7 +60,7 @@ export default function FlowchartExpanded({
         transformOrigin: "center center",
       }}
       ref={boundsRef}
-      className={`w-full rounded-md min-w-[500rem] min-h-[500rem] border-white border-[4px] border-dashed shadow-md relative bg-primary-pastel-blue`}
+      className={`w-full rounded-md min-w-[500rem] min-h-[500rem] border-secondary border-[4px] border-dashed shadow-md relative bg-primary-darker`}
     >
       {allTopologyBlocks
         ? allTopologyBlocks.map((tb) => (

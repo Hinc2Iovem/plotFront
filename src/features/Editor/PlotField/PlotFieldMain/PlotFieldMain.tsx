@@ -55,9 +55,9 @@ export default function PlotFieldMain({
     <main
       className={`${showAllCommands ? "hidden" : ""} ${
         renderedAsSubPlotfield
-          ? "h-fit max-h-[calc(100vh-8rem)] bg-white"
+          ? "h-fit max-h-[calc(100vh-8rem)] bg-secondary p-[.5rem]"
           : "h-[calc(100vh-8rem)]"
-      } mt-[.5rem] overflow-y-auto | containerScroll`}
+      } mt-[.5rem] overflow-y-auto | containerScroll px-[.5rem]`}
     >
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="plotFieldCommands">
@@ -84,7 +84,7 @@ export default function PlotFieldMain({
         </Droppable>
       </DragDropContext>
 
-      <div className={`h-[30rem] w-full bg-white`}></div>
+      <div className={`h-[30rem] w-full bg-secondary`}></div>
     </main>
   );
 }

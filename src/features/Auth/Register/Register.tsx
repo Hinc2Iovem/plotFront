@@ -56,11 +56,11 @@ export default function Register() {
   };
   return (
     <section className="md:h-screen w-screen flex md:items-center justify-center">
-      <main className="w-full max-w-[80rem] md:max-w-[70rem] md:mx-[1rem] md:bg-white flex md:flex-row flex-col overflow-x-hidden shadow-sm md:rounded-md">
+      <main className="w-full max-w-[80rem] md:max-w-[70rem] md:mx-[1rem] md:bg-secondary flex md:flex-row flex-col overflow-x-hidden shadow-sm md:rounded-md">
         <Sidebar setCurrentPage={setCurrentPage} currentPage={currentPage} />
         <form
           onSubmit={handleSubmit}
-          className="md:h-full p-[1rem] w-3/4 mx-auto md:bg-transparent bg-white md:relative absolute md:top-0 md:left-auto md:translate-x-0 top-[5rem] left-1/2 -translate-x-1/2"
+          className="md:h-full p-[1rem] w-3/4 mx-auto md:bg-transparent bg-secondary md:relative absolute md:top-0 md:left-auto md:translate-x-0 top-[5rem] left-1/2 -translate-x-1/2"
         >
           <RegisterFormFirstPage
             login={login}

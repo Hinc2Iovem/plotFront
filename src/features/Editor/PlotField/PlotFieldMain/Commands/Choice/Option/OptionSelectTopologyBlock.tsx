@@ -31,6 +31,7 @@ export default function OptionSelectTopologyBlock({
   const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState(
     topologyBlockName || ""
   );
+  const theme = localStorage.getItem("theme");
   const { episodeId } = useParams();
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId,
@@ -60,14 +61,16 @@ export default function OptionSelectTopologyBlock({
   });
 
   return (
-    <div className="relative self-end pr-[.2rem] pb-[.2rem] w-fit bg-white shadow-md">
+    <div className="relative self-end pr-[.2rem] pb-[.2rem] w-fit bg-secondary shadow-md">
       <button
         onClick={(e) => {
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);
           setShowAllOrders(false);
         }}
-        className="text-[1.3rem] relative z-[10] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap bg-white"
+        className={`text-[1.3rem] relative z-[10] ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } text-text-light focus-within:bg-primary-darker shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap bg-secondary`}
         type="button"
       >
         {currentTopologyBlockName || "Текущая Ветка"}
@@ -76,7 +79,7 @@ export default function OptionSelectTopologyBlock({
         ref={modalRef}
         className={`${
           showAllTopologyBlocks ? "" : "hidden"
-        } overflow-y-auto max-h-[15rem] z-[20] flex flex-col gap-[1rem] p-[.5rem] pt-[1rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.2rem] | containerScroll`}
+        } overflow-y-auto max-h-[15rem] z-[20] flex flex-col gap-[1rem] p-[.5rem] pt-[1rem] absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.2rem] | containerScroll`}
       >
         {(topologyBlockId && (allTopologyBlocks?.length || 0) > 1) ||
         (!topologyBlockId && allTopologyBlocks?.length) ? (
@@ -100,7 +103,9 @@ export default function OptionSelectTopologyBlock({
               }}
               className={`${topologyBlockId === tb._id ? "hidden" : ""} ${
                 currentTopologyBlockId === tb._id ? "hidden" : ""
-              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+              } ${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker shadow-md transition-all rounded-md`}
             >
               {tb.name}
             </button>
@@ -111,7 +116,9 @@ export default function OptionSelectTopologyBlock({
             onClick={() => {
               setShowAllTopologyBlocks(false);
             }}
-            className={` px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+            className={`${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker shadow-md transition-all rounded-md`}
           >
             Пусто
           </button>

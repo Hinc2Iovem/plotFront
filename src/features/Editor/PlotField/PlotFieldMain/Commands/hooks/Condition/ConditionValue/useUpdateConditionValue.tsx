@@ -1,32 +1,41 @@
 import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../../api/axios";
-import { ConditionSignTypes } from "../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
+import {
+  ConditionSignTypes,
+  ConditionValueVariationType,
+} from "../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 
 type UpdateConditionValueTypes = {
-  conditionValueId: string;
+  conditionBlockId: string;
 };
 
 type UpdateConditionValueOnMutationTypes = {
   name?: string;
-  value?: number;
+  value?: string;
   sign?: ConditionSignTypes;
+  type?: ConditionValueVariationType;
+  blockValueId?: string;
 };
 
 export default function useUpdateConditionValue({
-  conditionValueId,
+  conditionBlockId,
 }: UpdateConditionValueTypes) {
   return useMutation({
     mutationFn: async ({
       name,
       sign,
       value,
+      type,
+      blockValueId,
     }: UpdateConditionValueOnMutationTypes) =>
       await axiosCustomized.patch(
-        `/plotFieldCommands/conditionBlocks/conditionValues/${conditionValueId}`,
+        `/commandConditions/conditionBlocks/${conditionBlockId}/conditionBlockValues`,
         {
           name,
           value,
           sign,
+          type,
+          blockValueId,
         }
       ),
   });

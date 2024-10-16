@@ -60,14 +60,14 @@ export default function WardrobeHeaderChooseCharacter({
           setShowModal(false);
           setShowCharacterModal(true);
         }}
-        className="text-[1.5rem] px-[1rem] py-[.5rem] outline-gray-400 bg-white rounded-md shadow-md hover:bg-primary-pastel-blue hover:text-white transition-all active:scale-[0.98]"
+        className="text-[1.5rem] focus-within:bg-primary focus-within:text-text-light text-text-dark hover:text-text-light px-[1rem] py-[.5rem] outline-gray-400 bg-secondary rounded-md shadow-md hover:bg-primary-darker transition-all active:scale-[0.98]"
       >
         Имя Персонажа
       </button>
       <p
         className={`${
           characterName ? "" : "hidden"
-        } text-[1.5rem] border-b-[2px] border-gray-700 border-dotted text-center rounded-md`}
+        } text-[1.5rem] text-text-light opacity-80 cursor-default hover:opacity-100 border-b-[2px] border-gray-700 border-dotted text-center rounded-md`}
       >
         {characterName}
       </p>
@@ -76,7 +76,7 @@ export default function WardrobeHeaderChooseCharacter({
         id="scrollBar"
         className={`${
           showCharacterModal ? "" : "hidden"
-        } absolute top-1/2 translate-y-[1rem] z-[10] p-[1rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+        } absolute top-1/2 translate-y-[1rem] z-[10] p-[1rem] w-full max-h-[10rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
       >
         {(!characterName && (characters?.length || 0) > 0) ||
         (characterName && (characters?.length || 0) > 1) ? (
@@ -94,7 +94,7 @@ export default function WardrobeHeaderChooseCharacter({
             onClick={() => {
               setShowCharacterModal(false);
             }}
-            className="rounded-md text-[1.3rem] px-[.5rem] py-[.2rem] text-start hover:bg-primary-light-blue hover:text-white transition-all "
+            className="rounded-md text-[1.3rem] focus-within:bg-primary focus-within:text-text-light text-text-dark px-[.5rem] py-[.2rem] text-start hover:bg-primary-darker hover:text-text-light transition-all "
           >
             Пусто
           </button>
@@ -131,7 +131,7 @@ function WardrobeHeaderChooseCharacterItem({
             setCharacterId(characterId);
             setShowCharacterModal(false);
           }}
-          className="rounded-md flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
+          className="rounded-md focus-within:bg-primary focus-within:text-text-light text-text-dark hover:text-text-light flex px-[.5rem] py-[.2rem] items-center justify-between hover:bg-primary-darker transition-all "
         >
           <p className="text-[1.3rem] rounded-md">{currentCharacterName}</p>
           <img
@@ -147,7 +147,7 @@ function WardrobeHeaderChooseCharacterItem({
             setCharacterId(characterId);
             setShowCharacterModal(false);
           }}
-          className="text-start text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+          className="text-start focus-within:bg-primary focus-within:text-text-light text-text-dark hover:text-text-light text-[1.3rem] px-[.5rem] py-[.2rem] hover:bg-primary-darker transition-all rounded-md"
         >
           {currentCharacterName}
         </button>

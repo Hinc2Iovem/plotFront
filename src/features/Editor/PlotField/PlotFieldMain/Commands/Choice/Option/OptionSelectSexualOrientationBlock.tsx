@@ -58,7 +58,7 @@ export default function OptionSelectSexualOrientationBlock({
           setShowAllTopologyBlocks(false);
           setShowAllSexualOrientationBlocks((prev) => !prev);
         }}
-        className="text-[1.3rem] text-white outline-gray-300 shadow-md rounded-md px-[1rem] py-[.5rem] | rainbowBtn"
+        className="text-[1.3rem] text-text-dark outline-gray-300 shadow-md rounded-md px-[1rem] py-[.5rem] | rainbowBtn"
         type="button"
       >
         {currentSexualOrientationBlockName || "Orientation"}
@@ -67,7 +67,7 @@ export default function OptionSelectSexualOrientationBlock({
         ref={modalRef}
         className={`${
           showAllSexualOrientationBlocks ? "" : "hidden"
-        } left-0 z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem]`}
+        } left-0 z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem]`}
       >
         {AllSexualOrientations?.map((so) => (
           <button
@@ -82,7 +82,7 @@ export default function OptionSelectSexualOrientationBlock({
             }}
             className={`${
               currentSexualOrientationBlockName === so ? "hidden" : ""
-            } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md | rainbowBtn`}
+            } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary  hover:text-text-dark shadow-md transition-all rounded-md | rainbowBtn`}
           >
             {so}
           </button>

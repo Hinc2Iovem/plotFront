@@ -1,6 +1,6 @@
 export default function StoryItemSkeleton() {
   return (
-    <article className="flex flex-col gap-[1rem] w-full rounded-md shadow-sm bg-white h-[30rem]">
+    <article className="flex flex-col gap-[1rem] w-full rounded-md shadow-sm bg-secondary h-[30rem]">
       <div className="shadow-md rounded-md h-[50%] w-[100%]"></div>
       <div className="flex flex-col gap-[.5rem] p-[1rem]">
         <h3 className="text-[1.8rem] m-0 p-0 shadow-md rounded-md w-[15rem] h-[3rem]"></h3>

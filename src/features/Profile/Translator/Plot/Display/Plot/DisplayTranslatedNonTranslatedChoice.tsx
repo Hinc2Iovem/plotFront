@@ -126,7 +126,7 @@ export default function DisplayTranslatedNonTranslatedChoice({
       } h-[50rem] sm:h-[25rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-blue-200 p-[.5rem] rounded-md`}
     >
       <div
-        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}
+        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-secondary | containerScroll`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -135,7 +135,7 @@ export default function DisplayTranslatedNonTranslatedChoice({
           <input
             type="text"
             value={translatedCommandName}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setTranslatedCommandName(e.target.value)}
           />
           <div className="flex gap-[1rem] w-full flex-wrap">
@@ -153,7 +153,7 @@ export default function DisplayTranslatedNonTranslatedChoice({
         </form>
       </div>
       <div
-        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}
+        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-secondary | containerScroll`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -163,7 +163,7 @@ export default function DisplayTranslatedNonTranslatedChoice({
             type="text"
             value={commandName}
             placeholder="Вопрос"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setCommandName(e.target.value)}
           />
           <div className="flex gap-[1rem] w-full flex-wrap">

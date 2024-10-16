@@ -28,7 +28,7 @@ export default function CharacterPrompt({
   const modalCharactersRef = useRef<HTMLDivElement>(null);
   const [characterValue, setCharacterValue] = useState("");
   const [characterBackupValue, setCharacterBackupValue] = useState("");
-
+  const theme = localStorage.getItem("theme");
   useOutOfModal({
     modalRef: modalCharactersRef,
     setShowModal: setShowCharacters,
@@ -64,14 +64,14 @@ export default function CharacterPrompt({
 
   return (
     <form
-      className="bg-white rounded-md shadow-md relative"
+      className="bg-secondary rounded-md shadow-md relative"
       onSubmit={(e) => e.preventDefault()}
     >
       {typeof storyId === "string" && storyId.length === 0 ? (
         <>
           <input
             type="text"
-            className="w-full rounded-md bg-white text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
+            className={`w-full rounded-md text-text-light bg-secondary text-[1.3rem] px-[1rem] py-[.5rem] outline-none`}
             placeholder="Имя Персонажа"
             value={characterValue}
             onChange={(e) => setCharacterValue(e.target.value)}
@@ -88,14 +88,14 @@ export default function CharacterPrompt({
             ref={modalCharactersRef}
             className={`${
               showCharacters ? "" : "hidden"
-            } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+            } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
           >
             <button
               type="button"
               onClick={() => {
                 setShowCharacters(false);
               }}
-              className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+              className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
             >
               Сначала Выберите Историю
             </button>
@@ -105,7 +105,7 @@ export default function CharacterPrompt({
         <>
           <input
             type="text"
-            className="w-full rounded-md bg-white text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
+            className="w-full rounded-md text-text-light bg-secondary text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
             placeholder="Имя Персонажа"
             onClick={(e) => {
               e.stopPropagation();
@@ -125,10 +125,10 @@ export default function CharacterPrompt({
             ref={modalCharactersRef}
             className={`${
               showCharacters ? "" : "hidden"
-            } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+            } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
           >
             {isLoading ? (
-              <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">
+              <div className="text-[1.4rem] text-text-light text-center py-[.5rem]">
                 Загрузка...
               </div>
             ) : charactersSearch && charactersSearch.length > 0 ? (
@@ -141,7 +141,9 @@ export default function CharacterPrompt({
                     setCharacterValue((s?.translations || [])[0]?.text || "");
                     setShowCharacters(false);
                   }}
-                  className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md relative"
+                  className={`text-[1.4rem] ${
+                    theme === "light" ? "outline-gray-300" : "outline-gray-600"
+                  } text-text-dark text-start hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker rounded-md px-[1rem] py-[.5rem] hover:shadow-md relative`}
                 >
                   {(s?.translations || [])[0]?.text || ""}
                   {currentLanguage && translateToLanguage ? (
@@ -164,7 +166,9 @@ export default function CharacterPrompt({
                 onClick={() => {
                   setShowCharacters(false);
                 }}
-                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+                className={`text-[1.4rem] ${
+                  theme === "light" ? "outline-gray-300" : "outline-gray-600"
+                } text-text-dark hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker text-start hover:bg-primary-darker rounded-md px-[1rem] py-[.5rem] hover:shadow-md`}
               >
                 Нету Подходящих Персонажей
               </button>

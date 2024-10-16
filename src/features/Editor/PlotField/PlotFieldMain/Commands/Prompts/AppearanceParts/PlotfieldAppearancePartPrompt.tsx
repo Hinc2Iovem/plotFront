@@ -23,6 +23,7 @@ export default function PlotfieldAppearancePartsPrompt({
   const [currentAppearancePartName] = useState(
     (translations || [])[0]?.text || ""
   );
+  const theme = localStorage.getItem("theme");
 
   return (
     <>
@@ -41,7 +42,9 @@ export default function PlotfieldAppearancePartsPrompt({
               setAppearancePartImg(appearancePart?.img || "");
             }
           }}
-          className={`rounded-md outline-gray-300 flex px-[1rem] py-[.5rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all `}
+          className={`rounded-md ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } focus-within:text-text-light focus-within:bg-primary-darker flex px-[1rem] py-[.5rem] items-center justify-between hover:bg-primary-darker hover:text-text-light text-text-dark transition-all `}
         >
           <p className="text-[1.3rem] rounded-md">
             {currentAppearancePartName.length > 20
@@ -69,7 +72,9 @@ export default function PlotfieldAppearancePartsPrompt({
               setAppearancePartImg("");
             }
           }}
-          className={`text-start outline-gray-300 text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md`}
+          className={`text-start ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } focus-within:text-text-light focus-within:bg-primary-darker text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all rounded-md`}
         >
           {currentAppearancePartName.length > 20
             ? currentAppearancePartName.substring(0, 20) + "..."

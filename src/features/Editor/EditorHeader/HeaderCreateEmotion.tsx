@@ -45,7 +45,7 @@ export default function HeaderCreateEmotion({
       ref={modalRef}
       className={`${
         showCreateEmotionModal ? "" : "hidden"
-      } flex flex-col p-[1rem] gap-[1rem] mx-auto w-[30rem] rounded-md shadow-md bg-white`}
+      } flex flex-col p-[1rem] gap-[1rem] mx-auto w-[30rem] rounded-md shadow-md bg-secondary`}
     >
       <CharacterPrompt
         characterId={characterId}
@@ -61,7 +61,7 @@ export default function HeaderCreateEmotion({
           onChange={(e) => setEmotionName(e.target.value)}
           className="w-full px-[1rem] py-[.5rem] border-[2px] border-gray-300 border-dashed text-[1.4rem] text-gray-700 outline-gray-300 rounded-md"
         />
-        <button className="text-[1.4rem] outline-gray-300 border-gray-200 border-dashed border-[2px] text-gray-500 hover:text-black hover:border-gray-400 hover:scale-[1.01] transition-all px-[1rem] py-[.5rem] w-fit ml-auto rounded-md">
+        <button className="text-[1.4rem] outline-gray-300 border-gray-200 border-dashed border-[2px] text-text-dark hover:text-text-light focus-within:text-text-light hover:border-gray-400 hover:scale-[1.01] transition-all px-[1rem] py-[.5rem] w-fit ml-auto rounded-md">
           Создать
         </button>
       </form>

@@ -200,7 +200,7 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
           : "min-h-[24rem] sm:flex-row flex-col"
       } ${
         currentIndex === lastIndex ? "col-span-full" : ""
-      } w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      } w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
     >
       <div
         className={`h-full ${
@@ -208,7 +208,7 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
           characterType === "maincharacter"
             ? "w-full"
             : "w-full sm:w-[calc(50%)]"
-        } rounded-md shadow-md shadow-gray-400 bg-white`}
+        } rounded-md shadow-md shadow-gray-400 bg-secondary`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -217,7 +217,7 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
           <input
             type="text"
             value={translatedCharacterName}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setTranslatedCharacterName(e.target.value)}
           />
           {translated?.characterType === "minorcharacter" ? (
@@ -225,13 +225,13 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
               <input
                 type="text"
                 value={translatedUnknownName}
-                className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+                className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
                 onChange={(e) => setTranslatedUnknownName(e.target.value)}
               />
               <textarea
                 value={translatedDescription}
                 rows={5}
-                className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary | containerScroll"
                 onChange={(e) => setTranslatedDescription(e.target.value)}
               />
             </>
@@ -244,7 +244,7 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
           characterType === "maincharacter"
             ? "w-full"
             : "w-full sm:w-[calc(50%)] "
-        } rounded-md shadow-md shadow-gray-400 bg-white`}
+        } rounded-md shadow-md shadow-gray-400 bg-secondary`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -254,7 +254,7 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
             type="text"
             value={characterName}
             placeholder="Имя персонажа"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setCharacterName(e.target.value)}
           />
           {translated?.characterType === "minorcharacter" ? (
@@ -263,14 +263,14 @@ export default function DisplayTranslatedNonTranslatedCharacterRecent({
                 type="text"
                 value={unknownName}
                 placeholder="Неивестное имя персонажа"
-                className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+                className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
                 onChange={(e) => setUnknownName(e.target.value)}
               />
               <textarea
                 value={description}
                 placeholder="Описание персонажа"
                 rows={5}
-                className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+                className="max-h-[12.5rem] w-full border-dotted border-gray-600 border-[2px] text-[1.5rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary | containerScroll"
                 onChange={(e) => setDescription(e.target.value)}
               />
             </>

@@ -47,7 +47,7 @@ export default function AssignStory() {
     <>
       {data?.data || !notAssigned ? null : (
         <>
-          <div className="flex flex-col gap-[1rem] bg-white rounded-md shadow-sm text-center hover:scale-[1.01] hover:bg-primary-pastel-blue text-gray-700 hover:text-white transition-all">
+          <div className="flex flex-col gap-[1rem] bg-secondary rounded-md shadow-sm text-center hover:scale-[1.01] hover:bg-primary-darker text-gray-700 hover:text-text-dark transition-all">
             <button
               onClick={() => {
                 if (isMobile) {
@@ -68,7 +68,7 @@ export default function AssignStory() {
             } ml-auto hover:scale-[1.01]`}
             onSubmit={handleSubmit}
           >
-            <button className="active:scale-[0.98] px-[1rem] py-[.5rem] text-[2.5rem] text-gray-600 rounded-md shadow-sm bg-white ">
+            <button className="active:scale-[0.98] px-[1rem] py-[.5rem] text-[2.5rem] text-gray-600 rounded-md shadow-sm bg-secondary ">
               Вы уверены?
             </button>
           </form>
@@ -78,7 +78,7 @@ export default function AssignStory() {
               isLightBox
                 ? "top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2"
                 : "hidden -top-1/2 translate-y-1/2"
-            } z-[5] absolute bg-white rounded-md shadow-sm shadow-white  p-[1rem]`}
+            } z-[5] absolute bg-secondary rounded-md shadow-sm shadow-secondary  p-[1rem]`}
           >
             <form onSubmit={handleSubmit}>
               <button className="px-[1rem] py-[.5rem] text-[2.5rem] text-gray-600 rounded-md shadow-sm">

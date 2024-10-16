@@ -34,6 +34,8 @@ export default function CommandWardrobeChoosingAppearanceType({
     setTransmittingAppearancePartVariableEngToRus,
   ] = useState("");
 
+  const theme = localStorage.getItem("theme");
+
   useOutOfModal({
     showModal: showAppearancePartVariationModal,
     setShowModal: setShowAppearancePartVariationModal,
@@ -49,7 +51,9 @@ export default function CommandWardrobeChoosingAppearanceType({
           setShowAppearancePartVariationModal((prev) => !prev);
         }}
         type="button"
-        className="w-full text-start outline-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] shadow-md flex items-center justify-between"
+        className={`w-full text-start ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md flex items-center justify-between`}
       >
         <p className="text-[1.4rem] text-gray-700 whitespace-nowrap">
           {transmittingAppearancePartVariableEngToRus || "Тип Одежды"}
@@ -60,7 +64,7 @@ export default function CommandWardrobeChoosingAppearanceType({
         ref={appearancePartVariationTypeRef}
         className={`${
           showAppearancePartVariationModal ? "" : "hidden"
-        } translate-y-[.5rem] absolute z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+        } translate-y-[.5rem] absolute z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
       >
         {PossibleWardrobeAppearancePartVariations.map((p) => (
           <button
@@ -81,9 +85,11 @@ export default function CommandWardrobeChoosingAppearanceType({
             }}
             className={`${
               transmittingAppearancePartVariableEngToRus === p
-                ? "bg-primary-light-blue text-white"
+                ? "bg-primary-darker text-text-dark"
                 : ""
-            } text-start outline-gray-300 text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md`}
+            } text-start ${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-light text-text-dark focus-within:text-text-light focus-within:bg-primary-darker transition-all rounded-md`}
           >
             {p}
           </button>

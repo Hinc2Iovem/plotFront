@@ -11,6 +11,7 @@ export default function WardrobeItem({
   const { data: appearancePart } = useGetAppearancePartById({
     appearancePartId,
   });
+  const theme = localStorage.getItem("theme");
   const [text] = useState(translations[0]?.text || "");
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
@@ -36,8 +37,16 @@ export default function WardrobeItem({
   }, []);
 
   return (
-    <article className="w-full min-h-[20rem] h-full rounded-md shadow-md shadow-gray-400 bg-white">
-      <div className="relative border-[3px] w-full h-[20rem] border-white">
+    <article
+      className={`w-full min-h-[20rem] h-full rounded-md shadow-md ${
+        theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
+      } bg-secondary`}
+    >
+      <div
+        className={`${
+          theme === "light" ? "border-[3px]  border-white" : ""
+        } relative w-full h-[20rem]`}
+      >
         {appearancePart?.img ? (
           <img
             src={appearancePart?.img}
@@ -52,8 +61,12 @@ export default function WardrobeItem({
           />
         )}
       </div>
-      <div className="bg-white w-full p-[1rem] rounded-b-md shadow-md shadow-gray-400">
-        <p className="text-[1.5rem] hover:text-gray-600 transition-all">
+      <div
+        className={`bg-secondary w-full p-[1rem] rounded-b-md shadow-md ${
+          theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
+        }`}
+      >
+        <p className="text-[1.5rem] hover:text-text-light text-text-dark cursor-default transition-all">
           {text}
         </p>
       </div>

@@ -39,7 +39,7 @@ export default function CharacterItemDebounce({
           onClick={() => setIsFrontSide((prev) => !prev)}
           className={`${
             isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-white w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
+          } cursor-pointer flex flex-col rounded-md bg-secondary w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
         >
           <CharacterItemMainHero
             img={character?.img}
@@ -53,7 +53,7 @@ export default function CharacterItemDebounce({
           onClick={() => setIsFrontSide((prev) => !prev)}
           className={`${
             isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-white w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
+          } cursor-pointer flex flex-col rounded-md bg-secondary w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
         >
           <CharacterItemMinor
             img={character?.img}
@@ -70,7 +70,7 @@ export default function CharacterItemDebounce({
           onClick={() => setIsFrontSide((prev) => !prev)}
           className={`${
             isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-white w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
+          } cursor-pointer flex flex-col rounded-md bg-secondary w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
         >
           <CharacterItemEmpty
             img={character?.img}
@@ -107,7 +107,7 @@ function CharacterItemMinor({
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
   );
-
+  const theme = localStorage.getItem("theme");
   const uploadImgMutation = useUpdateImg({
     id: characterId,
     path: "/characters",
@@ -140,16 +140,24 @@ function CharacterItemMinor({
               />
             </div>
           ) : (
-            <div className="w-full h-full bg-neutral-alabaster">
+            <div
+              className={`w-full h-full ${
+                theme === "light" ? "bg-secondary-darker" : "bg-secondary"
+              }`}
+            >
               <PreviewImage
-                imgClasses="object-cover rounded-md border-[2px] border-b-0 rounded-b-none border-white"
+                imgClasses="object-cover rounded-md"
                 divClasses="top-1/2 relative"
                 imagePreview={imagePreview}
                 setPreview={setPreview}
               />
             </div>
           )}
-          <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600">
+          <div
+            className={`w-full rounded-b-md ${
+              theme === "light" ? "bg-secondary-darker" : "bg-secondary"
+            } p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 text-text-light rounded-t-md shadow-gray-600`}
+          >
             {characterName.length > 30
               ? characterName.substring(0, 30) + "..."
               : characterName}
@@ -159,13 +167,17 @@ function CharacterItemMinor({
         <div className="flex flex-col gap-[1rem] p-[1rem] justify-between h-full">
           <div className="gap-[1rem] flex flex-col">
             <div>
-              <h3 className="text-[2rem] break-words">Имя: {characterName}</h3>
-              <p className="text-[1.35rem] break-words">
+              <h3 className="text-[2rem] break-words text-text-light">
+                Имя: {characterName}
+              </h3>
+              <p className="text-[1.6rem] break-words text-text-light opacity-80">
                 Имя(Незнакомец) : {characterUnknownName}
               </p>
-              <p className="text-[1.3rem] break-words">НеймТаг {nameTag}</p>
+              <p className="text-[1.6rem] break-words text-text-light opacity-80">
+                НеймТаг {nameTag}
+              </p>
             </div>
-            <p className="text-[1.1rem] text-gray-600 break-words">
+            <p className="text-[1.3rem] break-words text-text-light opacity-80">
               Описание: {characterDescription}
             </p>
           </div>
@@ -175,7 +187,11 @@ function CharacterItemMinor({
               className="ml-auto"
               to={`/stories/${storyId}/wardrobes/characters/${characterId}`}
             >
-              <button className=" bg-white shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] ">
+              <button
+                className={`${
+                  theme === "light" ? "bg-secondary" : "bg-primary-darker"
+                } shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] `}
+              >
                 <img src={wardrobe} alt="Wardrobe" className="w-[3rem]" />
               </button>
             </Link>
@@ -202,7 +218,7 @@ function CharacterItemEmpty({
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     null
   );
-
+  const theme = localStorage.getItem("theme");
   const uploadImgMutation = useUpdateImg({
     id: characterId,
     path: "/characters",
@@ -231,27 +247,37 @@ function CharacterItemEmpty({
               <img
                 src={img}
                 alt="StoryBackground"
-                className="object-cover w-full h-full cursor-pointer rounded-t-md border-[3px] border-b-0 border-white"
+                className="object-cover w-full h-full cursor-pointer rounded-t-md"
               />
             </div>
           ) : (
-            <div className="w-full h-full bg-neutral-alabaster">
+            <div
+              className={`w-full h-full ${
+                theme === "light" ? "bg-secondary-darker" : "bg-secondary"
+              }`}
+            >
               <PreviewImage
-                imgClasses="object-cover rounded-md border-[2px] border-b-0 rounded-b-none border-white"
+                imgClasses="object-cover rounded-md"
                 divClasses="top-1/2 relative"
                 imagePreview={imagePreview}
                 setPreview={setPreview}
               />
             </div>
           )}
-          <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600">
+          <div
+            className={`w-full rounded-b-md  ${
+              theme === "light" ? "bg-secondary-darker" : "bg-secondary"
+            } p-[1rem] text-[1.5rem] text-text-light shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600`}
+          >
             {characterName.length > 30
               ? characterName.substring(0, 30) + "..."
               : characterName}
           </div>
         </>
       ) : (
-        <div className="flex flex-col gap-[1rem] p-[1rem] h-full">
+        <div
+          className={`text-text-light flex flex-col gap-[1rem] p-[1rem] h-full`}
+        >
           <h3 className="text-[2rem] break-words">{characterName}</h3>
         </div>
       )}

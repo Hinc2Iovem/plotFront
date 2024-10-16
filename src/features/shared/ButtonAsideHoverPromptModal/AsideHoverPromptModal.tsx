@@ -11,7 +11,7 @@ const AsideHoverPromptModalStyles = cva(
     variants: {
       variant: {
         squareModalPromptWithShadow:
-          "rounded-md shadow-sm shadow-black bg-white font-medium",
+          "rounded-md shadow-sm shadow-black bg-secondary font-medium",
       },
     },
     defaultVariants: {

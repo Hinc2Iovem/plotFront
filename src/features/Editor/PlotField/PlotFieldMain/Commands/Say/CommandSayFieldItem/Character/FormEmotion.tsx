@@ -34,7 +34,7 @@ export default function FormEmotion({
 }: FormEmotionTypes) {
   const [newEmotionId, setNewEmotionId] = useState("");
   const emotionsRef = useRef<HTMLDivElement>(null);
-
+  const theme = localStorage.getItem("theme");
   const allEmotions = useMemo(() => {
     const res = [...emotions];
     if (emotionValue?.emotionName) {
@@ -113,7 +113,9 @@ export default function FormEmotion({
               setShowAllEmotions((prev) => !prev);
               setShowCharacters(false);
             }}
-            className="text-[1.3rem] w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md"
+            className={`text-[1.3rem] w-full ${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } text-text-light px-[1rem] py-[.5rem] rounded-md shadow-md`}
             onChange={(e) => {
               setEmotionValue({
                 emotionName: e.target.value,
@@ -128,9 +130,9 @@ export default function FormEmotion({
             ref={emotionsRef}
             className={`absolute ${
               showAllEmotions ? "" : "hidden"
-            } bg-white rounded-md shadow-md translate-y-[.5rem] w-full max-h-[15rem] overflow-y-auto | containerScroll `}
+            } bg-secondary rounded-md shadow-md translate-y-[.5rem] w-full max-h-[15rem] overflow-y-auto | containerScroll `}
           >
-            <ul className="flex flex-col gap-[1rem]">
+            <ul className="flex flex-col gap-[1rem] p-[.2rem]">
               {allEmotions.length ? (
                 allEmotions.map((em, i) => {
                   return (
@@ -145,7 +147,11 @@ export default function FormEmotion({
                           handleEmotionFormSubmit(event, em);
                           setShowAllEmotions(false);
                         }}
-                        className="text-start outline-gray-300 w-full text-[1.4rem] hover:text-white hover:bg-green-300 text-black bg-white rounded-md px-[1rem] py-[.5rem]"
+                        className={`w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-secondary ${
+                          theme === "light"
+                            ? "outline-gray-300"
+                            : "outline-gray-600"
+                        } hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark transition-all`}
                       >
                         {em}
                       </button>
@@ -161,7 +167,13 @@ export default function FormEmotion({
                 })
               ) : !emotionValue?.emotionName?.trim().length ? (
                 <li>
-                  <button className="text-start outline-gray-300 w-full text-[1.4rem] hover:text-white hover:bg-green-300 text-black bg-white rounded-md px-[1rem] py-[.5rem]">
+                  <button
+                    className={`w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-secondary ${
+                      theme === "light"
+                        ? "outline-gray-300"
+                        : "outline-gray-600"
+                    } hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark transition-all`}
+                  >
                     Пусто
                   </button>
                 </li>

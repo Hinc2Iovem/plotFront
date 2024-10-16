@@ -26,7 +26,7 @@ export default function StoryItem({ _id, imgUrl }: StoryTypes) {
   }, [imagePreview]);
 
   return (
-    <article className="flex flex-col gap-[1rem] w-full rounded-md shadow-sm bg-white h-[30rem] relative">
+    <article className="flex flex-col gap-[1rem] w-full rounded-md shadow-sm bg-secondary h-[30rem] relative">
       {imgUrl ? (
         <div className="w-full h-1/2 rounded-t-md relative shadow-sm">
           <img

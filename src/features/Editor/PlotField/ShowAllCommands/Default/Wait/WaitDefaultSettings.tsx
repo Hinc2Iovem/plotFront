@@ -57,7 +57,7 @@ export default function WaitDefaultSettings({
         ref={modalRef}
         className={`${
           showTime ? "" : "hidden"
-        } flex flex-col gap-[.5rem] max-h-[10rem] overflow-auto absolute min-w-fit w-full right-0 shadow-md bg-white rounded-b-md | containerScroll`}
+        } flex flex-col gap-[.5rem] max-h-[10rem] overflow-auto absolute min-w-fit w-full right-0 shadow-md bg-secondary rounded-b-md | containerScroll`}
       >
         {AllPossibleTimes.map((t, i) => (
           <button

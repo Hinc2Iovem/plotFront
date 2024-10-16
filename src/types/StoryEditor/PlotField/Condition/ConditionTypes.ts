@@ -1,13 +1,7 @@
 export type ConditionTypes = {
   _id: string;
   plotFieldCommandId: string;
-};
-export type ConditionBlockTypes = {
-  _id: string;
-  conditionId: string;
-  targetBlockId: string;
-  isElse: boolean;
-  orderOfExecution: number;
+  amountOfBlocks: number;
 };
 
 export type ConditionSignTypes = ">" | "<" | "=" | ">=" | "<=";
@@ -20,10 +14,25 @@ export const AllConditionSigns: ConditionSignTypes[] = [
   ">=",
 ];
 
-export type ConditionValueTypes = {
+export type ConditionValueVariationType =
+  | "key"
+  | "appearance"
+  | "character"
+  | "characteristic"
+  | "else";
+
+export type ConditionBlockTypes = {
   _id: string;
-  conditionBlockId: string;
+  conditionId: string;
+  targetBlockId: string;
+  isElse: boolean;
+  orderOfExecution: number;
+  characterId?: string;
+  appearancePartId?: string;
+  characteristicId?: string;
+  commandKeyId?: string;
+  type: ConditionValueVariationType;
   name: string;
-  value: number;
+  value: string;
   sign: ConditionSignTypes;
 };

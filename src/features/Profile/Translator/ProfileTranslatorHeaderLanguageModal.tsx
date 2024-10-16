@@ -36,7 +36,7 @@ export default function ProfileTranslatorHeaderLanguageModal({
           e.stopPropagation();
           setShowModal((prev) => !prev);
         }}
-        className="text-[1.4rem] capitalize px-[1rem] py-[.5rem] bg-white rounded-md shadow-md outline-gray-400"
+        className="text-[1.4rem] capitalize px-[1rem] py-[.5rem] bg-secondary rounded-md shadow-md outline-gray-400"
       >
         {value || text}
       </button>
@@ -44,7 +44,7 @@ export default function ProfileTranslatorHeaderLanguageModal({
         ref={modalRef}
         className={`${showModal ? "" : "hidden"} ${
           text === "Перевести на" ? "right-0" : ""
-        } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[1rem] p-[1rem] | containerScroll`}
+        } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[1rem] p-[1rem] | containerScroll`}
       >
         {ALL_LANGUAGES.map((l) => (
           <button
@@ -58,11 +58,11 @@ export default function ProfileTranslatorHeaderLanguageModal({
             }}
             className={`${
               l === value
-                ? "bg-primary-pastel-blue text-white px-[1rem] py-[.5rem] rounded-md shadow-sm w-full"
-                : "text-gray-700 bg-white"
+                ? "bg-primary-darker text-text-dark px-[1rem] py-[.5rem] rounded-md shadow-sm w-full"
+                : "text-gray-700 bg-secondary"
             } ${
               takenValue === l ? "hidden" : ""
-            } text-[1.5rem] hover:bg-primary-pastel-blue hover:text-white transition-all px-[1rem] py-[.5rem] rounded-md outline-gray-400`}
+            } text-[1.5rem] hover:bg-primary-darker hover:text-text-dark transition-all px-[1rem] py-[.5rem] rounded-md outline-gray-400`}
           >
             {l}
           </button>

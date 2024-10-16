@@ -36,8 +36,8 @@ export default function DefaultOptionVariant({
       }}
       className={`${
         gi[0] === currentDefaultChoiceOption
-          ? "bg-primary-pastel-blue text-white"
-          : "hover:bg-primary-pastel-blue hover:text-white bg-white text-black"
+          ? "bg-primary-darker text-text-dark"
+          : "hover:bg-primary-darker hover:text-text-dark bg-secondary text-black"
       } w-[3rem] rounded-md shadow-md text-[1.5rem]  transition-all`}
     >
       {gi[0]}

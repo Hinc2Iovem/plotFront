@@ -20,7 +20,7 @@ export default function CommandChoiceField({
   const [timeLimit, setTimeLimit] = useState<number>(0);
   const [exitBlockId, setExitBlockId] = useState("");
   const [showCopyCursor, setShowCopyCursor] = useState(false);
-
+  const theme = localStorage.getItem("theme");
   const [nameValue] = useState<string>(command ?? "Choice");
   const [commandChoiceId, setCommandChoiceId] = useState("");
   const [amountOfOptions, setAmountOfOptions] = useState<number>();
@@ -93,11 +93,11 @@ export default function CommandChoiceField({
       onMouseLeave={() => {
         setShowCopyCursor(false);
       }}
-      className="flex gap-[1rem] w-full flex-wrap bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col sm:items-center"
+      className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-center"
       style={{ cursor: showCopyCursor ? "cell" : "" }}
     >
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
+        <h3 className="text-[1.3rem] text-text-light text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
           {nameValue}
         </h3>
       </div>
@@ -122,10 +122,14 @@ export default function CommandChoiceField({
         }}
         disabled={disabledBtn}
         className={`rounded-md ${
-          isAuthor ? "text-white bg-green-300" : "bg-white text-gray-700"
-        } ${
-          disabledBtn ? "cursor-not-allowed" : ""
-        } flex-grow shadow-md text-[1.3rem] px-[1rem] py-[.5rem] outline-gray-300`}
+          isAuthor
+            ? `${
+                theme === "light" ? "bg-green-300" : "bg-green-400"
+              } text-text-dark`
+            : "bg-secondary text-gray-700"
+        } ${disabledBtn ? "cursor-not-allowed" : ""} ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } text-text-light flex-grow shadow-md text-[1.3rem] px-[1rem] py-[.5rem] outline-gray-300`}
       >
         Автор
       </button>

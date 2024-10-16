@@ -16,17 +16,22 @@ export default function RegisterFormSecondPage({
   role,
   setRole,
 }: RegisterFormSecondPageTypes) {
+  const theme = localStorage.getItem("theme");
   return (
     <div
       className={`${
         currentPage === 2 ? "" : "hidden"
-      } mx-auto flex flex-col gap-[3rem] h-full`}
+      } mx-auto flex flex-col gap-[3rem] h-full `}
     >
       <div className="w-full flex flex-col text-center">
-        <h2 className="text-accent-marine-blue font-medium text-[3rem]">
+        <h2
+          className={`${
+            theme === "light" ? "text-dark-dark-blue" : "text-text-light"
+          } font-medium text-[3rem]`}
+        >
           Выберите роль
         </h2>
-        <p className="text-neutral-600 text-[1.3rem]">
+        <p className="text-text-light text-[1.3rem]">
           Роль будет решать доступность функционала для вас
         </p>
       </div>
@@ -36,9 +41,9 @@ export default function RegisterFormSecondPage({
           onClick={() => setRole("scriptwriter")}
           className={`${
             role === "scriptwriter"
-              ? "bg-primary-pastel-blue text-white"
-              : "bg-white text-black"
-          } md:w-[20rem] w-full text-[2rem] justify-center mx-auto active:scale-[0.98] transition-all hover:bg-primary-pastel-blue hover:text-white flex items-center gap-[.5rem] shadow-md px-[1rem] py-[.5rem] rounded-md`}
+              ? "bg-primary-darker text-text-light"
+              : "bg-secondary text-text-dark"
+          } md:w-[20rem] w-full text-[2rem] justify-center mx-auto active:scale-[0.98] transition-all hover:bg-primary-darker hover:text-text-light flex items-center gap-[.5rem] shadow-md px-[1rem] py-[.5rem] rounded-md`}
         >
           <p>Сценарист</p>
           <img
@@ -52,9 +57,9 @@ export default function RegisterFormSecondPage({
           onClick={() => setRole("translator")}
           className={`${
             role === "translator"
-              ? "bg-accent-purplish-blue text-white"
-              : "bg-white text-black"
-          } md:w-[20rem] w-full text-[2rem] justify-center mx-auto active:scale-[0.98] transition-all hover:bg-accent-purplish-blue hover:text-white flex items-center gap-[.5rem] shadow-md px-[1rem] py-[.5rem] rounded-md`}
+              ? "bg-dark-blue text-text-light"
+              : "bg-secondary text-text-dark"
+          } md:w-[20rem] w-full text-[2rem] justify-center mx-auto active:scale-[0.98] transition-all hover:bg-dark-blue hover:text-text-light flex items-center gap-[.5rem] shadow-md px-[1rem] py-[.5rem] rounded-md`}
         >
           <p>Переводчик</p>
           <img
@@ -68,7 +73,7 @@ export default function RegisterFormSecondPage({
       <div className="mt-auto flex items-center justify-between">
         <button
           onClick={() => setCurrentPage(1)}
-          className="w-fit text-[1.3rem] self-start px-[1rem] py-[.5rem] rounded-md shadow-md hover:bg-neutral-50 active:scale-[0.98]"
+          className="w-fit text-[1.3rem] self-start px-[1rem] text-text-dark hover:text-text-light py-[.5rem] rounded-md shadow-md bg-secondary hover:bg-primary transition-colors active:scale-[0.98]"
           type="button"
         >
           Предыдущая
@@ -76,10 +81,10 @@ export default function RegisterFormSecondPage({
         <button
           disabled={!canSubmit}
           type="submit"
-          className={`w-fit text-[1.3rem] self-start px-[1rem] py-[.5rem] rounded-md shadow-md  text-white ${
+          className={`w-fit text-[1.3rem] self-start px-[1rem] py-[.5rem] rounded-md shadow-md  ${
             canSubmit
-              ? "hover:bg-accent-purplish-blue bg-primary-pastel-blue"
-              : " bg-primary-light-blue"
+              ? "hover:bg-dark-blue bg-primary-darker text-text-light "
+              : " bg-primary text-text-dark hover:cursor-not-allowed"
           }  active:scale-[0.98] transition-all`}
         >
           Завершить

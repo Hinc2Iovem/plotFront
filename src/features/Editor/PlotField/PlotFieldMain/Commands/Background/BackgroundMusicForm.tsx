@@ -21,6 +21,7 @@ export default function BackgroundMusicForm({
   const { data: allMusic } = useGetAllMusicByStoryId({
     storyId: storyId ?? "",
   });
+  const theme = localStorage.getItem("theme");
   const allMusicMemoized = useMemo(() => {
     const allMusicNames = allMusic?.map((a) => a.musicName) ?? [];
     return allMusicNames;
@@ -62,7 +63,9 @@ export default function BackgroundMusicForm({
             e.stopPropagation();
             setShowMusicDropDown((prev) => !prev);
           }}
-          className="text-[1.3rem] outline-gray-400 bg-white rounded-md px-[1rem] py-[.5rem] w-full sm:text-start text-center"
+          className={`text-[1.3rem] ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] w-full sm:text-start text-center`}
         >
           {musicName?.trim().length ? (
             musicName
@@ -78,7 +81,7 @@ export default function BackgroundMusicForm({
           <ul
             className={`${
               showMusicDropDown ? "" : "hidden"
-            } shadow-md bg-neutral-alabaster rounded-md w-full flex flex-col gap-[.5rem] max-h-[15rem] overflow-y-auto overflow-x-hidden p-[.5rem] | containerScroll`}
+            } shadow-md bg-secondary rounded-md w-full flex flex-col gap-[.5rem] max-h-[15rem] overflow-y-auto overflow-x-hidden p-[.5rem] | containerScroll`}
           >
             {allMusicMemoized.length ? (
               allMusicMemoized.map((mm, i) => (
@@ -90,9 +93,13 @@ export default function BackgroundMusicForm({
                     }}
                     className={`${
                       musicName === mm
-                        ? "bg-orange-200 text-white"
-                        : "bg-white text-gray-600 "
-                    } text-start hover:bg-orange-200 outline-gray-300 hover:text-white transition-all cursor-pointer hover:scale-[1.005] active:scale-[1] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
+                        ? "bg-primary-darker text-text-light"
+                        : "bg-secondary text-text-dark"
+                    } ${
+                      theme === "light"
+                        ? "outline-gray-300"
+                        : "outline-gray-600"
+                    } text-start hover:bg-primary-darker focus-within:text-text-light focus-within:bg-primary-darker hover:text-text-light text-text-dark transition-all cursor-pointer hover:scale-[1.005] active:scale-[1] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
                   >
                     {mm}
                   </button>
@@ -104,7 +111,9 @@ export default function BackgroundMusicForm({
                   onClick={() => {
                     setShowMusicDropDown(false);
                   }}
-                  className={`bg-white outline-gray-300 text-gray-600 text-start hover:bg-orange-200 hover:text-white transition-all cursor-pointer hover:scale-[1.005] active:scale-[1] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
+                  className={`bg-secondary ${
+                    theme === "light" ? "outline-gray-300" : "outline-gray-600"
+                  } text-start hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark bg-primary transition-all cursor-pointer hover:scale-[1.005] active:scale-[1] w-full text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
                 >
                   Пусто
                 </button>

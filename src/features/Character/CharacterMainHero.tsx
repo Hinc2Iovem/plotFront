@@ -22,7 +22,7 @@ export default function CharacterItemMainHero({
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
     img ? img : null
   );
-
+  const theme = localStorage.getItem("theme");
   const uploadImgMutation = useUpdateImg({
     id: characterId,
     path: "/characters",
@@ -51,20 +51,28 @@ export default function CharacterItemMainHero({
               <img
                 src={img}
                 alt="StoryBackground"
-                className="object-cover w-full h-full cursor-pointer rounded-t-md border-[3px] border-b-0 border-white"
+                className="object-cover w-full h-full cursor-pointer rounded-t-md"
               />
             </div>
           ) : (
-            <div className="w-full h-full bg-neutral-alabaster">
+            <div
+              className={`w-full h-full ${
+                theme === "light" ? "bg-secondary-darker" : "bg-secondary"
+              } `}
+            >
               <PreviewImage
-                imgClasses="w-full h-full bg-neutral-alabaster object-cover rounded-md border-[2px] border-b-0 rounded-b-none border-white"
-                divClasses="bg-neutral-alabaster relative top-1/2"
+                imgClasses="w-full h-full  object-cover rounded-md"
+                divClasses=" relative top-1/2"
                 imagePreview={imagePreview}
                 setPreview={setPreview}
               />
             </div>
           )}
-          <div className="w-full rounded-b-md bg-neutral-alabaster p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600">
+          <div
+            className={`w-full rounded-b-md ${
+              theme === "light" ? "bg-secondary-darker" : "bg-secondary"
+            } text-text-light p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600`}
+          >
             {characterName.length > 30
               ? characterName.substring(0, 30) + "..."
               : characterName}
@@ -74,8 +82,12 @@ export default function CharacterItemMainHero({
         <div className="flex flex-col gap-[1rem] p-[1rem] justify-between h-full">
           <div className="gap-[1rem] flex flex-col">
             <div>
-              <h3 className="text-[2rem] break-words">{characterName}</h3>
-              <p className="text-[1.3rem] break-words">НеймТаг: {"SMH"}</p>
+              <h3 className="text-[2rem] break-words text-text-light">
+                Имя: {characterName}
+              </h3>
+              <p className="text-[1.6rem] break-words text-text-light opacity-80">
+                НеймТаг: {"SMH"}
+              </p>
             </div>
           </div>
 
@@ -84,7 +96,11 @@ export default function CharacterItemMainHero({
               className="ml-auto"
               to={`/stories/${storyId}/wardrobes/characters/${characterId}`}
             >
-              <button className=" bg-white shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] ">
+              <button
+                className={` ${
+                  theme === "light" ? "bg-secondary" : "bg-primary-darker"
+                } shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] `}
+              >
                 <img src={wardrobe} alt="Wardrobe" className="w-[3rem]" />
               </button>
             </Link>

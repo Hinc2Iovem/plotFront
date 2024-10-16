@@ -38,7 +38,7 @@ export default function StoryInfoModal({
   return (
     <aside
       ref={modalRef}
-      className={`flex flex-col justify-between z-10 bg-neutral-alabaster rounded-md shadow-sm shadow-gray-600 p-[1rem] ${className}`}
+      className={`flex flex-col justify-between z-10 bg-secondary-darker rounded-md shadow-sm shadow-gray-600 p-[1rem] ${className}`}
     >
       <div className="flex flex-col gap-[1rem]">
         <h3 className="text-[2rem] text-center text-gray-700">

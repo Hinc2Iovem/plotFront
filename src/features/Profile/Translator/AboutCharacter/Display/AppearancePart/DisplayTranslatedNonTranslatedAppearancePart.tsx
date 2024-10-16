@@ -124,10 +124,10 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
           <div
             className={`${
               currentIndex === lastIndex ? "col-span-full" : ""
-            } h-fit flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+            } h-fit flex-col w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
           >
             <div
-              className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
+              className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
             >
               <form
                 className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -136,13 +136,13 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
                 <input
                   type="text"
                   value={translatedAppearancePart}
-                  className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+                  className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
                   onChange={(e) => setTranslatedAppearancePart(e.target.value)}
                 />
               </form>
             </div>
             <div
-              className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
+              className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
             >
               <form
                 className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -152,7 +152,7 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
                   type="text"
                   value={appearancePart}
                   placeholder={appearancePartTypeToRus}
-                  className="w-full placeholder:capitalize border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+                  className="w-full placeholder:capitalize border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
                   onChange={(e) => setAppearancePart(e.target.value)}
                 />
               </form>
@@ -163,10 +163,10 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
         <div
           className={`${
             currentIndex === lastIndex ? "col-span-full" : ""
-          } h-fit flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+          } h-fit flex-col w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
         >
           <div
-            className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
+            className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
           >
             <form
               className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -175,13 +175,13 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
               <input
                 type="text"
                 value={translatedAppearancePart}
-                className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+                className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
                 onChange={(e) => setTranslatedAppearancePart(e.target.value)}
               />
             </form>
           </div>
           <div
-            className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
+            className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
           >
             <form
               className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -191,7 +191,7 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
                 type="text"
                 value={appearancePart}
                 placeholder={appearancePartTypeToRus}
-                className="w-full placeholder:capitalize border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+                className="w-full placeholder:capitalize border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
                 onChange={(e) => setAppearancePart(e.target.value)}
               />
             </form>

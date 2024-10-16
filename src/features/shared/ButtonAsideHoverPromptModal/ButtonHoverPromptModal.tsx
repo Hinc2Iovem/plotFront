@@ -8,9 +8,9 @@ const ButtonHoverPromptModalStyles = cva(
   {
     variants: {
       variant: {
-        icon: ["bg-white rounded-full"],
+        icon: ["bg-secondary rounded-full"],
         iconWithShadow: [
-          "hover:shadow-black bg-white hover:shadow-sm rounded-full",
+          "hover:shadow-black bg-secondary hover:shadow-sm rounded-full",
         ],
         rectangle: ["rounded-md"],
         rectangleWithShadow: ["hover:shadow-gray-300 rounded-md shadow-sm"],

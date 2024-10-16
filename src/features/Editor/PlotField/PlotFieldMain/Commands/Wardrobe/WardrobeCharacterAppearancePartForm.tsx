@@ -29,6 +29,7 @@ export default function WardrobeCharacterAppearancePartForm({
     useState<PossibleWardrobeAppearancePartVariationsTypes>(
       "" as PossibleWardrobeAppearancePartVariationsTypes
     );
+  const theme = localStorage.getItem("theme");
   const [
     showAppearancePartVariationModal,
     setShowAppearancePartVariationModal,
@@ -103,7 +104,9 @@ export default function WardrobeCharacterAppearancePartForm({
               setAppearancePartName(e.target.value);
               setShowAppearancePartModal(true);
             }}
-            className="w-full text-[1.4rem] text-start outline-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] shadow-md flex items-center justify-between"
+            className={`w-full text-[1.4rem] text-start ${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md flex items-center justify-between`}
           />
           <PlotfieldAppearancePartPromptMain
             appearancePartDebouncedValue={appearancePartDebouncedValue}

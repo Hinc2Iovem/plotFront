@@ -21,6 +21,7 @@ export default function CharacterHeaderCreateCharacterModal({
   debouncedValue,
 }: CharacterHeaderCreateCharacterModalTypes) {
   const { storyId } = useParams();
+  const theme = localStorage.getItem("theme");
   const [characterType, setCharacterType] =
     useState<CharacterTypes>("EmptyCharacter");
   const [name, setName] = useState("");
@@ -81,13 +82,19 @@ export default function CharacterHeaderCreateCharacterModal({
       <aside
         className={`${
           showCharacterModal ? "" : "hidden"
-        } fixed top-1/2 z-[4] -translate-y-1/2 left-1/2 -translate-x-1/2 bg-neutral-magnolia rounded-md ${
+        } fixed top-1/2 z-[4] -translate-y-1/2 left-1/2 -translate-x-1/2 bg-primary rounded-md ${
           characterType === "MinorCharacter" ? "min-h-[48rem]" : "min-h-[24rem]"
         } sm:w-[40rem] w-[30rem] p-[1rem]`}
       >
         <form className="flex flex-col gap-[2rem]" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-[1rem]">
-            <h2 className="text-[2.5rem] text-accent-marine-blue">
+            <h2
+              className={`text-[2.5rem] ${
+                theme === "light"
+                  ? "text-dark-dark-blue"
+                  : "text-text-light opacity-80"
+              }`}
+            >
               Тип персонажа
             </h2>
             <ul className="flex gap-[1rem] flex-wrap">
@@ -97,9 +104,17 @@ export default function CharacterHeaderCreateCharacterModal({
                   onClick={() => setCharacterType("EmptyCharacter")}
                   className={`text-[1.3rem] ${
                     characterType === "EmptyCharacter"
-                      ? "bg-accent-marine-blue text-white"
-                      : "bg-white text-black"
-                  } p-[1rem] rounded-md transition-all hover:bg-accent-marine-blue hover:text-white shadow-sm`}
+                      ? `${
+                          theme === "light"
+                            ? "bg-dark-dark-blue text-text-dark"
+                            : "bg-primary-darker text-text-light"
+                        }`
+                      : `${
+                          theme === "light"
+                            ? "bg-secondary text-black hover:bg-dark-dark-blue hover:text-text-dark"
+                            : "bg-secondary text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker"
+                        }`
+                  } p-[1rem] rounded-md transition-all  shadow-sm`}
                 >
                   Персонаж Третьего Плана
                 </button>
@@ -110,9 +125,17 @@ export default function CharacterHeaderCreateCharacterModal({
                   onClick={() => setCharacterType("MinorCharacter")}
                   className={`text-[1.3rem] ${
                     characterType === "MinorCharacter"
-                      ? "bg-accent-marine-blue text-white"
-                      : "bg-white text-black"
-                  } p-[1rem] rounded-md transition-all hover:bg-accent-marine-blue hover:text-white shadow-sm`}
+                      ? `${
+                          theme === "light"
+                            ? "bg-dark-dark-blue text-text-dark"
+                            : "bg-primary-darker text-text-light"
+                        }`
+                      : `${
+                          theme === "light"
+                            ? "bg-secondary text-black hover:bg-dark-dark-blue hover:text-text-dark"
+                            : "bg-secondary text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker"
+                        }`
+                  } p-[1rem] rounded-md transition-all shadow-sm`}
                 >
                   Второстепенный Персонаж
                 </button>
@@ -123,9 +146,17 @@ export default function CharacterHeaderCreateCharacterModal({
                   onClick={() => setCharacterType("MainCharacter")}
                   className={`text-[1.3rem] ${
                     characterType === "MainCharacter"
-                      ? "bg-accent-marine-blue text-white"
-                      : "bg-white text-black"
-                  } p-[1rem] rounded-md transition-all hover:bg-accent-marine-blue hover:text-white shadow-sm`}
+                      ? `${
+                          theme === "light"
+                            ? "bg-dark-dark-blue text-text-dark"
+                            : "bg-primary-darker text-text-light"
+                        }`
+                      : `${
+                          theme === "light"
+                            ? "bg-secondary text-black hover:bg-dark-dark-blue hover:text-text-dark"
+                            : "bg-secondary text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker"
+                        }`
+                  } p-[1rem] rounded-md transition-all shadow-sm`}
                 >
                   Главный Персонаж
                 </button>
@@ -136,7 +167,7 @@ export default function CharacterHeaderCreateCharacterModal({
           <div className="flex flex-col gap-[2rem]">
             <input
               type="text"
-              className="text-[1.5rem] w-full p-[1rem] outline-none text-gray-700"
+              className="text-[1.5rem] w-full p-[1rem] outline-none text-text-light"
               placeholder="Имя"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -145,20 +176,20 @@ export default function CharacterHeaderCreateCharacterModal({
               <>
                 <input
                   type="text"
-                  className="text-[1.5rem] w-full p-[1rem] outline-none text-gray-700"
+                  className="text-[1.5rem] w-full p-[1rem] outline-none text-text-light"
                   placeholder="Имя(Незнакомец)"
                   value={unknownName}
                   onChange={(e) => setUnknownName(e.target.value)}
                 />
                 <input
                   type="text"
-                  className="text-[1.5rem] w-full p-[1rem] outline-none text-gray-700"
+                  className="text-[1.5rem] w-full p-[1rem] outline-none text-text-light"
                   placeholder="nameTag"
                   value={nameTag}
                   onChange={(e) => setNameTag(e.target.value)}
                 />
                 <textarea
-                  className="text-[1.5rem] w-full max-h-[9rem] p-[1rem] outline-none text-gray-700"
+                  className="text-[1.5rem] w-full max-h-[9rem] p-[1rem] outline-none text-text-light"
                   placeholder="Описание"
                   rows={3}
                   value={description}
@@ -167,7 +198,13 @@ export default function CharacterHeaderCreateCharacterModal({
               </>
             )}
           </div>
-          <button className="self-end hover:scale-[1.01] hover:bg-accent-marine-blue hover:text-white transition-all active:scale-[0.99] text-[1.5rem] mt-auto p-[1rem] rounded-md shadow-sm bg-white">
+          <button
+            className={`${
+              theme === "light"
+                ? "hover:bg-dark-dark-blue hover:text-text-dark bg-secondary"
+                : "bg-secondary hover:bg-primary-darker text-text-dark hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker"
+            } self-end hover:scale-[1.01] transition-all active:scale-[0.99] text-[1.5rem] mt-auto p-[1rem] rounded-md shadow-sm`}
+          >
             Завершить
           </button>
         </form>

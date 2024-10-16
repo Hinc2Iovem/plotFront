@@ -53,11 +53,11 @@ export default function StorySinglePageHeaderCharacteristicModal({
       ref={modalRef}
       className={`${
         showCharacteristicsModal ? "" : "hidden"
-      } absolute w-[25rem] max-h-[30rem] flex flex-col gap-[1rem] rounded-md shadow-md bg-white right-0 z-[1]`}
+      } absolute w-[25rem] max-h-[30rem] flex flex-col gap-[1rem] rounded-md shadow-md bg-secondary right-0 z-[1]`}
     >
       <form
         onSubmit={handleSubmit}
-        className="flex w-full p-[1rem] bg-white gap-[1rem]"
+        className="flex w-full p-[1rem] bg-secondary gap-[1rem]"
       >
         <input
           type="text"
@@ -66,7 +66,7 @@ export default function StorySinglePageHeaderCharacteristicModal({
           className="w-full px-[1rem] text-[1.4rem] py-[.5rem] border-gray-700 border-dashed border-[2px] rounded-md"
           onChange={(e) => setCharacteristicName(e.target.value)}
         />
-        <button className="px-[1rem] py-[.5rem] text-[1.3rem] rounded-md border-black border-[1px] hover:bg-black hover:text-white transition-all">
+        <button className="px-[1rem] py-[.5rem] text-[1.3rem] rounded-md border-black border-[1px] hover:bg-black hover:text-text-dark transition-all">
           Создать
         </button>
       </form>
@@ -78,7 +78,7 @@ export default function StorySinglePageHeaderCharacteristicModal({
         {(characteristics?.length || 0) > 0
           ? characteristics?.map((c) => (
               <h3
-                className="text-[1.5rem] bg-white flex-grow rounded-md shadow-md p-[.2rem] cursor-default hover:text-white hover:bg-green-300 transition-all"
+                className="text-[1.5rem] bg-secondary flex-grow rounded-md shadow-md p-[.2rem] cursor-default hover:text-text-dark hover:bg-green-300 transition-all"
                 key={c._id}
                 style={{ wordBreak: "break-word" }}
               >

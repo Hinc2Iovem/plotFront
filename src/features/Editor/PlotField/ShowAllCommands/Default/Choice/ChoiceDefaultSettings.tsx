@@ -131,7 +131,7 @@ export default function ChoiceDefaultSettings({
             setShowChoiceModal((prev) => !prev);
             setShowOptionVariations(false);
           }}
-          className={`shadow-md relative rounded-md bg-white text-[1.5rem] outline-black px-[1rem] py-[.5rem] w-[8.5rem]`}
+          className={`shadow-md relative rounded-md bg-secondary text-[1.5rem] outline-black px-[1rem] py-[.5rem] w-[8.5rem]`}
         >
           Ответы
         </button>
@@ -140,7 +140,7 @@ export default function ChoiceDefaultSettings({
           ref={modalRef}
           className={`${
             showChoiceModal ? "" : "hidden"
-          } flex flex-col gap-[.5rem] max-h-[20rem] translate-y-[.5rem] overflow-auto absolute min-w-[17rem] w-full right-0 shadow-md bg-white rounded-b-md | containerScroll`}
+          } flex flex-col gap-[.5rem] max-h-[20rem] translate-y-[.5rem] overflow-auto absolute min-w-[17rem] w-full right-0 shadow-md bg-secondary rounded-b-md | containerScroll`}
         >
           <div className="w-full px-[1rem] py-[.5rem] flex flex-wrap gap-[.5rem] relative">
             <ButtonHoverPromptModal

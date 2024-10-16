@@ -31,6 +31,9 @@ import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlan
 import useUpdateCommandName from "../PlotFieldMain/Commands/hooks/useUpdateCommandName";
 import useCreateWait from "../PlotFieldMain/Commands/hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../PlotFieldMain/Commands/hooks/Wardrobe/useCreateWardrobe";
+import useTopologyBlocks from "../../Flowchart/Context/TopologyBlockContext";
+import { makeTopologyBlockName } from "../../Flowchart/utils/makeTopologyBlockName";
+import useConditionBlocks from "../PlotFieldMain/Commands/Condition/Context/ConditionContext";
 
 type CreatingCommandViaButtonClickTypes = {
   pc: string;
@@ -44,9 +47,11 @@ export default function CreatingCommandViaButtonClick({
   setShowAllCommands,
 }: CreatingCommandViaButtonClickTypes) {
   const { storyId } = useParams();
+  const { episodeId } = useParams();
   const { getCurrentAmountOfCommands, updateCommandInfo } =
     usePlotfieldCommands();
-
+  const { addConditionBlock } = useConditionBlocks();
+  const { getTopologyBlock } = useTopologyBlocks();
   // const { data: translatedCharacters } = useGetTranslationCharacters({
   //   language: "russian",
   //   storyId: storyId || "",
@@ -54,9 +59,8 @@ export default function CreatingCommandViaButtonClick({
 
   const [value, setValue] = useState("");
 
-  const [showCreateCharacterModal, setShowCreateCharacterModal] =
-    useState(false);
-  console.log(showCreateCharacterModal);
+  // const [showCreateCharacterModal, setShowCreateCharacterModal] =
+  // useState(false);
 
   // const [characterName, setCharacterName] = useState("");
 
@@ -121,6 +125,7 @@ export default function CreatingCommandViaButtonClick({
   });
   const createCondition = useCreateCondition({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
+    episodeId: episodeId || "",
   });
   const createCutScene = useCreateCutScene({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
@@ -171,8 +176,10 @@ export default function CreatingCommandViaButtonClick({
   const handleSubmit = ({
     submittedByCharacter,
     type,
+    plotfieldCommandId,
   }: {
     submittedByCharacter: boolean;
+    plotfieldCommandId: string;
     type?: CommandSayVariationTypes;
   }) => {
     if (submittedByCharacter && type) {
@@ -192,7 +199,39 @@ export default function CreatingCommandViaButtonClick({
       } else if (allCommands === "choice") {
         createChoice.mutate();
       } else if (allCommands === "condition") {
-        createCondition.mutate();
+        const conditionBlockId = generateMongoObjectId();
+        const targetBlockId = generateMongoObjectId();
+
+        addConditionBlock({
+          plotfieldCommandId,
+          conditionBlock: {
+            conditionBlockId,
+            conditionType: "else",
+            isElse: true,
+            orderOfExecution: null,
+            targetBlockId,
+            topologyBlockName: makeTopologyBlockName({
+              name: getTopologyBlock()?.name || "",
+              amountOfOptions:
+                getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+            }),
+            conditionName: "",
+            conditionValue: null,
+          },
+        });
+
+        createCondition.mutate({
+          conditionBlockId,
+          coordinatesX: getTopologyBlock()?.coordinatesX || 0,
+          coordinatesY: (getTopologyBlock()?.coordinatesY || 0) + 50,
+          sourceBlockName: makeTopologyBlockName({
+            name: getTopologyBlock()?.name || "",
+            amountOfOptions:
+              getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks,
+          }),
+          targetBlockId,
+          topologyBlockId,
+        });
       } else if (allCommands === "cutscene") {
         createCutScene.mutate();
       } else if (allCommands === "effect") {
@@ -226,32 +265,45 @@ export default function CreatingCommandViaButtonClick({
     setShowAllCommands(false);
   };
 
-  const handleFormSubmit = (pc: string) => {
+  const handleFormSubmit = ({
+    pc,
+    plotfieldCommandId,
+  }: {
+    pc: string;
+    plotfieldCommandId: string;
+  }) => {
     if (!pc.trim().length) {
       console.log("Заполните поле");
       return;
     }
+
+    console.log("plotfieldCommandId: working? ", plotfieldCommandId);
+
     let submittedByCharacter = false;
     // if it's say command whether it's hint, author, notify or some character name which already exists
     if (AllPossibleSayPlotFieldCommandsBlank.includes(pc.toLowerCase())) {
       handleSubmit({
         submittedByCharacter: true,
         type: pc as CommandSayVariationTypes,
+        plotfieldCommandId,
       });
     } else if (AllPossiblePlotFieldCommands.includes(pc.toLowerCase())) {
       // if it's any another existing command beside say and it's variations
       submittedByCharacter = false;
-      handleSubmit({ submittedByCharacter });
+      handleSubmit({ submittedByCharacter, plotfieldCommandId });
     } else {
       // if it's not any command and if there's no such character, it suggests to create a new one
-      setShowCreateCharacterModal(true);
+      // setShowCreateCharacterModal(true);
       return;
     }
   };
 
   useEffect(() => {
     if (newPlotFieldCommand.isSuccess) {
-      handleFormSubmit(pc);
+      handleFormSubmit({
+        pc,
+        plotfieldCommandId: newPlotFieldCommand.data._id,
+      });
     }
   }, [pc, newPlotFieldCommand.isSuccess]);
 
@@ -267,7 +319,7 @@ export default function CreatingCommandViaButtonClick({
         });
         updateCommandInfo({ topologyBlockId, addOrMinus: "add" });
       }}
-      className="text-[1.6rem] outline-black pr-[1rem] focus-within:px-[1rem] capitalize text-gray-700 hover:text-black transition-all border-b-[.1rem] border-gray-700 hover:border-black"
+      className="text-[1.6rem] outline-black pr-[1rem] focus-within:px-[1rem] capitalize text-text-light hover:text-black transition-all border-b-[.1rem] border-gray-700 hover:border-black"
     >
       {pc}
     </button>

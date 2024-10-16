@@ -16,7 +16,7 @@ export default function CommandIfValueItem({
   const [currentSign, setCurrentSign] = useState(sign || "");
   const [currentValue, setCurrentValue] = useState(value || null);
   const [showSignModal, setShowSignModal] = useState(false);
-
+  const theme = localStorage.getItem("theme");
   const updateValues = useUpdateIfConditionValue({ ifValueId: _id });
 
   const debouncedValue = useDebounce({ value: currentName, delay: 700 });
@@ -48,7 +48,9 @@ export default function CommandIfValueItem({
       <input
         type="text"
         placeholder="Название"
-        className="flex-grow px-[1rem] py-[.5rem] text-[1.3rem] text-gray-700 outline-gray-300 bg-white rounded-md shadow-md"
+        className={`flex-grow px-[1rem] py-[.5rem] text-[1.3rem] text-text-light ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } bg-secondary rounded-md shadow-md`}
         value={currentName}
         onChange={(e) => setCurrentName(e.target.value)}
       />
@@ -56,14 +58,16 @@ export default function CommandIfValueItem({
         <button
           onClick={() => setShowSignModal((prev) => !prev)}
           type="button"
-          className="w-full px-[1rem] py-[.5rem] shadow-md rounded-md bg-white outline-gray-300 text-[1.4rem]"
+          className={`w-full px-[1rem] py-[.5rem] shadow-md text-text-light rounded-md bg-secondary  ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-[1.4rem]`}
         >
           {currentSign ? currentSign : "Знак"}
         </button>
         <aside
           className={`${showSignModal ? "" : "hidden"} ${
             currentSign ? "translate-y-[1rem]" : "translate-y-[2rem]"
-          } absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | scrollBar`}
+          } absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[10rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
         >
           {AllConditionSigns &&
             AllConditionSigns?.map((c) => (
@@ -79,7 +83,9 @@ export default function CommandIfValueItem({
       <input
         type="text"
         placeholder="Значение"
-        className="flex-grow px-[1rem] py-[.5rem] text-[1.3rem] text-gray-700 outline-gray-300 bg-white rounded-md shadow-md"
+        className={`flex-grow px-[1rem] py-[.5rem] text-[1.3rem] text-text-light  ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } bg-secondary rounded-md shadow-md`}
         value={currentValue || ""}
         onChange={(e) => setCurrentValue(+e.target.value)}
       />

@@ -214,7 +214,7 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
       } h-fit max-h-[20rem] overflow-auto sm:flex-row flex-col w-full flex gap-[.5rem] bg-purple-200 p-[.5rem] rounded-md | containerScroll`}
     >
       <div
-        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white overflow-auto | containerScroll`}
+        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary overflow-auto | containerScroll`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -223,13 +223,13 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
           <input
             type="text"
             value={translatedItemName}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setTranslatedItemName(e.target.value)}
           />
           <input
             type="text"
             value={translatedButtonText}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setTranslatedButtonText(e.target.value)}
           />
           <textarea
@@ -237,12 +237,12 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
             id="translatedItemDescription"
             value={translatedItemDescription}
             onChange={(e) => setTranslatedItemDescription(e.target.value)}
-            className="w-full max-h-[10rem] border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+            className="w-full max-h-[10rem] border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary | containerScroll"
           />
         </form>
       </div>
       <div
-        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white overflow-auto | containerScroll`}
+        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary overflow-auto | containerScroll`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -252,14 +252,14 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
             type="text"
             value={itemName}
             placeholder="Название Предмета"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setItemName(e.target.value)}
           />
           <input
             type="text"
             value={buttonText}
             placeholder="Текст Кнопки Предмета"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setButtonText(e.target.value)}
           />
           <textarea
@@ -268,7 +268,7 @@ export default function DisplayTranslatedNonTranslatedPlotGetItem({
             value={itemDescription}
             placeholder="Описание Предмета"
             onChange={(e) => setItemDescription(e.target.value)}
-            className="w-full max-h-[10rem] h-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+            className="w-full max-h-[10rem] h-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary | containerScroll"
           />
         </form>
       </div>

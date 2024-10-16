@@ -29,7 +29,7 @@ export default function WardrobeHeaderChooceAppearaceType({
     showModal: showBodyTypeModal,
   });
   return (
-    <div className="flex flex-col gap-[.5rem] relative ">
+    <div className="flex flex-col gap-[.5rem] relative">
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -37,11 +37,11 @@ export default function WardrobeHeaderChooceAppearaceType({
           setShowModal(false);
           setShowBodyTypeModal(true);
         }}
-        className="text-[1.5rem] px-[1rem] py-[.5rem] outline-gray-400 bg-white rounded-md shadow-md hover:bg-primary-pastel-blue hover:text-white transition-all active:scale-[0.98]"
+        className="text-[1.5rem] px-[1rem] py-[.5rem] outline-gray-400 focus-within:bg-primary focus-within:text-text-light text-text-dark hover:text-text-light bg-secondary rounded-md shadow-md hover:bg-primary-darker transition-all active:scale-[0.98]"
       >
         Тип Одежды
       </button>
-      <p className="text-[1.5rem] border-b-[2px] border-gray-700 border-dotted text-center rounded-md">
+      <p className="text-[1.5rem] text-text-light opacity-80 hover:opacity-100 cursor-default transition-opacity border-b-[2px] border-gray-700 border-dotted text-center rounded-md">
         {bodyType}
       </p>
       <aside
@@ -49,7 +49,7 @@ export default function WardrobeHeaderChooceAppearaceType({
         ref={modalRef}
         className={`${
           showBodyTypeModal ? "" : "hidden"
-        } absolute top-1/2 translate-y-[1rem] z-[10] p-[1rem] min-w-[10rem] w-full h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+        } absolute top-1/2 translate-y-[1rem] z-[10] p-[1rem] min-w-[10rem] w-full h-[10rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
       >
         {BodyTypes.map((bt) => (
           <button
@@ -58,7 +58,7 @@ export default function WardrobeHeaderChooceAppearaceType({
               setBodyType(bt);
               setShowBodyTypeModal(false);
             }}
-            className="text-[1.3rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+            className="text-[1.3rem] hover:bg-primary-darker hover:text-text-light text-text-dark focus-within:bg-primary focus-within:text-text-light transition-all rounded-md"
           >
             {bt}
           </button>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useGetCommandComment from "../hooks/Comment/useGetCommandComment";
 import useUpdateCommentText from "../hooks/Comment/useUpdateCommentText";
+import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 
 type CommandCommentFieldTypes = {
   plotFieldCommandId: string;
@@ -16,6 +17,7 @@ export default function CommandCommentField({
   const { data: commandComment } = useGetCommandComment({
     plotFieldCommandId,
   });
+  const theme = localStorage.getItem("theme");
 
   const [commandCommentId, setCommandCommentId] = useState("");
   const [comment, setComment] = useState("");
@@ -27,22 +29,27 @@ export default function CommandCommentField({
     }
   }, [commandComment]);
 
+  const debouncedValue = useDebounce({ value: command, delay: 700 });
+
   const updateCommentText = useUpdateCommentText({
     commentId: commandCommentId,
-    comment,
+    comment: debouncedValue,
   });
 
   useEffect(() => {
-    if (commandComment?.comment !== comment && comment?.trim().length) {
+    if (
+      commandComment?.comment !== debouncedValue &&
+      debouncedValue?.trim().length
+    ) {
       updateCommentText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [comment]);
+  }, [debouncedValue]);
 
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
+    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] w-full relative">
-        <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
+        <h3 className="text-[1.3rem] text-start text-text-light outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
           {nameValue}
         </h3>
       </div>
@@ -57,7 +64,9 @@ export default function CommandCommentField({
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Коммент"
-          className="text-[1.3rem] max-h-[10rem] outline-gray-300 w-full px-[1rem] py-[.5rem] rounded-md shadow-md bg-white"
+          className={`text-[1.4rem] max-h-[10rem] ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light w-full px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary`}
         />
       </form>
     </div>

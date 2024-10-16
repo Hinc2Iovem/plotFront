@@ -100,7 +100,7 @@ export default function StoryHeroSection() {
   return (
     <section className="flex max-w-[148rem] mx-auto min-h-screen lg:items-start sm:items-center mt-[1rem] sm:mt-0 lg:mt-[2.5rem] px-[1rem] relative">
       <div className="flex lg:flex-row lg:w-full lg:mx-0 lg:items-start flex-col w-[100rem] gap-[1rem] h-fit items-center mx-auto">
-        <div className="w-full lg:max-w-[20rem] lg:h-[30rem] sm:max-w-[50rem] h-[45rem] relative bg-neutral-magnolia shadow-md shadow-gray-600 rounded-md">
+        <div className="w-full lg:max-w-[20rem] lg:h-[30rem] sm:max-w-[50rem] h-[45rem] relative bg-lightest-gray shadow-md shadow-gray-600 rounded-md">
           {storyImg ? (
             <img
               src={storyImg as string}
@@ -117,7 +117,7 @@ export default function StoryHeroSection() {
             />
           )}
           <SyncLoad
-            className="bg-white shadow-md rounded-sm bottom-[1rem] right-[1rem]"
+            className="bg-secondary shadow-md rounded-sm bottom-[1rem] right-[1rem]"
             conditionToLoading={!imgUploading}
             conditionToStart={imgUploading}
           />
@@ -145,7 +145,7 @@ export default function StoryHeroSection() {
           >
             {storyInfo.storyName}
             <span
-              className={`absolute bg-white transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
+              className={`absolute bg-secondary transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
                 opacityFull.title ? "" : " opacity-30"
               } rounded-md`}
             ></span>
@@ -171,7 +171,7 @@ export default function StoryHeroSection() {
           >
             {storyInfo.storyDescription}
             <span
-              className={`absolute bg-white transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
+              className={`absolute bg-secondary transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
                 opacityFull.description ? "" : " opacity-30"
               } rounded-md`}
             ></span>
@@ -197,7 +197,7 @@ export default function StoryHeroSection() {
           >
             {storyInfo.storyGenre}
             <span
-              className={`absolute bg-white transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
+              className={`absolute bg-secondary transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
                 opacityFull.genres ? "" : " opacity-30"
               } rounded-md`}
             ></span>

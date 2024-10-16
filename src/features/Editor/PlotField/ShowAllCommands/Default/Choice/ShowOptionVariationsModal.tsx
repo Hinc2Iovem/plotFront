@@ -26,7 +26,7 @@ export default function ShowOptionVariationsModal({
     <div
       className={`absolute ${
         showOptionVariations ? "" : "hidden"
-      } top-[4rem] flex gap-[.5rem] shadow-md bg-white rounded-md w-fit`}
+      } top-[4rem] flex gap-[.5rem] shadow-md bg-secondary rounded-md w-fit`}
     >
       <OptionVariationItem
         currentDefaultChoiceOption={currentDefaultChoiceOption}

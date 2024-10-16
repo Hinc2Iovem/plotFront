@@ -11,7 +11,7 @@ export default function EmotionItem({
 }: EmotionsTypes) {
   const [imgPreview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-
+  const theme = localStorage.getItem("theme");
   const { mutate: updateImg, isPending } = useUpdateImg({
     id: _id,
     path: "/characterEmotions",
@@ -30,8 +30,16 @@ export default function EmotionItem({
   }, []);
 
   return (
-    <article className="w-full min-h-[24rem] h-full rounded-md shadow-md shadow-gray-400 bg-white relative">
-      <div className="relative border-[3px] w-full h-[20rem] border-white">
+    <article
+      className={`w-full min-h-[24rem] h-full rounded-md shadow-md ${
+        theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
+      } bg-secondary relative`}
+    >
+      <div
+        className={`${
+          theme === "light" ? "border-[3px] border-white rounded-sm" : ""
+        } relative w-full h-[20rem]`}
+      >
         {imgUrl ? (
           <img
             src={imgUrl}
@@ -46,8 +54,12 @@ export default function EmotionItem({
           />
         )}
       </div>
-      <div className="bg-white w-full p-[1rem] rounded-b-md shadow-md shadow-gray-400">
-        <p className="text-[1.5rem] hover:text-gray-600 transition-all">
+      <div
+        className={`bg-secondary w-full p-[1rem] rounded-b-md shadow-md ${
+          theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
+        }`}
+      >
+        <p className="text-[1.5rem] text-text-dark hover:cursor-default hover:text-text-light transition-all">
           {emotionName}
         </p>
       </div>

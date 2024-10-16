@@ -39,7 +39,7 @@ export default function CommandWardrobeCharacter({
     characterId,
     language: "russian",
   });
-
+  const theme = localStorage.getItem("theme");
   useEffect(() => {
     if (character) {
       setCharacterImg(character?.img ?? "");
@@ -123,7 +123,9 @@ export default function CommandWardrobeCharacter({
             setCharacterName(e.target.value);
           }}
           placeholder="Имя Персонажа"
-          className="flex-grow w-full text-[1.4rem] outline-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] shadow-md"
+          className={`flex-grow w-full text-[1.4rem] ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md`}
         />
 
         <img

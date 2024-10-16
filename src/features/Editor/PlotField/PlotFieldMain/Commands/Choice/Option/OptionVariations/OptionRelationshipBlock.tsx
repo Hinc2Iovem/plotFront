@@ -19,7 +19,7 @@ export default function OptionRelationshipBlock({
   const [characterId, setCharacterId] = useState("");
   const [characterImg, setCharacterImg] = useState("");
   const [characterName, setCharacterName] = useState("");
-
+  const theme = localStorage.getItem("theme");
   const { data: character } = useGetCharacterById({ characterId });
 
   useEffect(() => {
@@ -104,7 +104,9 @@ export default function OptionRelationshipBlock({
             setCharacterName(e.target.value);
           }}
           placeholder="Имя Персонажа"
-          className="flex-grow text-[1.4rem] outline-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] shadow-md"
+          className={`flex-grow text-[1.4rem] ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md`}
         />
 
         <img
@@ -126,7 +128,9 @@ export default function OptionRelationshipBlock({
       <input
         type="text"
         placeholder="Очки характеристики"
-        className="flex-grow  text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-gray-300 rounded-md shadow-md"
+        className={`flex-grow text-[1.3rem] px-[1rem] py-[.5rem] text-text-light ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } rounded-md shadow-md`}
         value={amountOfPoints || ""}
         onChange={(e) => setAmountOfPoints(+e.target.value)}
       />

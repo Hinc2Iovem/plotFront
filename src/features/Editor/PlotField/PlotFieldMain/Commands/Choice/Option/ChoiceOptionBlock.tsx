@@ -41,6 +41,8 @@ export default function ChoiceOptionBlock({
     updateChoiceOptionTopologyBlockId,
   } = useChoiceOptions();
 
+  const theme = localStorage.getItem("theme");
+
   const [showAllSexualOrientationBlocks, setShowAllSexualOrientationBlocks] =
     useState(false);
   const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
@@ -95,7 +97,7 @@ export default function ChoiceOptionBlock({
     <div
       className={`${
         showOptionPlot ? "hidden" : ""
-      } w-full bg-white min-h-[10rem] h-full rounded-md shadow-md`}
+      } w-full bg-secondary min-h-[10rem] h-full rounded-md shadow-md`}
     >
       <div className="w-full flex justify-between flex-col h-full">
         <input
@@ -109,7 +111,9 @@ export default function ChoiceOptionBlock({
             });
           }}
           placeholder="Ответ"
-          className="w-full text-[1.4rem] text-gray-700 rounded-md outline-gray-300 shadow-md bg-white px-[1rem]"
+          className={`w-full text-[1.4rem] text-text-light rounded-md ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } shadow-md bg-secondary px-[1rem]`}
         />
 
         <div className="p-[.2rem] flex flex-col gap-[1rem]">

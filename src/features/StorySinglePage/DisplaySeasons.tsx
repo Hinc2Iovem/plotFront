@@ -31,9 +31,9 @@ export default function DisplaySeasons({
 
   return (
     <>
-      <div className="flex flex-col w-full md:w-[calc(50%-0.5rem)] flex-grow bg-white p-[1rem] rounded-md">
+      <div className="flex flex-col w-full md:w-[calc(50%-0.5rem)] flex-grow bg-secondary p-[1rem] rounded-md">
         <div className="flex justify-between w-full items-center gap-[1rem]">
-          <h2 className="text-[2.5rem] text-gray-700 border-b-[.1rem] rounded-md px-[.5rem]">
+          <h2 className="text-[2.5rem] text-text-light border-b-[.1rem] rounded-md px-[.5rem]">
             {seasonTitle || `Сезон ${index}`}
           </h2>
           <ButtonHoverPromptModal
@@ -41,10 +41,10 @@ export default function DisplaySeasons({
               e.stopPropagation();
               setShowModal(true);
             }}
-            asideClasses="text-[1.5rem] top-[3.9rem] bottom-[-3.9rem]"
+            asideClasses="text-[1.5rem] top-[3.9rem] bottom-[-3.9rem] text-text-light"
             contentName="Создать Эпизод"
             positionByAbscissa="right"
-            className="w-fit bg-white rounded-md shadow-sm shadow-gray-500 p-[.2rem]"
+            className="w-fit bg-secondary rounded-md shadow-sm shadow-gray-500 p-[.2rem]"
             variant={"rectangle"}
           >
             <img src={add} alt="NewEpisode" className="w-[3rem]" />
@@ -116,7 +116,7 @@ function DisplayEpisodes({ seasonId }: DisplayEpisodesTypes) {
                 );
               })
             ) : (
-              <li className="text-[1.5rem] text-gray-700 bg-white w-full rounded-md shadow-sm shadow-gray-300 p-[1rem] hover:scale-[1.01]">
+              <li className="text-[1.5rem] text-text-light opacity-60 bg-secondary w-full rounded-md shadow-sm shadow-gray-300 p-[1rem] hover:scale-[1.01]">
                 В этом сезоне покамись нету эпизодов
               </li>
             )}
@@ -152,11 +152,11 @@ function CreateEpisodeBlock({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!title.trim().length || !description.trim().length) {
       console.log("title and description are required");
       return;
     }
-
     createNewEpisode.mutate();
     startTransition(() => {
       setTitle("");
@@ -176,24 +176,24 @@ function CreateEpisodeBlock({
     >
       <form
         onSubmit={handleSubmit}
-        className={`w-full bg-white flex flex-col gap-[1rem] p-[1rem]`}
+        className={`w-full bg-secondary flex flex-col gap-[1rem] p-[1rem]`}
       >
         <input
           type="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="text-[2rem] text-gray-700 border-double border-l-neutral-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none"
+          className="text-[2rem] text-text-light border-double border-l-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none"
           placeholder="Название Эпизода"
         />
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="text-[1.5rem] text-gray-700 border-double border-l-neutral-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none max-h-[30rem]"
+          className="text-[1.5rem] text-text-light border-double border-l-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none max-h-[30rem]"
           placeholder="Описание Эпизода"
         />
         <button
           disabled={isPending}
-          className="w-fit self-end outline-gray-300 text-[1.5rem] shadow-md rounded-md px-[1rem] py-[.5rem] hover:scale-[1.01] active:scale-[0.98]"
+          className={` w-fit text-text-dark hover:text-text-light self-end outline-gray-300 text-[1.5rem] shadow-md rounded-md px-[1rem] py-[.5rem] hover:scale-[1.01] active:scale-[0.98]`}
         >
           Создать
         </button>

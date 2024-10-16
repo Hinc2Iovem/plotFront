@@ -1,46 +1,54 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import { ConditionBlockTypes } from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import useUpdateConditionBlockTopologyBlockId from "../hooks/Condition/ConditionBlock/useUpdateConditionBlockTopologyBlockId";
-import useGetConditionValueByConditionBlockId from "../hooks/Condition/ConditionValue/useGetAllConditionValuesByConditionBlockId";
 import useGetAllTopologyBlocksByEpisodeId from "../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../hooks/TopologyBlock/useGetTopologyBlockById";
 import ConditionValueItem from "./ConditionValueItem";
+import useConditionBlocks, {
+  ConditionBlockItemTypes,
+} from "./Context/ConditionContext";
 import DisplayOrderOfIfsModal from "./DisplayOrderOfIfsModal";
+import ConditionBlockShowPlot from "./ConditionBlockShowPlot";
 
-type ConditionBlockItemTypes = {
-  amountOfIfBlocks?: number;
-  allUsedOrderNumbers?: number[];
+type ConditionBlockItemProps = {
   currentTopologyBlockId: string;
-} & ConditionBlockTypes;
+  conditionId: string;
+  plotfieldCommandId: string;
+  setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
+} & ConditionBlockItemTypes;
 
 export default function ConditionBlockItem({
-  _id,
+  setShowConditionBlockPlot,
+  conditionBlockId,
   targetBlockId,
   isElse,
-  amountOfIfBlocks,
   orderOfExecution,
-  conditionId,
-  allUsedOrderNumbers,
   currentTopologyBlockId,
-}: ConditionBlockItemTypes) {
+  conditionId,
+  topologyBlockName,
+  plotfieldCommandId,
+  conditionName,
+  conditionValue,
+  sign,
+}: ConditionBlockItemProps) {
   const { episodeId } = useParams();
+  const theme = localStorage.getItem("theme");
+  const { updateConditionBlockTargetBlockId } = useConditionBlocks();
   const modalRef = useRef<HTMLDivElement>(null);
-  const [currentOrder, setCurrentOrder] = useState(orderOfExecution || null);
-
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId: targetBlockId,
   });
   const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
-  const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState("");
-  const [newTopologyBlockId, setNewTopologyBlockId] = useState(
-    targetBlockId || ""
-  );
 
   useEffect(() => {
     if (topologyBlock) {
-      setCurrentTopologyBlockName(topologyBlock?.name || "");
+      updateConditionBlockTargetBlockId({
+        conditionBlockId,
+        plotfieldCommandId,
+        targetBlockId,
+        topologyBlockName: topologyBlock?.name || "",
+      });
     }
   }, [topologyBlock]);
 
@@ -48,26 +56,11 @@ export default function ConditionBlockItem({
     episodeId: episodeId ?? "",
   });
 
-  const { data: conditionValues } = useGetConditionValueByConditionBlockId({
-    conditionBlockId: _id,
-  });
   const updateTopologyBlock = useUpdateConditionBlockTopologyBlockId({
-    conditionBlockId: _id,
-    targetBlockId: newTopologyBlockId,
-    sourceBlockId: currentTopologyBlockId,
+    conditionBlockId: conditionBlockId,
+    sourceBlockId: targetBlockId,
     episodeId: episodeId || "",
   });
-
-  useEffect(() => {
-    if (newTopologyBlockId?.trim().length) {
-      updateTopologyBlock.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newTopologyBlockId]);
-
-  useEffect(() => {
-    setCurrentOrder(orderOfExecution || null);
-  }, [orderOfExecution]);
 
   useOutOfModal({
     setShowModal: setShowAllTopologyBlocks,
@@ -79,19 +72,26 @@ export default function ConditionBlockItem({
     <>
       {!isElse ? (
         <div
-          className={`p-[1rem] flex flex-col gap-[1rem] w-full bg-white rounded-md shadow-md`}
+          className={`p-[1rem] flex flex-col gap-[1rem] w-full bg-secondary rounded-md shadow-md`}
         >
-          {conditionValues?.map((cv) => (
-            <ConditionValueItem key={cv._id} {...cv} />
-          ))}
-
+          <ConditionValueItem
+            key={conditionBlockId}
+            conditionBlockId={conditionBlockId}
+            name={conditionName}
+            sign={sign}
+            value={conditionValue}
+          />
+          <ConditionBlockShowPlot
+            conditionBlockId={conditionBlockId}
+            plotfieldCommandId={plotfieldCommandId}
+            setShowConditionBlockPlot={setShowConditionBlockPlot}
+            targetBlockId={targetBlockId}
+          />
           <DisplayOrderOfIfsModal
-            conditionBlockId={_id}
-            allUsedOrderNumbers={allUsedOrderNumbers || []}
+            conditionBlockId={conditionBlockId}
             commandConditionId={conditionId}
-            setCurrentOrder={setCurrentOrder}
-            currentOrder={currentOrder}
-            amountOfIfBlocks={amountOfIfBlocks || 0}
+            currentOrder={orderOfExecution}
+            plotfieldCommandId={plotfieldCommandId}
           />
           <div className="relative w-full flex justify-between flex-wrap gap-[1rem]">
             <button
@@ -99,15 +99,17 @@ export default function ConditionBlockItem({
                 e.stopPropagation();
                 setShowAllTopologyBlocks((prev) => !prev);
               }}
-              className="flex-grow text-[1.4rem] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
+              className={`flex-grow text-[1.4rem] ${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } text-text-light shadow-md rounded-md px-[1rem] py-[.5rem]`}
               type="button"
             >
-              {currentTopologyBlockName || "Текущая Ветка"}
+              {topologyBlockName || "Текущая Ветка"}
             </button>
             <aside
               className={`${
                 showAllTopologyBlocks ? "" : "hidden"
-              } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem]`}
+              } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] overflow-y-auto max-h-[20rem] | containerScroll`}
             >
               {(allTopologyBlocks?.length || 0) > 1 ? (
                 allTopologyBlocks?.map((tb) => (
@@ -116,14 +118,23 @@ export default function ConditionBlockItem({
                     type="button"
                     onClick={() => {
                       setShowAllTopologyBlocks(false);
-                      setCurrentTopologyBlockName(tb?.name || "");
-                      setNewTopologyBlockId(tb._id);
+                      updateConditionBlockTargetBlockId({
+                        conditionBlockId,
+                        plotfieldCommandId,
+                        targetBlockId: tb._id,
+                        topologyBlockName: tb?.name || "",
+                      });
+                      updateTopologyBlock.mutate({ targetBlockId: tb._id });
                     }}
                     className={`${
                       currentTopologyBlockId === tb._id ? "hidden" : ""
                     } ${
-                      tb._id === newTopologyBlockId ? "hidden" : ""
-                    } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                      tb._id === targetBlockId ? "hidden" : ""
+                    } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+                      theme === "light"
+                        ? "outline-gray-300"
+                        : "outline-gray-600"
+                    } text-text-dark hover:bg-primary-light hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light shadow-md transition-all rounded-md`}
                   >
                     {tb.name}
                   </button>
@@ -134,7 +145,9 @@ export default function ConditionBlockItem({
                   onClick={() => {
                     setShowAllTopologyBlocks(false);
                   }}
-                  className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                  className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+                    theme === "light" ? "outline-gray-300" : "outline-gray-600"
+                  } text-text-dark hover:bg-primary-light hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light shadow-md transition-all rounded-md`}
                 >
                   Пусто
                 </button>
@@ -144,24 +157,32 @@ export default function ConditionBlockItem({
         </div>
       ) : (
         <div
-          className={`flex flex-col gap-[1rem] w-full bg-white rounded-md shadow-md`}
+          className={`flex flex-wrap gap-[.5rem] flex-grow bg-secondary rounded-md shadow-md px-[.5rem] py-[.5rem]`}
         >
-          <div className="relative self-end w-full flex-grow">
+          <ConditionBlockShowPlot
+            conditionBlockId={conditionBlockId}
+            plotfieldCommandId={plotfieldCommandId}
+            setShowConditionBlockPlot={setShowConditionBlockPlot}
+            targetBlockId={targetBlockId}
+          />
+          <div className="relative self-end flex-grow">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowAllTopologyBlocks((prev) => !prev);
               }}
-              className="w-full flex-grow text-[1.4rem] outline-gray-300 text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem]"
+              className={`w-full text-[1.4rem] ${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } text-text-light shadow-md rounded-md px-[1rem] py-[.5rem] focus-within:bg-primary-darker`}
               type="button"
             >
-              {currentTopologyBlockName || "Текущая Ветка"}
+              {topologyBlockName || "Текущая Ветка"}
             </button>
             <aside
               ref={modalRef}
               className={`${
                 showAllTopologyBlocks ? "" : "hidden"
-              } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem]`}
+              } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] overflow-y-auto max-h-[20rem] | containerScroll`}
             >
               {(allTopologyBlocks?.length || 0) > 1 ? (
                 allTopologyBlocks?.map((tb) => (
@@ -170,14 +191,23 @@ export default function ConditionBlockItem({
                     type="button"
                     onClick={() => {
                       setShowAllTopologyBlocks(false);
-                      setCurrentTopologyBlockName(tb?.name || "");
-                      setNewTopologyBlockId(tb._id);
+                      updateConditionBlockTargetBlockId({
+                        conditionBlockId,
+                        plotfieldCommandId,
+                        targetBlockId: tb._id,
+                        topologyBlockName: tb?.name || "",
+                      });
+                      updateTopologyBlock.mutate({ targetBlockId: tb._id });
                     }}
                     className={`${
                       currentTopologyBlockId === tb._id ? "hidden" : ""
                     } ${
-                      tb._id === newTopologyBlockId ? "hidden" : ""
-                    } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                      tb._id === targetBlockId ? "hidden" : ""
+                    } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+                      theme === "light"
+                        ? "outline-gray-300"
+                        : "outline-gray-600"
+                    } text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker shadow-md transition-all rounded-md`}
                   >
                     {tb.name}
                   </button>
@@ -188,7 +218,9 @@ export default function ConditionBlockItem({
                   onClick={() => {
                     setShowAllTopologyBlocks(false);
                   }}
-                  className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                  className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+                    theme === "light" ? "outline-gray-300" : "outline-gray-600"
+                  } text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker shadow-md transition-all rounded-md`}
                 >
                   Пусто
                 </button>

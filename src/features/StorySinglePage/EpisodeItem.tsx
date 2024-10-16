@@ -79,7 +79,7 @@ export default function EpisodeItem({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      className="w-full bg-white flex flex-col"
+      className="w-full bg-secondary flex flex-col"
     >
       <div
         onClick={() => {
@@ -90,18 +90,18 @@ export default function EpisodeItem({
           isEpisodeInfoOpen
             ? "shadow-none border-[.1rem] border-b-0 rounded-b-none"
             : " hover:scale-[1.01]"
-        } outline-gray-400 text-start bg-white w-full rounded-md shadow-sm shadow-gray-300 p-[1rem]`}
+        } outline-gray-400 text-start bg-secondary w-full rounded-md shadow-sm shadow-gray-300 p-[1rem]`}
       >
-        <h3 className="text-[1.5rem] text-gray-700">
+        <h3 className="text-[1.5rem] text-text-light">
           {episodeTitle.trim().length ? episodeTitle : `Эпизод ${episodeOrder}`}
         </h3>
       </div>
       <div
         className={`${
           isEpisodeInfoOpen ? "border-[.1rem]  rounded-t-none" : "hidden"
-        } flex flex-col min-h-[10rem] w-full bg-white rounded-md shadow-gray-300`}
+        } flex flex-col min-h-[10rem] w-full bg-secondary rounded-md shadow-gray-300`}
       >
-        <p className="text-[1.5rem] self-end pt-[.5rem] pr-[.5rem]">
+        <p className="text-[1.5rem] self-end pt-[.5rem] pr-[.5rem] text-text-dark">
           Статус:{" "}
           <span
             className={`text-[1.4rem] ${
@@ -111,14 +111,14 @@ export default function EpisodeItem({
             {episodeStatus === "doing" ? "В процессе" : "Завершена"}
           </span>
         </p>
-        <p className="text-[1.4rem] text-gray-600 h-full w-full break-words pl-[.5rem]">
+        <p className="text-[1.4rem] text-text-light opacity-70 h-full w-full break-words pl-[.5rem]">
           {episodeDescription}
         </p>
         <div className="flex justify-between items-center gap-[1rem] mt-auto w-full">
           <div
             className={`${
               currentStory?.storyStaffInfo?.length ? "" : "hidden"
-            } flex gap-[.5rem] flex-wrap bg-white shadow-md px-[1rem] py-[.5rem]`}
+            } flex gap-[.5rem] flex-wrap bg-secondary shadow-md px-[1rem] py-[.5rem]`}
           >
             {currentStory?.storyStaffInfo?.length
               ? currentStory.storyStaffInfo.map((ss) => (
@@ -127,7 +127,7 @@ export default function EpisodeItem({
               : null}
           </div>
           <Link
-            className="ml-auto w-fit text-[1.5rem] text-gray-700 hover:text-primary-pastel-blue pr-[.5rem] transition-all"
+            className="ml-auto w-fit text-[1.5rem] text-text-dark hover:text-text-light pr-[.5rem] transition-all"
             to={`/stories/${storyId}/editor/episodes/${_id}`}
           >
             На страницу Эпизода
@@ -154,7 +154,7 @@ function WorkersItems({ staffId }: { staffId: string }) {
       <aside
         className={`${
           showName ? "" : "hidden"
-        } absolute bottom-[0rem] translate-y-[3rem] rounded-md px-[1rem] py-[.25rem] bg-white shadow-md z-[10] text-[1.4rem]`}
+        } absolute bottom-[0rem] translate-y-[3rem] text-text-dark rounded-md px-[1rem] py-[.25rem] bg-secondary shadow-md z-[10] text-[1.4rem]`}
       >
         {scriptwriter?.username}
       </aside>

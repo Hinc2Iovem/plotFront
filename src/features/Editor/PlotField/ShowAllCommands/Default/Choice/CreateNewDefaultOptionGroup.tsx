@@ -56,7 +56,7 @@ export default function CreateNewDefaultOptionGroup({
           e.stopPropagation();
           handleCreatingDefaultOptions();
         }}
-        className="w-[90%] mx-auto mb-[1rem] text-[1.4rem] px-[1rem] py-[.5rem] shadow-md hover:text-white hover:bg-primary-pastel-blue transition-all rounded-md"
+        className="w-[90%] mx-auto mb-[1rem] text-[1.4rem] px-[1rem] py-[.5rem] shadow-md hover:text-text-dark hover:bg-primary-darker transition-all rounded-md"
       >
         Добавить Заготовку
       </button>

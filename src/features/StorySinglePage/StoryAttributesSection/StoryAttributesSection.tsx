@@ -73,7 +73,7 @@ function CardBlock({ img, path, alt }: CardBlockTypes) {
           prefetchCharacters();
         }
       }}
-      className="sm:flex-grow flex-grow-0 sm:w-auto min-w-[20rem] min-h-[18rem] rounded-md shadow-md bg-white sm:h-full relative hover:scale-[1.01] transition-all"
+      className="sm:flex-grow flex-grow-0 sm:w-auto min-w-[20rem] min-h-[18rem] rounded-md shadow-md bg-secondary sm:h-full relative hover:scale-[1.01] transition-all"
     >
       <Link to={`/stories/${storyId}/${path}`}>
         <img
@@ -123,8 +123,8 @@ function CardCharacteristicBlock({ img, alt }: CardCharacteristicBlockTypes) {
           setShowBackSide(true);
         }}
         className={`${
-          showBackSide ? "hidden" : ""
-        } sm:flex-grow flex-grow-0 sm:w-auto min-w-[20rem] min-h-[18rem] rounded-md shadow-md bg-white sm:h-full relative hover:scale-[1.01] transition-all`}
+          showBackSide ? "hidden" : "hover:scale-[1.01]"
+        } sm:flex-grow flex-grow-0 sm:w-auto min-w-[20rem] min-h-[18rem] rounded-md shadow-md bg-secondary sm:h-full relative  transition-all`}
       >
         <img
           src={img}
@@ -136,7 +136,7 @@ function CardCharacteristicBlock({ img, alt }: CardCharacteristicBlockTypes) {
         ref={modalRef}
         className={`${
           showBackSide ? "" : "hidden"
-        } overflow-y-auto sm:w-[calc(50%-0.25rem)] p-[1rem] w-full min-h-[18rem] max-h-[30rem] rounded-md shadow-md bg-white sm:h-full relative hover:scale-[1.01] transition-all | containerScroll`}
+        } overflow-y-auto sm:w-[calc(50%-0.25rem)] p-[1rem] w-full min-h-[18rem] max-h-[30rem] rounded-md shadow-md bg-secondary sm:h-full relative transition-all | containerScroll`}
       >
         <form
           className="flex gap-[1rem]"
@@ -153,11 +153,11 @@ function CardCharacteristicBlock({ img, alt }: CardCharacteristicBlockTypes) {
             value={characteristic}
             onChange={(e) => setCharacteristic(e.target.value)}
             placeholder="Характеристика"
-            className="flex-grow outline-gray-300 rounded-md shadow-sm shadow-gray-200 text-[1.4rem] px-[1rem] py-[.5rem] text-gray-500"
+            className="flex-grow text-text-light outline-none rounded-md shadow-sm shadow-gray-200 text-[1.4rem] px-[1rem] py-[.5rem]"
           />
           <button
             disabled={isPending}
-            className="text-[1.4rem] shadow-sm shadow-gray-200 px-[1rem] rounded-md outline-gray-300"
+            className="text-[1.4rem] shadow-sm shadow-gray-200 px-[1rem] rounded-md text-text-dark hover:text-text-light transition-colors"
           >
             Создать
           </button>
@@ -243,7 +243,7 @@ function CharacteristicItem({
         }}
         className={`${
           clicked.first && clicked.second ? "hidden" : ""
-        } flex-grow cursor-cell min-w-[15rem] px-[1rem] py-[.5rem] rounded-md text-[1.4rem] shadow-sm shadow-gray-200`}
+        } flex-grow text-text-light cursor-cell min-w-[15rem] px-[1rem] py-[.5rem] rounded-md text-[1.4rem] shadow-sm shadow-gray-200`}
       >
         {characteristic}
       </li>
@@ -259,7 +259,7 @@ function CharacteristicItem({
           type="text"
           value={characteristic}
           onChange={(e) => setCharacteristic(e.target.value)}
-          className="w-full border-[1px] border-dashed border-orange-200 px-[1rem] py-[.5rem] rounded-md text-[1.4rem] shadow-sm shadow-gray-200 outline-orange-200"
+          className="w-full text-text-light opacity-70 border-[1px] border-dashed border-orange-200 px-[1rem] py-[.5rem] rounded-md text-[1.4rem] shadow-sm shadow-gray-200 outline-orange-200"
         />
       </form>
     </>

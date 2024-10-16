@@ -108,10 +108,10 @@ export default function DisplayTranslatedNonTranslatedRecentOneLiners({
 
   return (
     <div
-      className={`h-fit sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      className={`h-fit sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
     >
       <div
-        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
+        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -120,13 +120,13 @@ export default function DisplayTranslatedNonTranslatedRecentOneLiners({
           <input
             type="text"
             value={translatedCommandName}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setTranslatedCommandName(e.target.value)}
           />
         </form>
       </div>
       <div
-        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
+        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -136,7 +136,7 @@ export default function DisplayTranslatedNonTranslatedRecentOneLiners({
             type="text"
             value={commandName}
             placeholder={commandTypeToRus}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setCommandName(e.target.value)}
           />
         </form>

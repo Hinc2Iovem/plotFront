@@ -16,7 +16,7 @@ export default function EmotionHeaderCreateEmotion({
   showModal,
 }: EmotionHeaderCreateEmotionTypes) {
   const modalRef = useRef<HTMLDivElement | null>(null);
-
+  const theme = localStorage.getItem("theme");
   useOutOfModal({ modalRef, setShowModal, showModal });
 
   const [emotionName, setEmotionName] = useState("");
@@ -41,7 +41,7 @@ export default function EmotionHeaderCreateEmotion({
           setEmotionName("");
           setShowCharacterModal(false);
         }}
-        className={`text-[1.5rem] px-[1rem] py-[.5rem] outline-gray-400 bg-white rounded-md shadow-md hover:bg-primary-pastel-blue hover:text-white transition-all active:scale-[0.98]`}
+        className={`text-[1.5rem] focus-within:text-text-light focus-within:bg-primary-darker text-text-dark hover:text-text-light px-[1rem] py-[.5rem] outline-gray-400 bg-secondary rounded-md shadow-md hover:bg-primary-darker transition-all active:scale-[0.98]`}
       >
         Создать Эмоцию
       </button>
@@ -49,17 +49,21 @@ export default function EmotionHeaderCreateEmotion({
         ref={modalRef}
         className={`${
           showModal ? "" : "hidden"
-        } translate-y-[2.3rem] absolute top-1/2 z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem]`}
+        } translate-y-[2.3rem] absolute top-1/2 z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem]`}
       >
         <form className="flex flex-col gap-[1rem]" onSubmit={handleSubmit}>
           <input
             type="text"
             value={emotionName}
             placeholder="Смайл"
-            className="w-full px-[1rem] py-[.5rem] rounded-md text-[1.4rem] outline-none text-gray-700 border-[1px] border-dashed border-gray-500"
+            className="w-full px-[1rem] py-[.5rem] text-text-light rounded-md text-[1.4rem] outline-none border-[1px] border-dashed border-gray-500"
             onChange={(e) => setEmotionName(e.target.value)}
           />
-          <button className="w-fit self-end text-[1.3rem] px-[1rem] py-[.5rem] shadow-md rounded-md hover:bg-primary-light-blue hover:text-white transition-all">
+          <button
+            className={`w-fit text-text-dark ${
+              theme === "light" ? "" : "bg-primary-darker opacity-90"
+            } hover:text-text-light self-end text-[1.4rem] px-[1rem] py-[.5rem] shadow-md rounded-md hover:bg-primary-darker transition-all`}
+          >
             Создать
           </button>
         </form>

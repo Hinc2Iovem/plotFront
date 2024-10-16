@@ -22,6 +22,7 @@ export default function BackgroundNameAndImage({
     path: "/plotFieldCommands/backgrounds",
     preview: imagePreview,
   });
+  const theme = localStorage.getItem("theme");
   const [showFullSizeImg, setShowFullSizeImg] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -45,7 +46,9 @@ export default function BackgroundNameAndImage({
           <input
             value={backgroundName || ""}
             type="text"
-            className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]"
+            className={`w-full ${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md h-fit`}
             placeholder="Название заднего плана"
             onChange={(e) => setBackgroundName(e.target.value)}
           />
@@ -57,7 +60,7 @@ export default function BackgroundNameAndImage({
               imagePreview={imagePreview}
               imgClasses="cursor-pointer w-full h-full object-cover"
               setPreview={setPreview}
-              divClasses="w-[4rem] h-[4rem] bg-white rounded-md relative"
+              divClasses="w-[4rem] h-[4rem] bg-secondary rounded-md relative"
             />
           </div>
         </div>
@@ -65,8 +68,8 @@ export default function BackgroundNameAndImage({
 
       <aside
         className={`${
-          showFullSizeImg ? "" : "hidden"
-        } absolute w-[20rem] h-[10rem] z-[2] rounded-md border-[1px] border-white shadow-sm bg-white right-0 top-[5rem]`}
+          showFullSizeImg && imagePreview ? "" : "hidden"
+        } absolute w-[20rem] h-[10rem] z-[2] rounded-md border-[1px] border-secondary shadow-sm bg-secondary right-0 top-[5rem]`}
       >
         <img
           src={imagePreview as string}

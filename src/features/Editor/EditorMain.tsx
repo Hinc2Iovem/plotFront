@@ -160,7 +160,7 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
               hideFlowchartFromScriptwriter
                 ? "hidden"
                 : ""
-            } fixed top-[2rem] text-[1.3rem] transition-all bg-white hover:bg-primary-light-blue hover:text-white text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md z-[10]`}
+            } fixed top-[2rem] text-text-light text-[1.3rem] transition-all bg-secondary hover:bg-primary-darker hover:text-text-dark text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md z-[10]`}
             style={{
               left: `${scaleDivPosition}px`,
             }}

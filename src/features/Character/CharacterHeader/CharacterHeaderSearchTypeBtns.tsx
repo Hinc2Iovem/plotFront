@@ -60,8 +60,8 @@ export default function CharacterHeaderSearchTypeBtns({
         onClick={() => setSearchCharacterType("all")}
         className={`${
           searchCharacterType === "all"
-            ? "text-white bg-primary-pastel-blue"
-            : "text-gray-700 bg-white hover:text-white hover:bg-primary-pastel-blue"
+            ? "text-text-light bg-primary-darker"
+            : "text-text-dark bg-secondary hover:text-text-light hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light"
         } text-[1.4rem] rounded-md shadow-md px-[1rem] py-[.5rem] transition-all active:scale-[0.99]`}
       >
         Все
@@ -74,8 +74,8 @@ export default function CharacterHeaderSearchTypeBtns({
         onFocus={() => prefetchCharacters({ characterType: "maincharacter" })}
         className={`${
           searchCharacterType === "maincharacter"
-            ? "text-white bg-primary-pastel-blue"
-            : "text-gray-700 bg-white hover:text-white hover:bg-primary-pastel-blue"
+            ? "text-text-light bg-primary-darker"
+            : "text-text-dark bg-secondary hover:text-text-light hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light"
         } text-[1.4rem] rounded-md shadow-md px-[1rem] py-[.5rem] transition-all active:scale-[0.99]`}
       >
         Главный персонаж
@@ -88,8 +88,8 @@ export default function CharacterHeaderSearchTypeBtns({
         onClick={() => setSearchCharacterType("minorcharacter")}
         className={`${
           searchCharacterType === "minorcharacter"
-            ? "text-white bg-primary-pastel-blue"
-            : "text-gray-700 bg-white hover:text-white hover:bg-primary-pastel-blue"
+            ? "text-text-light bg-primary-darker"
+            : "text-text-dark bg-secondary hover:text-text-light hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light"
         } text-[1.4rem] rounded-md shadow-md px-[1rem] py-[.5rem] transition-all active:scale-[0.99]`}
       >
         Второстепенные персонажи
@@ -102,8 +102,8 @@ export default function CharacterHeaderSearchTypeBtns({
         onClick={() => setSearchCharacterType("emptycharacter")}
         className={`${
           searchCharacterType === "emptycharacter"
-            ? "text-white bg-primary-pastel-blue"
-            : "text-gray-700 bg-white hover:text-white hover:bg-primary-pastel-blue"
+            ? "text-text-light bg-primary-darker"
+            : "text-text-dark bg-secondary hover:text-text-light hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light"
         } text-[1.4rem] rounded-md shadow-md px-[1rem] py-[.5rem] transition-all active:scale-[0.99]`}
       >
         Персонажи третьего плана

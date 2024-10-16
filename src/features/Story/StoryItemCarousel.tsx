@@ -26,7 +26,7 @@ export default function StoryItemCarousel({ _id, imgUrl }: StoryTypes) {
   }, [imagePreview]);
 
   return (
-    <article className="flex flex-col gap-[1rem] w-[30rem] rounded-md shadow-sm bg-white h-[30rem] flex-shrink-0 relative">
+    <article className="flex flex-col gap-[1rem] w-[30rem] rounded-md shadow-sm bg-secondary h-[30rem] flex-shrink-0 relative">
       {imgUrl ? (
         <div className="w-full h-1/2 rounded-t-md relative shadow-sm">
           <img

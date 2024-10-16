@@ -38,6 +38,7 @@ export default function AssignScriptwriterModal({
 }: AssignScriptwriterModalTypes) {
   const { userId } = useGetDecodedJWTValues();
   const modalRef = useRef<HTMLDivElement>(null);
+  const theme = localStorage.getItem("theme");
 
   useEffect(() => {
     if (showScriptwriters && assignedWorkers) {
@@ -83,13 +84,13 @@ export default function AssignScriptwriterModal({
 
   return (
     <>
-      <div className="absolute bottom-[4.5rem] right-[.5rem] bg-white rounded-md shadow-md">
+      <div className="absolute bottom-[4.5rem] right-[.5rem] bg-secondary rounded-md shadow-md">
         <ButtonHoverPromptModal
-          className="bg-white w-[3rem] shadow-md"
+          className="bg-secondary w-[3rem] shadow-md"
           positionByAbscissa="right"
           contentName="Назначить Сценариста"
           variant={"rectangle"}
-          asideClasses="text-[1.5rem]"
+          asideClasses="text-[1.5rem] text-text-light"
           onClick={(e) => {
             e.stopPropagation();
             if (openedStoryId === storyId) {
@@ -111,9 +112,9 @@ export default function AssignScriptwriterModal({
         ref={modalRef}
         className={`${
           showScriptwriters ? "" : "hidden"
-        } z-[10] fixed bottom-[1rem] flex flex-col gap-[1rem] right-[1rem] bg-white rounded-md shadow-md p-[1rem] h-[30rem] w-[20rem]`}
+        } z-[10] fixed bottom-[1rem] flex flex-col gap-[1rem] right-[1rem] bg-secondary rounded-md shadow-md p-[1rem] h-[30rem] w-[20rem]`}
       >
-        <h2 className="text-[1.6rem] text-black text-center">
+        <h2 className="text-[1.6rem] text-center text-text-light">
           {storyTitle || ""}
         </h2>
         <ul className="h-[20rem] overflow-auto px-[1rem] py-[.5rem] flex flex-col gap-[1rem] | containerScroll">
@@ -132,9 +133,9 @@ export default function AssignScriptwriterModal({
                 }}
                 className={`${
                   characterIds.includes(s._id)
-                    ? "bg-primary-light-blue text-white"
-                    : "text-black bg-white"
-                } flex px-[.5rem] gap-[.5rem] py-[.5rem] justify-between w-full items-center rounded-md shadow-md hover:text-white hover:bg-primary-light-blue transition-all`}
+                    ? "bg-primary  text-text-light"
+                    : "text-black bg-secondary"
+                } flex px-[.5rem] gap-[.5rem] py-[.5rem] justify-between w-full items-center rounded-md shadow-md hover:text-text-light text-text-dark hover:bg-primary transition-all`}
               >
                 {s.imgUrl ? (
                   <img
@@ -151,7 +152,7 @@ export default function AssignScriptwriterModal({
               </button>
             ))
           ) : (
-            <button className="flex px-[.5rem] gap-[.5rem] py-[.5rem] justify-between w-full items-center rounded-md shadow-md hover:text-white text-black hover:bg-primary-light-blue bg-white transition-all">
+            <button className="flex px-[.5rem] gap-[.5rem] py-[.5rem] justify-between w-full items-center rounded-md shadow-md hover:text-text-light text-text-dark hover:bg-primary bg-secondary transition-all">
               Покамись Пусто
             </button>
           )}
@@ -161,7 +162,11 @@ export default function AssignScriptwriterModal({
             setShowScriptwriters(false);
             handleSubmit();
           }}
-          className="w-full px-[1rem] py-[.5rem] rounded-md shadow-md hover:bg-green-300  bg-white text-[1.5rem] text-gray-700 hover:text-white transition-all"
+          className={`w-full px-[1rem] py-[.5rem] rounded-md shadow-md ${
+            theme === "light"
+              ? "hover:bg-green-300 bg-secondary"
+              : "bg-primary-darker"
+          }  text-[1.5rem] text-text-dark hover:text-text-light transition-all`}
         >
           Назначить
         </button>

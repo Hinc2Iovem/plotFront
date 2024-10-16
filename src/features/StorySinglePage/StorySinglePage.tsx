@@ -44,7 +44,7 @@ export default function StorySinglePage() {
           src={homeIcon}
           alt="Profile"
           draggable={false}
-          className="fixed right-[0rem] top-[0rem] p-[.5rem] bg-white shadow-md rounded-bl-full w-[4.5rem] cursor-pointer z-[11]"
+          className="fixed right-[0rem] top-[0rem] p-[.5rem] bg-secondary shadow-md rounded-bl-full w-[4.5rem] cursor-pointer z-[11]"
         />
       </Link>
       <Parallax

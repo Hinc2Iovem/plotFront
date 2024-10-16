@@ -76,15 +76,15 @@ export default function CommandSayCreateCharacterFieldModal({
   return (
     <aside
       ref={modalRef}
-      className={`bg-white ${
+      className={`bg-secondary ${
         showModal ? "" : "hidden"
-      } translate-y-[3.3rem] z-10 shadow-md text-gray-600 w-full rounded-md absolute p-[1rem]`}
+      } translate-y-[7rem] z-10 shadow-md text-text-light w-full rounded-md absolute p-[1rem]`}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-[.5rem]">
         <p className="text-[1.4rem]">Такого персонажа не существует</p>
         <button
           ref={cursorRef}
-          className="w-fit self-end text-[1.5rem] border-[1px] border-dotted border-black rounded-md px-[1rem] focus:shadow-inner active:bg-black shadow-md shadow-gray-200"
+          className="w-fit self-end text-[1.5rem] border-[1px] border-dotted border-black rounded-md px-[1rem] focus:shadow-inner active:bg-black shadow-sm shadow-gray-200"
         >
           Создать
         </button>

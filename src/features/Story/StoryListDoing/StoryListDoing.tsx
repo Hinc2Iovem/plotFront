@@ -9,7 +9,7 @@ export default function StoryListDoing() {
   return (
     <div>
       <div className="flex sm:flex-row flex-col gap-[0rem] justify-between">
-        <h2 className="text-[2.5rem] font-medium bg-white w-fit p-[1rem] rounded-md shadow-md mb-[1rem] text-gray-600">
+        <h2 className="text-[2.5rem] font-medium bg-secondary w-fit p-[1rem] rounded-md shadow-md mb-[1rem] text-gray-600">
           Истории в Процессе
         </h2>
         <button

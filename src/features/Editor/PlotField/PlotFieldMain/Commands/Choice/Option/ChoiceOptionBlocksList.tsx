@@ -46,7 +46,7 @@ export default function ChoiceOptionBlocksList({
         showOptionPlot
           ? ""
           : "grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] items-center"
-      } bg-neutral-magnolia rounded-md shadow-md p-[.5rem]`}
+      } bg-primary rounded-md shadow-md p-[.5rem]`}
     >
       <PlotfieldInsideChoiceOption
         choiceId={choiceId}

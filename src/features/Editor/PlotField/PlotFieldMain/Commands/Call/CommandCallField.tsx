@@ -54,9 +54,9 @@ export default function CommandCallField({
   }, [commandCall]);
 
   return (
-    <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
+    <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
+        <h3 className="text-[1.3rem] text-start text-text-light outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
           {nameValue}
         </h3>
       </div>
@@ -101,7 +101,7 @@ function ChooseReferencedCommandIndex({
 }: ChooseReferencedCommandIndexTypes) {
   const updateCommandIndex = useUpdateCallCommandIndex({ callId });
   const modalRef = useRef<HTMLDivElement>(null);
-
+  const theme = localStorage.getItem("theme");
   const [showAllCommandIndexes, setShowAllCommandIndexes] = useState(false);
   useOutOfModal({
     modalRef,
@@ -112,21 +112,23 @@ function ChooseReferencedCommandIndex({
   return (
     <div className="relative">
       <button
-        className="text-[1.3rem] outline-gray-300 bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
+        className={`text-[1.3rem] ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } bg-secondary rounded-md shadow-md text-text-light px-[1rem] py-[.5rem]`}
         onClick={(e) => {
           e.stopPropagation();
           setShowAllCommandIndexes((prev) => !prev);
         }}
       >
         {typeof currentReferencedCommandIndex === "number"
-          ? currentReferencedCommandIndex
+          ? `Ссылаться на команду - ${currentReferencedCommandIndex}`
           : "Ссылаться на команду"}
       </button>
       <aside
         ref={modalRef}
         className={`${
           showAllCommandIndexes ? "" : "hidden"
-        } z-[10] left-0 flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem] | containerScroll`}
+        } z-[10] left-0 flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] | containerScroll`}
       >
         {(typeof currentReferencedCommandIndex === "number" &&
           amountOfCommands > 1) ||
@@ -144,7 +146,9 @@ function ChooseReferencedCommandIndex({
                 }}
                 className={`${
                   currentReferencedCommandIndex === i ? "hidden" : ""
-                } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+                } px-[1rem]  py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+                  theme === "light" ? "outline-gray-300" : "outline-gray-600"
+                } text-text-dark hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker hover:bg-primary-darker shadow-md transition-all rounded-md`}
               >
                 {i}
               </button>
@@ -156,7 +160,9 @@ function ChooseReferencedCommandIndex({
             onClick={() => {
               setShowAllCommandIndexes(false);
             }}
-            className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+            className={`px-[1rem]  py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } text-text-dark hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker hover:bg-primary-darker shadow-md transition-all rounded-md`}
           >
             Пусто
           </button>
@@ -203,6 +209,7 @@ function ChooseTopologyBlock({
     setShowModal: setShowAllTopologyBlocks,
     showModal: showAllTopologyBlocks,
   });
+  const theme = localStorage.getItem("theme");
 
   const updateCallText = useUpdateCallText({
     callId,
@@ -221,7 +228,9 @@ function ChooseTopologyBlock({
   return (
     <div className="relative flex-grow">
       <button
-        className="text-[1.3rem] h-full outline-gray-300 w-full bg-white rounded-md shadow-md text-gray-700 px-[1rem] py-[.5rem]"
+        className={`text-[1.3rem] h-full ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } w-full bg-secondary rounded-md shadow-md text-text-light px-[1rem] py-[.5rem]`}
         onClick={(e) => {
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);
@@ -233,7 +242,7 @@ function ChooseTopologyBlock({
         ref={modalRef}
         className={`${
           showAllTopologyBlocks ? "" : "hidden"
-        } z-[10] flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-white right-[0rem] translate-y-[.5rem] | containerScroll`}
+        } z-[10] flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] | containerScroll`}
       >
         {((allTopologyBlocks?.length || 0) > 1 && !targetBlockId) ||
         (allTopologyBlocks?.length || 0) > 2 ? (
@@ -249,7 +258,9 @@ function ChooseTopologyBlock({
               }}
               className={`${topologyBlockId === tb._id ? "hidden" : ""} ${
                 tb._id === targetBlockId ? "hidden" : ""
-              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } text-text-dark hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light hover:bg-primary-darker shadow-md transition-all rounded-md`}
             >
               {tb.name}
             </button>
@@ -260,7 +271,9 @@ function ChooseTopologyBlock({
             onClick={() => {
               setShowAllTopologyBlocks(false);
             }}
-            className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] outline-gray-300 text-gray-700 hover:bg-primary-light-blue hover:text-white shadow-md transition-all rounded-md`}
+            className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } text-text-dark hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light hover:bg-primary-darker shadow-md transition-all rounded-md`}
           >
             Пусто
           </button>

@@ -203,10 +203,10 @@ export default function DisplayTranslatedNonTranslatedStory({
     <div
       className={`${
         currentIndex === lastIndex ? "col-span-full" : ""
-      } sm:h-[17.5rem] h-[35rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      } sm:h-[17.5rem] h-[35rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
     >
       <div
-        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}
+        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-secondary | containerScroll`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -215,26 +215,26 @@ export default function DisplayTranslatedNonTranslatedStory({
           <input
             type="text"
             value={translatedStoryName}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setTranslatedStoryName(e.target.value)}
           />
           <input
             type="text"
             value={translatedStoryGenre}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setTranslatedStoryGenre(e.target.value)}
           />
           <textarea
             name="TranslatedDescription"
             id="translatedDescription"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary | containerScroll"
             value={translatedStoryDescription}
             onChange={(e) => setTranslatedStoryDescription(e.target.value)}
           />
         </form>
       </div>
       <div
-        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}
+        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-secondary | containerScroll`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -244,21 +244,21 @@ export default function DisplayTranslatedNonTranslatedStory({
             type="text"
             value={storyName}
             placeholder="Тайтл Истории"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setStoryName(e.target.value)}
           />
           <input
             type="text"
             value={storyGenre}
             placeholder="Жанры Истории"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setStoryGenre(e.target.value)}
           />
           <textarea
             name="Description"
             id="description"
             placeholder="Описание Истории"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white | containerScroll"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary | containerScroll"
             value={storyDescription}
             onChange={(e) => setStoryDescription(e.target.value)}
           />

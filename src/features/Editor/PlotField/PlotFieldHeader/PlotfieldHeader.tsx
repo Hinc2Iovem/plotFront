@@ -32,7 +32,7 @@ export default function PlotfieldHeader({
 }: PlotFieldHeaderTypes) {
   const { updateCommandInfo, getCurrentAmountOfCommands } =
     usePlotfieldCommands();
-
+  const theme = localStorage.getItem("theme");
   const createCommand = useCreateBlankCommand({ topologyBlockId });
 
   const commandCreatedByKeyCombinationBlankCommand =
@@ -71,8 +71,8 @@ export default function PlotfieldHeader({
           onClick={() => setShowAllCommands(true)}
           contentName="Все команды"
           positionByAbscissa="left"
-          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem] z-[1000]"
-          className="bg-primary-pastel-blue shadow-sm shadow-gray-400 active:scale-[.99]"
+          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem] z-[1000] text-text-light"
+          className="bg-primary-darker shadow-sm shadow-gray-400 active:scale-[.99]"
           variant="rectangle"
         >
           <img src={command} alt="Commands" className="w-[3rem]" />
@@ -80,8 +80,8 @@ export default function PlotfieldHeader({
         <ButtonHoverPromptModal
           contentName="Создать строку"
           positionByAbscissa="left"
-          className="bg-primary-light-blue shadow-sm shadow-gray-400 active:scale-[.99] relative "
-          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem] z-[1000]"
+          className="bg-primary  shadow-sm shadow-gray-400 active:scale-[.99] relative"
+          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem] z-[1000] text-text-light"
           onClick={handleCreateCommand}
           variant="rectangle"
         >
@@ -95,7 +95,7 @@ export default function PlotfieldHeader({
       </div>
       <div className="flex gap-[1rem]">
         <button
-          className="text-[1.6rem] px-[1rem] outline-gray-300 rounded-md shadow-md hover:bg-green-300 hover:text-white transition-all"
+          className="text-[1.6rem] px-[1rem] outline-gray-300 rounded-md shadow-md hover:bg-primary hover:text-text-dark text-text-light transition-all"
           onClick={(e) => {
             e.stopPropagation();
             setShowHeader(true);
@@ -113,7 +113,11 @@ export default function PlotfieldHeader({
               setHideFlowchartFromScriptwriter(false);
               setExpansionDivDirection("" as "right" | "left");
             }}
-            className="w-[2.5rem] h-[1rem] shadow-inner shadow-gray-400 hover:shadow-md transition-shadow rounded-md absolute top-[-1rem] right-[-.5rem]"
+            className={`w-[2.5rem] h-[1rem] shadow-inner ${
+              theme === "light"
+                ? "shadow-secondary-darker hover:shadow-md"
+                : "shadow-gray-700 hover:scale-[1.03]"
+            } transition-shadow rounded-md absolute top-[-1rem] right-[-.5rem]`}
           ></button>
         </div>
       </div>

@@ -6,7 +6,9 @@ type GetCommandKeyTypes = {
   storyId: string;
 };
 
-export default function useGetCommandKey({ storyId }: GetCommandKeyTypes) {
+export default function useGetAllKeysByStoryId({
+  storyId,
+}: GetCommandKeyTypes) {
   return useQuery({
     queryKey: ["stories", storyId, "key"],
     queryFn: async () =>

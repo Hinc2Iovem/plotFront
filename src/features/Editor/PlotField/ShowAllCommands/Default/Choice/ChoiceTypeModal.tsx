@@ -33,7 +33,7 @@ export default function ChoiceTypeModal({
           e.stopPropagation();
           setShowChoiceTypes((prev) => !prev);
         }}
-        className="shadow-md rounded-md bg-white text-[1.5rem] outline-black px-[1rem] py-[.5rem]"
+        className="shadow-md rounded-md bg-secondary text-[1.5rem] outline-black px-[1rem] py-[.5rem]"
       >
         {choiceType ? choiceType : "Тип Выбора"}
       </button>
@@ -41,7 +41,7 @@ export default function ChoiceTypeModal({
         ref={modalChoiceTypeRef}
         className={`${
           showChoiceTypes ? "" : "hidden"
-        } w-full min-w-fit right-0 absolute flex flex-col gap-[.5rem] bg-white shadow-md p-[1rem] translate-y-[.5rem]`}
+        } w-full min-w-fit right-0 absolute flex flex-col gap-[.5rem] bg-secondary shadow-md p-[1rem] translate-y-[.5rem]`}
       >
         {ALL_POSSIBLE_CHOICE_VARIATIONS.map((cv) => (
           <button
@@ -52,9 +52,9 @@ export default function ChoiceTypeModal({
             }}
             className={`${
               cv === choiceType
-                ? " bg-primary-pastel-blue text-white"
-                : "text-black bg-white"
-            } shadow-md hover:text-white hover:bg-primary-pastel-blue focus-within:text-white focus-within:bg-primary-pastel-blue transition-all capitalize rounded-md text-[1.5rem] outline-none px-[1rem] py-[.5rem]`}
+                ? " bg-primary-darker text-text-dark"
+                : "text-black bg-secondary"
+            } shadow-md hover:text-text-dark hover:bg-primary-darker focus-within:text-text-dark focus-within:bg-primary-darker transition-all capitalize rounded-md text-[1.5rem] outline-none px-[1rem] py-[.5rem]`}
           >
             {cv}
           </button>

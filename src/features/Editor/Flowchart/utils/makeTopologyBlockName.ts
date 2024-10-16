@@ -7,12 +7,7 @@ export const makeTopologyBlockName = ({
 }): string => {
   let newName;
   if (typeof amountOfOptions === "number") {
-    if (name?.includes("-")) {
-      const newArray = name.split("-");
-      newName = newArray[0] + "-" + (Number(newArray[1]) + 1);
-    } else {
-      newName = name + "-" + amountOfOptions;
-    }
+    newName = name + "-" + amountOfOptions;
   } else {
     return "";
   }

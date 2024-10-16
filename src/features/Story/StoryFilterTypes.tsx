@@ -37,7 +37,7 @@ export default function StoryFilterTypesHeader({
     });
   };
   return (
-    <ul className="flex flex-col gap-[1rem] bg-white rounded-md p-[1rem] shadow-sm">
+    <ul className="flex flex-col gap-[1rem] bg-secondary rounded-md p-[1rem] shadow-sm">
       <li>
         <button
           onMouseEnter={() => prefetchAllAssignedStories("")}
@@ -50,9 +50,9 @@ export default function StoryFilterTypesHeader({
           }}
           className={`text-[1.4rem] ${
             storiesType === "allAssigned"
-              ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
+              ? "rounded-md bg-primary-darker text-text-light w-full text-start px-[1rem] py-[.5rem]"
               : ""
-          } w-full hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+          } w-full hover:bg-primary-darker outline-gray-300 hover:text-text-light text-text-dark hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           Все
         </button>
@@ -69,9 +69,9 @@ export default function StoryFilterTypesHeader({
           }}
           className={`text-[1.4rem] ${
             storiesType === "done"
-              ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
+              ? "rounded-md bg-primary-darker text-text-light w-full text-start px-[1rem] py-[.5rem]"
               : ""
-          } w-full hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+          } w-full hover:bg-primary-darker outline-gray-300 hover:text-text-light text-text-dark hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           Законченные
         </button>
@@ -88,9 +88,9 @@ export default function StoryFilterTypesHeader({
           }}
           className={`text-[1.4rem] ${
             storiesType === "doing"
-              ? "rounded-md bg-primary-light-blue text-white w-full text-start px-[1rem] py-[.5rem]"
+              ? "rounded-md bg-primary-darker text-text-light w-full text-start px-[1rem] py-[.5rem]"
               : ""
-          } w-full hover:bg-primary-light-blue outline-gray-300 hover:text-white hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+          } w-full hover:bg-primary-darker outline-gray-300 hover:text-text-light text-text-dark hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
         >
           В Процессе
         </button>

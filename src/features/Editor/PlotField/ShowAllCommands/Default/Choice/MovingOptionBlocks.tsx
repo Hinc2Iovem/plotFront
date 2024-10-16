@@ -19,7 +19,7 @@ export default function MovingOptionBlocks({
       style={{
         transform: moveBlocks ? `translateX(-${1 + i}rem)` : ``,
       }}
-      className={`w-[3rem] h-full max-w-[3.5rem] bg-white flex-grow rounded-md ${
+      className={`w-[3rem] h-full max-w-[3.5rem] bg-secondary flex-grow rounded-md ${
         moveBlocks ? "shadow-md" : ""
       } transition-all absolute`}
     >

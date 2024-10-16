@@ -47,7 +47,7 @@ export default function ProfileRightSideTranslatorHeader({
   translateToLanguage,
 }: ProfileRightSideTranslatorHeaderTypes) {
   return (
-    <header className="flex flex-col gap-[1rem] p-[.5rem] bg-neutral-alabaster rounded-md shadow-sm">
+    <header className="flex flex-col gap-[1rem] p-[.5rem] bg-secondary-darker rounded-md shadow-sm">
       <div className="flex gap-[1rem] flex-col z-[3] w-full">
         <div className="flex gap-[1rem] z-[3] w-full">
           <ProfileRightSideTranslatorCategory
@@ -145,9 +145,9 @@ function ProfileRightSideTranslatorCategory({
         }}
         className={`text-[1.5rem] w-full rounded-md ${
           category === nameToEng
-            ? "text-white bg-primary-pastel-blue"
-            : "text-gray-700 bg-white"
-        } hover:bg-primary-pastel-blue hover:text-white transition-all px-[1rem] py-[.5rem] outline-gray-400`}
+            ? "text-text-dark bg-primary-darker"
+            : "text-gray-700 bg-secondary"
+        } hover:bg-primary-darker hover:text-text-dark transition-all px-[1rem] py-[.5rem] outline-gray-400`}
       >
         {name}
       </button>
@@ -155,7 +155,7 @@ function ProfileRightSideTranslatorCategory({
         ref={modalRef}
         className={`${
           showModal ? "" : "hidden"
-        } z-[2] flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[1rem] p-[1rem]`}
+        } z-[2] flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[1rem] p-[1rem]`}
       >
         {nameToEng === "everythingCharacter" ? (
           <>
@@ -222,9 +222,9 @@ function ProfileRightSideTranslatorHeaderDisplaySubCategories({
       }}
       className={`${
         c === subCategory
-          ? "bg-primary-pastel-blue text-white px-[1rem] py-[.5rem] rounded-md shadow-sm w-full"
-          : "text-gray-700 bg-white"
-      } text-[1.5rem] hover:bg-primary-pastel-blue hover:text-white transition-all px-[1rem] py-[.5rem] rounded-md outline-gray-400`}
+          ? "bg-primary-darker text-text-dark px-[1rem] py-[.5rem] rounded-md shadow-sm w-full"
+          : "text-gray-700 bg-secondary"
+      } text-[1.5rem] hover:bg-primary-darker hover:text-text-dark transition-all px-[1rem] py-[.5rem] rounded-md outline-gray-400`}
       key={c}
     >
       {c}

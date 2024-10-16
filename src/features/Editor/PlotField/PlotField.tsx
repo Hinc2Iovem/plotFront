@@ -58,7 +58,7 @@ export default function PlotField({
           : " w-1/2"
       } ${
         command === "expandPlotField" || !command ? "" : "hidden"
-      } flex-grow flex-shrink-0 bg-white rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
+      } flex-grow flex-shrink-0 bg-secondary rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
     >
       <ShowAllCommandsPlotfield
         command={command}

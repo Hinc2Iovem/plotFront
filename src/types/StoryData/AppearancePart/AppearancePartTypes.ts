@@ -3,7 +3,7 @@ import { TranslationTextFieldNameAppearancePartsTypes } from "../../Additional/T
 export type AppearancePartTypes = {
   characterId: string;
   _id: string;
-  type: TranslationTextFieldNameAppearancePartsTypes;
+  type: TranslationTextFieldNameAppearancePartsTypes | "temp";
   img?: string;
 };
 

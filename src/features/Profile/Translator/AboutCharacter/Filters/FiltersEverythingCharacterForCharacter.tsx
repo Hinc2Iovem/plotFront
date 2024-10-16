@@ -99,7 +99,7 @@ export default function FiltersEverythingCharacterForCharacter({
 
   return (
     <>
-      <div className="flex w-full gap-[1rem] bg-neutral-alabaster px-[.5rem] py-[.5rem] rounded-md shadow-sm">
+      <div className="flex w-full gap-[1rem] bg-secondary-darker px-[.5rem] py-[.5rem] rounded-md shadow-sm">
         <StoryPrompt
           setStoryId={setStoryId}
           characterType={characterTypeEng}

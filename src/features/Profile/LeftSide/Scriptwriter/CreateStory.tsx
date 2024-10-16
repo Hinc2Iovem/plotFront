@@ -14,6 +14,8 @@ export default function CreateStory() {
   const [imgPreviewLink, setImgPreviewLink] = useState("");
   const [imgUploading, setImgUploading] = useState(false);
 
+  const theme = localStorage.getItem("theme");
+
   const createStory = useCreateStory({
     currentLanguage: "russian",
     description: storyDescription,
@@ -56,7 +58,11 @@ export default function CreateStory() {
           onClick={() => {
             setIsLightBox(true);
           }}
-          className="text-[1.5rem] outline-none active:scale-[0.99] w-full bg-neutral-alabaster hover:bg-green-300 hover:text-neutral-alabaster transition-all py-[1rem] p-[.5rem] rounded-md"
+          className={`text-[1.5rem] outline-none active:scale-[0.99] w-full  ${
+            theme === "light"
+              ? "hover:text-text-dark hover:bg-green-300 bg-secondary-darker"
+              : " bg-primary text-text-dark hover:text-text-light hover:bg-primary-darker"
+          } transition-all py-[1rem] p-[.5rem] rounded-md`}
         >
           Создать Историю
         </button>
@@ -65,7 +71,7 @@ export default function CreateStory() {
       <aside
         className={`${
           isLightBox ? "" : "hidden"
-        } flex flex-col gap-[1rem] p-[1rem] z-[3] fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-white rounded-md shadow-md sm:w-[30rem] h-fit w-[25rem]`}
+        } flex flex-col gap-[1rem] p-[1rem] z-[3] fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-secondary rounded-md shadow-md sm:w-[30rem] h-fit w-[25rem]`}
       >
         <PreviewImage
           imagePreview={preview}
@@ -85,28 +91,30 @@ export default function CreateStory() {
             type="text"
             value={storyTitle}
             onChange={(e) => setStoryTitle(e.target.value)}
-            className="w-full text-[1.6rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
+            className="w-full text-text-light text-[1.6rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
             placeholder="Тайтл Истории"
           />
           <input
             type="text"
             value={storyGenre}
             onChange={(e) => setStoryGenre(e.target.value)}
-            className="w-full text-[1.5rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
+            className="w-full text-text-light text-[1.5rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
             placeholder="Жанры Истории"
           />
           <textarea
             value={storyDescription}
             onChange={(e) => setStoryDescription(e.target.value)}
-            className="w-full text-[1.4rem] max-h-[10rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
+            className="w-full text-text-light text-[1.4rem] max-h-[10rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
             placeholder="Описание Истории"
           />
-          <button className="w-full px-[1rem] py-[.5rem] text-[1.5rem] rounded-md hover:shadow-md border-gray-700 border-[1px] active:scale-[0.99] transition-all">
+          <button
+            className={`w-full text-text-dark hover:text-text-light px-[1rem] py-[.5rem] text-[1.5rem] rounded-md hover:shadow-md border-gray-700 border-[1px] active:scale-[0.99] transition-all`}
+          >
             Создать
           </button>
         </form>
         <SyncLoad
-          className="bg-white shadow-md rounded-sm top-[1rem] right-[1rem]"
+          className="bg-secondary shadow-md rounded-sm top-[1rem] right-[1rem]"
           conditionToLoading={!imgUploading}
           conditionToStart={imgUploading}
         />

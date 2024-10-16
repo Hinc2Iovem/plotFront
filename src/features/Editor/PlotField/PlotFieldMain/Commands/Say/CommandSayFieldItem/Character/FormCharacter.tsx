@@ -34,6 +34,7 @@ export default function FormCharacter({
   const charactersRef = useRef<HTMLDivElement>(null);
   const { storyId } = useParams();
   const [newCharacterId, setNewCharacterId] = useState("");
+  const theme = localStorage.getItem("theme");
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     characterId: newCharacterId,
@@ -135,7 +136,9 @@ export default function FormCharacter({
               setShowAllEmotions(false);
             }}
             placeholder="Персонаж"
-            className="text-[1.3rem] w-full outline-gray-300 px-[1rem] py-[.5rem] rounded-md shadow-md capitalize"
+            className={`text-[1.3rem] w-full ${
+              theme === "light" ? "outline-gray-300" : "outline-gray-600"
+            } px-[1rem] py-[.5rem] text-text-light rounded-md shadow-md capitalize`}
             onChange={(e) => {
               setNameValue(e.target.value);
               setShowCharacters(true);
@@ -144,10 +147,10 @@ export default function FormCharacter({
           <aside
             ref={charactersRef}
             className={`absolute ${
-              showCharacters ? "" : "hidden"
-            } z-[2] w-full bg-white translate-y-[.5rem] shadow-md rounded-md max-h-[15rem] overflow-y-auto | containerScroll `}
+              showCharacters && !showCreateCharacterModal ? "" : "hidden"
+            } z-[2] w-full bg-secondary translate-y-[.5rem] shadow-md rounded-md max-h-[15rem] overflow-y-auto | containerScroll `}
           >
-            <ul className="flex flex-col gap-[1rem]">
+            <ul className="flex flex-col gap-[1rem] p-[.2rem]">
               {allNamesFiltered.length ? (
                 allNamesFiltered?.map((nf, i) => {
                   return (
@@ -158,7 +161,11 @@ export default function FormCharacter({
                           setShowCharacters(false);
                           handleNameFormSubmit(e, nf);
                         }}
-                        className="w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-white text-black hover:bg-green-300 hover:text-white transition-all outline-gray-300"
+                        className={`w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-secondary ${
+                          theme === "light"
+                            ? "outline-gray-300"
+                            : "outline-gray-600"
+                        } hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark transition-all`}
                       >
                         {nf}
                       </button>
@@ -167,7 +174,13 @@ export default function FormCharacter({
                 })
               ) : !nameValue?.trim().length ? (
                 <li>
-                  <button className="text-start outline-gray-300 w-full text-[1.4rem] hover:text-white hover:bg-green-300 text-black bg-white rounded-md px-[1rem] py-[.5rem]">
+                  <button
+                    className={`w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-secondary ${
+                      theme === "light"
+                        ? "outline-gray-300"
+                        : "outline-gray-600"
+                    } hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark transition-all`}
+                  >
                     Пусто
                   </button>
                 </li>

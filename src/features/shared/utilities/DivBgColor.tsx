@@ -1,5 +1,5 @@
 export default function DivBgColor({
-  bgColor = "bg-neutral-magnolia",
+  bgColor = "bg-primary",
 }: {
   bgColor?: string;
 }) {

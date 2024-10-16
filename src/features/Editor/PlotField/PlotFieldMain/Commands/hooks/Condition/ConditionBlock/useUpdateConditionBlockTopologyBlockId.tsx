@@ -3,20 +3,18 @@ import { axiosCustomized } from "../../../../../../../../api/axios";
 
 type UpdateConditionBlockTopologyBlockIdTypes = {
   conditionBlockId: string;
-  targetBlockId: string;
   sourceBlockId: string;
   episodeId: string;
 };
 
 export default function useUpdateConditionBlockTopologyBlockId({
   conditionBlockId,
-  targetBlockId,
   sourceBlockId,
   episodeId,
 }: UpdateConditionBlockTopologyBlockIdTypes) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({ targetBlockId }: { targetBlockId: string }) =>
       await axiosCustomized.patch(
         `/commandConditions/conditionBlocks/${conditionBlockId}/sourceBlocks/${sourceBlockId}/targetBlocks/${targetBlockId}`
       ),

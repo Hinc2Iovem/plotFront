@@ -14,8 +14,10 @@ export default function PaginatedSkeleton() {
             <button
               key={i as number}
               className={`text-[1.5rem] p-[1rem] px-[1.5rem] rounded-md ${
-                1 === i + 1 ? "bg-primary-pastel-blue text-white" : "bg-white"
-              } shadow-sm hover:bg-primary-pastel-blue hover:text-white transition-all`}
+                1 === i + 1
+                  ? "bg-primary-darker text-text-dark"
+                  : "bg-secondary"
+              } shadow-sm hover:bg-primary-darker hover:text-text-dark transition-all`}
             >
               {(i + 1) as number}
             </button>

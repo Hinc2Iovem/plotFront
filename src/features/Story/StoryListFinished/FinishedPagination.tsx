@@ -94,9 +94,9 @@ export default function FinishedPagination() {
               onClick={() => handlePageChange(i)}
               className={`text-[1.5rem] p-[1rem] px-[1.5rem] rounded-md ${
                 currentPage === i
-                  ? "bg-primary-pastel-blue text-white"
-                  : "bg-white"
-              } shadow-sm hover:bg-primary-pastel-blue hover:text-white transition-all`}
+                  ? "bg-primary-darker text-text-dark"
+                  : "bg-secondary"
+              } shadow-sm hover:bg-primary-darker hover:text-text-dark transition-all`}
             >
               {i as number}
             </button>

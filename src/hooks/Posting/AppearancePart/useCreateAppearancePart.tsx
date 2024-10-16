@@ -6,18 +6,20 @@ type CreateAppearancePartTypes = {
   characterId: string;
   appearanceType: TranslationTextFieldNameAppearancePartsTypes;
   appearancePartName: string;
+  storyId: string;
 };
 
 export default function useCreateAppearancePart({
   characterId,
   appearancePartName,
   appearanceType,
+  storyId,
 }: CreateAppearancePartTypes) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () =>
       await axiosCustomized.post(
-        `/appearanceParts/characters/${characterId}/translations`,
+        `/appearanceParts/stories/${storyId}/characters/${characterId}/translations`,
         {
           appearancePartName,
           type: appearanceType,

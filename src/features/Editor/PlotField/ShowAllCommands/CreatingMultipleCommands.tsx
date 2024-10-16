@@ -79,7 +79,7 @@ export default function CreatingMultipleCommands({
         onClick={handleAddCommand}
         className={`${
           amountOfCommands ? "hidden" : ""
-        } shadow-md rounded-full outline-white`}
+        } shadow-md rounded-full outline-secondary`}
       >
         <img src={addCommand} alt="+" className="w-[2.8rem]" />
       </button>
@@ -87,7 +87,7 @@ export default function CreatingMultipleCommands({
         <button
           type="button"
           onClick={handleRemoveAllCommands}
-          className="shadow-md rounded-full outline-white"
+          className="shadow-md rounded-full outline-secondary"
         >
           <img src={cross} alt="X" className="w-[2.8rem]" />
         </button>

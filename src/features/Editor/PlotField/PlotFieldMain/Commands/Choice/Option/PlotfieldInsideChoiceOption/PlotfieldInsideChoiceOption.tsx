@@ -74,7 +74,7 @@ export default function PlotfieldInsideChoiceOption({
           e.stopPropagation();
           setShowOptionPlot(false);
         }}
-        className="w-[2.5rem] h-[1rem] bg-white rounded-md shadow-sm absolute right-[-.3rem] top-[-.3rem] hover:shadow-md transition-shadow"
+        className="w-[2.5rem] h-[1rem] bg-secondary rounded-md shadow-sm absolute right-[-.3rem] top-[-.3rem] hover:shadow-md transition-shadow"
       ></button>
       <form onSubmit={(e) => e.preventDefault()}>
         {getAllChoiceOptionsByChoiceId({ choiceId }).map((op, i) => (
@@ -110,13 +110,13 @@ export default function PlotfieldInsideChoiceOption({
       </header>
 
       <main className="flex flex-col gap-[.5rem] w-full">
-        <div className="flex w-full bg-white rounded-md shadow-sm itesm-center  px-[1rem] py-[.5rem]">
+        <div className="flex w-full bg-secondary rounded-md shadow-sm itesm-center  px-[1rem] py-[.5rem]">
           <div className="flex gap-[1rem]">
             <ButtonHoverPromptModal
               contentName="Все команды"
               positionByAbscissa="left"
-              asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
-              className="bg-primary-pastel-blue shadow-sm shadow-gray-400 active:scale-[.99]"
+              asideClasses="text-text-light text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
+              className="bg-primary-darker shadow-sm shadow-gray-400 active:scale-[.99]"
               variant="rectangle"
             >
               <img src={command} alt="Commands" className="w-[3rem]" />
@@ -124,8 +124,8 @@ export default function PlotfieldInsideChoiceOption({
             <ButtonHoverPromptModal
               contentName="Создать строку"
               positionByAbscissa="left"
-              className="bg-primary-light-blue shadow-sm shadow-gray-400 active:scale-[.99] relative "
-              asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
+              className="bg-primary  shadow-sm shadow-gray-400 active:scale-[.99] relative "
+              asideClasses="text-text-light text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
               onClick={handleCreateCommand}
               variant="rectangle"
             >
@@ -166,10 +166,12 @@ function OptionVariationButton({
     updateCurrentlyOpenChoiceOption,
     getCurrentlyOpenChoiceOptionPlotId,
   } = useChoiceOptions();
+
   return (
     <button
       onClick={(e) => {
         e.stopPropagation();
+        e.currentTarget.blur();
         if (topologyBlockId) {
           updateCurrentlyOpenChoiceOption({
             topologyBlockId,
@@ -186,13 +188,13 @@ function OptionVariationButton({
       className={`${
         topologyBlockId === showedOptionPlotTopologyBlockId ||
         getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
-          ? "bg-primary-pastel-blue text-white focus-within:outline-white"
-          : "bg-white"
+          ? "bg-primary-darker text-text-light focus-within:outline-secondary"
+          : "bg-secondary"
       } ${
         !topologyBlockId
           ? "hover:outline-red-200 focus-within:outline-red-200"
-          : "focus-within:bg-primary-pastel-blue focus-within:text-white"
-      } text-[1.5rem] outline-none rounded-md px-[1rem] py-[.5rem] shadow-sm transition-all hover:bg-primary-pastel-blue hover:text-white `}
+          : `focus-within:bg-primary-darker focus-within:text-text-dark`
+      } text-[1.5rem] outline-none rounded-md px-[1rem] py-[.5rem] shadow-sm transition-all hover:text-text-light text-text-dark hover:bg-primary-darker `}
     >
       {type}
     </button>

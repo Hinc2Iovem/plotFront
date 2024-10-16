@@ -51,6 +51,7 @@ export default function CommandIfField({
   const { data: commandIf } = useGetCommandIf({
     plotFieldCommandId,
   });
+  const theme = localStorage.getItem("theme");
   const [commandIfId, setCommandIfId] = useState("");
   const createCommandInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -337,20 +338,31 @@ export default function CommandIfField({
   };
 
   return (
-    <div className="flex gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] flex-col">
+    <div className="flex gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] flex-col">
       <div className="min-w-[10rem] w-full flex flex-col gap-[1rem]">
         <div className="flex w-full relative items-center gap-[1rem]">
           <div className="flex gap-[.5rem] w-full">
-            <h3 className="text-[1.4rem] w-full text-start outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-slate-50 text-gray-600 cursor-default">
+            <h3 className="text-[1.4rem] w-full text-text-light text-start outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary text-gray-600 cursor-default">
               {nameValue}
             </h3>
             <button
-              onClick={() => setHideIfCommands((prev) => !prev)}
+              onClick={(e) => {
+                setHideIfCommands((prev) => !prev);
+                e.currentTarget.blur();
+              }}
               className={`${
                 hideIfCommands
-                  ? "bg-green-200 focus-within:shadow-green-300 hover:shadow-green-300 text-gray-600"
-                  : "bg-orange-200 text-white focus-within:shadow-orange-200 hover:shadow-orange-200"
-              } px-[1rem] w-fit shadow-md focus-within:shadow-sm hover:shadow-sm outline-none transition-all active:scale-[0.95] py-[.5rem] rounded-md text-[1.5rem] text-gray-700`}
+                  ? `${
+                      theme === "light"
+                        ? "bg-secondary outline-none"
+                        : "hover:bg-red-light hover:text-text-dark bg-primary text-text-light focus-within:bg-red-light focus-within:text-text-dark outline-gray-600"
+                    } focus-within:opacity-95 hover:opacity-95 text-text-light`
+                  : ` ${
+                      theme === "light"
+                        ? "bg-red-mid outline-none"
+                        : "bg-red-light hover:bg-primary hover:text-text-light focus-within:bg-primary focus-within:text-text-light"
+                    } text-text-dark focus-within:opacity-95 hover:opacity-95`
+              } px-[1rem] w-fit shadow-md focus-within:shadow-sm hover:shadow-sm transition-all active:scale-[0.95] py-[.5rem] rounded-md text-[1.5rem]`}
             >
               {hideIfCommands ? "Открыть" : "Скрыть"}
             </button>
@@ -358,8 +370,8 @@ export default function CommandIfField({
           <ButtonHoverPromptModal
             contentName="Создать строку"
             positionByAbscissa="right"
-            className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-slate-50"
-            asideClasses="text-[1.3rem] -translate-y-1/3"
+            className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-secondary"
+            asideClasses="text-[1.3rem] -translate-y-1/4 text-text-light"
             onClick={() => handleCreateCommand(false)}
             variant="rectangle"
           >
@@ -376,7 +388,7 @@ export default function CommandIfField({
       <div
         className={`${
           hideIfCommands ? "hidden" : ""
-        } flex flex-col bg-neutral-magnolia rounded-md w-full`}
+        } flex flex-col bg-primary rounded-md w-full`}
       >
         <DragDropContext
           onDragStart={handleDragStart}
@@ -387,7 +399,7 @@ export default function CommandIfField({
               <ul
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className="flex flex-col gap-[.5rem] py-[.5rem] w-full bg-slate-50 rounded-md"
+                className="flex flex-col gap-[.5rem] py-[.5rem] w-full bg-primary rounded-md"
               >
                 {getCommandsByCommandIfId({ commandIfId, isElse: false })?.map(
                   (p, i) => {
@@ -405,20 +417,31 @@ export default function CommandIfField({
             )}
           </Droppable>
         </DragDropContext>
-        <div className="h-[10vh] bg-slate-50 w-full rounded-b-md"></div>
+        <div className="h-[10vh] bg-primary w-full rounded-b-md"></div>
       </div>
       <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem] p-[.5rem]">
         <div className="flex gap-[.5rem] w-full">
-          <h3 className="text-[1.4rem] w-full text-start outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-slate-50 text-gray-600 cursor-default">
+          <h3 className="text-[1.4rem] text-text-light w-full text-start outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary text-gray-600 cursor-default">
             Else
           </h3>
           <button
-            onClick={() => setHideElseCommands((prev) => !prev)}
+            onClick={(e) => {
+              setHideElseCommands((prev) => !prev);
+              e.currentTarget.blur();
+            }}
             className={`${
               hideElseCommands
-                ? "bg-green-200 focus-within:shadow-green-300 hover:shadow-green-300 text-gray-600"
-                : "bg-orange-200 text-white focus-within:shadow-orange-200 hover:shadow-orange-200"
-            } px-[1rem] w-fit shadow-md focus-within:shadow-sm hover:shadow-sm outline-none transition-all active:scale-[0.95] py-[.5rem] rounded-md text-[1.5rem] text-gray-700`}
+                ? `${
+                    theme === "light"
+                      ? "bg-secondary outline-none"
+                      : "hover:bg-red-light hover:text-text-dark bg-primary text-text-light focus-within:bg-red-light focus-within:text-text-dark outline-gray-600"
+                  } focus-within:opacity-95 hover:opacity-95 text-text-light`
+                : ` ${
+                    theme === "light"
+                      ? "bg-red-mid outline-none"
+                      : "bg-red-light hover:bg-primary hover:text-text-light focus-within:bg-primary focus-within:text-text-light"
+                  } text-text-dark focus-within:opacity-95 hover:opacity-95`
+            } px-[1rem] w-fit shadow-md hover:shadow-sm transition-all active:scale-[0.95] py-[.5rem] rounded-md text-[1.5rem]`}
           >
             {hideElseCommands ? "Открыть" : "Скрыть"}
           </button>
@@ -426,8 +449,8 @@ export default function CommandIfField({
         <ButtonHoverPromptModal
           contentName="Создать строку"
           positionByAbscissa="right"
-          className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-neutral-magnolia z-[2]"
-          asideClasses="text-[1.3rem] -translate-y-1/3"
+          className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-primary z-[2]"
+          asideClasses="text-[1.3rem] -translate-y-1/3 text-text-light"
           onClick={() => handleCreateCommand(true)}
           variant="rectangle"
         >
@@ -442,7 +465,7 @@ export default function CommandIfField({
       <div
         className={`${
           hideElseCommands ? "hidden" : ""
-        } flex flex-col bg-neutral-magnolia rounded-md w-full`}
+        } flex flex-col bg-secondary rounded-md w-full`}
       >
         <DragDropContext
           onDragStart={handleDragStartElse}
@@ -453,7 +476,7 @@ export default function CommandIfField({
               <ul
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className="flex flex-col gap-[.5rem] py-[.5rem] w-full bg-neutral-magnolia rounded-md"
+                className="flex flex-col gap-[.5rem] py-[.5rem] w-full bg-secondary rounded-md"
               >
                 {getCommandsByCommandIfId({ commandIfId, isElse: true })?.map(
                   (p, i) => {
@@ -471,7 +494,7 @@ export default function CommandIfField({
             )}
           </Droppable>
         </DragDropContext>
-        <div className="h-[10vh] bg-neutral-magnolia w-full rounded-b-md"></div>
+        <div className="h-[10vh] bg-secondary w-full rounded-b-md"></div>
       </div>
     </div>
   );

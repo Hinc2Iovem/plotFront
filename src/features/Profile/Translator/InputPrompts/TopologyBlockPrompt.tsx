@@ -55,12 +55,12 @@ export default function TopologyBlockPrompt({
 
   return (
     <form
-      className="bg-white rounded-md shadow-md relative"
+      className="bg-secondary rounded-md shadow-md relative"
       onSubmit={(e) => e.preventDefault()}
     >
       <input
         type="text"
-        className="w-full rounded-md shadow-md bg-white text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
+        className="w-full rounded-md shadow-md bg-secondary text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
         placeholder="Название Блока"
         onClick={(e) => {
           e.stopPropagation();
@@ -78,7 +78,7 @@ export default function TopologyBlockPrompt({
           ref={modalTopologyBlocksRef}
           className={`${
             showTopologyBlocks ? "" : "hidden"
-          } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+          } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
         >
           {isLoading ? (
             <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">
@@ -94,7 +94,7 @@ export default function TopologyBlockPrompt({
                   setTopologyBlockValue(s.name || "");
                   setShowTopologyBlocks(false);
                 }}
-                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
               >
                 {s.name}
               </button>
@@ -105,7 +105,7 @@ export default function TopologyBlockPrompt({
               onClick={() => {
                 setShowTopologyBlocks(false);
               }}
-              className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+              className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
             >
               Нету Подходящих Блоков
             </button>
@@ -116,14 +116,14 @@ export default function TopologyBlockPrompt({
           ref={modalTopologyBlocksRef}
           className={`${
             showTopologyBlocks ? "" : "hidden"
-          } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-white rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+          } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
         >
           <button
             type="button"
             onClick={() => {
               setShowTopologyBlocks(false);
             }}
-            className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-pastel-blue hover:text-white rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
+            className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
           >
             Выберите Эпизод
           </button>

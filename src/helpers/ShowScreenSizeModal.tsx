@@ -20,7 +20,7 @@ export default function ShowScreenSizeModal() {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 rounded-full bg-gray-800 px-3 py-1 text-sm text-white">
+    <div className="fixed bottom-4 right-4 z-50 rounded-full bg-gray-800 px-3 py-1 text-sm text-text-dark">
       {breakpoint}
     </div>
   );

@@ -11,19 +11,28 @@ type SidebarTypes = {
 
 export default function Sidebar({ currentPage, setCurrentPage }: SidebarTypes) {
   const { pathname } = useLocation();
-
+  const theme = localStorage.getItem("theme");
   return (
     <div className="md:w-1/4 w-full md:h-full h-[15rem] relative flex-shrink-0">
-      <img
-        src={imgDesktop}
-        alt="Sidebar"
-        className="hidden md:block w-full h-full object-cover rounded-md max-h-[35rem]"
-      />
-      <img
-        src={imgMobile}
-        alt="Sidebar"
-        className="block md:hidden w-full h-full object-cover"
-      />
+      {theme === "light" ? (
+        <>
+          <img
+            src={imgDesktop}
+            alt="Sidebar"
+            className="hidden md:block w-full h-full object-cover rounded-md max-h-[35rem]"
+          />
+          <img
+            src={imgMobile}
+            alt="Sidebar"
+            className="block md:hidden w-full h-full object-cover"
+          />
+        </>
+      ) : (
+        <>
+          <div className="hidden md:block w-full h-full object-cover rounded-md max-h-[35rem] bg-secondary"></div>
+          <div className="block md:hidden w-full h-full object-cover bg-secondary"></div>
+        </>
+      )}
       <div
         className={`${
           pathname.includes("register")

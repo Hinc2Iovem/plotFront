@@ -42,9 +42,9 @@ export default function PlotfieldItem({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      className={`${
-        commandIfId ? "" : ""
-      } w-full flex gap-[1rem] outline-gray-300`}
+      className={`${commandIfId ? "" : ""} w-full flex gap-[1rem] ${
+        command?.trim().length ? "outline-gray-300" : `outline-gray-600`
+      }`}
     >
       {!command ? (
         <PlotfieldBlank

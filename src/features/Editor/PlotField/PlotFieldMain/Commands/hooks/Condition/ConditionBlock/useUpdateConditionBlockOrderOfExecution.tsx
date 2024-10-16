@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../../api/axios";
 
 type UpdateConditionBlockOrderOfExecutionTypes = {
@@ -12,9 +12,7 @@ type UpdateConditionBlockOnMutationTypes = {
 
 export default function useUpdateConditionBlockOrderOfExecution({
   conditionBlockId,
-  commandConditionId,
 }: UpdateConditionBlockOrderOfExecutionTypes) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       orderOfExecution,
@@ -25,12 +23,5 @@ export default function useUpdateConditionBlockOrderOfExecution({
           orderOfExecution,
         }
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["commandCondition", commandConditionId, "conditionBlock"],
-        exact: true,
-        type: "active",
-      });
-    },
   });
 }

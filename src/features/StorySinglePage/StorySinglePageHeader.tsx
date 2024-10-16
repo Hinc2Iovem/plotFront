@@ -58,7 +58,7 @@ export default function StorySinglePageHeader() {
               <Link to={`/stories/${storyId}/emotions`}>
                 <img
                   src={emotion}
-                  className="w-[4rem] bg-white rounded-md shadow-sm shadow-gray-400"
+                  className="w-[4rem] bg-secondary rounded-md shadow-sm shadow-gray-400"
                   alt="Emotion"
                 />
               </Link>
@@ -73,7 +73,7 @@ export default function StorySinglePageHeader() {
               <Link to={`/stories/${storyId}/wardrobes`}>
                 <img
                   src={wardrobe}
-                  className="w-[4rem] bg-white rounded-md shadow-sm shadow-gray-400"
+                  className="w-[4rem] bg-secondary rounded-md shadow-sm shadow-gray-400"
                   alt="Wardrobe"
                 />
               </Link>
@@ -91,7 +91,7 @@ export default function StorySinglePageHeader() {
               >
                 <img
                   src={characteristics}
-                  className="w-[4rem] p-[.3rem] bg-white rounded-md shadow-sm shadow-gray-400"
+                  className="w-[4rem] p-[.3rem] bg-secondary rounded-md shadow-sm shadow-gray-400"
                   alt="Characteristics"
                 />
               </ButtonHoverPromptModal>
@@ -110,7 +110,7 @@ export default function StorySinglePageHeader() {
               <Link to={`/stories/${storyId}/characters`}>
                 <img
                   src={characters}
-                  className="w-[4rem] bg-white rounded-md shadow-sm shadow-gray-400"
+                  className="w-[4rem] bg-secondary rounded-md shadow-sm shadow-gray-400"
                   alt="Characters"
                 />
               </Link>
@@ -119,7 +119,7 @@ export default function StorySinglePageHeader() {
         </div>
 
         <div className="flex w-full justify-between flex-wrap items-center">
-          <h1 className="text-[3.5rem] bg-white text-gray-700 rounded-md shadow-md w-fit px-[1rem]">
+          <h1 className="text-[3.5rem] bg-secondary text-gray-700 rounded-md shadow-md w-fit px-[1rem]">
             {storyName}
           </h1>
           <div className="relative">
@@ -127,7 +127,7 @@ export default function StorySinglePageHeader() {
               onClick={() => {
                 setInfoModal((prev) => !prev);
               }}
-              className="text-[2rem] bg-white text-gray-700 rounded-md shadow-md w-fit px-[1rem] py-[.5rem]"
+              className="text-[2rem] bg-secondary text-gray-700 rounded-md shadow-md w-fit px-[1rem] py-[.5rem]"
             >
               Информация по истории
             </button>

@@ -86,6 +86,7 @@ export default function ChoiceQuestionField({
   const [emotionName, setEmotionName] = useState("");
   const [emotionId, setEmotionId] = useState("");
   const [emotionImg, setEmotionImg] = useState<string>("");
+  const theme = localStorage.getItem("theme");
 
   useEffect(() => {
     if (currentCharacter) {
@@ -137,10 +138,10 @@ export default function ChoiceQuestionField({
     delay: 500,
   });
   return (
-    <div className="w-full flex-grow flex gap-[1rem] bg-neutral-magnolia rounded-md shadow-md p-[.5rem] flex-wrap items-center z-[20]">
+    <div className="w-full flex-grow flex gap-[1rem] bg-primary rounded-md shadow-md p-[.5rem] flex-wrap items-center z-[20]">
       {isAuthor ? (
-        <div className="flex-grow bg-white rounded-md shadow-md px-[1rem] py-[.5rem]">
-          <h4 className="text-[1.4rem] text-gray-700">Author</h4>
+        <div className="flex-grow bg-secondary rounded-md shadow-md px-[1rem] py-[.5rem]">
+          <h4 className="text-[1.4rem] text-text-light">Author</h4>
         </div>
       ) : (
         <>
@@ -149,7 +150,7 @@ export default function ChoiceQuestionField({
               e.preventDefault();
               setShowAllCharacters(false);
             }}
-            className="w-full relative flex gap-[.5rem] items-center bg-primary-light-blue rounded-md"
+            className="w-full relative flex gap-[.5rem] items-center bg-primary  rounded-md"
           >
             <input
               onClick={(e) => {
@@ -163,7 +164,9 @@ export default function ChoiceQuestionField({
                 setCharacterName(e.target.value);
               }}
               placeholder="Имя Персонажа"
-              className="flex-grow text-[1.4rem] outline-gray-300 bg-white rounded-md px-[1rem] py-[.5rem] shadow-md"
+              className={`flex-grow text-[1.4rem] ${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md`}
             />
 
             <img
@@ -190,11 +193,15 @@ export default function ChoiceQuestionField({
                 setShowAllCharacters(false);
                 setShowAllEmotions((prev) => !prev);
               }}
-              className="outline-gray-300 text-[1.3rem] w-full bg-white rounded-md shadow-md px-[1rem] py-[.5rem]"
+              className={`${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } text-text-light text-[1.3rem] w-full bg-secondary rounded-md shadow-md px-[1rem] py-[.5rem]`}
             >
               {emotionName?.trim().length ? (
                 <div className="flex gap-[1rem] justify-between items-center">
-                  <h4 className="text-[1.5rem]">{emotionName}</h4>
+                  <h4 className="text-[1.5rem] text-text-light">
+                    {emotionName}
+                  </h4>
                   <img
                     src={emotionImg}
                     alt="EmotionIcon"
@@ -227,7 +234,9 @@ export default function ChoiceQuestionField({
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="Вопрос"
-          className="w-full px-[1rem] py-[.5rem] outline-gray-300 bg-white rounded-md shadow-md text-gray-600 text-[1.4rem]"
+          className={`w-full px-[1rem] py-[.5rem] ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } bg-secondary rounded-md shadow-md text-text-light text-[1.4rem]`}
         />
       </form>
 
@@ -240,8 +249,8 @@ export default function ChoiceQuestionField({
           variant={"rectangle"}
           contentName="Создать Ответ"
           positionByAbscissa="right"
-          asideClasses="text-[1.4rem] text-gray-700"
-          className="bg-white rounded-md shadow-md p-[.2rem]"
+          asideClasses="text-[1.4rem] text-text-light"
+          className="bg-secondary rounded-md shadow-md p-[.2rem]"
         >
           <img src={plus} alt="Add" className="w-[3rem] object-contain" />
         </ButtonHoverPromptModal>

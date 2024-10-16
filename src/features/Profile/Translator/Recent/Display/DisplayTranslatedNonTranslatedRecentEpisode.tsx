@@ -141,10 +141,10 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
 
   return (
     <div
-      className={`sm:h-[15rem] h-[25rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      className={`sm:h-[15rem] h-[25rem] sm:flex-row flex-col w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
     >
       <div
-        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}
+        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-secondary | containerScroll`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -154,21 +154,21 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
             type="text"
             value={translatedEpisodeName}
             placeholder="Тайтл Эпизода"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setTranslatedEpisodeName(e.target.value)}
           />
           <textarea
             name="TranslatedDescription"
             id="translatedDescription"
             placeholder="Описание Эпизода"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             value={translatedEpisodeDescription}
             onChange={(e) => setTranslatedEpisodeDescription(e.target.value)}
           />
         </form>
       </div>
       <div
-        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-white | containerScroll`}
+        className={`h-full w-full sm:w-[calc(50%)] overflow-auto rounded-md shadow-md shadow-gray-400 bg-secondary | containerScroll`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -178,14 +178,14 @@ export default function DisplayTranslatedNonTranslatedRecentEpisode({
             type="text"
             value={episodeName}
             placeholder="Тайтл Эпизода"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setEpisodeName(e.target.value)}
           />
           <textarea
             name="Description"
             id="description"
             placeholder="Описание Эпизода"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             value={episodeDescription}
             onChange={(e) => setEpisodeDescription(e.target.value)}
           />

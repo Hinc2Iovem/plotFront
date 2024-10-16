@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateNameTextTypes = {
@@ -11,11 +11,7 @@ type UpdateNameTextOnMutationTypes = {
   newName?: string;
 };
 
-export default function useUpdateNameText({
-  nameId,
-  plotFieldCommandId,
-}: UpdateNameTextTypes) {
-  const queryClient = useQueryClient();
+export default function useUpdateNameText({ nameId }: UpdateNameTextTypes) {
   return useMutation({
     mutationFn: async ({
       characterId,
@@ -28,12 +24,5 @@ export default function useUpdateNameText({
           characterId,
         }
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["plotfieldCommand", plotFieldCommandId, "name"],
-        type: "active",
-        exact: true,
-      });
-    },
   });
 }

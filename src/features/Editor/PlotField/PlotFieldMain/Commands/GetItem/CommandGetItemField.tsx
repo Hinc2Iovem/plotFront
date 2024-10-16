@@ -23,6 +23,7 @@ export default function CommandGetItemField({
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
+  const theme = localStorage.getItem("theme");
 
   const { data: getItem } = useGetSingleGetItemTranslation({
     plotFieldCommandId,
@@ -110,9 +111,9 @@ export default function CommandGetItemField({
   }, [debouncedButtonTextValue]);
 
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col">
+    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-white cursor-default">
+        <h3 className="text-[1.3rem] text-text-light text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
           {nameValue}
         </h3>
       </div>
@@ -123,20 +124,26 @@ export default function CommandGetItemField({
         <input
           value={itemName}
           type="text"
-          className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md"
+          className={`w-full ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
           placeholder="Название"
           onChange={(e) => setItemName(e.target.value)}
         />
         <textarea
           value={itemDescription}
-          className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]"
+          className={`w-full ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]`}
           placeholder="Описание"
           onChange={(e) => setItemDescription(e.target.value)}
         />
         <input
           value={buttonText}
           type="text"
-          className=" w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md"
+          className={`w-full ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
           placeholder="Текст Кнопки"
           onChange={(e) => setButtonText(e.target.value)}
         />

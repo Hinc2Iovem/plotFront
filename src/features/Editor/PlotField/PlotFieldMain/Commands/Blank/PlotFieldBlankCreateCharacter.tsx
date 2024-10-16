@@ -96,7 +96,7 @@ export default function PlotFieldBlankCreateCharacter({
   return (
     <aside
       ref={modalRef}
-      className={`bg-white ${
+      className={`bg-secondary ${
         showModal ? "" : "hidden"
       } z-10 shadow-md text-gray-600 w-full rounded-md absolute translate-y-[.5rem] p-[1rem]`}
     >

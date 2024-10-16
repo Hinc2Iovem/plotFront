@@ -20,7 +20,7 @@ export default function PlotfieldCharactersPrompt({
   const { data: character } = useGetCharacterById({
     characterId,
   });
-
+  const theme = localStorage.getItem("theme");
   const [currentCharacterName] = useState((translations || [])[0]?.text || "");
 
   return (
@@ -36,7 +36,9 @@ export default function PlotfieldCharactersPrompt({
               setCharacterImg(character?.img || "");
             }
           }}
-          className="whitespace-nowrap w-full outline-gray-300 flex-wrap rounded-md flex px-[1rem] py-[.5rem] items-center justify-between hover:bg-primary-light-blue hover:text-white transition-all "
+          className={`whitespace-nowrap w-full ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } focus-within:bg-primary-darker focus-within:text-text-light flex-wrap rounded-md flex px-[1rem] py-[.5rem] items-center justify-between hover:bg-primary-darker hover:text-text-light text-text-dark transition-all `}
         >
           <p className="text-[1.3rem] rounded-md">
             {currentCharacterName.length > 20
@@ -60,7 +62,9 @@ export default function PlotfieldCharactersPrompt({
               setCharacterImg("");
             }
           }}
-          className="whitespace-nowrap w-full outline-gray-300 flex-wrap text-start text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md"
+          className={`whitespace-nowrap w-full ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-start text-[1.3rem] focus-within:bg-primary-darker focus-within:text-text-light rounded-md px-[1rem] py-[1rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all `}
         >
           {currentCharacterName.length > 20
             ? currentCharacterName.substring(0, 20) + "..."

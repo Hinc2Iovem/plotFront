@@ -49,7 +49,7 @@ export default function HeaderCreateCharacteristic({
       ref={modalRef}
       className={`${
         showCreateCharacteristicModal ? "" : "hidden"
-      } flex flex-col p-[1rem] gap-[1rem] mx-auto w-[30rem] rounded-md shadow-md bg-white`}
+      } flex flex-col p-[1rem] gap-[1rem] mx-auto w-[30rem] rounded-md shadow-md bg-secondary`}
     >
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-[1rem]">
         <input
@@ -57,9 +57,9 @@ export default function HeaderCreateCharacteristic({
           value={characteristicName}
           placeholder="Характеристика"
           onChange={(e) => setCharacteristicName(e.target.value)}
-          className="w-full px-[1rem] py-[.5rem] border-[2px] border-gray-300 border-dashed text-[1.4rem] text-gray-700 outline-gray-300 rounded-md"
+          className="w-full px-[1rem] text-text-light py-[.5rem] border-[2px] border-gray-300 border-dashed text-[1.4rem] text-gray-700 outline-gray-300 rounded-md"
         />
-        <button className="text-[1.4rem] outline-gray-300 border-gray-200 border-dashed border-[2px] text-gray-500 hover:text-black hover:border-gray-400 hover:scale-[1.01] transition-all px-[1rem] py-[.5rem] w-fit ml-auto rounded-md">
+        <button className="text-[1.4rem] focus-within:text-text-light outline-gray-300 border-gray-200 border-dashed border-[2px] text-gray-500 hover:text-text-light text-text-dark hover:border-gray-400 hover:scale-[1.01] transition-all px-[1rem] py-[.5rem] w-fit ml-auto rounded-md">
           Создать
         </button>
       </form>

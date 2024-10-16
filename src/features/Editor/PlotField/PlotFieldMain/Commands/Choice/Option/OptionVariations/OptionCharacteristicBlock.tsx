@@ -15,7 +15,7 @@ export default function OptionCharacteristicBlock({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
   const [characteristicId, setCharacteristicId] = useState("");
-
+  const theme = localStorage.getItem("theme");
   useEffect(() => {
     if (optionCharacteristic) {
       setCharacteristicId(optionCharacteristic.characterCharacteristicId);
@@ -78,7 +78,9 @@ export default function OptionCharacteristicBlock({
             e.stopPropagation();
             setShowAllCharacteristics((prev) => !prev);
           }}
-          className="w-full outline-gray-300 text-[1.3rem] px-[1rem] py-[.5rem] rounded-md shadow-md"
+          className={`w-full ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light text-[1.3rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
           type="button"
         >
           {characteristicName || "Характеристики"}
@@ -93,7 +95,9 @@ export default function OptionCharacteristicBlock({
       <input
         type="text"
         placeholder="Очки характеристики"
-        className="flex-grow  text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-gray-300 rounded-md shadow-md"
+        className={`flex-grow text-[1.3rem] px-[1rem] py-[.5rem] text-text-light ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } rounded-md shadow-md`}
         value={amountOfPoints || ""}
         onChange={(e) => setAmountOfPoints(+e.target.value)}
       />

@@ -15,7 +15,7 @@ export default function OptionPremiumBlock({
   const [priceAmethysts, setPriceAmethysts] = useState(
     optionPremium?.priceAmethysts || ""
   );
-
+  const theme = localStorage.getItem("theme");
   useEffect(() => {
     if (optionPremium) {
       setPriceAmethysts(optionPremium.priceAmethysts);
@@ -38,7 +38,9 @@ export default function OptionPremiumBlock({
       <input
         type="text"
         placeholder="Аметисты"
-        className="w-full text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-gray-300 rounded-md shadow-md"
+        className={`w-full text-[1.3rem] px-[1rem] py-[.5rem] text-text-light ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } rounded-md shadow-md`}
         value={priceAmethysts || ""}
         onChange={(e) => setPriceAmethysts(+e.target.value)}
       />

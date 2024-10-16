@@ -59,7 +59,7 @@ function CreateSeasonBlock() {
           e.stopPropagation();
           setShowSeasonModal((prev) => !prev);
         }}
-        className="px-[1rem] outline-gray-300 py-[.5rem] shadow-sm bg-white rounded-md text-[2rem]"
+        className="px-[1rem] outline-gray-300 text-text-light hover:bg-primary-darker transition-colors py-[.5rem] shadow-sm bg-secondary rounded-md text-[2rem]"
       >
         Создать Сезон
       </button>
@@ -75,7 +75,7 @@ function CreateSeasonBlock() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Тайтл Сезона"
-            className="w-full text-[1.4rem] outline-gray-300 text-gray-500 px-[1rem] py-[.5rem]"
+            className="w-full text-[1.4rem] text-text-light text-gray-500 px-[1rem] py-[.5rem]"
           />
         </form>
       </aside>

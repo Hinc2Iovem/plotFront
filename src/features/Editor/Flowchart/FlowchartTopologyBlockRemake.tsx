@@ -22,7 +22,7 @@ export default function FlowchartTopologyBlock({
   currentTopologyBlockId,
 }: FlowchartTopologyBlockTypes) {
   const { coordinates, setCoordinates } = useCoordinates();
-
+  const theme = localStorage.getItem("theme");
   const topologyBlockRef = useRef<HTMLDivElement>(null);
   const [localCoordinates, setLocalCoordinates] = useState<{
     coordinatesX: number;
@@ -103,9 +103,13 @@ export default function FlowchartTopologyBlock({
             ref={topologyBlockRef}
             className={` ${
               currentTopologyBlockId === _id
-                ? "bg-green-300 text-white"
-                : "bg-white "
-            } z-[10] w-[10rem] text-[2rem] rounded-md shadow-md absolute px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
+                ? `${
+                    theme === "light"
+                      ? "bg-green-300 text-text-dark "
+                      : "bg-green-500 text-text-light"
+                  }`
+                : "bg-secondary "
+            } text-text-light z-[10] w-[10rem] text-[2rem] rounded-md shadow-md absolute px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
           >
             {name}
           </div>

@@ -71,7 +71,7 @@ export default function Flowchart({
     <section
       ref={boundsRef}
       className={`${
-        scale >= 0.99 ? "" : "border-white border-[4px] border-dashed"
+        scale >= 0.99 ? "" : "border-secondary border-[4px] border-dashed"
       }
        ${hideFlowchartFromScriptwriter ? "hidden" : ""}
        ${
@@ -80,14 +80,14 @@ export default function Flowchart({
            : "w-1/2"
        } ${
         command === "expandFlowchart" || !command ? "" : "hidden"
-      } overflow-auto rounded-md shadow-md relative bg-primary-light-blue | containerScroll`}
+      } overflow-auto rounded-md shadow-md relative bg-primary-darker | containerScroll`}
     >
       <div
         style={{
           transform: `scale(${scale})`,
           transformOrigin: "center center",
         }}
-        className="z-[2] border-white border-[4px] border-dashed w-full h-full rounded-md min-w-[500rem] min-h-[500rem] relative  bg-primary-pastel-blue"
+        className="z-[2] border-secondary border-[4px] border-dashed w-full h-full rounded-md min-w-[500rem] min-h-[500rem] relative bg-primary-darker"
       >
         {allTopologyBlocks
           ? allTopologyBlocks.map((tb) => (
@@ -109,14 +109,14 @@ export default function Flowchart({
           command !== "expandFlowchart"
             ? "left-[calc(50%+.6rem)]"
             : "left-[2rem]"
-        } z-[10] px-[1rem] py-[.5rem] bg-white rounded-md shadow-sm text-[1.4rem]`}
+        } z-[10] px-[1rem] py-[.5rem] text-text-light bg-secondary rounded-md shadow-sm text-[1.4rem]`}
       >
         Создать Блок
       </button>
 
       <div className="absolute top-0 bottom-0 right-0 left-0 min-w-[500rem] min-h-[500rem] z-[1]">
-        <div className="absolute bg-white left-[calc(50%-.2rem)] h-full w-[.4rem]"></div>
-        <div className="absolute bg-white left-[calc(50%-.2rem)] h-full w-[.4rem] rotate-90"></div>
+        <div className="absolute bg-secondary left-[calc(50%-.2rem)] h-full w-[.4rem]"></div>
+        <div className="absolute bg-secondary left-[calc(50%-.2rem)] h-full w-[.4rem] rotate-90"></div>
       </div>
     </section>
   );

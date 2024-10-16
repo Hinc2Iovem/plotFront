@@ -30,6 +30,7 @@ export default function CreateChoiceOptionTypeModal({
   const { addChoiceOption } = useChoiceOptions();
   const { episodeId } = useParams();
   const modalRef = useRef<HTMLDivElement>(null);
+  const theme = localStorage.getItem("theme");
 
   const createChoiceOption = useCreateChoiceOption({
     plotFieldCommandChoiceId,
@@ -84,13 +85,15 @@ export default function CreateChoiceOptionTypeModal({
       ref={modalRef}
       className={`${
         showCreateChoiceOptionModal ? "" : "hidden"
-      } absolute right-0 z-[10] flex flex-col min-w-fit w-full rounded-md shadow-md p-[.5rem] bg-white`}
+      } absolute right-0 z-[10] flex flex-col min-w-fit w-full rounded-md shadow-md p-[.5rem] bg-secondary`}
     >
       {ChoiceOptionVariations.map((cov) => (
         <button
           key={cov}
           onClick={() => handleCreatingChoiceOption(cov)}
-          className={`hover:bg-primary-light-blue outline-gray-300 hover:text-white transition-all text-[1.4rem] whitespace-nowrap text-gray-700 px-[1rem] py-[.5rem] rounded-md`}
+          className={`hover:bg-primary-darker ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } transition-all text-[1.4rem] whitespace-nowrap text-text-dark hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light px-[1rem] py-[.5rem] rounded-md`}
         >
           {cov}
         </button>

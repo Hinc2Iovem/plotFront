@@ -14,8 +14,9 @@ export default function ChoiceOptionShowPlot({
   choiceOptionId,
 }: ChoiceOptionShowPlotTypes) {
   const { updateCurrentlyOpenChoiceOption } = useChoiceOptions();
+  const theme = localStorage.getItem("theme");
   return (
-    <div className="relative self-end pr-[.2rem] pb-[.2rem]">
+    <div className="relative self-end pr-[.2rem] pt-[.2rem]">
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -30,7 +31,9 @@ export default function ChoiceOptionShowPlot({
             console.error("Choose TopologyBlock,firstly");
           }
         }}
-        className="text-[1.3rem] hover:text-white hover:bg-primary-pastel-blue transition-all focus-within:bg-primary-pastel-blue focus-within:text-white self-end outline-none text-gray-700 shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap"
+        className={`text-[1.3rem] ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        } text-text-light hover:text-text-light hover:bg-primary-darker transition-all focus-within:bg-primary-darker focus-within:text-text-light self-end shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
         type="button"
       >
         Сценарий

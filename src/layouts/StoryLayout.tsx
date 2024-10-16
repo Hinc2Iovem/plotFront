@@ -5,7 +5,7 @@ import ShowScreenSizeModal from "../helpers/ShowScreenSizeModal";
 export default function StoryLayout() {
   return (
     <>
-      <DivBgColor bgColor="bg-neutral-magnolia" />
+      <DivBgColor bgColor="bg-primary" />
       <ShowScreenSizeModal />
       <Outlet />
     </>

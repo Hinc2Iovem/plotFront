@@ -73,7 +73,7 @@ export default function DisplayTranslatedNonTranslatedChoiceOption({
       value={optionText}
       placeholder="Ответ"
       onChange={(e) => setOptionText(e.target.value)}
-      className="w-1/2 flex-grow border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+      className="w-1/2 flex-grow border-dotted border-gray-600 border-[2px] text-[1.4rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
     />
   );
 }

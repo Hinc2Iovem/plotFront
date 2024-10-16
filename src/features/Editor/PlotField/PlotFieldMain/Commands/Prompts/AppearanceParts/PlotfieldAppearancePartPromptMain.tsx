@@ -31,7 +31,7 @@ export default function PlotfieldAppearancePartPromptMain({
     characterId: characterId ?? "",
     language: "russian",
   });
-
+  const theme = localStorage.getItem("theme");
   const memoizedAppearanceParts = useMemo(() => {
     const filterByDebouncedValue = (items: TranslationAppearancePartTypes[]) =>
       appearancePartDebouncedValue?.trim().length
@@ -77,7 +77,7 @@ export default function PlotfieldAppearancePartPromptMain({
       ref={modalRef}
       className={`${
         showAppearancePartModal ? "" : "hidden"
-      } translate-y-[.5rem] absolute z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-white shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+      } translate-y-[.5rem] absolute z-[10] p-[1rem] min-w-[10rem] w-full max-h-[10rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
     >
       {memoizedAppearanceParts.length ? (
         memoizedAppearanceParts?.map((c) => (
@@ -93,7 +93,9 @@ export default function PlotfieldAppearancePartPromptMain({
       ) : (
         <button
           type="button"
-          className={`text-start outline-gray-300 text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-light-blue hover:text-white transition-all rounded-md`}
+          className={`text-start ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } focus-within:text-text-light focus-within:bg-primary-darker text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-dark transition-all rounded-md`}
         >
           Пусто
         </button>

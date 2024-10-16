@@ -81,7 +81,7 @@ export default function ButtonCreateCommands({
           : "hover:bg-green-400 bg-green-300"
       } ${
         plotfieldExpanded ? " fixed  bottom-[2rem]" : "absolute  bottom-[0rem]"
-      } px-[1rem] py-[.5rem] rounded-md shadow-md text-white transition-all text-[1.5rem]`}
+      } px-[1rem] py-[.5rem] rounded-md shadow-md text-text-dark transition-all text-[1.5rem]`}
     >
       {createMultipleCommands.status === "pending" ? (
         <>

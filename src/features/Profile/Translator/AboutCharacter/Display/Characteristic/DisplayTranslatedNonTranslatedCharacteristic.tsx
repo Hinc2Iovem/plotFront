@@ -119,10 +119,10 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
 
   return (
     <div
-      className={`h-fit flex-col w-full flex gap-[.5rem] bg-primary-pastel-blue p-[.5rem] rounded-md`}
+      className={`h-fit flex-col w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
     >
       <div
-        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
+        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -131,7 +131,7 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
           <input
             type="text"
             value={translatedCharacterCharacteristic}
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) =>
               setTranslatedCharacterCharacteristic(e.target.value)
             }
@@ -139,7 +139,7 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
         </form>
       </div>
       <div
-        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-white`}
+        className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
       >
         <form
           className="flex flex-col gap-[.5rem] p-[1rem] w-full"
@@ -149,7 +149,7 @@ export default function DisplayTranslatedNonTranslatedCharacteristic({
             type="text"
             value={characterCharacteristic}
             placeholder="Характеристика"
-            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-white"
+            className="w-full border-dotted border-gray-600 border-[2px] text-[1.6rem] font-medium text-gray-700 outline-none rounded-md px-[1rem] py-[.5rem] bg-secondary"
             onChange={(e) => setCharacterCharacteristic(e.target.value)}
           />
         </form>

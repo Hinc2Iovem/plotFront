@@ -23,16 +23,16 @@ export default function SidebarRegister({
           onClick={() => setCurrentPage(1)}
           className={`rounded-full ${
             currentPage === 1
-              ? "bg-primary-light-blue text-neutral-alabaster"
-              : "bg-transparent text-white"
-          } text-[1rem] z-[10] w-[3rem] hover:bg-primary-light-blue transition-all h-[3rem] border-[1px] border-white shadow-sm shadow-neutral-light-gray px-[1rem] py-[.5rem]`}
+              ? "bg-primary-darker text-text-light"
+              : "bg-transparent text-text-dark"
+          } text-[1rem] z-[10] w-[3rem] hover:bg-primary-darker transition-all h-[3rem] border-[1px] border-secondary shadow-sm shadow-light-gray px-[1rem] py-[.5rem]`}
         >
           1
         </button>
         <h4
           className={`${
             currentPage === 1 || currentPageHover === 1
-              ? "text-white"
+              ? "text-text-light"
               : "text-gray-200"
           } text-[1.3rem]`}
         >
@@ -49,16 +49,16 @@ export default function SidebarRegister({
           onClick={() => setCurrentPage(2)}
           className={`rounded-full ${
             currentPage === 2
-              ? "bg-primary-light-blue text-neutral-alabaster"
-              : "bg-transparent text-white"
-          } text-[1rem] z-[10] w-[3rem] hover:bg-primary-light-blue transition-all h-[3rem] border-[1px] border-white shadow-sm shadow-neutral-light-gray px-[1rem] py-[.5rem]`}
+              ? "bg-primary-darker text-text-light"
+              : "bg-transparent text-text-dark"
+          } text-[1rem] z-[10] w-[3rem] hover:bg-primary-darker transition-all h-[3rem] border-[1px] border-secondary shadow-sm shadow-light-gray px-[1rem] py-[.5rem]`}
         >
           2
         </button>
         <h4
           className={`${
             currentPage === 2 || currentPageHover === 2
-              ? "text-white"
+              ? "text-text-light"
               : "text-gray-200"
           } text-[1.3rem]`}
         >

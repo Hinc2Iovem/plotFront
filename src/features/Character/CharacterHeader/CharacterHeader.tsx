@@ -31,7 +31,7 @@ export default function CharacterHeader({
           <form>
             <input
               type="text"
-              className="text-[1.5rem] px-[1rem] py-[.5rem] rounded-md outline-none shadow-md text-gray-700"
+              className="text-[1.5rem] text-text-light px-[1rem] py-[.5rem] rounded-md outline-none shadow-md text-gray-700"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Майки"
@@ -42,8 +42,8 @@ export default function CharacterHeader({
             positionByAbscissa="right"
             marginAutoSide="ml-auto"
             contentName="Создать Персонажа"
-            asideClasses="text-[1.3rem] top-[4.5rem] bottom-[-3.3rem]"
-            className="active:scale-[0.99] hover:scale-[1.01]"
+            asideClasses="text-[1.3rem] top-[4.5rem] bottom-[-3.3rem] text-text-light"
+            className="active:scale-[0.99] hover:scale-[1.01] bg-secondary"
           >
             <img
               src={createCharacter}

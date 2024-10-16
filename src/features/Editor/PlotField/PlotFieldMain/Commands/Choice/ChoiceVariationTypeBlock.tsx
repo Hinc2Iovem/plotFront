@@ -36,7 +36,7 @@ export default function ChoiceVariationTypeBlock({
   timeLimitDefaultOptionId,
 }: ChoiceVariationTypeBlockTypes) {
   const choiceVariationRef = useRef<HTMLDivElement>(null);
-
+  const theme = localStorage.getItem("theme");
   const [showChoiceVariationTypesModal, setShowChoiceVariationTypesModal] =
     useState(false);
   const [showChoiceMultipleModal, setShowChoiceMultipleModal] = useState(false);
@@ -62,7 +62,9 @@ export default function ChoiceVariationTypeBlock({
             setShowChoiceMultipleModal(false);
             setShowChoiceVariationTypesModal((prev) => !prev);
           }}
-          className="w-full text-start outline-gray-300 whitespace-nowrap text-[1.3rem] bg-white rounded-md text-gray-700 shadow-md px-[1rem] py-[.5rem]"
+          className={`w-full text-text-light text-start ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } whitespace-nowrap text-[1.3rem] bg-secondary rounded-md  shadow-md px-[1rem] py-[.5rem]`}
         >
           {choiceVariationTypes ? choiceVariationTypes : "Тип Выбора"}
         </button>
@@ -71,14 +73,16 @@ export default function ChoiceVariationTypeBlock({
           ref={choiceVariationRef}
           className={`${
             showChoiceVariationTypesModal ? "" : "hidden"
-          } translate-y-[.5rem] absolute flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md z-[10] min-w-fit w-full p-[.5rem]`}
+          } translate-y-[.5rem] absolute flex flex-col gap-[1rem] bg-primary-darker rounded-md shadow-md z-[10] min-w-fit w-full p-[.5rem]`}
         >
           {ChoiceVariations.map((cv) => (
             <button
               key={cv}
               className={`${
                 cv === choiceVariationTypes ? "hidden" : ""
-              } w-full text-start outline-gray-300 text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
+              } w-full text-text-dark hover:text-text-light text-start hover:bg-primary-darker focus-within:text-text-light focus-within:bg-primary-darker ${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } text-[1.3rem] hover:scale-[1.01] rounded-md shadow-md bg-secondary px-[1rem] py-[.5rem]`}
               onClick={() => {
                 setChoiceVariationTypes(cv);
                 setShowChoiceVariationTypesModal(false);
@@ -99,7 +103,7 @@ export default function ChoiceVariationTypeBlock({
           !choiceVariationTypes?.trim().length
             ? "hidden"
             : ""
-        } flex-grow shadow-md bg-white rounded-md relative`}
+        } flex-grow shadow-md bg-secondary rounded-md relative`}
         onSubmit={(e) => e.preventDefault()}
       >
         <ChoiceTimeLimitBlock
@@ -199,7 +203,7 @@ function ChoiceTimeLimitBlock({
     >
       <input
         type="text"
-        className={`w-[5rem] text-[1.4rem] border-[2px] border-gray-400 text-gray-700 border-dashed px-[1rem] py-[.5rem] rounded-md outline-gray-300`}
+        className={`w-[5rem] text-[1.4rem] border-[2px] border-gray-400  border-dashed px-[1rem] py-[.5rem] rounded-md outline-gray-300`}
         value={timeLimit || ""}
         onChange={(e) => setTimeLimit(+e.target.value)}
       />
@@ -211,7 +215,7 @@ function ChoiceTimeLimitBlock({
           setShowChoiceVariationTypesModal(false);
           setShowChoiceDefaultTimeLimitBlockModal((prev) => !prev);
         }}
-        className={`flex-grow text-[1.4rem] border-[2px] border-gray-400 text-gray-700 border-dashed px-[1rem] py-[.5rem] rounded-md outline-gray-300`}
+        className={`flex-grow text-[1.4rem] border-[2px] border-gray-400  border-dashed px-[1rem] py-[.5rem] rounded-md outline-gray-300`}
       >
         {typeof currentChoiceOptionOrder === "number"
           ? currentChoiceOptionOrder
@@ -221,7 +225,7 @@ function ChoiceTimeLimitBlock({
         ref={modalRef}
         className={`${
           showChoiceDefaultTimeLimitBlockModal ? "" : "hidden"
-        } translate-y-[3.8rem] absolute z-10 flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
+        } translate-y-[3.8rem] absolute z-10 flex flex-col gap-[1rem] bg-primary  rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
       >
         {(currentChoiceOptionOrder && amountOfOptions > 1) ||
         (!currentChoiceOptionOrder && amountOfOptions > 0) ? (
@@ -230,7 +234,7 @@ function ChoiceTimeLimitBlock({
               key={i}
               className={`${
                 i === currentChoiceOptionOrder ? "hidden" : ""
-              } text-start outline-gray-300 whitespace-nowrap text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
+              } text-start outline-gray-300 whitespace-nowrap text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
               onClick={() => {
                 setShowChoiceVariationTypesModal(false);
                 setShowChoiceDefaultTimeLimitBlockModal(false);
@@ -246,7 +250,7 @@ function ChoiceTimeLimitBlock({
           ))
         ) : (
           <button
-            className={`text-start outline-gray-300 text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
+            className={`text-start outline-gray-300 text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
             onClick={() => {
               setShowChoiceVariationTypesModal(false);
               setShowChoiceDefaultTimeLimitBlockModal(false);
@@ -290,6 +294,7 @@ function ChoiceMultipleBlock({
     topologyBlockId: exitBlockId,
   });
   const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState("");
+  const theme = localStorage.getItem("theme");
 
   useEffect(() => {
     if (currentTopologyBlock) {
@@ -316,7 +321,9 @@ function ChoiceMultipleBlock({
         }}
         className={`${
           choiceVariationTypes === "multiple" ? "" : "hidden"
-        } text-start w-full text-[1.3rem] px-[1rem] py-[.5rem] rounded-md outline-gray-300`}
+        } text-start w-full text-[1.3rem] px-[1rem] text-text-light py-[.5rem] rounded-md ${
+          theme === "light" ? "outline-gray-300" : "outline-gray-600"
+        }`}
       >
         {currentTopologyBlockName?.trim().length
           ? currentTopologyBlockName
@@ -326,7 +333,7 @@ function ChoiceMultipleBlock({
         ref={choiceVariationMultipleRef}
         className={`${
           showChoiceMultipleModal ? "" : "hidden"
-        } translate-y-[.5rem] absolute z-10 flex flex-col gap-[1rem] bg-primary-light-blue rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
+        } translate-y-[.5rem] absolute z-[100] flex flex-col gap-[1rem] bg-primary-darker rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
       >
         {(exitBlockId && (allTopologyBlocks?.length || 0) > 1) ||
         (!exitBlockId && allTopologyBlocks?.length) ? (
@@ -335,7 +342,9 @@ function ChoiceMultipleBlock({
               key={atb._id}
               className={`${
                 atb._id === exitBlockId ? "hidden" : ""
-              } text-start outline-gray-300 whitespace-nowrap text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
+              } text-start ${
+                theme === "light" ? "outline-gray-300" : "outline-gray-600"
+              } whitespace-nowrap text-[1.3rem] rounded-md hover:scale-[1.01] shadow-md bg-secondary hover:bg-primary-darker hover:text-text-light text-text-dark focus-within:text-text-light focus-within:bg-primary-darker px-[1rem] py-[.5rem]`}
               onClick={() => {
                 setExitBlockId(atb._id);
                 setShowChoiceVariationTypesModal(false);
@@ -351,7 +360,7 @@ function ChoiceMultipleBlock({
           ))
         ) : (
           <button
-            className={`text-start outline-gray-300 text-[1.3rem] rounded-md shadow-md bg-white text-gray-700 px-[1rem] py-[.5rem]`}
+            className={`text-start outline-gray-300 text-[1.3rem] rounded-md hover:scale-[1.01] shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
             onClick={() => {
               setShowChoiceVariationTypesModal(false);
               setShowChoiceMultipleModal(false);

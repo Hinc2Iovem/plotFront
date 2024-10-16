@@ -31,6 +31,7 @@ export default function CommandSayCharacterFieldItem({
   const [initialValue, setInitialValue] = useState("");
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
+  const theme = localStorage.getItem("theme");
   const [showCreateEmotionModal, setShowCreateEmotionModal] = useState(false);
   const [emotionValue, setEmotionValue] = useState<EmotionsTypes | null>(null);
 
@@ -83,8 +84,8 @@ export default function CommandSayCharacterFieldItem({
   const [showAllEmotions, setShowAllEmotions] = useState(false);
 
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-light-blue rounded-md p-[.5rem] sm:flex-row flex-col relative">
-      <div className="flex flex-col gap-[1rem] sm:w-1/3 min-w-[20rem] w-full">
+    <div className="flex flex-wrap gap-[1rem] w-full h-fit bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
+      <div className="flex flex-col gap-[1rem] sm:w-1/3 min-w-[20rem] w-full flex-grow">
         <FormCharacter
           nameValue={nameValue}
           setNameValue={setNameValue}
@@ -111,10 +112,12 @@ export default function CommandSayCharacterFieldItem({
           showAllEmotions={showAllEmotions}
         />
       </div>
-      <form className="sm:w-[57%] flex-grow w-full sm:h-full">
+      <form className="sm:w-[57%] flex-grow w-full h-full">
         <textarea
           value={textValue}
-          className="h-full w-full outline-gray-300 text-gray-600 text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[25rem] containerScroll"
+          className={`h-full min-h-[7rem] w-full ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[25rem] containerScroll`}
           placeholder="Such a lovely day"
           onChange={(e) => setTextValue(e.target.value)}
         />

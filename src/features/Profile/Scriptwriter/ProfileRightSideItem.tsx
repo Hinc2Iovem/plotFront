@@ -53,6 +53,7 @@ export default function ProfileRightSideItem({
     preview: imagePreview,
   });
   const [isMounted, setIsMounted] = useState(false);
+  const theme = localStorage.getItem("theme");
 
   useEffect(() => {
     if (isMounted && imagePreview) {
@@ -76,9 +77,17 @@ export default function ProfileRightSideItem({
     <article
       onMouseEnter={prefetchSeason}
       onFocus={prefetchSeason}
-      className="w-full h-[26rem] bg-white rounded-md shadow-sm relative flex flex-col justify-between"
+      className={`w-full h-[26rem] ${
+        theme === "light" ? "bg-secondary" : "bg-secondary-darker"
+      } rounded-md shadow-sm relative flex flex-col justify-between`}
     >
-      <div className="relative border-[3px] w-full max-h-[23rem] h-full border-white bg-white">
+      <div
+        className={`relative border-[3px] w-full max-h-[23rem] rounded-md rounded-b-none h-full ${
+          theme === "light"
+            ? "bg-secondary border-secondary"
+            : "bg-primary border-primary"
+        } `}
+      >
         {imgUrl ? (
           <img
             src={imgUrl}
@@ -87,7 +96,7 @@ export default function ProfileRightSideItem({
           />
         ) : (
           <PreviewImage
-            imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-white"
+            imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-secondary"
             imagePreview={imagePreview}
             setPreview={setPreview}
           />
@@ -98,9 +107,9 @@ export default function ProfileRightSideItem({
             storiesType === "allAssigned"
               ? ""
               : "hidden"
-          } absolute top-[.5rem] right-[.5rem] bg-white rounded-md shadow-md p-[.5rem]`}
+          } absolute top-[.5rem] right-[.5rem] bg-secondary rounded-md shadow-md p-[.5rem]`}
         >
-          <p className={`text-[1.5rem] self-end`}>
+          <p className={`text-[1.5rem] self-end text-text-light`}>
             Статус:{" "}
             <span
               className={`text-[1.4rem] ${
@@ -127,7 +136,11 @@ export default function ProfileRightSideItem({
       ) : null}
       <Link
         to={`/stories/${storyId}`}
-        className="text-[1.5rem] hover:text-gray-600 transition-all bg-white w-full p-[1rem] rounded-b-md"
+        className={`text-[1.5rem] hover:text-text-light text-text-dark transition-all ${
+          theme === "light"
+            ? "bg-secondary border-secondary"
+            : "bg-primary border-primary"
+        } w-full p-[1rem] rounded-b-md`}
       >
         {title.length > 25 ? title.substring(0, 25) + "..." : title}
       </Link>
