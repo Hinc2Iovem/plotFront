@@ -27,7 +27,7 @@ export default function useCreateCallViaKeyCombination({
       if (
         pressedKeys.has("shift") &&
         pressedKeys.has("c") &&
-        pressedKeys.has("a")
+        pressedKeys.has("l")
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
