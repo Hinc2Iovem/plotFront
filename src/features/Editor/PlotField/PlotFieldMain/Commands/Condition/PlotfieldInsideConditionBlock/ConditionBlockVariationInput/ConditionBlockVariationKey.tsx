@@ -2,36 +2,42 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
+import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
 import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
+import useCreateNewKeyAsValue from "../../../hooks/Key/useCreateNewKeyAsValue";
 import useGetAllKeysByStoryId from "../../../hooks/Key/useGetAllKeysByStoryId";
 import useConditionBlocks from "../../Context/ConditionContext";
-import useCreateNewKeyAsValue from "../../../hooks/Key/useCreateNewKeyAsValue";
-import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
+import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
+import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
+import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type ConditionBlockVariationKeyTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
-  conditionName: string;
 };
 
 export default function ConditionBlockVariationKey({
   plotfieldCommandId,
   conditionBlockId,
-  conditionName,
 }: ConditionBlockVariationKeyTypes) {
   const { storyId } = useParams();
   const [showKeyPromptModal, setShowKeyPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] =
     useState(false);
-  const theme = localStorage.getItem("theme");
+
   const {
-    getCurrentlyOpenConditionBlock,
+    getConditionBlockById,
     updateConditionBlockName,
     updateConditionBlockValueId,
   } = useConditionBlocks();
+
   const [currentConditionName, setCurrentConditionName] = useState(
-    getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.conditionName || ""
+    getConditionBlockById({ plotfieldCommandId, conditionBlockId })
+      ?.conditionName || ""
   );
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -51,8 +57,8 @@ export default function ConditionBlockVariationKey({
   const debouncedValue = useDebounce({
     delay: 700,
     value:
-      getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.conditionName ||
-      "",
+      getConditionBlockById({ plotfieldCommandId, conditionBlockId })
+        ?.conditionName || "",
   });
 
   const handleUpdatingConditionContextValue = ({
@@ -109,7 +115,7 @@ export default function ConditionBlockVariationKey({
   useEffect(() => {
     if (
       debouncedValue?.trim().length &&
-      conditionName?.trim() !== debouncedValue.trim()
+      currentConditionName?.trim() !== debouncedValue.trim()
     ) {
       handleCheckValueCorrectnessBeforeUpdating({ onClick: false });
     }
@@ -123,16 +129,17 @@ export default function ConditionBlockVariationKey({
 
   return (
     <div className="relative">
-      <input
+      <PlotfieldInput
         type="text"
         placeholder="Ключ"
         onClick={(e) => {
-          e.stopPropagation();
           setShowKeyPromptModal((prev) => !prev);
+          e.stopPropagation();
         }}
         value={
-          getCurrentlyOpenConditionBlock({
+          getConditionBlockById({
             plotfieldCommandId,
+            conditionBlockId,
           })?.conditionName || ""
         }
         onChange={(e) => {
@@ -143,8 +150,9 @@ export default function ConditionBlockVariationKey({
           setCurrentConditionName(e.target.value);
           updateConditionBlockName({
             conditionBlockId:
-              getCurrentlyOpenConditionBlock({
+              getConditionBlockById({
                 plotfieldCommandId,
+                conditionBlockId,
               })?.conditionBlockId || "",
             conditionName: e.target.value,
             plotfieldCommandId,
@@ -152,40 +160,44 @@ export default function ConditionBlockVariationKey({
         }}
         className={`${
           highlightRedOnValueNonExisting ? "border-red-300 border-[2px]" : ""
-        } w-full text-[1.5rem] ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-text-light bg-secondary rounded-md shadow-sm px-[1rem] py-[.5rem] focus-within:shadow-inner transition-shadow`}
+        }`}
       />
-      <aside
+      <AsideScrollable
         ref={modalRef}
-        className={`${
-          showKeyPromptModal ? "" : "hidden"
-        } absolute rounded-md shadow-sm p-[1rem] bg-secondary flex flex-col gap-[.5rem] w-full max-h-[20rem] overflow-y-auto | containerScroll`}
+        className={`${showKeyPromptModal ? "" : "hidden"} translate-y-[.5rem]`}
       >
-        {memoizedKeys.map((mk, i) => (
-          <button
-            key={mk + "-" + i}
+        {memoizedKeys?.length ? (
+          memoizedKeys.map((mk, i) => (
+            <AsideScrollableButton
+              key={mk + "-" + i}
+              onClick={() => {
+                setShowKeyPromptModal(false);
+                setCurrentConditionName(mk);
+                handleCheckValueCorrectnessBeforeUpdating({ onClick: true });
+                updateConditionBlockName({
+                  conditionBlockId:
+                    getConditionBlockById({
+                      plotfieldCommandId,
+                      conditionBlockId,
+                    })?.conditionBlockId || "",
+                  conditionName: mk,
+                  plotfieldCommandId,
+                });
+              }}
+            >
+              {mk}
+            </AsideScrollableButton>
+          ))
+        ) : (
+          <AsideScrollableButton
             onClick={() => {
               setShowKeyPromptModal(false);
-              setCurrentConditionName(mk);
-              handleCheckValueCorrectnessBeforeUpdating({ onClick: true });
-              updateConditionBlockName({
-                conditionBlockId:
-                  getCurrentlyOpenConditionBlock({
-                    plotfieldCommandId,
-                  })?.conditionBlockId || "",
-                conditionName: mk,
-                plotfieldCommandId,
-              });
             }}
-            className={`capitalize text-[1.5rem] ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } text-text-dark hover:text-text-light bg-secondary px-[1rem] py-[.5rem] rounded-md hover:bg-primary  focus-within:bg-primary focus-within:text-text-dark transition-all focus-within:border-[2px] focus-within:border-white`}
           >
-            {mk}
-          </button>
-        ))}
-      </aside>
+            Пусто
+          </AsideScrollableButton>
+        )}
+      </AsideScrollable>
 
       <CreateNewValueModal
         conditionName={currentConditionName}
@@ -228,7 +240,6 @@ function CreateNewValueModal({
       focusOnBtnRef.current?.focus();
     }
   }, []);
-  const theme = localStorage.getItem("theme");
   const createNewKey = useCreateNewKeyAsValue({ storyId: storyId || "" });
 
   const handleCreatingNewKey = () => {
@@ -249,24 +260,19 @@ function CreateNewValueModal({
   });
 
   return (
-    <aside
+    <AsideInformativeOrSuggestion
       ref={createNewKeyModalRef}
-      className={`${
-        showCreateNewValueModal ? "" : "hidden"
-      } absolute rounded-md shadow-sm p-[1rem] bg-secondary flex flex-col gap-[.5rem] w-full`}
+      className={`${showCreateNewValueModal ? "" : "hidden"}`}
     >
-      <p className="text-[1.5rem] text-text-light">
+      <InformativeOrSuggestionText>
         Такого ключа не существует, хотите создать?
-      </p>
-      <button
+      </InformativeOrSuggestionText>
+      <InformativeOrSuggestionButton
         ref={focusOnBtnRef}
         onClick={handleCreatingNewKey}
-        className={`self-end text-[1.6rem] w-fit rounded-md bg-secondary shadow-sm ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } focus-within:border-black focus-within:border-[2px] focus-within:text-black`}
       >
         Создать
-      </button>
-    </aside>
+      </InformativeOrSuggestionButton>
+    </AsideInformativeOrSuggestion>
   );
 }

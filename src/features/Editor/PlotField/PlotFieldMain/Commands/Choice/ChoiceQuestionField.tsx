@@ -12,6 +12,7 @@ import CreateChoiceOptionTypeModal from "./Option/CreateChoiceOptionTypeModal";
 import useUpdateChoiceTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateChoiceTranslation";
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationTextFieldNameChoiceTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type ChoiceQuestionFieldTypes = {
   characterId: string;
@@ -138,7 +139,7 @@ export default function ChoiceQuestionField({
     delay: 500,
   });
   return (
-    <div className="w-full flex-grow flex gap-[1rem] bg-primary rounded-md shadow-md p-[.5rem] flex-wrap items-center z-[20]">
+    <div className="w-full flex-grow flex gap-[1rem] bg-primary rounded-md shadow-md p-[.5rem] flex-wrap items-center">
       {isAuthor ? (
         <div className="flex-grow bg-secondary rounded-md shadow-md px-[1rem] py-[.5rem]">
           <h4 className="text-[1.4rem] text-text-light">Author</h4>
@@ -152,7 +153,7 @@ export default function ChoiceQuestionField({
             }}
             className="w-full relative flex gap-[.5rem] items-center bg-primary  rounded-md"
           >
-            <input
+            <PlotfieldInput
               onClick={(e) => {
                 e.stopPropagation();
                 setShowAllCharacters(true);
@@ -164,9 +165,6 @@ export default function ChoiceQuestionField({
                 setCharacterName(e.target.value);
               }}
               placeholder="Имя Персонажа"
-              className={`flex-grow text-[1.4rem] ${
-                theme === "light" ? "outline-gray-300" : "outline-gray-600"
-              } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md`}
             />
 
             <img
@@ -195,7 +193,7 @@ export default function ChoiceQuestionField({
               }}
               className={`${
                 theme === "light" ? "outline-gray-300" : "outline-gray-600"
-              } text-text-light text-[1.3rem] w-full bg-secondary rounded-md shadow-md px-[1rem] py-[.5rem]`}
+              } text-text-light text-[1.4rem] w-full bg-secondary rounded-md shadow-md px-[1rem] py-[.5rem]`}
             >
               {emotionName?.trim().length ? (
                 <div className="flex gap-[1rem] justify-between items-center">
@@ -229,14 +227,11 @@ export default function ChoiceQuestionField({
       )}
 
       <form className="flex-grow" onSubmit={(e) => e.preventDefault()}>
-        <input
+        <PlotfieldInput
           type="text"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="Вопрос"
-          className={`w-full px-[1rem] py-[.5rem] ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } bg-secondary rounded-md shadow-md text-text-light text-[1.4rem]`}
         />
       </form>
 

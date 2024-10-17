@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import useGetCommandMove from "../hooks/Move/useGetCommandMove";
 import useUpdateMoveText from "../hooks/Move/useUpdateMoveText";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type CommandMoveFieldTypes = {
   plotFieldCommandId: string;
@@ -16,7 +18,6 @@ export default function CommandMoveField({
   const [nameValue] = useState<string>(command ?? "Move");
   const [moveValue, setMoveValue] = useState<string>("");
   const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const theme = localStorage.getItem("theme");
   const { data: commandMove } = useGetCommandMove({
     plotFieldCommandId,
   });
@@ -54,20 +55,15 @@ export default function CommandMoveField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-text-light text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
-          {nameValue}
-        </h3>
+        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
         className="sm:w-[77%] flex-grow w-full"
       >
-        <input
+        <PlotfieldInput
           value={moveValue || ""}
           type="text"
-          className={`w-full ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]`}
           placeholder="Such a lovely day"
           onChange={(e) => setMoveValue(e.target.value)}
         />

@@ -6,17 +6,13 @@ import ConditionBlockVariationCharacteristic from "./ConditionBlockVariationInpu
 import ConditionBlockVariationKey from "./ConditionBlockVariationInput/ConditionBlockVariationKey";
 
 type ConditionBlockInputFieldTypes = {
-  conditionValue: string;
   conditionBlockId: string;
   plotfieldCommandId: string;
-  conditionName: string;
   conditionType: ConditionValueVariationType;
 };
 
 export default function ConditionBlockInputField({
-  conditionValue,
   conditionType,
-  conditionName,
   plotfieldCommandId,
   conditionBlockId,
 }: ConditionBlockInputFieldTypes) {
@@ -35,26 +31,20 @@ export default function ConditionBlockInputField({
         <ConditionBlockVariationKey
           plotfieldCommandId={plotfieldCommandId}
           conditionBlockId={conditionBlockId}
-          conditionName={conditionName}
         />
       ) : conditionType === "character" ? (
         <ConditionBlockVariationCharacter
           conditionBlockId={conditionBlockId}
-          conditionName={conditionName}
-          conditionValue={conditionValue}
           plotfieldCommandId={plotfieldCommandId}
         />
       ) : conditionType === "characteristic" ? (
         <ConditionBlockVariationCharacteristic
           conditionBlockId={conditionBlockId}
-          conditionName={conditionName}
-          conditionValue={conditionValue}
           plotfieldCommandId={plotfieldCommandId}
         />
       ) : conditionType === "appearance" ? (
         <ConditionBlockVariationAppearance
           conditionBlockId={conditionBlockId}
-          conditionName={conditionName}
           plotfieldCommandId={plotfieldCommandId}
         />
       ) : null}

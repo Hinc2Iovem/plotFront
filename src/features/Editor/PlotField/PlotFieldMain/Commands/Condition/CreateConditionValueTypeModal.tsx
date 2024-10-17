@@ -1,12 +1,13 @@
 import { useRef } from "react";
-import useAddAnotherConditionBlock from "../hooks/Condition/ConditionBlock/useAddAnotherConditionBlock";
+import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { ConditionValueVariationType } from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import useConditionBlocks from "./Context/ConditionContext";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
+import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
-import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import { useParams } from "react-router-dom";
+import useAddAnotherConditionBlock from "../hooks/Condition/ConditionBlock/useAddAnotherConditionBlock";
+import useConditionBlocks from "./Context/ConditionContext";
 
 type CreateConditionValueTypeModalTypes = {
   setShowCreateValueType: React.Dispatch<React.SetStateAction<boolean>>;
@@ -38,7 +39,6 @@ export default function CreateConditionValueTypeModal({
     commandConditionId,
     episodeId: episodeId || "",
   });
-  const theme = localStorage.getItem("theme");
   const handleConditionValueCreation = (cv: ConditionValueVariationType) => {
     const targetBlockId = generateMongoObjectId();
     const conditionBlockId = generateMongoObjectId();
@@ -99,15 +99,12 @@ export default function CreateConditionValueTypeModal({
       } w-fit flex flex-col gap-[.5rem] p-[.5rem] z-[10]`}
     >
       {AllConditionValueVariationTypes.map((cv) => (
-        <button
+        <PlotfieldButton
           key={cv}
           onClick={() => handleConditionValueCreation(cv)}
-          className={`px-[1rem] py-[.5rem] text-[1.4rem] text-gray bg-secondary rounded-md hover:text-text-light text-text-dark hover:bg-primary focus-within:bg-primary focus-within:text-text-light ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } active:border-[2px] active:border-secondary transition-all`}
         >
           {cv}
-        </button>
+        </PlotfieldButton>
       ))}
     </aside>
   );

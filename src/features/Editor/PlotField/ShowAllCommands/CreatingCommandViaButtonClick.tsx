@@ -13,7 +13,7 @@ import useCreateAmbient from "../PlotFieldMain/Commands/hooks/Ambient/useCreateA
 import useCreateBackground from "../PlotFieldMain/Commands/hooks/Background/useCreateBackground";
 import useCreateCall from "../PlotFieldMain/Commands/hooks/Call/useCreateCall";
 import useCreateChoice from "../PlotFieldMain/Commands/hooks/Choice/useCreateChoice";
-import useCreateComment from "../PlotFieldMain/Commands/hooks/Comment/useCommentWait";
+import useCreateComment from "../PlotFieldMain/Commands/hooks/Comment/useCreateComment";
 import useCreateCondition from "../PlotFieldMain/Commands/hooks/Condition/useCreateCondition";
 import useCreateCutScene from "../PlotFieldMain/Commands/hooks/CutScene/useCreateCutScene";
 import useCreateEffect from "../PlotFieldMain/Commands/hooks/Effect/useCreateEffect";
@@ -189,15 +189,15 @@ export default function CreatingCommandViaButtonClick({
       const allCommands: AllPossiblePlotFieldComamndsTypes =
         value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
       if (allCommands === "achievement") {
-        createCommandAchievement.mutate();
+        createCommandAchievement.mutate({});
       } else if (allCommands === "ambient") {
-        createCommandAmbient.mutate();
+        createCommandAmbient.mutate({});
       } else if (allCommands === "background") {
-        createBackground.mutate();
+        createBackground.mutate({});
       } else if (allCommands === "call") {
-        createCall.mutate();
+        createCall.mutate({});
       } else if (allCommands === "choice") {
-        createChoice.mutate();
+        createChoice.mutate({});
       } else if (allCommands === "condition") {
         const conditionBlockId = generateMongoObjectId();
         const targetBlockId = generateMongoObjectId();
@@ -233,31 +233,31 @@ export default function CreatingCommandViaButtonClick({
           topologyBlockId,
         });
       } else if (allCommands === "cutscene") {
-        createCutScene.mutate();
+        createCutScene.mutate({});
       } else if (allCommands === "effect") {
-        createEffect.mutate();
+        createEffect.mutate({});
       } else if (allCommands === "getitem") {
-        createGetItem.mutate();
+        createGetItem.mutate({});
       } else if (allCommands === "if") {
-        createCommandIf.mutate();
+        createCommandIf.mutate({});
       } else if (allCommands === "key") {
-        createKey.mutate();
+        createKey.mutate({});
       } else if (allCommands === "move") {
-        createMove.mutate();
+        createMove.mutate({});
       } else if (allCommands === "music") {
-        createMusic.mutate();
+        createMusic.mutate({});
       } else if (allCommands === "name") {
-        createName.mutate();
+        createName.mutate({});
       } else if (allCommands === "sound") {
-        createSound.mutate();
+        createSound.mutate({});
       } else if (allCommands === "suit") {
-        createSuit.mutate();
+        createSuit.mutate({});
       } else if (allCommands === "wait") {
-        createWait.mutate();
+        createWait.mutate({});
       } else if (allCommands === "wardrobe") {
-        createWardrobe.mutate();
+        createWardrobe.mutate({});
       } else if (allCommands === "comment") {
-        createComment.mutate();
+        createComment.mutate({});
       }
       updateCommandName.mutate({ valueForSay: false });
     }

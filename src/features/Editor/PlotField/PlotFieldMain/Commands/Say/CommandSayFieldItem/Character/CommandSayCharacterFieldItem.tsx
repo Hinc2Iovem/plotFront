@@ -7,6 +7,7 @@ import useGetTranslationSayEnabled from "../../../hooks/Say/useGetTranslationSay
 import useUpdateCommandSayText from "../../../hooks/Say/useUpdateCommandSayText";
 import FormCharacter from "./FormCharacter";
 import FormEmotion from "./FormEmotion";
+import PlotfieldTextarea from "../../../../../../../shared/Textareas/PlotfieldTextarea";
 
 type CommandSayCharacterFieldItemTypes = {
   nameValue: string;
@@ -31,7 +32,6 @@ export default function CommandSayCharacterFieldItem({
   const [initialValue, setInitialValue] = useState("");
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
-  const theme = localStorage.getItem("theme");
   const [showCreateEmotionModal, setShowCreateEmotionModal] = useState(false);
   const [emotionValue, setEmotionValue] = useState<EmotionsTypes | null>(null);
 
@@ -113,11 +113,9 @@ export default function CommandSayCharacterFieldItem({
         />
       </div>
       <form className="sm:w-[57%] flex-grow w-full h-full">
-        <textarea
+        <PlotfieldTextarea
           value={textValue}
-          className={`h-full min-h-[7rem] w-full ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[25rem] containerScroll`}
+          className={`h-full min-h-[7.5rem]`}
           placeholder="Such a lovely day"
           onChange={(e) => setTextValue(e.target.value)}
         />

@@ -55,7 +55,7 @@ export default function ChoiceVariationTypeBlock({
 
   return (
     <>
-      <div className="relative flex-grow z-[21]">
+      <div className="relative flex-grow">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -73,7 +73,7 @@ export default function ChoiceVariationTypeBlock({
           ref={choiceVariationRef}
           className={`${
             showChoiceVariationTypesModal ? "" : "hidden"
-          } translate-y-[.5rem] absolute flex flex-col gap-[1rem] bg-primary-darker rounded-md shadow-md z-[10] min-w-fit w-full p-[.5rem]`}
+          } translate-y-[.5rem] absolute flex flex-col gap-[1rem] bg-primary-darker rounded-md shadow-md z-[2] min-w-fit w-full p-[.5rem]`}
         >
           {ChoiceVariations.map((cv) => (
             <button

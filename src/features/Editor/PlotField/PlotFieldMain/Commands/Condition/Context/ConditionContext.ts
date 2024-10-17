@@ -98,6 +98,15 @@ type CommandConditionStoreTypes = {
     plotfieldCommandId: string;
     conditionValue: string;
   }) => void;
+  updateConditionBlockSign: ({
+    conditionBlockId,
+    sign,
+    plotfieldCommandId,
+  }: {
+    conditionBlockId: string;
+    plotfieldCommandId: string;
+    sign: ConditionSignTypes;
+  }) => void;
   updateConditionOrderOfExecution: ({
     conditionBlockId,
     orderOfExecution,
@@ -411,6 +420,24 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()((set, get) => ({
                   ? {
                       ...co,
                       conditionValue,
+                    }
+                  : co
+              ),
+            }
+          : c
+      ),
+    })),
+  updateConditionBlockSign: ({ conditionBlockId, sign, plotfieldCommandId }) =>
+    set((state) => ({
+      conditions: state.conditions.map((c) =>
+        c.plotfieldCommandId === plotfieldCommandId
+          ? {
+              ...c,
+              conditionBlocks: c.conditionBlocks.map((co) =>
+                co.conditionBlockId === conditionBlockId
+                  ? {
+                      ...co,
+                      sign,
                     }
                   : co
               ),

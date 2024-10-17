@@ -3,7 +3,7 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 
 type CreateAchievementTypes = {
   storyId: string;
-  plotFieldCommandId: string;
+  plotFieldCommandId?: string;
   topologyBlockId: string;
 };
 
@@ -13,12 +13,21 @@ export default function useCreateAchievement({
   storyId,
 }: CreateAchievementTypes) {
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({
+      plotfieldCommandId,
+    }: {
+      plotfieldCommandId?: string;
+    }) => {
+      const commandId = plotFieldCommandId?.trim().length
+        ? plotFieldCommandId
+        : plotfieldCommandId;
+
       await axiosCustomized.post(
-        `/achievements/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/translations`,
+        `/achievements/${commandId}/topologyBlocks/${topologyBlockId}/translations`,
         {
           storyId,
         }
-      ),
+      );
+    },
   });
 }

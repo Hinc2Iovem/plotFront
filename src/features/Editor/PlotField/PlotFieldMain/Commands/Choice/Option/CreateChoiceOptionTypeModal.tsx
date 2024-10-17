@@ -93,7 +93,7 @@ export default function CreateChoiceOptionTypeModal({
           onClick={() => handleCreatingChoiceOption(cov)}
           className={`hover:bg-primary-darker ${
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } transition-all text-[1.4rem] whitespace-nowrap text-text-dark hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light px-[1rem] py-[.5rem] rounded-md`}
+          } transition-all text-[1.4rem] whitespace-nowrap text-text-light hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light px-[1rem] py-[.5rem] rounded-md`}
         >
           {cov}
         </button>

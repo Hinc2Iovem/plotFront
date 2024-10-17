@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PreviewImageSmallIcons from "../../../../../shared/utilities/PreviewImageSmallIcons";
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type BackgroundNameAndImageTypes = {
   commandBackgroundId: string;
@@ -22,7 +23,6 @@ export default function BackgroundNameAndImage({
     path: "/plotFieldCommands/backgrounds",
     preview: imagePreview,
   });
-  const theme = localStorage.getItem("theme");
   const [showFullSizeImg, setShowFullSizeImg] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -43,12 +43,9 @@ export default function BackgroundNameAndImage({
         className="sm:w-[77%] flex-grow flex-col w-full flex gap-[1rem] items-center"
       >
         <div className="w-full flex gap-[.5rem]">
-          <input
+          <PlotfieldInput
             value={backgroundName || ""}
             type="text"
-            className={`w-full ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md h-fit`}
             placeholder="Название заднего плана"
             onChange={(e) => setBackgroundName(e.target.value)}
           />

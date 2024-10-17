@@ -6,6 +6,10 @@ import useGetAllTopologyBlocksByEpisodeId from "../hooks/TopologyBlock/useGetAll
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useUpdateCallCommandIndex from "../hooks/Call/useUpdateCallCommandIndex";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type CommandCallFieldTypes = {
   plotFieldCommandId: string;
@@ -56,9 +60,7 @@ export default function CommandCallField({
   return (
     <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-start text-text-light outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
-          {nameValue}
-        </h3>
+        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
       </div>
       <div className="flex gap-[.5rem] sm:w-fit w-full flex-grow">
         <ChooseReferencedCommandIndex
@@ -101,7 +103,6 @@ function ChooseReferencedCommandIndex({
 }: ChooseReferencedCommandIndexTypes) {
   const updateCommandIndex = useUpdateCallCommandIndex({ callId });
   const modalRef = useRef<HTMLDivElement>(null);
-  const theme = localStorage.getItem("theme");
   const [showAllCommandIndexes, setShowAllCommandIndexes] = useState(false);
   useOutOfModal({
     modalRef,
@@ -111,10 +112,7 @@ function ChooseReferencedCommandIndex({
 
   return (
     <div className="relative">
-      <button
-        className={`text-[1.3rem] ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } bg-secondary rounded-md shadow-md text-text-light px-[1rem] py-[.5rem]`}
+      <PlotfieldButton
         onClick={(e) => {
           e.stopPropagation();
           setShowAllCommandIndexes((prev) => !prev);
@@ -123,12 +121,12 @@ function ChooseReferencedCommandIndex({
         {typeof currentReferencedCommandIndex === "number"
           ? `Ссылаться на команду - ${currentReferencedCommandIndex}`
           : "Ссылаться на команду"}
-      </button>
-      <aside
+      </PlotfieldButton>
+      <AsideScrollable
         ref={modalRef}
         className={`${
           showAllCommandIndexes ? "" : "hidden"
-        } z-[10] left-0 flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] | containerScroll`}
+        } translate-y-[.5rem] `}
       >
         {(typeof currentReferencedCommandIndex === "number" &&
           amountOfCommands > 1) ||
@@ -136,7 +134,7 @@ function ChooseReferencedCommandIndex({
           amountOfCommands > 0) ? (
           [...Array.from({ length: amountOfCommands })]?.map((_, i) => {
             return (
-              <button
+              <AsideScrollableButton
                 key={"command" + "-" + i}
                 type="button"
                 onClick={() => {
@@ -146,28 +144,23 @@ function ChooseReferencedCommandIndex({
                 }}
                 className={`${
                   currentReferencedCommandIndex === i ? "hidden" : ""
-                } px-[1rem]  py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-                  theme === "light" ? "outline-gray-300" : "outline-gray-600"
-                } text-text-dark hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker hover:bg-primary-darker shadow-md transition-all rounded-md`}
+                } `}
               >
                 {i}
-              </button>
+              </AsideScrollableButton>
             );
           })
         ) : (
-          <button
+          <AsideScrollableButton
             type="button"
             onClick={() => {
               setShowAllCommandIndexes(false);
             }}
-            className={`px-[1rem]  py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } text-text-dark hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker hover:bg-primary-darker shadow-md transition-all rounded-md`}
           >
             Пусто
-          </button>
+          </AsideScrollableButton>
         )}
-      </aside>
+      </AsideScrollable>
     </div>
   );
 }
@@ -209,7 +202,6 @@ function ChooseTopologyBlock({
     setShowModal: setShowAllTopologyBlocks,
     showModal: showAllTopologyBlocks,
   });
-  const theme = localStorage.getItem("theme");
 
   const updateCallText = useUpdateCallText({
     callId,
@@ -227,27 +219,24 @@ function ChooseTopologyBlock({
 
   return (
     <div className="relative flex-grow">
-      <button
-        className={`text-[1.3rem] h-full ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } w-full bg-secondary rounded-md shadow-md text-text-light px-[1rem] py-[.5rem]`}
+      <PlotfieldButton
         onClick={(e) => {
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);
         }}
       >
         {currentTopologyBlockName || "Блок"}
-      </button>
-      <aside
+      </PlotfieldButton>
+      <AsideScrollable
         ref={modalRef}
         className={`${
           showAllTopologyBlocks ? "" : "hidden"
-        } z-[10] flex flex-col gap-[1rem] p-[.5rem] max-h-[15rem] overflow-y-auto absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] | containerScroll`}
+        } translate-y-[.5rem]`}
       >
         {((allTopologyBlocks?.length || 0) > 1 && !targetBlockId) ||
         (allTopologyBlocks?.length || 0) > 2 ? (
           allTopologyBlocks?.map((tb) => (
-            <button
+            <AsideScrollableButton
               key={tb._id}
               type="button"
               onClick={() => {
@@ -258,27 +247,22 @@ function ChooseTopologyBlock({
               }}
               className={`${topologyBlockId === tb._id ? "hidden" : ""} ${
                 tb._id === targetBlockId ? "hidden" : ""
-              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-                theme === "light" ? "outline-gray-300" : "outline-gray-600"
-              } text-text-dark hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light hover:bg-primary-darker shadow-md transition-all rounded-md`}
+              } `}
             >
               {tb.name}
-            </button>
+            </AsideScrollableButton>
           ))
         ) : (
-          <button
+          <AsideScrollableButton
             type="button"
             onClick={() => {
               setShowAllTopologyBlocks(false);
             }}
-            className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } text-text-dark hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light hover:bg-primary-darker shadow-md transition-all rounded-md`}
           >
             Пусто
-          </button>
+          </AsideScrollableButton>
         )}
-      </aside>
+      </AsideScrollable>
     </div>
   );
 }

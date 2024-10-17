@@ -10,6 +10,9 @@ import useConditionBlocks, {
 } from "./Context/ConditionContext";
 import DisplayOrderOfIfsModal from "./DisplayOrderOfIfsModal";
 import ConditionBlockShowPlot from "./ConditionBlockShowPlot";
+import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 
 type ConditionBlockItemProps = {
   currentTopologyBlockId: string;
@@ -31,9 +34,9 @@ export default function ConditionBlockItem({
   conditionName,
   conditionValue,
   sign,
+  conditionType,
 }: ConditionBlockItemProps) {
   const { episodeId } = useParams();
-  const theme = localStorage.getItem("theme");
   const { updateConditionBlockTargetBlockId } = useConditionBlocks();
   const modalRef = useRef<HTMLDivElement>(null);
   const { data: topologyBlock } = useGetTopologyBlockById({
@@ -72,87 +75,81 @@ export default function ConditionBlockItem({
     <>
       {!isElse ? (
         <div
-          className={`p-[1rem] flex flex-col gap-[1rem] w-full bg-secondary rounded-md shadow-md`}
+          className={`p-[1rem] flex flex-col gap-[1rem] justify-around w-full bg-secondary rounded-md shadow-md`}
         >
-          <ConditionValueItem
-            key={conditionBlockId}
-            conditionBlockId={conditionBlockId}
-            name={conditionName}
-            sign={sign}
-            value={conditionValue}
-          />
-          <ConditionBlockShowPlot
-            conditionBlockId={conditionBlockId}
-            plotfieldCommandId={plotfieldCommandId}
-            setShowConditionBlockPlot={setShowConditionBlockPlot}
-            targetBlockId={targetBlockId}
-          />
-          <DisplayOrderOfIfsModal
-            conditionBlockId={conditionBlockId}
-            commandConditionId={conditionId}
-            currentOrder={orderOfExecution}
-            plotfieldCommandId={plotfieldCommandId}
-          />
-          <div className="relative w-full flex justify-between flex-wrap gap-[1rem]">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowAllTopologyBlocks((prev) => !prev);
-              }}
-              className={`flex-grow text-[1.4rem] ${
-                theme === "light" ? "outline-gray-300" : "outline-gray-600"
-              } text-text-light shadow-md rounded-md px-[1rem] py-[.5rem]`}
-              type="button"
-            >
-              {topologyBlockName || "Текущая Ветка"}
-            </button>
-            <aside
-              className={`${
-                showAllTopologyBlocks ? "" : "hidden"
-              } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] overflow-y-auto max-h-[20rem] | containerScroll`}
-            >
-              {(allTopologyBlocks?.length || 0) > 1 ? (
-                allTopologyBlocks?.map((tb) => (
-                  <button
-                    key={tb._id}
+          <div className="flex flex-col gap-[1rem] ">
+            <ConditionValueItem
+              key={conditionBlockId}
+              conditionBlockId={conditionBlockId}
+              name={conditionName}
+              sign={sign}
+              value={conditionValue}
+              conditionType={conditionType}
+              plotfieldCommandId={plotfieldCommandId}
+            />
+          </div>
+          <div className="flex flex-col gap-[1rem]">
+            <ConditionBlockShowPlot
+              conditionBlockId={conditionBlockId}
+              plotfieldCommandId={plotfieldCommandId}
+              setShowConditionBlockPlot={setShowConditionBlockPlot}
+              targetBlockId={targetBlockId}
+            />
+            <DisplayOrderOfIfsModal
+              conditionBlockId={conditionBlockId}
+              commandConditionId={conditionId}
+              currentOrder={orderOfExecution}
+              plotfieldCommandId={plotfieldCommandId}
+            />
+            <div className="relative w-full flex justify-between flex-wrap gap-[1rem]">
+              <PlotfieldButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAllTopologyBlocks((prev) => !prev);
+                }}
+                type="button"
+              >
+                {topologyBlockName || "Текущая Ветка"}
+              </PlotfieldButton>
+              <AsideScrollable
+                className={`${
+                  showAllTopologyBlocks ? "" : "hidden"
+                } translate-y-[3.5rem]`}
+              >
+                {(allTopologyBlocks?.length || 0) > 1 ? (
+                  allTopologyBlocks?.map((tb) => (
+                    <AsideScrollableButton
+                      key={tb._id}
+                      type="button"
+                      onClick={() => {
+                        setShowAllTopologyBlocks(false);
+                        updateConditionBlockTargetBlockId({
+                          conditionBlockId,
+                          plotfieldCommandId,
+                          targetBlockId: tb._id,
+                          topologyBlockName: tb?.name || "",
+                        });
+                        updateTopologyBlock.mutate({ targetBlockId: tb._id });
+                      }}
+                      className={`${
+                        currentTopologyBlockId === tb._id ? "hidden" : ""
+                      } ${tb._id === targetBlockId ? "hidden" : ""}`}
+                    >
+                      {tb.name}
+                    </AsideScrollableButton>
+                  ))
+                ) : (
+                  <AsideScrollableButton
                     type="button"
                     onClick={() => {
                       setShowAllTopologyBlocks(false);
-                      updateConditionBlockTargetBlockId({
-                        conditionBlockId,
-                        plotfieldCommandId,
-                        targetBlockId: tb._id,
-                        topologyBlockName: tb?.name || "",
-                      });
-                      updateTopologyBlock.mutate({ targetBlockId: tb._id });
                     }}
-                    className={`${
-                      currentTopologyBlockId === tb._id ? "hidden" : ""
-                    } ${
-                      tb._id === targetBlockId ? "hidden" : ""
-                    } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-                      theme === "light"
-                        ? "outline-gray-300"
-                        : "outline-gray-600"
-                    } text-text-dark hover:bg-primary-light hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light shadow-md transition-all rounded-md`}
                   >
-                    {tb.name}
-                  </button>
-                ))
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAllTopologyBlocks(false);
-                  }}
-                  className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-                    theme === "light" ? "outline-gray-300" : "outline-gray-600"
-                  } text-text-dark hover:bg-primary-light hover:text-text-light focus-within:bg-primary-darker focus-within:text-text-light shadow-md transition-all rounded-md`}
-                >
-                  Пусто
-                </button>
-              )}
-            </aside>
+                    Пусто
+                  </AsideScrollableButton>
+                )}
+              </AsideScrollable>
+            </div>
           </div>
         </div>
       ) : (
@@ -166,27 +163,24 @@ export default function ConditionBlockItem({
             targetBlockId={targetBlockId}
           />
           <div className="relative self-end flex-grow">
-            <button
+            <PlotfieldButton
               onClick={(e) => {
                 e.stopPropagation();
                 setShowAllTopologyBlocks((prev) => !prev);
               }}
-              className={`w-full text-[1.4rem] ${
-                theme === "light" ? "outline-gray-300" : "outline-gray-600"
-              } text-text-light shadow-md rounded-md px-[1rem] py-[.5rem] focus-within:bg-primary-darker`}
               type="button"
             >
               {topologyBlockName || "Текущая Ветка"}
-            </button>
-            <aside
+            </PlotfieldButton>
+            <AsideScrollable
               ref={modalRef}
               className={`${
                 showAllTopologyBlocks ? "" : "hidden"
-              } z-[10] flex flex-col gap-[1rem] p-[.5rem] absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.5rem] overflow-y-auto max-h-[20rem] | containerScroll`}
+              } translate-y-[3.5rem]`}
             >
               {(allTopologyBlocks?.length || 0) > 1 ? (
                 allTopologyBlocks?.map((tb) => (
-                  <button
+                  <AsideScrollableButton
                     key={tb._id}
                     type="button"
                     onClick={() => {
@@ -201,31 +195,22 @@ export default function ConditionBlockItem({
                     }}
                     className={`${
                       currentTopologyBlockId === tb._id ? "hidden" : ""
-                    } ${
-                      tb._id === targetBlockId ? "hidden" : ""
-                    } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-                      theme === "light"
-                        ? "outline-gray-300"
-                        : "outline-gray-600"
-                    } text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker shadow-md transition-all rounded-md`}
+                    } ${tb._id === targetBlockId ? "hidden" : ""}`}
                   >
                     {tb.name}
-                  </button>
+                  </AsideScrollableButton>
                 ))
               ) : (
-                <button
+                <AsideScrollableButton
                   type="button"
                   onClick={() => {
                     setShowAllTopologyBlocks(false);
                   }}
-                  className={`px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-                    theme === "light" ? "outline-gray-300" : "outline-gray-600"
-                  } text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker shadow-md transition-all rounded-md`}
                 >
                   Пусто
-                </button>
+                </AsideScrollableButton>
               )}
-            </aside>
+            </AsideScrollable>
           </div>
         </div>
       )}

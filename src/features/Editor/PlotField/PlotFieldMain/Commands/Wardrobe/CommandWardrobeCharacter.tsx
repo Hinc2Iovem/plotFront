@@ -7,6 +7,7 @@ import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useUpdateWardrobeCurrentDressedAndCharacterId from "../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
 import CommandWardrobeCreateCharacter from "./CommandWardrobeCreateCharacter";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type CommandWardrobeCharacterTypes = {
   setShowAppearancePartVariationModal: React.Dispatch<
@@ -39,7 +40,6 @@ export default function CommandWardrobeCharacter({
     characterId,
     language: "russian",
   });
-  const theme = localStorage.getItem("theme");
   useEffect(() => {
     if (character) {
       setCharacterImg(character?.img ?? "");
@@ -110,7 +110,7 @@ export default function CommandWardrobeCharacter({
         onSubmit={handleSubmit}
         className="w-full relative flex gap-[.5rem] items-center"
       >
-        <input
+        <PlotfieldInput
           onClick={(e) => {
             e.stopPropagation();
             setShowAppearancePartModal(false);
@@ -123,9 +123,6 @@ export default function CommandWardrobeCharacter({
             setCharacterName(e.target.value);
           }}
           placeholder="Имя Персонажа"
-          className={`flex-grow w-full text-[1.4rem] ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md`}
         />
 
         <img

@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
 
 type CreateChoiceTypes = {
-  plotFieldCommandId: string;
+  plotFieldCommandId?: string;
   topologyBlockId: string;
 };
 
@@ -11,9 +11,17 @@ export default function useCreateChoice({
   topologyBlockId,
 }: CreateChoiceTypes) {
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({
+      plotfieldCommandId,
+    }: {
+      plotfieldCommandId?: string;
+    }) => {
+      const commandId = plotFieldCommandId?.trim().length
+        ? plotFieldCommandId
+        : plotfieldCommandId;
       await axiosCustomized.post(
-        `/choices/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/translations`
-      ),
+        `/choices/${commandId}/topologyBlocks/${topologyBlockId}/translations`
+      );
+    },
   });
 }

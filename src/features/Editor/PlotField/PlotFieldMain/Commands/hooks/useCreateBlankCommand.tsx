@@ -12,6 +12,7 @@ type NewCommandTypes = {
   isElse?: boolean;
   topologyBlockId: string;
   commandOrder: number;
+  commandName?: AllPossiblePlotFieldComamndsTypes;
 };
 
 export default function useCreateBlankCommand({
@@ -28,6 +29,7 @@ export default function useCreateBlankCommand({
         .post<PlotFieldTypes>(`/plotField/topologyBlocks/${topologyBlockId}`, {
           commandOrder: commandOrder.commandOrder,
           _id: commandOrder._id,
+          commandName: commandOrder.commandName,
         })
         .then((r) => r.data);
     },
@@ -45,7 +47,8 @@ export default function useCreateBlankCommand({
       addCommand({
         newCommand: {
           _id: newCommand._id,
-          command: "" as AllPossiblePlotFieldComamndsTypes,
+          command:
+            (newCommand.commandName as AllPossiblePlotFieldComamndsTypes) || "",
           commandOrder: newCommand.commandOrder,
           topologyBlockId,
         },

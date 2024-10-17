@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetTranslationCharacters from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
+import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
+import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
 import CommandSayCreateCharacterFieldModal from "./ModalCreateCharacter/CommandSayCreateCharacterFieldModal";
-import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
-import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 
 type FormCharacterTypes = {
   nameValue: string;
@@ -34,7 +37,6 @@ export default function FormCharacter({
   const charactersRef = useRef<HTMLDivElement>(null);
   const { storyId } = useParams();
   const [newCharacterId, setNewCharacterId] = useState("");
-  const theme = localStorage.getItem("theme");
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     characterId: newCharacterId,
@@ -127,7 +129,7 @@ export default function FormCharacter({
         className={`${showCharacters ? "z-[10]" : ""} w-full`}
       >
         <div className="relative w-full">
-          <input
+          <PlotfieldInput
             type="text"
             value={nameValue}
             onClick={(e) => {
@@ -136,57 +138,41 @@ export default function FormCharacter({
               setShowAllEmotions(false);
             }}
             placeholder="Персонаж"
-            className={`text-[1.3rem] w-full ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } px-[1rem] py-[.5rem] text-text-light rounded-md shadow-md capitalize`}
             onChange={(e) => {
               setNameValue(e.target.value);
               setShowCharacters(true);
             }}
           />
-          <aside
+          <AsideScrollable
             ref={charactersRef}
-            className={`absolute ${
+            className={`${
               showCharacters && !showCreateCharacterModal ? "" : "hidden"
-            } z-[2] w-full bg-secondary translate-y-[.5rem] shadow-md rounded-md max-h-[15rem] overflow-y-auto | containerScroll `}
+            } translate-y-[.5rem]`}
           >
             <ul className="flex flex-col gap-[1rem] p-[.2rem]">
               {allNamesFiltered.length ? (
                 allNamesFiltered?.map((nf, i) => {
                   return (
                     <li className="w-full" key={nf + "-" + i}>
-                      <button
+                      <AsideScrollableButton
                         onClick={(e) => {
                           setNameValue(nf);
                           setShowCharacters(false);
                           handleNameFormSubmit(e, nf);
                         }}
-                        className={`w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-secondary ${
-                          theme === "light"
-                            ? "outline-gray-300"
-                            : "outline-gray-600"
-                        } hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark transition-all`}
                       >
                         {nf}
-                      </button>
+                      </AsideScrollableButton>
                     </li>
                   );
                 })
               ) : !nameValue?.trim().length ? (
                 <li>
-                  <button
-                    className={`w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-secondary ${
-                      theme === "light"
-                        ? "outline-gray-300"
-                        : "outline-gray-600"
-                    } hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark transition-all`}
-                  >
-                    Пусто
-                  </button>
+                  <AsideScrollableButton>Пусто</AsideScrollableButton>
                 </li>
               ) : null}
             </ul>
-          </aside>
+          </AsideScrollable>
         </div>
       </form>
       <CommandSayCreateCharacterFieldModal

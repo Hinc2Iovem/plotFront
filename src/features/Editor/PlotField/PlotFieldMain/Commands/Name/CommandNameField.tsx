@@ -5,6 +5,8 @@ import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import useGetCommandName from "../hooks/Name/useGetCommandName";
 import useUpdateNameText from "../hooks/Name/useUpdateNameText";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type CommandNameFieldTypes = {
   plotFieldCommandId: string;
@@ -21,7 +23,6 @@ export default function CommandNameField({
   const [currentCharacterImg, setCurrentCharacterImg] = useState("");
   const [currentCharacterName, setCurrentCharacterName] = useState("");
   const [showCharacterList, setShowCharacterList] = useState(false);
-  const theme = localStorage.getItem("theme");
   const { data: commandName } = useGetCommandName({
     plotFieldCommandId,
   });
@@ -97,9 +98,7 @@ export default function CommandNameField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-text-light text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
-          {nameValue}
-        </h3>
+        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => {
@@ -108,7 +107,7 @@ export default function CommandNameField({
         }}
         className="w-full relative flex gap-[.5rem] items-center"
       >
-        <input
+        <PlotfieldInput
           onClick={(e) => {
             e.stopPropagation();
             setShowCharacterList(true);
@@ -119,9 +118,6 @@ export default function CommandNameField({
             setCurrentCharacterName(e.target.value);
           }}
           placeholder="Имя Персонажа"
-          className={`flex-grow text-[1.4rem] ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md`}
         />
 
         <img
@@ -144,12 +140,9 @@ export default function CommandNameField({
         onSubmit={(e) => e.preventDefault()}
         className="sm:w-[77%] flex-grow w-full"
       >
-        <input
+        <PlotfieldInput
           value={textValue}
           type="text"
-          className={`w-full ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]`}
           placeholder="Настоящее имя"
           onChange={(e) => setTextValue(e.target.value)}
         />

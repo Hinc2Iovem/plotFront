@@ -7,19 +7,22 @@ import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
 import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import useConditionBlocks from "../../Context/ConditionContext";
+import ConditionSignField from "./ConditionSignField";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
+import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
+import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
+import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type ConditionBlockVariationCharacteristicTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
-  conditionName: string;
-  conditionValue: string;
 };
 
 export default function ConditionBlockVariationCharacteristic({
   plotfieldCommandId,
   conditionBlockId,
-  conditionName,
-  conditionValue,
 }: ConditionBlockVariationCharacteristicTypes) {
   const [
     showFirstCharacteristicPromptModal,
@@ -39,27 +42,33 @@ export default function ConditionBlockVariationCharacteristic({
   }, [showFirstCharacteristicPromptModal, showSecondCharacteristicPromptModal]);
 
   return (
-    <div className="w-[calc(100%-2.5rem)] flex gap-[1rem] flex-shrink">
-      <CharacteristicInputField
-        key={"characteristic-1"}
-        conditionBlockId={conditionBlockId}
-        plotfieldCommandId={plotfieldCommandId}
-        conditionName={conditionName}
-        setShowCharacteristicPromptModal={setShowFirstCharacteristicPromptModal}
-        showCharacteristicPromptModal={showFirstCharacteristicPromptModal}
-        fieldType="conditionName"
-      />
-      <CharacteristicInputField
-        key={"characteristic-2"}
-        conditionBlockId={conditionBlockId}
-        conditionName={conditionValue}
-        setShowCharacteristicPromptModal={
-          setShowSecondCharacteristicPromptModal
-        }
-        showCharacteristicPromptModal={showSecondCharacteristicPromptModal}
-        plotfieldCommandId={plotfieldCommandId}
-        fieldType="conditionValue"
-      />
+    <div className="flex flex-col gap-[1rem]">
+      <div className="w-full flex gap-[1rem] flex-shrink flex-wrap">
+        <CharacteristicInputField
+          key={"characteristic-1"}
+          conditionBlockId={conditionBlockId}
+          plotfieldCommandId={plotfieldCommandId}
+          setShowCharacteristicPromptModal={
+            setShowFirstCharacteristicPromptModal
+          }
+          showCharacteristicPromptModal={showFirstCharacteristicPromptModal}
+          fieldType="conditionName"
+        />
+        <ConditionSignField
+          conditionBlockId={conditionBlockId}
+          plotfieldCommandId={plotfieldCommandId}
+        />
+        <CharacteristicInputField
+          key={"characteristic-2"}
+          conditionBlockId={conditionBlockId}
+          setShowCharacteristicPromptModal={
+            setShowSecondCharacteristicPromptModal
+          }
+          showCharacteristicPromptModal={showSecondCharacteristicPromptModal}
+          plotfieldCommandId={plotfieldCommandId}
+          fieldType="conditionValue"
+        />
+      </div>
     </div>
   );
 }
@@ -71,7 +80,6 @@ type CharacteristicInputFieldTypes = {
   showCharacteristicPromptModal: boolean;
   plotfieldCommandId: string;
   conditionBlockId: string;
-  conditionName: string;
   fieldType: "conditionName" | "conditionValue";
 };
 
@@ -80,25 +88,24 @@ function CharacteristicInputField({
   showCharacteristicPromptModal,
   plotfieldCommandId,
   conditionBlockId,
-  conditionName,
   fieldType,
 }: CharacteristicInputFieldTypes) {
   const { storyId } = useParams();
   const {
-    getCurrentlyOpenConditionBlock,
+    getConditionBlockById,
     updateConditionBlockName,
     updateConditionBlockValueId,
     updateConditionBlockValue,
   } = useConditionBlocks();
-  const theme = localStorage.getItem("theme");
+
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] =
     useState(false);
 
   const [currentConditionName, setCurrentConditionName] = useState(
     fieldType === "conditionName"
-      ? getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.conditionName ||
-          ""
-      : getCurrentlyOpenConditionBlock({ plotfieldCommandId })
+      ? getConditionBlockById({ conditionBlockId, plotfieldCommandId })
+          ?.conditionName || ""
+      : getConditionBlockById({ conditionBlockId, plotfieldCommandId })
           ?.conditionValue || ""
   );
 
@@ -134,9 +141,9 @@ function CharacteristicInputField({
     delay: 700,
     value:
       fieldType === "conditionName"
-        ? getCurrentlyOpenConditionBlock({ plotfieldCommandId })
+        ? getConditionBlockById({ conditionBlockId, plotfieldCommandId })
             ?.conditionName || ""
-        : getCurrentlyOpenConditionBlock({ plotfieldCommandId })
+        : getConditionBlockById({ conditionBlockId, plotfieldCommandId })
             ?.conditionValue || "",
   });
 
@@ -200,7 +207,7 @@ function CharacteristicInputField({
   useEffect(() => {
     if (
       debouncedConditionName?.trim().length &&
-      conditionName?.trim() !== debouncedConditionName.trim()
+      currentConditionName?.trim() !== debouncedConditionName.trim()
     ) {
       handleCheckValueCorrectnessBeforeUpdating({ onClick: false });
     }
@@ -212,8 +219,8 @@ function CharacteristicInputField({
     showModal: showCharacteristicPromptModal,
   });
   return (
-    <div className="w-[calc(50%-.5rem)] min-w-[15rem]">
-      <input
+    <div className="w-full min-w-[10rem] relative">
+      <PlotfieldInput
         type="text"
         placeholder="Характеристика"
         onClick={(e) => {
@@ -222,10 +229,9 @@ function CharacteristicInputField({
         }}
         value={
           fieldType === "conditionName"
-            ? getCurrentlyOpenConditionBlock({
-                plotfieldCommandId,
-              })?.conditionName || ""
-            : getCurrentlyOpenConditionBlock({ plotfieldCommandId })
+            ? getConditionBlockById({ conditionBlockId, plotfieldCommandId })
+                ?.conditionName || ""
+            : getConditionBlockById({ conditionBlockId, plotfieldCommandId })
                 ?.conditionValue || ""
         }
         onChange={(e) => {
@@ -237,18 +243,16 @@ function CharacteristicInputField({
           if (fieldType === "conditionName") {
             updateConditionBlockName({
               conditionBlockId:
-                getCurrentlyOpenConditionBlock({
-                  plotfieldCommandId,
-                })?.conditionBlockId || "",
+                getConditionBlockById({ conditionBlockId, plotfieldCommandId })
+                  ?.conditionBlockId || "",
               conditionName: e.target.value,
               plotfieldCommandId,
             });
           } else {
             updateConditionBlockValue({
               conditionBlockId:
-                getCurrentlyOpenConditionBlock({
-                  plotfieldCommandId,
-                })?.conditionBlockId || "",
+                getConditionBlockById({ conditionBlockId, plotfieldCommandId })
+                  ?.conditionBlockId || "",
               conditionValue: e.target.value,
               plotfieldCommandId,
             });
@@ -256,37 +260,35 @@ function CharacteristicInputField({
         }}
         className={`${
           highlightRedOnValueNonExisting ? " border-red-300 border-[2px]" : ""
-        }  ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-[1.5rem] text-text-light bg-secondary rounded-md shadow-sm px-[1rem] py-[.5rem] focus-within:shadow-inner transition-shadow`}
+        }`}
       />
-      <aside
+      <AsideScrollable
         ref={modalRef}
         className={`${
           showCharacteristicPromptModal ? "" : "hidden"
-        } absolute rounded-md shadow-sm p-[1rem] z-[2] bg-secondary flex flex-col gap-[.5rem] w-full max-h-[20rem] overflow-y-auto | containerScroll`}
+        } translate-y-[.5rem]`}
       >
         {(memoizedCharacteristics || [])?.map((mk, i) => (
-          <button
+          <AsideScrollableButton
             key={mk + "-" + i}
             onClick={() => {
               setShowCharacteristicPromptModal(false);
               setCurrentConditionName(mk || "");
               updateConditionBlockName({
                 conditionBlockId:
-                  getCurrentlyOpenConditionBlock({
+                  getConditionBlockById({
+                    conditionBlockId,
                     plotfieldCommandId,
                   })?.conditionBlockId || "",
                 conditionName: mk || "",
                 plotfieldCommandId,
               });
             }}
-            className="capitalize text-[1.5rem] text-text-dark hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker bg-secondary px-[1rem] py-[.5rem] rounded-md hover:bg-primary transition-all focus-within:border-[2px] focus-within:border-white"
           >
             {mk}
-          </button>
+          </AsideScrollableButton>
         ))}
-      </aside>
+      </AsideScrollable>
       <CreateNewCharacteristicModal
         setShowCreateNewValueModal={setShowCreateNewValueModal}
         showCreateNewValueModal={showCreateNewValueModal}
@@ -318,7 +320,7 @@ function CreateNewCharacteristicModal({
   const { storyId } = useParams();
   const focusOnBtnRef = useRef<HTMLButtonElement>(null);
   const createNewCharacteristicModalRef = useRef<HTMLDivElement>(null);
-  const theme = localStorage.getItem("theme");
+
   const createNewCharacteristic = useCreateCharacteristicOptimistic({
     characteristicName: conditionName,
     storyId: storyId || "",
@@ -353,24 +355,19 @@ function CreateNewCharacteristicModal({
   });
 
   return (
-    <aside
+    <AsideInformativeOrSuggestion
       ref={createNewCharacteristicModalRef}
-      className={`${
-        showCreateNewValueModal ? "" : "hidden"
-      } absolute rounded-md shadow-sm p-[1rem] bg-secondary flex flex-col gap-[.5rem] w-full`}
+      className={`${showCreateNewValueModal ? "" : "hidden"}`}
     >
-      <p className="text-[1.5rem] text-text-light">
+      <InformativeOrSuggestionText>
         Такой Характеристики не существует, хотите создать?
-      </p>
-      <button
+      </InformativeOrSuggestionText>
+      <InformativeOrSuggestionButton
         ref={focusOnBtnRef}
         onClick={handleCreatingNewCharacteristic}
-        className={`self-end text-[1.6rem] w-fit rounded-md bg-secondary shadow-sm ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } focus-within:border-black focus-within:border-[2px] focus-within:text-black`}
       >
         Создать
-      </button>
-    </aside>
+      </InformativeOrSuggestionButton>
+    </AsideInformativeOrSuggestion>
   );
 }

@@ -98,10 +98,10 @@ export default function PlotFieldBlankCreateCharacter({
       ref={modalRef}
       className={`bg-secondary ${
         showModal ? "" : "hidden"
-      } z-10 shadow-md text-gray-600 w-full rounded-md absolute translate-y-[.5rem] p-[1rem]`}
+      } z-10 shadow-md text-text-light w-full rounded-md absolute translate-y-[.5rem] p-[1rem]`}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-[.5rem]">
-        <p className="text-[1.4rem]">
+        <p className="text-[1.4rem] text-text-dark">
           Такой команды или персонажа с таким именем не существует
         </p>
         <button

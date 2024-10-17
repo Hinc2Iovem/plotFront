@@ -5,6 +5,7 @@ import useUpdateChoiceIsAuthor from "../hooks/Choice/useUpdateChoiceIsAuthor";
 import ChoiceQuestionField from "./ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./ChoiceVariationTypeBlock";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 
 type CommandChoiceFieldTypes = {
   plotFieldCommandId: string;
@@ -97,9 +98,7 @@ export default function CommandChoiceField({
       style={{ cursor: showCopyCursor ? "cell" : "" }}
     >
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-text-light text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
-          {nameValue}
-        </h3>
+        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
       </div>
 
       <ChoiceVariationTypeBlock

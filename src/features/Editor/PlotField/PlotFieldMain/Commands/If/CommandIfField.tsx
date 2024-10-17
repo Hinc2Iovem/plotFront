@@ -23,6 +23,7 @@ import PlotfieldItemInsideIf from "../PlotfieldItemInsideIf";
 import CommandIfValues from "./CommandIfValues";
 import useReorderIfCommands from "./useReorderIfCommands";
 import useReorderElseCommands from "./useReorderElseCommands";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -342,9 +343,7 @@ export default function CommandIfField({
       <div className="min-w-[10rem] w-full flex flex-col gap-[1rem]">
         <div className="flex w-full relative items-center gap-[1rem]">
           <div className="flex gap-[.5rem] w-full">
-            <h3 className="text-[1.4rem] w-full text-text-light text-start outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary text-gray-600 cursor-default">
-              {nameValue}
-            </h3>
+            <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
             <button
               onClick={(e) => {
                 setHideIfCommands((prev) => !prev);
@@ -421,9 +420,7 @@ export default function CommandIfField({
       </div>
       <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem] p-[.5rem]">
         <div className="flex gap-[.5rem] w-full">
-          <h3 className="text-[1.4rem] text-text-light w-full text-start outline-gray-300 capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary text-gray-600 cursor-default">
-            Else
-          </h3>
+          <PlotfieldCommandNameField>Else</PlotfieldCommandNameField>
           <button
             onClick={(e) => {
               setHideElseCommands((prev) => !prev);

@@ -5,6 +5,8 @@ import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEdi
 import useGetTranslationSay from "../../../hooks/Say/useGetTranslationSay";
 import useUpdateCommandSayText from "../../../hooks/Say/useUpdateCommandSayText";
 import useUpdateCommandSayType from "../../../hooks/Say/useUpdateCommandSayType";
+import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldTextarea from "../../../../../../../shared/Textareas/PlotfieldTextarea";
 
 type CommandSayFieldItemTypes = {
   nameValue: string;
@@ -30,7 +32,6 @@ export default function CommandSayFieldItem({
   const [initialTextValue, setInitialTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
-  const theme = localStorage.getItem("theme");
 
   useEffect(() => {
     if (nameValue) {
@@ -75,17 +76,18 @@ export default function CommandSayFieldItem({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <button
+        <PlotfieldButton
           onClick={(e) => {
             e.stopPropagation();
             setShowUpdateNameModal((prev) => !prev);
+            if (showUpdateNameModal) {
+              e.currentTarget.blur();
+            }
           }}
-          className={`text-[1.3rem] text-text-light text-start ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default`}
+          className="capitalize text-start"
         >
           {sayVariationType}
-        </button>
+        </PlotfieldButton>
         <aside
           ref={updateNameModalRef}
           className={`${
@@ -94,7 +96,7 @@ export default function CommandSayFieldItem({
         >
           {CommandSayPossibleUpdateVariations.map((pv) => {
             return (
-              <button
+              <PlotfieldButton
                 key={pv}
                 onClick={() => {
                   setSayVariationType(pv);
@@ -103,22 +105,17 @@ export default function CommandSayFieldItem({
                   );
                   setShowUpdateNameModal(false);
                 }}
-                className={`${
-                  pv === nameValue ? "hidden" : ""
-                } rounded-md capitalize text-[1.3rem] text-text-dark hover:text-text-light transition-all p-[1rem] cursor-pointer hover:bg-primary-darker`}
+                className={`${pv === nameValue ? "hidden" : ""} capitalize`}
               >
                 {pv}
-              </button>
+              </PlotfieldButton>
             );
           })}
         </aside>
       </div>
       <form className="sm:w-[77%] flex-grow w-full">
-        <textarea
+        <PlotfieldTextarea
           value={textValue}
-          className={`w-full ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]`}
           placeholder="Such a lovely day"
           onChange={(e) => setTextValue(e.target.value)}
         />

@@ -9,6 +9,7 @@ import useConditionBlocks, {
 } from "./Context/ConditionContext";
 import CreateConditionValueTypeModal from "./CreateConditionValueTypeModal";
 import PlotfieldInsideConditionBlock from "./PlotfieldInsideConditionBlock/PlotfieldInsideConditionBlock";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 
 type CommandConditionFieldTypes = {
   plotFieldCommandId: string;
@@ -60,9 +61,7 @@ export default function CommandConditionField({
   return (
     <div className="flex gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] flex-col">
       <div className="min-w-[10rem] flex-grow w-full relative flex items-start gap-[1rem]">
-        <h3 className="text-[1.4rem] text-start text-text-light outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary text-gray-600 cursor-default">
-          {nameValue}
-        </h3>
+        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
         <ButtonHoverPromptModal
           contentName="Создать Блок"
           positionByAbscissa="right"
@@ -162,9 +161,7 @@ function ConditionBlocksList({
           </div>
         ) : null}
         <div className="min-w-[10rem] w-full relative flex gap-[.5rem] flex-wrap bg-secondary rounded-md">
-          <h3 className="text-[1.4rem] min-w-[15rem] text-start text-text-light outline-gray-300 w-full m-[.5rem] capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary text-gray-600 cursor-default">
-            Else
-          </h3>
+          <PlotfieldCommandNameField>Else</PlotfieldCommandNameField>
           <ConditionBlockElse
             plotFieldCommandId={plotFieldCommandId}
             topologyBlockId={topologyBlockId}

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { IfValueTypes } from "../../../../../../types/StoryEditor/PlotField/IfCommand/IfCommandTypes";
 import useUpdateIfConditionValue from "../hooks/If/Values/useUpdateIfConditionValue";
-import { PlotfieldSingsPrompt } from "../Condition/ConditionValueItem";
-import { AllConditionSigns } from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
+import {
+  AllConditionSigns,
+  ConditionSignTypes,
+} from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
+import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 export default function CommandIfValueItem({
   _id,
@@ -71,7 +74,7 @@ export default function CommandIfValueItem({
         >
           {AllConditionSigns &&
             AllConditionSigns?.map((c) => (
-              <PlotfieldSingsPrompt
+              <PlotfieldIfSingsPrompt
                 key={c}
                 signName={c}
                 setShowSignModal={setShowSignModal}
@@ -90,5 +93,29 @@ export default function CommandIfValueItem({
         onChange={(e) => setCurrentValue(+e.target.value)}
       />
     </>
+  );
+}
+
+type PlotfieldSingsPromptTypes = {
+  setShowSignModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentSign: React.Dispatch<React.SetStateAction<ConditionSignTypes>>;
+  signName: ConditionSignTypes;
+};
+
+function PlotfieldIfSingsPrompt({
+  setShowSignModal,
+  setCurrentSign,
+  signName,
+}: PlotfieldSingsPromptTypes) {
+  return (
+    <AsideScrollableButton
+      type="button"
+      onClick={() => {
+        setShowSignModal(false);
+        setCurrentSign(signName);
+      }}
+    >
+      {signName}
+    </AsideScrollableButton>
   );
 }

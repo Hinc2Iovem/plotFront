@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useGetAppearancePartById from "../../../../../../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
 import { TranslationAppearancePartTypes } from "../../../../../../../types/Additional/TranslationTypes";
+import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type EmotionAppearancePartNameTypes = {
   setAppearancePartName?: React.Dispatch<React.SetStateAction<string>>;
@@ -23,12 +24,11 @@ export default function PlotfieldAppearancePartsPrompt({
   const [currentAppearancePartName] = useState(
     (translations || [])[0]?.text || ""
   );
-  const theme = localStorage.getItem("theme");
 
   return (
     <>
       {appearancePart?.img ? (
-        <button
+        <AsideScrollableButton
           type="button"
           onClick={() => {
             if (setAppearancePartName) {
@@ -42,23 +42,18 @@ export default function PlotfieldAppearancePartsPrompt({
               setAppearancePartImg(appearancePart?.img || "");
             }
           }}
-          className={`rounded-md ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } focus-within:text-text-light focus-within:bg-primary-darker flex px-[1rem] py-[.5rem] items-center justify-between hover:bg-primary-darker hover:text-text-light text-text-dark transition-all `}
         >
-          <p className="text-[1.3rem] rounded-md">
-            {currentAppearancePartName.length > 20
-              ? currentAppearancePartName.substring(0, 20) + "..."
-              : currentAppearancePartName}
-          </p>
+          {currentAppearancePartName.length > 20
+            ? currentAppearancePartName.substring(0, 20) + "..."
+            : currentAppearancePartName}
           <img
             src={appearancePart?.img || ""}
             alt="AppearancePartImg"
             className="w-[3rem] rounded-md"
           />
-        </button>
+        </AsideScrollableButton>
       ) : (
-        <button
+        <AsideScrollableButton
           type="button"
           onClick={() => {
             if (setAppearancePartName) {
@@ -72,14 +67,11 @@ export default function PlotfieldAppearancePartsPrompt({
               setAppearancePartImg("");
             }
           }}
-          className={`text-start ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } focus-within:text-text-light focus-within:bg-primary-darker text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all rounded-md`}
         >
           {currentAppearancePartName.length > 20
             ? currentAppearancePartName.substring(0, 20) + "..."
             : currentAppearancePartName}
-        </button>
+        </AsideScrollableButton>
       )}
     </>
   );

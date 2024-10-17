@@ -4,6 +4,9 @@ import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character
 import "../../../../../../Flowchart/FlowchartStyles.css";
 import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
 import CommandSayCreateEmotionFieldModal from "./ModalCreateEmotion/CommandSayCreateEmotionFieldModal";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type FormEmotionTypes = {
   plotFieldCommandSayId: string;
@@ -34,7 +37,6 @@ export default function FormEmotion({
 }: FormEmotionTypes) {
   const [newEmotionId, setNewEmotionId] = useState("");
   const emotionsRef = useRef<HTMLDivElement>(null);
-  const theme = localStorage.getItem("theme");
   const allEmotions = useMemo(() => {
     const res = [...emotions];
     if (emotionValue?.emotionName) {
@@ -104,7 +106,7 @@ export default function FormEmotion({
         className={`${showAllEmotions ? "z-[10]" : ""} w-full`}
       >
         <div className="w-full relative">
-          <input
+          <PlotfieldInput
             type="text"
             value={emotionValue?.emotionName || ""}
             placeholder="Эмоция"
@@ -113,9 +115,6 @@ export default function FormEmotion({
               setShowAllEmotions((prev) => !prev);
               setShowCharacters(false);
             }}
-            className={`text-[1.3rem] w-full ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } text-text-light px-[1rem] py-[.5rem] rounded-md shadow-md`}
             onChange={(e) => {
               setEmotionValue({
                 emotionName: e.target.value,
@@ -126,18 +125,16 @@ export default function FormEmotion({
             }}
           />
 
-          <aside
+          <AsideScrollable
             ref={emotionsRef}
-            className={`absolute ${
-              showAllEmotions ? "" : "hidden"
-            } bg-secondary rounded-md shadow-md translate-y-[.5rem] w-full max-h-[15rem] overflow-y-auto | containerScroll `}
+            className={`${showAllEmotions ? "" : "hidden"} translate-y-[.5rem]`}
           >
             <ul className="flex flex-col gap-[1rem] p-[.2rem]">
               {allEmotions.length ? (
                 allEmotions.map((em, i) => {
                   return (
                     <li key={em + "-" + i} className="flex justify-between">
-                      <button
+                      <AsideScrollableButton
                         onClick={(event) => {
                           setEmotionValue({
                             emotionName: em,
@@ -147,14 +144,9 @@ export default function FormEmotion({
                           handleEmotionFormSubmit(event, em);
                           setShowAllEmotions(false);
                         }}
-                        className={`w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-secondary ${
-                          theme === "light"
-                            ? "outline-gray-300"
-                            : "outline-gray-600"
-                        } hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark transition-all`}
                       >
                         {em}
-                      </button>
+                      </AsideScrollableButton>
                       {emotionValue?.imgUrl ? (
                         <img
                           src={emotionValue?.imgUrl || ""}
@@ -167,19 +159,15 @@ export default function FormEmotion({
                 })
               ) : !emotionValue?.emotionName?.trim().length ? (
                 <li>
-                  <button
-                    className={`w-full text-start text-[1.4rem] px-[1rem] py-[.5rem] bg-secondary ${
-                      theme === "light"
-                        ? "outline-gray-300"
-                        : "outline-gray-600"
-                    } hover:bg-primary-darker focus-within:bg-primary-darker focus-within:text-text-light hover:text-text-light text-text-dark transition-all`}
+                  <AsideScrollableButton
+                    onClick={() => setShowAllEmotions(false)}
                   >
                     Пусто
-                  </button>
+                  </AsideScrollableButton>
                 </li>
               ) : null}
             </ul>
-          </aside>
+          </AsideScrollable>
         </div>
       </form>
       <CommandSayCreateEmotionFieldModal

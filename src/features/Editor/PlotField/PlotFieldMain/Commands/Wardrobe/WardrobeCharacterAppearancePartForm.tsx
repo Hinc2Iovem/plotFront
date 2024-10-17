@@ -4,6 +4,7 @@ import useCreateWardrobeAppearanceTypeBlock from "../hooks/Wardrobe/WardrobeAppe
 import PlotfieldAppearancePartPromptMain from "../Prompts/AppearanceParts/PlotfieldAppearancePartPromptMain";
 import CommandWardrobeChoosingAppearanceType from "./CommandWardrobeChoosingAppearanceType";
 import CommandWardrobeCharacter from "./CommandWardrobeCharacter";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type WardrobeCharacterAppearancePartFormTypes = {
   characterId: string;
@@ -91,7 +92,7 @@ export default function WardrobeCharacterAppearancePartForm({
           }}
           className="w-full relative"
         >
-          <input
+          <PlotfieldInput
             onClick={(e) => {
               e.stopPropagation();
               setShowCharacterModal(false);

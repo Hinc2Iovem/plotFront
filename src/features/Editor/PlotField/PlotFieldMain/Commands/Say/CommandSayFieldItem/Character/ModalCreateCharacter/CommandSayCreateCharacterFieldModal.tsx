@@ -78,7 +78,7 @@ export default function CommandSayCreateCharacterFieldModal({
       ref={modalRef}
       className={`bg-secondary ${
         showModal ? "" : "hidden"
-      } translate-y-[7rem] z-10 shadow-md text-text-light w-full rounded-md absolute p-[1rem]`}
+      } translate-y-[4rem] z-10 shadow-md text-text-light w-full rounded-md absolute p-[1rem]`}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-[.5rem]">
         <p className="text-[1.4rem]">Такого персонажа не существует</p>

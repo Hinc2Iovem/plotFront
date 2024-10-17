@@ -14,7 +14,7 @@ import useCreateAmbient from "../hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../hooks/Background/useCreateBackground";
 import useCreateCall from "../hooks/Call/useCreateCall";
 import useCreateChoice from "../hooks/Choice/useCreateChoice";
-import useCreateComment from "../hooks/Comment/useCommentWait";
+import useCreateComment from "../hooks/Comment/useCreateComment";
 import useCreateCondition from "../hooks/Condition/useCreateCondition";
 import useCreateCutScene from "../hooks/CutScene/useCreateCutScene";
 import useCreateEffect from "../hooks/Effect/useCreateEffect";
@@ -330,15 +330,15 @@ export default function PlotfieldBlank({
       const allCommands: AllPossiblePlotFieldComamndsTypes =
         value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
       if (allCommands === "achievement") {
-        createCommandAchievement.mutate();
+        createCommandAchievement.mutate({});
       } else if (allCommands === "ambient") {
-        createCommandAmbient.mutate();
+        createCommandAmbient.mutate({});
       } else if (allCommands === "background") {
-        createBackground.mutate();
+        createBackground.mutate({});
       } else if (allCommands === "call") {
-        createCall.mutate();
+        createCall.mutate({});
       } else if (allCommands === "choice") {
-        createChoice.mutate();
+        createChoice.mutate({});
       } else if (allCommands === "condition") {
         const targetBlockId = generateMongoObjectId();
         const conditionBlockId = generateMongoObjectId();
@@ -373,31 +373,31 @@ export default function PlotfieldBlank({
           conditionBlockId,
         });
       } else if (allCommands === "cutscene") {
-        createCutScene.mutate();
+        createCutScene.mutate({});
       } else if (allCommands === "effect") {
-        createEffect.mutate();
+        createEffect.mutate({});
       } else if (allCommands === "getitem") {
-        createGetItem.mutate();
+        createGetItem.mutate({});
       } else if (allCommands === "if") {
-        createCommandIf.mutate();
+        createCommandIf.mutate({});
       } else if (allCommands === "key") {
-        createKey.mutate();
+        createKey.mutate({});
       } else if (allCommands === "move") {
-        createMove.mutate();
+        createMove.mutate({});
       } else if (allCommands === "music") {
-        createMusic.mutate();
+        createMusic.mutate({});
       } else if (allCommands === "name") {
-        createName.mutate();
+        createName.mutate({});
       } else if (allCommands === "sound") {
-        createSound.mutate();
+        createSound.mutate({});
       } else if (allCommands === "suit") {
-        createSuit.mutate();
+        createSuit.mutate({});
       } else if (allCommands === "wait") {
-        createWait.mutate();
+        createWait.mutate({});
       } else if (allCommands === "wardrobe") {
-        createWardrobe.mutate();
+        createWardrobe.mutate({});
       } else if (allCommands === "comment") {
-        createComment.mutate();
+        createComment.mutate({});
       }
 
       if (commandIfId?.trim().length) {

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useUpdateConditionBlockOrderOfExecution from "../hooks/Condition/ConditionBlock/useUpdateConditionBlockOrderOfExecution";
 import useConditionBlocks from "./Context/ConditionContext";
+import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 
 type DisplayOrderOfIfsModalTypes = {
   currentOrder: number | null;
@@ -36,20 +37,17 @@ export default function DisplayOrderOfIfsModal({
   });
   return (
     <div className="relative flex-grow">
-      <button
+      <PlotfieldButton
         onClick={(e) => {
           e.stopPropagation();
           setShowAllOrders((prev) => !prev);
         }}
-        className={`w-full flex-grow text-[1.4rem] ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-text-light shadow-md rounded-md px-[1rem] py-[.5rem]`}
         type="button"
       >
         {typeof currentOrder === "number"
           ? `Порядок выполнения - ${currentOrder}`
           : "Порядок выполнения"}
-      </button>
+      </PlotfieldButton>
       <aside
         ref={modalRef}
         className={`${

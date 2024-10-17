@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import useGetCommandWait from "../hooks/Wait/useGetCommandWait";
 import useUpdateWaitText from "../hooks/Wait/useUpdateWaitText";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type CommandWaitFieldTypes = {
   plotFieldCommandId: string;
@@ -13,7 +15,6 @@ export default function CommandWaitField({
 }: CommandWaitFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Wait");
   const [waitValue, setWaitValue] = useState("");
-  const theme = localStorage.getItem("theme");
   const { data: commandWait } = useGetCommandWait({
     plotFieldCommandId,
   });
@@ -47,20 +48,15 @@ export default function CommandWaitField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <h3 className="text-[1.3rem] text-text-light text-start outline-gray-300 w-full capitalize px-[1rem] py-[.5rem] rounded-md shadow-md bg-secondary cursor-default">
-          {nameValue}
-        </h3>
+        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
         className="sm:w-[77%] flex-grow w-full"
       >
-        <input
+        <PlotfieldInput
           value={waitValue || ""}
           type="number"
-          className={`w-full ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]`}
           placeholder="Ожидание"
           onChange={(e) => setWaitValue(e.target.value)}
         />

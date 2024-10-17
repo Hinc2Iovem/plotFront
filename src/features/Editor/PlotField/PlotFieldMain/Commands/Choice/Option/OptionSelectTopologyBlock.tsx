@@ -5,6 +5,9 @@ import useUpdateChoiceOptionTopologyBlock from "../../hooks/Choice/ChoiceOption/
 import useGetAllTopologyBlocksByEpisodeId from "../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../hooks/TopologyBlock/useGetTopologyBlockById";
 import useChoiceOptions from "../Context/ChoiceContext";
+import PlotfieldButton from "../../../../../../shared/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type OptionSelecteTopologyBlockTypes = {
   setShowAllTopologyBlocks: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,7 +34,6 @@ export default function OptionSelectTopologyBlock({
   const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState(
     topologyBlockName || ""
   );
-  const theme = localStorage.getItem("theme");
   const { episodeId } = useParams();
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId,
@@ -62,29 +64,26 @@ export default function OptionSelectTopologyBlock({
 
   return (
     <div className="relative self-end pr-[.2rem] pb-[.2rem] w-fit bg-secondary shadow-md">
-      <button
+      <PlotfieldButton
         onClick={(e) => {
           e.stopPropagation();
           setShowAllTopologyBlocks((prev) => !prev);
           setShowAllOrders(false);
         }}
-        className={`text-[1.3rem] relative z-[10] ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-text-light focus-within:bg-primary-darker shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap bg-secondary`}
         type="button"
       >
         {currentTopologyBlockName || "Текущая Ветка"}
-      </button>
-      <aside
+      </PlotfieldButton>
+      <AsideScrollable
         ref={modalRef}
         className={`${
           showAllTopologyBlocks ? "" : "hidden"
-        } overflow-y-auto max-h-[15rem] z-[20] flex flex-col gap-[1rem] p-[.5rem] pt-[1rem] absolute min-w-fit w-full rounded-md shadow-md bg-secondary right-[0rem] translate-y-[.2rem] | containerScroll`}
+        } min-w-fit w-full translate-y-[.5rem] whitespace-nowrap right-0`}
       >
         {(topologyBlockId && (allTopologyBlocks?.length || 0) > 1) ||
         (!topologyBlockId && allTopologyBlocks?.length) ? (
           allTopologyBlocks?.map((tb) => (
-            <button
+            <AsideScrollableButton
               key={tb._id}
               type="button"
               onClick={() => {
@@ -103,27 +102,22 @@ export default function OptionSelectTopologyBlock({
               }}
               className={`${topologyBlockId === tb._id ? "hidden" : ""} ${
                 currentTopologyBlockId === tb._id ? "hidden" : ""
-              } ${
-                theme === "light" ? "outline-gray-300" : "outline-gray-600"
-              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker shadow-md transition-all rounded-md`}
+              }`}
             >
               {tb.name}
-            </button>
+            </AsideScrollableButton>
           ))
         ) : (
-          <button
+          <AsideScrollableButton
             type="button"
             onClick={() => {
               setShowAllTopologyBlocks(false);
             }}
-            className={`${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] text-text-dark hover:bg-primary-darker hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker shadow-md transition-all rounded-md`}
           >
             Пусто
-          </button>
+          </AsideScrollableButton>
         )}
-      </aside>
+      </AsideScrollable>
     </div>
   );
 }

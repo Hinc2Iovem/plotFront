@@ -97,8 +97,6 @@ export default function PlotfieldInsideConditionBlock({
               "-" +
               i
             }
-            conditionName={op.conditionName || ""}
-            conditionValue={op.conditionValue || ""}
             conditionType={op.conditionType}
             conditionBlockId={op.conditionBlockId}
             plotfieldCommandId={plotfieldCommandId}

@@ -1,3 +1,4 @@
+import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 import useConditionBlocks from "./Context/ConditionContext";
 
 type ConditionBlockShowPlotTypes = {
@@ -14,10 +15,9 @@ export default function ConditionBlockShowPlot({
   conditionBlockId,
 }: ConditionBlockShowPlotTypes) {
   const { updateCurrentlyOpenConditionBlock } = useConditionBlocks();
-  const theme = localStorage.getItem("theme");
   return (
-    <div className="relative flex-grow">
-      <button
+    <div className="relative flex-grow h-fit">
+      <PlotfieldButton
         onClick={(e) => {
           e.stopPropagation();
           if (targetBlockId) {
@@ -31,13 +31,10 @@ export default function ConditionBlockShowPlot({
             console.error("Choose TopologyBlock,firstly");
           }
         }}
-        className={`text-[1.4rem] w-full text-text-light ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } hover:bg-primary-darker transition-all focus-within:bg-primary-darker shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
         type="button"
       >
         Сценарий
-      </button>
+      </PlotfieldButton>
     </div>
   );
 }

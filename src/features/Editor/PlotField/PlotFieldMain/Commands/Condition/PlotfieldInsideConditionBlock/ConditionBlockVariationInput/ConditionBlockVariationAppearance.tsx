@@ -7,17 +7,21 @@ import useConditionBlocks from "../../Context/ConditionContext";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
 import useGetTranslationAppearancePartsByStoryId from "../../../../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
 import useCreateAppearancePartOptimistic from "../../../../../../../../hooks/Posting/AppearancePart/useCreateAppearancePartOptimistic";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
+import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
+import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
 
 type ConditionBlockVariationAppearanceTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
-  conditionName: string;
 };
 
 export default function ConditionBlockVariationAppearance({
   plotfieldCommandId,
   conditionBlockId,
-  conditionName,
 }: ConditionBlockVariationAppearanceTypes) {
   const { storyId } = useParams();
   const [showAppearancePromptModal, setShowAppearancePromptModal] =
@@ -25,14 +29,14 @@ export default function ConditionBlockVariationAppearance({
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] =
     useState(false);
-  const theme = localStorage.getItem("theme");
   const {
-    getCurrentlyOpenConditionBlock,
+    getConditionBlockById,
     updateConditionBlockName,
     updateConditionBlockValueId,
   } = useConditionBlocks();
   const [currentConditionName, setCurrentConditionName] = useState(
-    getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.conditionName || ""
+    getConditionBlockById({ plotfieldCommandId, conditionBlockId })
+      ?.conditionName || ""
   );
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -60,8 +64,8 @@ export default function ConditionBlockVariationAppearance({
   const debouncedValue = useDebounce({
     delay: 700,
     value:
-      getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.conditionName ||
-      "",
+      getConditionBlockById({ plotfieldCommandId, conditionBlockId })
+        ?.conditionName || "",
   });
 
   const handleUpdatingConditionContextValue = ({
@@ -120,7 +124,7 @@ export default function ConditionBlockVariationAppearance({
   useEffect(() => {
     if (
       debouncedValue?.trim().length &&
-      conditionName?.trim() !== debouncedValue.trim()
+      currentConditionName?.trim() !== debouncedValue.trim()
     ) {
       handleCheckValueCorrectnessBeforeUpdating({ onClick: false });
     }
@@ -133,8 +137,8 @@ export default function ConditionBlockVariationAppearance({
   });
 
   return (
-    <div className="w-[calc(100%-2.5rem)] relative">
-      <input
+    <div className="w-full relative">
+      <PlotfieldInput
         type="text"
         placeholder="Одежда"
         onClick={(e) => {
@@ -142,8 +146,9 @@ export default function ConditionBlockVariationAppearance({
           setShowAppearancePromptModal((prev) => !prev);
         }}
         value={
-          getCurrentlyOpenConditionBlock({
+          getConditionBlockById({
             plotfieldCommandId,
+            conditionBlockId,
           })?.conditionName || ""
         }
         onChange={(e) => {
@@ -154,27 +159,26 @@ export default function ConditionBlockVariationAppearance({
           setCurrentConditionName(e.target.value);
           updateConditionBlockName({
             conditionBlockId:
-              getCurrentlyOpenConditionBlock({
+              getConditionBlockById({
                 plotfieldCommandId,
+                conditionBlockId,
               })?.conditionBlockId || "",
             conditionName: e.target.value,
             plotfieldCommandId,
           });
         }}
         className={`${
-          highlightRedOnValueNonExisting ? " border-red-300 border-[2px]" : ""
-        } text-[1.5rem] ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-text-light bg-secondary focus-within:bg-primary-darker rounded-md shadow-sm px-[1rem] py-[.5rem] focus-within:shadow-inner transition-shadow`}
+          highlightRedOnValueNonExisting ? "border-red-300 border-[2px]" : ""
+        }`}
       />
-      <aside
+      <AsideScrollable
         ref={modalRef}
         className={`${
           showAppearancePromptModal ? "" : "hidden"
-        } absolute rounded-md shadow-sm p-[1rem] bg-secondary flex flex-col gap-[.5rem] w-full max-h-[20rem] z-[2] overflow-y-auto | containerScroll`}
+        } translate-y-[.5rem]`}
       >
         {memoizedAppearances.map((mk, i) => (
-          <button
+          <AsideScrollableButton
             key={mk + "-" + i}
             onClick={() => {
               setShowAppearancePromptModal(false);
@@ -182,21 +186,19 @@ export default function ConditionBlockVariationAppearance({
               handleCheckValueCorrectnessBeforeUpdating({ onClick: true });
               updateConditionBlockName({
                 conditionBlockId:
-                  getCurrentlyOpenConditionBlock({
+                  getConditionBlockById({
                     plotfieldCommandId,
+                    conditionBlockId,
                   })?.conditionBlockId || "",
                 conditionName: mk,
                 plotfieldCommandId,
               });
             }}
-            className={`capitalize text-[1.5rem] ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } text-text-dark hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker bg-secondary px-[1rem] py-[.5rem] rounded-md hover:bg-primary transition-all focus-within:border-[2px] focus-within:border-white`}
           >
             {mk}
-          </button>
+          </AsideScrollableButton>
         ))}
-      </aside>
+      </AsideScrollable>
 
       <CreateNewValueModal
         conditionName={currentConditionName}
@@ -229,7 +231,6 @@ function CreateNewValueModal({
   const { storyId } = useParams();
   const focusOnBtnRef = useRef<HTMLButtonElement>(null);
   const createNewAppearanceModalRef = useRef<HTMLDivElement>(null);
-  const theme = localStorage.getItem("theme");
   const updateConditionBlock = useUpdateConditionValue({
     conditionBlockId,
   });
@@ -263,24 +264,19 @@ function CreateNewValueModal({
   });
 
   return (
-    <aside
+    <AsideInformativeOrSuggestion
       ref={createNewAppearanceModalRef}
-      className={`${
-        showCreateNewValueModal ? "" : "hidden"
-      } absolute rounded-md shadow-sm p-[1rem] bg-secondary flex flex-col gap-[.5rem] w-full`}
+      className={`${showCreateNewValueModal ? "" : "hidden"}`}
     >
-      <p className="text-[1.5rem] text-text-light">
+      <InformativeOrSuggestionText>
         Такого ключа не существует, хотите создать?
-      </p>
-      <button
+      </InformativeOrSuggestionText>
+      <InformativeOrSuggestionButton
         ref={focusOnBtnRef}
         onClick={handleCreatingNewAppearance}
-        className={`self-end text-[1.6rem] w-fit rounded-md bg-secondary shadow-sm ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } focus-within:border-black focus-within:border-[2px] focus-within:text-black`}
       >
         Создать
-      </button>
-    </aside>
+      </InformativeOrSuggestionButton>
+    </AsideInformativeOrSuggestion>
   );
 }

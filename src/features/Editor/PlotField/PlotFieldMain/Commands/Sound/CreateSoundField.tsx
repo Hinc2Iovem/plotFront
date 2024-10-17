@@ -48,10 +48,12 @@ export default function CreateSoundField({
       ref={modalRef}
       className={`bg-secondary ${
         showModal ? "" : "hidden"
-      } translate-y-[3.3rem] z-10 shadow-md text-gray-600 w-full rounded-md absolute p-[1rem]`}
+      } translate-y-[3.3rem] z-10 shadow-md text-text-light w-full rounded-md absolute p-[1rem]`}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-[.5rem]">
-        <p className="text-[1.4rem]">Такого Звука не существует</p>
+        <p className="text-[1.4rem] text-text-dark">
+          Такого Звука не существует
+        </p>
         <button
           ref={cursorRef}
           className="w-fit self-end text-[1.5rem] border-[1px] border-dotted border-black rounded-md px-[1rem] focus:shadow-inner active:bg-black shadow-md shadow-gray-200"
