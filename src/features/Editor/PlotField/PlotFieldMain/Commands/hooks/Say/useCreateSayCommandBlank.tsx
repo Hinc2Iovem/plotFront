@@ -3,12 +3,13 @@ import { axiosCustomized } from "../../../../../../../api/axios";
 import { CommandSayVariationTypes } from "../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 
 type CreateSayCommandTypes = {
-  plotFieldCommandId: string;
+  plotFieldCommandId?: string;
   topologyBlockId: string;
 };
 
 type CreateSayCommandOnMutationTypes = {
   type: CommandSayVariationTypes;
+  plotfieldCommandId?: string;
 };
 
 export default function useCreateSayCommandBlank({
@@ -16,9 +17,15 @@ export default function useCreateSayCommandBlank({
   topologyBlockId,
 }: CreateSayCommandTypes) {
   return useMutation({
-    mutationFn: async ({ type }: CreateSayCommandOnMutationTypes) => {
+    mutationFn: async ({
+      type,
+      plotfieldCommandId,
+    }: CreateSayCommandOnMutationTypes) => {
+      const commandId = plotFieldCommandId?.trim().length
+        ? plotFieldCommandId
+        : plotfieldCommandId;
       await axiosCustomized.post(
-        `/says/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/blank/translations`,
+        `/says/${commandId}/topologyBlocks/${topologyBlockId}/blank/translations`,
         {
           type,
         }

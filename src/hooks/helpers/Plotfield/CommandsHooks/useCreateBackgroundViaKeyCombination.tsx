@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateSuit from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Suit/useCreateSuit";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBackground from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Background/useCreateBackground";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 
-type CreateSuitViaKeyCombinationTypes = {
+type CreateBackgroundViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateSuitViaKeyCombination({
+export default function useCreateBackgroundViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateSuitViaKeyCombinationTypes) {
+}: CreateBackgroundViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createSuit = useCreateSuit({});
+  const createBackground = useCreateBackground({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateSuitViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("s") &&
-        pressedKeys.has("u")
+        ((pressedKeys.has("b") && pressedKeys.has("a")) ||
+          (pressedKeys.has("и") && pressedKeys.has("ф")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateSuitViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "suit",
+          commandName: "background",
         });
-        createSuit.mutate({ plotfieldCommandId: _id });
+        createBackground.mutate({ plotfieldCommandId: _id });
       }
     };
 

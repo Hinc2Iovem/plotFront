@@ -1,22 +1,22 @@
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateCommandIf from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/If/useCreateCommandIf";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateMove from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Move/useCreateMove";
 
-type CreateMoveViaKeyCombinationTypes = {
+type CreateIfViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateMoveViaKeyCombination({
+export default function useCreateIfViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateMoveViaKeyCombinationTypes) {
+}: CreateIfViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createMove = useCreateMove({});
+  const createIf = useCreateCommandIf({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateMoveViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("m") &&
-        pressedKeys.has("o")
+        ((pressedKeys.has("i") && pressedKeys.has("f")) ||
+          (pressedKeys.has("ш") && pressedKeys.has("а")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateMoveViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "move",
+          commandName: "if",
         });
-        createMove.mutate({ plotfieldCommandId: _id });
+        createIf.mutate({ plotfieldCommandId: _id });
       }
     };
 

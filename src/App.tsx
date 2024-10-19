@@ -16,6 +16,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import ProfileLayout from "./layouts/ProfileLayout";
 import StoryLayout from "./layouts/StoryLayout";
 import { useEffect } from "react";
+import KeyBinds from "./features/StorySinglePage/KeyBinds/KeyBinds";
 
 export default function App() {
   useEffect(() => {
@@ -57,6 +58,7 @@ export default function App() {
               <Route path="stories/:storyId" element={<StorySinglePage />} />
               <Route path="stories/:storyId/emotions" element={<Emotion />} />
               <Route path="stories/:storyId/wardrobes" element={<Wardrobe />} />
+              <Route path="stories/:storyId/keyBinds" element={<KeyBinds />} />
               <Route
                 path="stories/:storyId/characters"
                 element={<CharacterListPage />}

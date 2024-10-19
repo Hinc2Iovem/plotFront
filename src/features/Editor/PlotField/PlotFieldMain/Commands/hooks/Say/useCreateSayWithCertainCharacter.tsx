@@ -1,11 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../../api/axios";
-import {
-  AllPossiblePlotFieldComamndsTypes,
-  PlotFieldTypes,
-} from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import usePlotfieldCommands from "../../../Context/PlotFieldContext";
+import { axiosCustomized } from "../../../../../../../api/axios";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import usePlotfieldCommands from "../../../../Context/PlotFieldContext";
+import { CommandSayVariationTypes } from "../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+
+type CreateSayCommandTypes = {
+  plotFieldCommandId?: string;
+  topologyBlockId: string;
+};
 
 type NewCommandTypes = {
   _id: string;
@@ -15,25 +17,36 @@ type NewCommandTypes = {
   commandOrder: number;
   commandName?: AllPossiblePlotFieldComamndsTypes;
   sayType?: CommandSayVariationTypes;
+  characterName: string;
+  characterId: string;
 };
 
-export default function useCreateBlankCommand({
+export default function useCreateSayWithCertainCharacter({
+  plotFieldCommandId,
   topologyBlockId,
-}: {
-  topologyBlockId: string;
-}) {
+}: CreateSayCommandTypes) {
   const { addCommand } = usePlotfieldCommands();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ["new", "plotfield", "topologyBlock", topologyBlockId],
-    mutationFn: async (commandOrder) => {
-      return await axiosCustomized
-        .post<PlotFieldTypes>(`/plotField/topologyBlocks/${topologyBlockId}`, {
-          commandOrder: commandOrder.commandOrder,
-          _id: commandOrder._id,
-          commandName: commandOrder.commandName,
-        })
-        .then((r) => r.data);
+    mutationFn: async ({
+      _id,
+      characterId,
+      characterName,
+      commandName,
+      commandOrder,
+    }) => {
+      const commandId = plotFieldCommandId?.trim().length
+        ? plotFieldCommandId
+        : _id;
+      await axiosCustomized.post(
+        `/plotField/${commandId}/topologyBlocks/${topologyBlockId}/certainCharacter`,
+        {
+          characterId,
+          characterName,
+          commandName,
+          commandOrder,
+        }
+      );
     },
     onMutate: async (newCommand: NewCommandTypes) => {
       await queryClient.cancelQueries({
@@ -54,6 +67,8 @@ export default function useCreateBlankCommand({
           commandOrder: newCommand.commandOrder,
           topologyBlockId,
           sayType: newCommand?.sayType || ("" as CommandSayVariationTypes),
+          characterName: newCommand?.characterName || "",
+          characterId: newCommand?.characterId || "",
         },
         topologyBlockId,
       });

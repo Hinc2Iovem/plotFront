@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import useGetSeasonTranslationsByStoryIdAndSearch from "../../../../../hooks/Fetching/Translation/Season/useGetSeasonTranslationsByStoryIdAndSearch";
+import { useEffect, useMemo, useRef, useState } from "react";
+import useGetSeasonsByStoryId from "../../../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
 import useOutOfModal from "../../../../../hooks/UI/useOutOfModal";
-import useDebounce from "../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import AsideScrollable from "../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../shared/Inputs/PlotfieldInput";
 import CheckForCompletenessEpisode from "./CheckForCompletenessEpisode";
+import useDebounce from "../../../../../hooks/utilities/useDebounce";
 
 type SeasonPromptTypes = {
   setSeasonId: React.Dispatch<React.SetStateAction<string>>;
@@ -29,20 +32,57 @@ export default function SeasonPrompt({
   const modalSeasonsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const debouncedValue = useDebounce({ value: seasonValue || "", delay: 500 });
+  const { data: seasonsSearch, isLoading } = useGetSeasonsByStoryId({
+    language: "russian",
+    storyId,
+  });
 
-  const { data: seasonsSearch, isLoading } =
-    useGetSeasonTranslationsByStoryIdAndSearch({
-      debouncedValue,
-      language: "russian",
-      storyId,
-    });
+  const debouncedValue = useDebounce({ value: seasonValue || "", delay: 700 });
+
+  const filteredSeasons = useMemo(() => {
+    if (seasonsSearch) {
+      if (seasonValue) {
+        return seasonsSearch.filter((ss) =>
+          ss.translations.filter(
+            (sst) =>
+              sst.textFieldName === "seasonName" &&
+              sst.text.toLowerCase().includes(seasonValue.toLowerCase())
+          )
+        );
+      } else {
+        return seasonsSearch;
+      }
+    } else {
+      return [];
+    }
+  }, [seasonsSearch, seasonValue]);
 
   useEffect(() => {
     if (!showSeasons && !seasonValue && seasonBackupValue && setSeasonValue) {
       setSeasonValue(seasonBackupValue);
     }
   }, [showSeasons, seasonValue, seasonBackupValue]);
+
+  useEffect(() => {
+    if (debouncedValue) {
+      const matchedValue = seasonsSearch?.find((cs) =>
+        cs?.translations?.some(
+          (tct) =>
+            tct.textFieldName === "seasonName" &&
+            tct.text.toLowerCase() === debouncedValue.toLowerCase()
+        )
+      );
+      if (matchedValue) {
+        setSeasonId(matchedValue?.seasonId);
+        if (setSeasonValue) {
+          setSeasonValue(matchedValue?.translations[0]?.text);
+        }
+        setSeasonBackupValue(matchedValue?.translations[0]?.text);
+      } else {
+        setSeasonId("");
+      }
+    }
+  }, [debouncedValue, seasonsSearch]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,14 +105,10 @@ export default function SeasonPrompt({
   });
 
   return (
-    <form
-      className="bg-secondary rounded-md shadow-sm relative"
-      onSubmit={handleSubmit}
-    >
-      <input
+    <form className={`rounded-md shadow-sm relative`} onSubmit={handleSubmit}>
+      <PlotfieldInput
         type="text"
         ref={inputRef}
-        className="w-full rounded-md shadow-md bg-secondary text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
         placeholder="Название Сезона"
         onClick={(e) => {
           e.stopPropagation();
@@ -92,19 +128,17 @@ export default function SeasonPrompt({
         }}
       />
       {storyId ? (
-        <aside
+        <AsideScrollable
           ref={modalSeasonsRef}
-          className={`${
-            showSeasons ? "" : "hidden"
-          } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+          className={`${showSeasons ? "" : "hidden"} translate-y-[.5rem]`}
         >
           {isLoading ? (
             <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">
               Загрузка...
             </div>
-          ) : seasonsSearch && seasonsSearch.length > 0 ? (
-            seasonsSearch.map((s) => (
-              <button
+          ) : filteredSeasons && filteredSeasons.length > 0 ? (
+            filteredSeasons.map((s) => (
+              <AsideScrollableButton
                 key={s._id}
                 type="button"
                 onClick={() => {
@@ -114,7 +148,12 @@ export default function SeasonPrompt({
                   }
                   setShowSeasons(false);
                 }}
-                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md relative"
+                className={`${
+                  seasonBackupValue?.toLowerCase() ===
+                  s.translations[0].text?.toLowerCase()
+                    ? "bg-primary text-text-light"
+                    : ""
+                }`}
               >
                 {s.translations[0]?.text || ""}
                 {currentLanguage && translateToLanguage ? (
@@ -128,37 +167,33 @@ export default function SeasonPrompt({
                     ) : null}
                   </>
                 ) : null}
-              </button>
+              </AsideScrollableButton>
             ))
           ) : (
-            <button
+            <AsideScrollableButton
               type="button"
               onClick={() => {
                 setShowSeasons(false);
               }}
-              className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
             >
               Нету Подходящих Сезонов
-            </button>
+            </AsideScrollableButton>
           )}
-        </aside>
+        </AsideScrollable>
       ) : (
-        <aside
+        <AsideScrollable
           ref={modalSeasonsRef}
-          className={`${
-            showSeasons ? "" : "hidden"
-          } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+          className={`${showSeasons ? "" : "hidden"} translate-y-[.5rem]`}
         >
-          <button
+          <AsideScrollableButton
             type="button"
             onClick={() => {
               setShowSeasons(false);
             }}
-            className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
           >
             Выберите Историю
-          </button>
-        </aside>
+          </AsideScrollableButton>
+        </AsideScrollable>
       )}
     </form>
   );

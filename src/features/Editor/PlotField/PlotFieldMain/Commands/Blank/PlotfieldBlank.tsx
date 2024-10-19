@@ -35,6 +35,7 @@ import { generateMongoObjectId } from "../../../../../../utils/generateMongoObje
 import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import useConditionBlocks from "../Condition/Context/ConditionContext";
+import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -475,7 +476,7 @@ export default function PlotfieldBlank({
             setShowPromptValues((prev) => !prev);
             setShowCreateCharacterModal(false);
           }}
-          placeholder="author"
+          placeholder="ПУСТОТА"
           onChange={(e) => {
             setValue(e.target.value);
             if (!showPromptValues) {
@@ -484,41 +485,37 @@ export default function PlotfieldBlank({
           }}
           className="outline-none text-[1.5rem] text-text-light w-full"
         />
-        <aside
+        <AsideScrollable
           ref={promptRef}
           className={`${
             showPromptValues && !showCreateCharacterModal ? "" : "hidden"
-          } 
-        z-[1000] w-full bg-secondary shadow-md rounded-md absolute left-0 max-h-[20rem] translate-y-[1rem] overflow-auto | containerScroll
-        `}
+          } translate-y-[1rem] left-0`}
         >
-          <ul className="flex flex-col gap-[1rem] p-[1rem]">
-            {filteredPromptValues.length > 0 ? (
-              filteredPromptValues.map((pv) => (
-                <button
-                  key={pv}
-                  onClick={() => {
-                    setValue(pv);
-                    setShowPromptValues(false);
-                  }}
-                  className="text-text-dark hover:text-text-light hover:bg-primary focus-within:text-text-light focus-within:bg-primary text-start w-full text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
-                >
-                  {pv}
-                </button>
-              ))
-            ) : (
+          {filteredPromptValues.length > 0 ? (
+            filteredPromptValues.map((pv) => (
               <button
-                type="button"
+                key={pv}
                 onClick={() => {
+                  setValue(pv);
                   setShowPromptValues(false);
                 }}
                 className="text-text-dark hover:text-text-light hover:bg-primary focus-within:text-text-light focus-within:bg-primary text-start w-full text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
               >
-                Такой команды или персонажа не существует
+                {pv}
               </button>
-            )}
-          </ul>
-        </aside>
+            ))
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setShowPromptValues(false);
+              }}
+              className="text-text-dark hover:text-text-light hover:bg-primary focus-within:text-text-light focus-within:bg-primary text-start w-full text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
+            >
+              Такой команды или персонажа не существует
+            </button>
+          )}
+        </AsideScrollable>
       </form>
       <PlotFieldBlankCreateCharacter
         setShowModal={setShowCreateCharacterModal}

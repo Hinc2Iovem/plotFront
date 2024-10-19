@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
 import useGetTranslationStoryById from "../../../hooks/Fetching/Story/useGetTranslationStoryById";
 import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import { handleUploadeImg } from "../../../utils/handleUploadImg";
 import SyncLoad from "../../shared/Loaders/SyncLoader";
 import PreviewImage from "../../shared/utilities/PreviewImage";
+import keyButton from "../../../assets/images/Story/keyButton.png";
+import { useQueryClient } from "@tanstack/react-query";
+import { getAllCharacters } from "../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
+import { getTranslationCharacters } from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import { getSeasonsByStoryId } from "../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
 
 export default function StoryHeroSection() {
   const { storyId } = useParams();
@@ -59,7 +64,6 @@ export default function StoryHeroSection() {
       setStoryImg(story?.imgUrl || "");
     }
   }, [story]);
-  console.log("story: ", story);
 
   useEffect(() => {
     if (preview) {
@@ -98,8 +102,8 @@ export default function StoryHeroSection() {
   });
 
   return (
-    <section className="flex max-w-[148rem] mx-auto min-h-screen lg:items-start sm:items-center mt-[1rem] sm:mt-0 lg:mt-[2.5rem] px-[1rem] relative">
-      <div className="flex lg:flex-row lg:w-full lg:mx-0 lg:items-start flex-col w-[100rem] gap-[1rem] h-fit items-center mx-auto">
+    <section className="flex flex-col max-w-[148rem] mx-auto min-h-screen lg:items-start sm:items-center mt-[1rem] sm:mt-0 lg:mt-[2.5rem] px-[1rem] relative">
+      <div className="flex lg:flex-row lg:w-full lg:mx-0 lg:items-start flex-col w-[100rem] gap-[1rem] h-fit items-center mt-[2rem]">
         <div className="w-full lg:max-w-[20rem] lg:h-[30rem] sm:max-w-[50rem] h-[45rem] relative bg-lightest-gray shadow-md shadow-gray-600 rounded-md">
           {storyImg ? (
             <img
@@ -113,7 +117,7 @@ export default function StoryHeroSection() {
               imagePreview={preview}
               setPreview={setPreview}
               imgClasses="w-full h-full object-cover rounded-md"
-              divClasses="h-full rounded-md shadow-sm relative"
+              divClasses="h-full rounded-md shadow-sm relative bg-primary"
             />
           )}
           <SyncLoad
@@ -204,6 +208,67 @@ export default function StoryHeroSection() {
           </h4>
         </div>
       </div>
+
+      <KeyBindsBlock />
     </section>
   );
 }
+
+const KeyBindsBlock = () => {
+  const { storyId } = useParams();
+
+  const queryClient = useQueryClient();
+
+  const prefetchTranslatedCharacters = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["translation", "russian", "character", "story", storyId],
+      queryFn: () =>
+        getTranslationCharacters({
+          language: "russian",
+          storyId: storyId || "",
+        }),
+    });
+  };
+
+  const prefetchCharacters = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["story", storyId, "characters"],
+      queryFn: () =>
+        getAllCharacters({
+          storyId: storyId || "",
+        }),
+    });
+  };
+
+  const prefetchSeasons = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["stories", storyId, "season", "language", "russian"],
+      queryFn: () =>
+        getSeasonsByStoryId({
+          storyId: storyId || "",
+          language: "russian",
+        }),
+    });
+  };
+
+  const handlePrefetches = () => {
+    Promise.all([
+      prefetchTranslatedCharacters(),
+      prefetchCharacters(),
+      prefetchSeasons(),
+    ]);
+  };
+
+  return (
+    <div className="flex gap-[1rem] mt-[2rem] flex-wrap w-full mb-[1rem]">
+      <Link
+        onFocus={handlePrefetches}
+        onMouseOver={handlePrefetches}
+        to={`/stories/${storyId}/keyBinds`}
+        className="w-[15rem] h-[15rem] rounded-2xl hover:bg-primary-darker bg-primary transition-colors"
+      >
+        <img src={keyButton} alt="A" draggable="false" className="" />
+      </Link>
+    </div>
+  );
+};

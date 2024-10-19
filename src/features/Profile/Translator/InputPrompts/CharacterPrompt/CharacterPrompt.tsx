@@ -4,6 +4,8 @@ import useOutOfModal from "../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../hooks/utilities/useDebounce";
 import CheckForCompletenessAppearancePart from "./CheckForCompletenessAppearancePart";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import AsideScrollable from "../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldInput from "../../../../shared/Inputs/PlotfieldInput";
 
 type CharacterPromptTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
@@ -29,6 +31,7 @@ export default function CharacterPrompt({
   const [characterValue, setCharacterValue] = useState("");
   const [characterBackupValue, setCharacterBackupValue] = useState("");
   const theme = localStorage.getItem("theme");
+
   useOutOfModal({
     modalRef: modalCharactersRef,
     setShowModal: setShowCharacters,
@@ -103,9 +106,8 @@ export default function CharacterPrompt({
         </>
       ) : (
         <>
-          <input
+          <PlotfieldInput
             type="text"
-            className="w-full rounded-md text-text-light bg-secondary text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
             placeholder="Имя Персонажа"
             onClick={(e) => {
               e.stopPropagation();
@@ -121,11 +123,9 @@ export default function CharacterPrompt({
               setCharacterValue(e.target.value);
             }}
           />
-          <aside
+          <AsideScrollable
             ref={modalCharactersRef}
-            className={`${
-              showCharacters ? "" : "hidden"
-            } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+            className={`${showCharacters ? "" : "hidden"} translate-y-[.5rem]`}
           >
             {isLoading ? (
               <div className="text-[1.4rem] text-text-light text-center py-[.5rem]">
@@ -173,7 +173,7 @@ export default function CharacterPrompt({
                 Нету Подходящих Персонажей
               </button>
             )}
-          </aside>
+          </AsideScrollable>
         </>
       )}
     </form>

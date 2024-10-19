@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBackground from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Background/useCreateBackground";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateWardrobe from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Wardrobe/useCreateWardrobe";
 
-type CreateBackgroundViaKeyCombinationTypes = {
+type CreateWardrobeViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateBackgroundViaKeyCombination({
+export default function useCreateWardrobeViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateBackgroundViaKeyCombinationTypes) {
+}: CreateWardrobeViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createBackground = useCreateBackground({});
+  const createWardrobe = useCreateWardrobe({ topologyBlockId });
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateBackgroundViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("b") &&
-        pressedKeys.has("a")
+        ((pressedKeys.has("w") && pressedKeys.has("d")) ||
+          (pressedKeys.has("ц") && pressedKeys.has("в")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateBackgroundViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "background",
+          commandName: "wardrobe",
         });
-        createBackground.mutate({ plotfieldCommandId: _id });
+        createWardrobe.mutate({ plotfieldCommandId: _id });
       }
     };
 

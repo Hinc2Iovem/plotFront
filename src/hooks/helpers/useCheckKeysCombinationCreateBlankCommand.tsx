@@ -9,7 +9,10 @@ export default function useCheckKeysCombinationCreateBlankCommand() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key.toLowerCase() === "m") {
+      if (
+        event.ctrlKey &&
+        (event.key.toLowerCase() === "m" || event.key.toLowerCase() === "ь")
+      ) {
         setCommand("blankPlotFieldCommand");
       }
     };

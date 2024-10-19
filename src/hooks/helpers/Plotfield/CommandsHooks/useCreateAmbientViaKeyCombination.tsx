@@ -1,22 +1,22 @@
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateCommandIf from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/If/useCreateCommandIf";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
 import { useEffect } from "react";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateAmbient from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Ambient/useCreateAmbient";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 
-type CreateIfViaKeyCombinationTypes = {
+type CreateAmbientViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateIfViaKeyCombination({
+export default function useCreateAmbientViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateIfViaKeyCombinationTypes) {
+}: CreateAmbientViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createIf = useCreateCommandIf({});
+  const createAmbient = useCreateAmbient({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateIfViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("i") &&
-        pressedKeys.has("f")
+        ((pressedKeys.has("a") && pressedKeys.has("m")) ||
+          (pressedKeys.has("ф") && pressedKeys.has("ь")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateIfViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "if",
+          commandName: "ambient",
         });
-        createIf.mutate({ plotfieldCommandId: _id });
+        createAmbient.mutate({ plotfieldCommandId: _id });
       }
     };
 

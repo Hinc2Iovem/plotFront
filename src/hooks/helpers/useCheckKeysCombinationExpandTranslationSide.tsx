@@ -8,7 +8,10 @@ export default function useCheckKeysCombinationExpandTranslationSide() {
     );
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.altKey && event.key.toLowerCase() === "c") {
+      if (
+        event.altKey &&
+        (event.key.toLowerCase() === "c" || event.key.toLowerCase() === "с")
+      ) {
         if (command === "expandTranslationSide") {
           setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
         } else {

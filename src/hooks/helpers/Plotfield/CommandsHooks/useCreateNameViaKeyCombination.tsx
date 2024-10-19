@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateMusic from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Music/useCreateMusic";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateName from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Name/useCreateName";
 
-type CreateMusicViaKeyCombinationTypes = {
+type CreateNameViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateMusicViaKeyCombination({
+export default function useCreateNameViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateMusicViaKeyCombinationTypes) {
+}: CreateNameViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createMusic = useCreateMusic({});
+  const createName = useCreateName({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateMusicViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("m") &&
-        pressedKeys.has("u")
+        ((pressedKeys.has("n") && pressedKeys.has("a")) ||
+          (pressedKeys.has("т") && pressedKeys.has("ф")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateMusicViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "music",
+          commandName: "name",
         });
-        createMusic.mutate({ plotfieldCommandId: _id });
+        createName.mutate({ plotfieldCommandId: _id });
       }
     };
 

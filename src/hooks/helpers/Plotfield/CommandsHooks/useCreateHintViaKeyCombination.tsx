@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateWardrobe from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Wardrobe/useCreateWardrobe";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateSayCommandBlank from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Say/useCreateSayCommandBlank";
 
-type CreateWardrobeViaKeyCombinationTypes = {
+type CreateHintViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateWardrobeViaKeyCombination({
+export default function useCreateHintViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateWardrobeViaKeyCombinationTypes) {
+}: CreateHintViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createWardrobe = useCreateWardrobe({ topologyBlockId });
+  const createHint = useCreateSayCommandBlank({ topologyBlockId });
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateWardrobeViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("w") &&
-        pressedKeys.has("d")
+        ((pressedKeys.has("h") && pressedKeys.has("i")) ||
+          (pressedKeys.has("р") && pressedKeys.has("ш")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,10 @@ export default function useCreateWardrobeViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "wardrobe",
+          commandName: "say",
+          sayType: "hint",
         });
-        createWardrobe.mutate({ plotfieldCommandId: _id });
+        createHint.mutate({ plotfieldCommandId: _id, type: "hint" });
       }
     };
 

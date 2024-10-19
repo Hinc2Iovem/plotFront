@@ -1,22 +1,22 @@
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateGetItem from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/GetItem/useCreateGetItem";
 import { useEffect } from "react";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateSuit from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Suit/useCreateSuit";
 
-type CreateGetItemViaKeyCombinationTypes = {
+type CreateSuitViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateGetItemViaKeyCombination({
+export default function useCreateSuitViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateGetItemViaKeyCombinationTypes) {
+}: CreateSuitViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createGetItem = useCreateGetItem({ topologyBlockId });
+  const createSuit = useCreateSuit({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateGetItemViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("g") &&
-        pressedKeys.has("e")
+        ((pressedKeys.has("s") && pressedKeys.has("u")) ||
+          (pressedKeys.has("ы") && pressedKeys.has("г")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateGetItemViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "getitem",
+          commandName: "suit",
         });
-        createGetItem.mutate({ plotfieldCommandId: _id });
+        createSuit.mutate({ plotfieldCommandId: _id });
       }
     };
 

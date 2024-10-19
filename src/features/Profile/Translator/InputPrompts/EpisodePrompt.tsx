@@ -1,19 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import useGetEpisodesTranslationsBySeasonId from "../../../../hooks/Fetching/Translation/Episode/useGetEpisodesTranslationsBySeasonId";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
-import useGetEpisodeTranslationByTextFieldNameAndSearch from "../../../../hooks/Fetching/Episode/useGetEpisodeTranslationByTextFieldNameAndSearch";
+import AsideScrollable from "../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../shared/Inputs/PlotfieldInput";
 
 type EpisodePromptTypes = {
   setEpisodeId: React.Dispatch<React.SetStateAction<string>>;
+  setEpisodeCurrentValue?: React.Dispatch<React.SetStateAction<string>>;
   seasonId: string;
+  episodeCurrentValue?: string;
 };
 
 export default function EpisodePrompt({
+  setEpisodeCurrentValue,
   setEpisodeId,
   seasonId,
+  episodeCurrentValue,
 }: EpisodePromptTypes) {
   const [showEpisodes, setShowEpisodes] = useState(false);
-  const [episodeValue, setEpisodeValue] = useState("");
+  // const [episodeValue, setEpisodeValue] = useState("");
   const [episodeBackupValue, setEpisodeBackupValue] = useState("");
 
   const modalEpisodesRef = useRef<HTMLDivElement>(null);
@@ -24,107 +31,139 @@ export default function EpisodePrompt({
     showModal: showEpisodes,
   });
 
-  const debouncedValue = useDebounce({ value: episodeValue, delay: 500 });
+  const debouncedValue = useDebounce({
+    value: episodeCurrentValue || "",
+    delay: 500,
+  });
 
   const { data: episodesSearch, isLoading } =
-    useGetEpisodeTranslationByTextFieldNameAndSearch({
-      debouncedValue,
+    useGetEpisodesTranslationsBySeasonId({
       language: "russian",
       seasonId,
     });
 
-  useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      setEpisodeId(
-        episodesSearch?.find(
-          (cs) => cs.translations[0]?.text === debouncedValue
-        )?.episodeId || ""
+  const filteredEpisodes = useMemo(() => {
+    if (episodesSearch) {
+      return episodesSearch.filter((episode) =>
+        episode.translations.some(
+          (translation) =>
+            translation.textFieldName === "episodeName" &&
+            translation.text
+              .toLowerCase()
+              .includes((episodeCurrentValue || "").toLowerCase())
+        )
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue, episodesSearch]);
+    return [];
+  }, [episodesSearch, episodeCurrentValue]);
 
   useEffect(() => {
-    if (!showEpisodes && !episodeValue && episodeBackupValue) {
-      setEpisodeValue(episodeBackupValue);
+    if (
+      !showEpisodes &&
+      !episodeCurrentValue &&
+      episodeBackupValue &&
+      setEpisodeCurrentValue
+    ) {
+      setEpisodeCurrentValue(episodeBackupValue);
     }
-  }, [showEpisodes, episodeValue, episodeBackupValue]);
+  }, [showEpisodes, episodeCurrentValue, episodeBackupValue]);
+
+  useEffect(() => {
+    if (debouncedValue) {
+      const matchedValue = episodesSearch?.find((cs) =>
+        cs?.translations?.some(
+          (tct) =>
+            tct.textFieldName === "episodeName" &&
+            tct.text.toLowerCase() === debouncedValue.toLowerCase()
+        )
+      );
+      if (matchedValue) {
+        setEpisodeId(matchedValue?.episodeId);
+        setEpisodeBackupValue(matchedValue?.translations[0]?.text);
+        if (setEpisodeCurrentValue) {
+          setEpisodeCurrentValue(matchedValue?.translations[0]?.text);
+        }
+      } else {
+        setEpisodeId("");
+      }
+    }
+  }, [debouncedValue, episodesSearch]);
 
   return (
     <form
-      className="bg-secondary rounded-md shadow-md relative"
+      className="rounded-md shadow-md relative"
       onSubmit={(e) => e.preventDefault()}
     >
-      <input
+      <PlotfieldInput
         type="text"
-        className="w-full rounded-md shadow-md bg-secondary text-[1.3rem] px-[1rem] py-[.5rem] text-gray-700 outline-none"
         placeholder="Название Эпизода"
         onClick={(e) => {
           e.stopPropagation();
-          if (episodeValue?.trim().length) {
-            setEpisodeBackupValue(episodeValue);
+          if (episodeCurrentValue?.trim().length) {
+            setEpisodeBackupValue(episodeCurrentValue);
           }
-          setEpisodeValue("");
+          if (setEpisodeCurrentValue) {
+            setEpisodeCurrentValue("");
+          }
           setShowEpisodes(true);
         }}
-        value={episodeValue}
-        onChange={(e) => setEpisodeValue(e.target.value)}
+        value={episodeCurrentValue}
+        onChange={(e) => {
+          if (setEpisodeCurrentValue) {
+            setEpisodeCurrentValue(e.target.value);
+          }
+        }}
       />
       {seasonId ? (
-        <aside
+        <AsideScrollable
           ref={modalEpisodesRef}
-          className={`${
-            showEpisodes ? "" : "hidden"
-          } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+          className={`${showEpisodes ? "" : "hidden"} translate-y-[.5rem]`}
         >
           {isLoading ? (
             <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">
               Загрузка...
             </div>
-          ) : episodesSearch && episodesSearch.length > 0 ? (
-            episodesSearch.map((s) => (
-              <button
+          ) : filteredEpisodes && filteredEpisodes.length > 0 ? (
+            filteredEpisodes.map((s) => (
+              <AsideScrollableButton
                 key={s._id}
                 type="button"
                 onClick={() => {
                   setEpisodeId(s.episodeId);
-                  setEpisodeValue(s.translations[0]?.text || "");
+                  if (setEpisodeCurrentValue) {
+                    setEpisodeCurrentValue(s.translations[0]?.text || "");
+                  }
                   setShowEpisodes(false);
                 }}
-                className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
               >
                 {s.translations[0]?.text || ""}
-              </button>
+              </AsideScrollableButton>
             ))
           ) : (
-            <button
+            <AsideScrollableButton
               type="button"
               onClick={() => {
                 setShowEpisodes(false);
               }}
-              className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
             >
               Нету Подходящих Эпизодов
-            </button>
+            </AsideScrollableButton>
           )}
-        </aside>
+        </AsideScrollable>
       ) : (
-        <aside
+        <AsideScrollable
           ref={modalEpisodesRef}
-          className={`${
-            showEpisodes ? "" : "hidden"
-          } max-h-[15rem] overflow-auto flex flex-col gap-[.5rem] min-w-fit w-full absolute bg-secondary rounded-md shadow-md translate-y-[.5rem] p-[1rem] | containerScroll`}
+          className={`${showEpisodes ? "" : "hidden"} translate-y-[.5rem]`}
         >
-          <button
+          <AsideScrollableButton
             type="button"
             onClick={() => {
               setShowEpisodes(false);
             }}
-            className="text-[1.4rem] outline-gray-300 text-gray-600 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md"
           >
             Выберите Сезон
-          </button>
-        </aside>
+          </AsideScrollableButton>
+        </AsideScrollable>
       )}
     </form>
   );

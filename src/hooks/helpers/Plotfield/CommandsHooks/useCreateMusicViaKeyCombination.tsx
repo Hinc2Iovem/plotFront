@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateComment from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Comment/useCreateComment";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateMusic from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Music/useCreateMusic";
 
-type CreateCommentViaKeyCombinationTypes = {
+type CreateMusicViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateCommentViaKeyCombination({
+export default function useCreateMusicViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateCommentViaKeyCombinationTypes) {
+}: CreateMusicViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createComment = useCreateComment({});
+  const createMusic = useCreateMusic({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateCommentViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("c") &&
-        pressedKeys.has("m")
+        ((pressedKeys.has("m") && pressedKeys.has("u")) ||
+          (pressedKeys.has("ь") && pressedKeys.has("г")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateCommentViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "comment",
+          commandName: "music",
         });
-        createComment.mutate({ plotfieldCommandId: _id });
+        createMusic.mutate({ plotfieldCommandId: _id });
       }
     };
 

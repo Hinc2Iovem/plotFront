@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import CharacterPrompt from "../../Profile/Translator/InputPrompts/CharacterPrompt/CharacterPrompt";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import useCreateEmotion from "../../../hooks/Posting/Emotion/useCreateEmotion";
+import PlotfieldInput from "../../shared/Inputs/PlotfieldInput";
 
 type HeaderCreateEmotionTypes = {
   storyId: string;
@@ -54,12 +55,11 @@ export default function HeaderCreateEmotion({
         currentLanguage="russian"
       />
       <form onSubmit={handleSubmit} className="w-full flex flex-col gap-[1rem]">
-        <input
+        <PlotfieldInput
           type="text"
           value={emotionName}
           placeholder="Эмоция"
           onChange={(e) => setEmotionName(e.target.value)}
-          className="w-full px-[1rem] py-[.5rem] border-[2px] border-gray-300 border-dashed text-[1.4rem] text-gray-700 outline-gray-300 rounded-md"
         />
         <button className="text-[1.4rem] outline-gray-300 border-gray-200 border-dashed border-[2px] text-text-dark hover:text-text-light focus-within:text-text-light hover:border-gray-400 hover:scale-[1.01] transition-all px-[1rem] py-[.5rem] w-fit ml-auto rounded-md">
           Создать

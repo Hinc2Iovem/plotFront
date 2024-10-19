@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateChoice from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/useCreateChoice";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateWait from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Wait/useCreateWait";
 
-type CreateChoiceViaKeyCombinationTypes = {
+type CreateWaitViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateChoiceViaKeyCombination({
+export default function useCreateWaitViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateChoiceViaKeyCombinationTypes) {
+}: CreateWaitViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createChoice = useCreateChoice({ topologyBlockId });
+  const createWait = useCreateWait({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateChoiceViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("c") &&
-        pressedKeys.has("h")
+        ((pressedKeys.has("w") && pressedKeys.has("a")) ||
+          (pressedKeys.has("ц") && pressedKeys.has("ф")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateChoiceViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "choice",
+          commandName: "wait",
         });
-        createChoice.mutate({ plotfieldCommandId: _id });
+        createWait.mutate({ plotfieldCommandId: _id });
       }
     };
 

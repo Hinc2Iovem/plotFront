@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateEffect from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Effect/useCreateEffect";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateSayCommandBlank from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Say/useCreateSayCommandBlank";
 
-type CreateEffectViaKeyCombinationTypes = {
+type CreateCharacterViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateEffectViaKeyCombination({
+export default function useCreateCharacterViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateEffectViaKeyCombinationTypes) {
+}: CreateCharacterViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createEffect = useCreateEffect({});
+  const createCharacter = useCreateSayCommandBlank({ topologyBlockId });
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateEffectViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("e") &&
-        pressedKeys.has("f")
+        ((pressedKeys.has("c") && pressedKeys.has("r")) ||
+          (pressedKeys.has("с") && pressedKeys.has("к")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,10 @@ export default function useCreateEffectViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "effect",
+          commandName: "say",
+          sayType: "character",
         });
-        createEffect.mutate({ plotfieldCommandId: _id });
+        createCharacter.mutate({ plotfieldCommandId: _id, type: "character" });
       }
     };
 

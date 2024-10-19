@@ -1,27 +1,22 @@
 import { useEffect } from "react";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateAchievement from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Achievement/useCreateAchievement";
-import { useParams } from "react-router-dom";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateEffect from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Effect/useCreateEffect";
 
-type CreateAchievementViaKeyCombinationTypes = {
+type CreateEffectViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateAchievementViaKeyCombination({
+export default function useCreateEffectViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateAchievementViaKeyCombinationTypes) {
-  const { storyId } = useParams();
+}: CreateEffectViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createAchievement = useCreateAchievement({
-    storyId: storyId || "",
-    topologyBlockId,
-  });
+  const createEffect = useCreateEffect({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -31,8 +26,8 @@ export default function useCreateAchievementViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("a") &&
-        pressedKeys.has("c")
+        ((pressedKeys.has("e") && pressedKeys.has("f")) ||
+          (pressedKeys.has("у") && pressedKeys.has("а")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -42,9 +37,9 @@ export default function useCreateAchievementViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "achievement",
+          commandName: "effect",
         });
-        createAchievement.mutate({ plotfieldCommandId: _id });
+        createEffect.mutate({ plotfieldCommandId: _id });
       }
     };
 

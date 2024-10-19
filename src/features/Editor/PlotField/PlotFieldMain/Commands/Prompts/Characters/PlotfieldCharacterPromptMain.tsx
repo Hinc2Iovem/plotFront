@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import useGetCharacterTranslationByTextFieldNameAndSearch from "../../../../../../../hooks/Fetching/Character/useGetCharacterTranslationByTextFieldNameAndSearch";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import PlotfieldCharactersPrompt from "./PlotfieldCharactersPrompt";
+import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 
 type PlotfieldCharacterPromptMainTypes = {
   setCharacterName: React.Dispatch<React.SetStateAction<string>>;
@@ -39,11 +40,11 @@ export default function PlotfieldCharacterPromptMain({
   });
 
   return (
-    <aside
+    <AsideScrollable
       ref={modalRef}
       className={`${showCharacterModal ? "" : "hidden"} ${
         !allCharacters?.length && characterDebouncedValue ? "hidden" : ""
-      } translate-y-[2rem] absolute top-1/2 z-[10] p-[1rem] min-w-fit w-full max-h-[15rem] overflow-y-auto bg-secondary shadow-md rounded-md flex flex-col gap-[1rem] | containerScroll`}
+      }`}
     >
       {allCharacters?.length ? (
         allCharacters?.map((c) => (
@@ -66,6 +67,6 @@ export default function PlotfieldCharacterPromptMain({
           Пусто
         </button>
       ) : null}
-    </aside>
+    </AsideScrollable>
   );
 }

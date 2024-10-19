@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateCutScene from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/CutScene/useCreateCutScene";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateCall from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Call/useCreateCall";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 
-type CreateCutSceneViaKeyCombinationTypes = {
+type CreateCallViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateCutSceneViaKeyCombination({
+export default function useCreateCallViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateCutSceneViaKeyCombinationTypes) {
+}: CreateCallViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createCutScene = useCreateCutScene({});
+  const createCall = useCreateCall({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateCutSceneViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("c") &&
-        pressedKeys.has("u")
+        ((pressedKeys.has("c") && pressedKeys.has("l")) ||
+          (pressedKeys.has("с") && pressedKeys.has("д")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateCutSceneViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "cutscene",
+          commandName: "call",
         });
-        createCutScene.mutate({ plotfieldCommandId: _id });
+        createCall.mutate({ plotfieldCommandId: _id });
       }
     };
 

@@ -22,7 +22,10 @@ export default function useCheckKeysCombinationExpandFlowchart({
 }: CheckKeysCombinationExpandTypes) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.altKey && event.key.toLowerCase() === "c") {
+      if (
+        event.altKey &&
+        (event.key.toLowerCase() === "c" || event.key.toLowerCase() === "с")
+      ) {
         if (command === "expandFlowchart") {
           setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
           setExpansionDivDirection("left");

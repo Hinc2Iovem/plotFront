@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
 
 type CreateConditionTypes = {
-  plotFieldCommandId: string;
+  plotFieldCommandId?: string;
   episodeId: string;
 };
 
@@ -13,6 +13,7 @@ type CreateConditionOnMutation = {
   topologyBlockId: string;
   sourceBlockName: string;
   conditionBlockId: string;
+  plotfieldCommandId?: string;
 };
 
 export default function useCreateCondition({
@@ -27,9 +28,14 @@ export default function useCreateCondition({
       targetBlockId,
       topologyBlockId,
       conditionBlockId,
-    }: CreateConditionOnMutation) =>
+      plotfieldCommandId,
+    }: CreateConditionOnMutation) => {
+      const commandId = plotFieldCommandId?.trim().length
+        ? plotFieldCommandId
+        : plotfieldCommandId;
+
       await axiosCustomized.post(
-        `/plotFieldCommands/${plotFieldCommandId}/episodes/${episodeId}/conditions`,
+        `/plotFieldCommands/${commandId}/episodes/${episodeId}/conditions`,
         {
           coordinatesX,
           coordinatesY,
@@ -38,6 +44,7 @@ export default function useCreateCondition({
           topologyBlockId,
           conditionBlockId,
         }
-      ),
+      );
+    },
   });
 }

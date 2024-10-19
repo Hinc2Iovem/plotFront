@@ -11,6 +11,7 @@ export default function AsideScrollableButton({
   const theme = localStorage.getItem("theme");
   return (
     <button
+      type="button"
       className={twMerge(
         `capitalize text-[1.5rem] ${
           theme === "light" ? "outline-gray-300" : "outline-gray-600"

@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateWait from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Wait/useCreateWait";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateComment from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Comment/useCreateComment";
 
-type CreateWaitViaKeyCombinationTypes = {
+type CreateCommentViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateWaitViaKeyCombination({
+export default function useCreateCommentViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateWaitViaKeyCombinationTypes) {
+}: CreateCommentViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createWait = useCreateWait({});
+  const createComment = useCreateComment({});
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateWaitViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("w") &&
-        pressedKeys.has("a")
+        ((pressedKeys.has("c") && pressedKeys.has("m")) ||
+          (pressedKeys.has("с") && pressedKeys.has("ь")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateWaitViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "wait",
+          commandName: "comment",
         });
-        createWait.mutate({ plotfieldCommandId: _id });
+        createComment.mutate({ plotfieldCommandId: _id });
       }
     };
 

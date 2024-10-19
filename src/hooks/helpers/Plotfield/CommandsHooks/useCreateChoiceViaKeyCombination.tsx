@@ -1,22 +1,22 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
-import useCreateSound from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Sound/useCreateSound";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateChoice from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/useCreateChoice";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 
-type CreateSoundViaKeyCombinationTypes = {
+type CreateChoiceViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateSoundViaKeyCombination({
+export default function useCreateChoiceViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateSoundViaKeyCombinationTypes) {
+}: CreateChoiceViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createSound = useCreateSound({});
+  const createChoice = useCreateChoice({ topologyBlockId });
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ export default function useCreateSoundViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("s") &&
-        pressedKeys.has("o")
+        ((pressedKeys.has("c") && pressedKeys.has("h")) ||
+          (pressedKeys.has("с") && pressedKeys.has("р")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -37,9 +37,9 @@ export default function useCreateSoundViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "sound",
+          commandName: "choice",
         });
-        createSound.mutate({ plotfieldCommandId: _id });
+        createChoice.mutate({ plotfieldCommandId: _id });
       }
     };
 

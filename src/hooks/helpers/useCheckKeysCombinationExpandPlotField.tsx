@@ -22,7 +22,10 @@ export default function useCheckKeysCombinationExpandPlotField({
 }: CheckKeysCombinationExpandTypes) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === "v" && event.altKey) {
+      if (
+        (event.key.toLowerCase() === "v" || event.key.toLowerCase() === "м") &&
+        event.altKey
+      ) {
         if (command === "expandPlotField") {
           setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
           setExpansionDivDirection("" as "left" | "right");

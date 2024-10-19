@@ -10,24 +10,7 @@ import Flowchart from "./Flowchart/Flowchart";
 import "./Flowchart/FlowchartStyles.css";
 import PlotField from "./PlotField/PlotField";
 import useGetFirstTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetFirstTopologyBlock";
-import useCreateAchievementViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateAchievementViaKeyCombination";
-import useCreateAmbientViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateAmbientViaKeyCombination";
-import useCreateBackgroundViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateBackgroundViaKeyCombination";
-import useCreateCallViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateCallViaKeyCombination";
-import useCreateChoiceViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateChoiceViaKeyCombination";
-import useCreateCommentViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateCommentViaKeyCombination";
-import useCreateCutSceneViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateCutSceneViaKeyCombination";
-import useCreateEffectViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateEffectViaKeyCombination";
-import useCreateGetItemViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateGetItemViaKeyCombination";
-import useCreateIfViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateIfViaKeyCombination";
-import useCreateKeyViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateKeyViaKeyCombination";
-import useCreateMoveViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateMoveViaKeyCombination";
-import useCreateMusicViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateMusicViaKeyCombination";
-import useCreateNameViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateNameViaKeyCombination";
-import useCreateSoundViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateSoundViaKeyCombination";
-import useCreateSuitViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateSuitViaKeyCombination";
-import useCreateWaitViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateWaitViaKeyCombination";
-import useCreateWardrobeViaKeyCombination from "../../hooks/helpers/Plotfield/useCreateWardrobeViaKeyCombination";
+import useHandleAllCommandsCreatedViaKeyCombination from "../../hooks/helpers/Plotfield/useHandleAllCommandsCreatedViaKeyCombination";
 
 type EditorMainTypes = {
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -146,111 +129,7 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
     };
   }, [command]);
 
-  useCreateAchievementViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateAmbientViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateBackgroundViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateCallViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateChoiceViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateCommentViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateCutSceneViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateEffectViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateGetItemViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateIfViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateKeyViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateMoveViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateMusicViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateNameViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateSoundViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateSuitViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateWaitViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId: currentTopologyBlockId,
-  });
-
-  useCreateWardrobeViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
+  useHandleAllCommandsCreatedViaKeyCombination({
     topologyBlockId: currentTopologyBlockId,
   });
 

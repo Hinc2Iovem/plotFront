@@ -1,24 +1,22 @@
-import { useParams } from "react-router-dom";
-import useTopologyBlocks from "../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateKey from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Key/useCreateKey";
-import useCreateBlankCommand from "../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
 import { useEffect } from "react";
+import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useCreateSayCommandBlank from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Say/useCreateSayCommandBlank";
 
-type CreateKeyViaKeyCombinationTypes = {
+type CreateAuthorViaKeyCombinationTypes = {
   topologyBlockId: string;
   commandIfId: string;
   isElse: boolean;
 };
 
-export default function useCreateKeyViaKeyCombination({
+export default function useCreateAuthorViaKeyCombination({
   topologyBlockId,
   commandIfId,
   isElse,
-}: CreateKeyViaKeyCombinationTypes) {
-  const { storyId } = useParams();
+}: CreateAuthorViaKeyCombinationTypes) {
   const createPlotfield = useCreateBlankCommand({ topologyBlockId });
-  const createKey = useCreateKey({ storyId: storyId || "" });
+  const createAuthor = useCreateSayCommandBlank({ topologyBlockId });
   const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
@@ -28,8 +26,8 @@ export default function useCreateKeyViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        pressedKeys.has("k") &&
-        pressedKeys.has("e")
+        ((pressedKeys.has("a") && pressedKeys.has("u")) ||
+          (pressedKeys.has("ф") && pressedKeys.has("г")))
       ) {
         const _id = generateMongoObjectId();
         createPlotfield.mutate({
@@ -39,9 +37,10 @@ export default function useCreateKeyViaKeyCombination({
           topologyBlockId,
           commandIfId,
           isElse,
-          commandName: "key",
+          commandName: "say",
+          sayType: "author",
         });
-        createKey.mutate({ plotfieldCommandId: _id });
+        createAuthor.mutate({ plotfieldCommandId: _id, type: "author" });
       }
     };
 
