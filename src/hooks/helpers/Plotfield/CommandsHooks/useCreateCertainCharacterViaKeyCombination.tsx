@@ -38,7 +38,7 @@ export default function useCreateCertainCharacterViaKeyCombination({
     const handleKeyDown = (event: KeyboardEvent) => {
       pressedKeys.add(event.key.toLowerCase());
       console.log(event.key);
-
+      console.log(Object.keys(allPossibleNumbers).includes(event.key));
       if (
         (pressedKeys.has("c") || pressedKeys.has("с")) &&
         Object.keys(allPossibleNumbers).includes(event.key)
@@ -53,6 +53,9 @@ export default function useCreateCertainCharacterViaKeyCombination({
         const savedValue = localStorage.getItem(keyByEpisode)
           ? localStorage.getItem(keyByEpisode)
           : localStorage.getItem(keyByStory);
+
+        console.log("savedValue: ", savedValue);
+
         if (!savedValue) {
           console.log("You haven't assigned any characters yet.");
           return;
