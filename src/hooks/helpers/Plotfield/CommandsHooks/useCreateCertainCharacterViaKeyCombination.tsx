@@ -50,6 +50,8 @@ export default function useCreateCertainCharacterViaKeyCombination({
 
         const keyByStory = `story-${storyId}-shift-${numberPressed}`;
         const keyByEpisode = `episode-${episodeId}-shift-${numberPressed}`;
+        console.log("keyByStory: ", keyByStory);
+
         const savedValue = localStorage.getItem(keyByEpisode)
           ? localStorage.getItem(keyByEpisode)
           : localStorage.getItem(keyByStory);
