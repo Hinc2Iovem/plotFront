@@ -1,27 +1,37 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
+import { EmotionsTypes } from "../../../../../../../../../types/StoryData/Character/CharacterTypes";
+import { generateMongoObjectId } from "../../../../../../../../../utils/generateMongoObjectId";
 import useCreateCharacterBlank from "../../../../hooks/Character/useCreateCharacterBlank";
 import useUpdateNameOrEmotionOnCondition from "../../../../hooks/Say/useUpdateNameOrEmotionOnCondition";
-import { EmotionsTypes } from "../../../../../../../../../types/StoryData/Character/CharacterTypes";
+import { useQueryClient } from "@tanstack/react-query";
 
 type CommandSayCreateCharacterFieldTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setNewlyCreated: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentCharacterId: React.Dispatch<React.SetStateAction<string>>;
   setEmotionValue: React.Dispatch<React.SetStateAction<EmotionsTypes | null>>;
+  setNewlyCreatedName: React.Dispatch<React.SetStateAction<string>>;
   showModal: boolean;
   characterName: string;
   plotFieldCommandId: string;
+  currentCharacterId: string;
   commandSayId: string;
 };
 
 export default function CommandSayCreateCharacterFieldModal({
   setShowModal,
+  setCurrentCharacterId,
+  setNewlyCreatedName,
   showModal,
   characterName,
-  plotFieldCommandId,
+  currentCharacterId,
   commandSayId,
   setEmotionValue,
+  setNewlyCreated,
 }: CommandSayCreateCharacterFieldTypes) {
+  const queryClient = useQueryClient();
   const { storyId } = useParams();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
@@ -36,12 +46,10 @@ export default function CommandSayCreateCharacterFieldModal({
   const createCharacter = useCreateCharacterBlank({
     characterType: "minorcharacter",
     name: characterName,
-    storyId: storyId ?? "",
+    storyId: storyId || "",
   });
 
-  const updateNameOrEmotion = useUpdateNameOrEmotionOnCondition({
-    plotFieldCommandId,
-  });
+  const updateNameOrEmotion = useUpdateNameOrEmotionOnCondition();
 
   useEffect(() => {
     if (characterId?.trim().length) {
@@ -55,15 +63,22 @@ export default function CommandSayCreateCharacterFieldModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId]);
 
-  useEffect(() => {
-    if (createCharacter.data) {
-      setCharacterId(createCharacter.data._id);
-    }
-  }, [createCharacter]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createCharacter.mutate({ characterId });
+    const newCharacterId = generateMongoObjectId();
+
+    setNewlyCreated(true);
+    queryClient.invalidateQueries({
+      queryKey: ["character", currentCharacterId],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["translation", "russian", "character", characterId],
+    });
+    setCharacterId(newCharacterId);
+    setCurrentCharacterId(newCharacterId);
+    setNewlyCreatedName(characterName);
+
+    createCharacter.mutate({ characterId: newCharacterId });
     setShowModal(false);
   };
 

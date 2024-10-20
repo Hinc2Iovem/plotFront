@@ -3,6 +3,7 @@ import useCreateCommandIf from "../../../../features/Editor/PlotField/PlotFieldM
 import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import { useEffect } from "react";
+import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
 
 type CreateIfViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -22,6 +23,11 @@ export default function useCreateIfViaKeyCombination({
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
+      const allowed = preventCreatingCommandsWhenFocus();
+      if (!allowed) {
+        console.log("You are inside input element");
+        return;
+      }
       pressedKeys.add(event.key.toLowerCase());
 
       if (

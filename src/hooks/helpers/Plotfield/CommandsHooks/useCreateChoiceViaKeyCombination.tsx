@@ -3,6 +3,7 @@ import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/Top
 import useCreateChoice from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/useCreateChoice";
 import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
 
 type CreateChoiceViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -22,6 +23,11 @@ export default function useCreateChoiceViaKeyCombination({
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
+      const allowed = preventCreatingCommandsWhenFocus();
+      if (!allowed) {
+        console.log("You are inside input element");
+        return;
+      }
       pressedKeys.add(event.key.toLowerCase());
 
       if (

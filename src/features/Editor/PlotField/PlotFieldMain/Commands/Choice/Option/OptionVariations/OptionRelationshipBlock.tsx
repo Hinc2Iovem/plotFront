@@ -4,7 +4,6 @@ import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetchi
 import useUpdateChoiceOption from "../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetRelationshipOption from "../../../hooks/Choice/ChoiceOptionVariation/useGetRelationshipOption";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
-import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 
 type OptionRelationshipBlockTypes = {
   choiceOptionId: string;
@@ -80,10 +79,6 @@ export default function OptionRelationshipBlock({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId]);
 
-  const characterDebouncedValue = useDebounce({
-    value: characterName,
-    delay: 500,
-  });
   return (
     <div className="self-end w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap mt-[.5rem]">
       <form
@@ -91,7 +86,7 @@ export default function OptionRelationshipBlock({
           e.preventDefault();
           setShowAllCharacters(false);
         }}
-        className="w-full relative flex gap-[.5rem] items-center"
+        className="w-full relative flex gap-[.5rem]"
       >
         <input
           onClick={(e) => {
@@ -104,7 +99,7 @@ export default function OptionRelationshipBlock({
             setCharacterName(e.target.value);
           }}
           placeholder="Имя Персонажа"
-          className={`flex-grow text-[1.4rem] ${
+          className={`w-full text-[1.4rem] ${
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
           } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md`}
         />
@@ -114,15 +109,16 @@ export default function OptionRelationshipBlock({
           alt="CharacterImg"
           className={`${
             characterImg?.trim().length ? "" : "hidden"
-          } w-[3rem] object-cover rounded-md self-end`}
+          } w-[3rem] absolute object-cover rounded-md right-0`}
         />
         <PlotfieldCharacterPromptMain
-          characterDebouncedValue={characterDebouncedValue}
+          characterValue={characterName}
           setCharacterId={setCharacterId}
           setCharacterName={setCharacterName}
           setShowCharacterModal={setShowAllCharacters}
           showCharacterModal={showAllCharacters}
           setCharacterImg={setCharacterImg}
+          translateAsideValue="translate-y-[3.5rem]"
         />
       </form>
       <input

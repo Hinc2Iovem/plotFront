@@ -6,6 +6,7 @@ import useCreateCondition from "../../../../features/Editor/PlotField/PlotFieldM
 import { useParams } from "react-router-dom";
 import { makeTopologyBlockName } from "../../../../features/Editor/Flowchart/utils/makeTopologyBlockName";
 import useConditionBlocks from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/Condition/Context/ConditionContext";
+import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
 
 type CreateConditionViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -27,6 +28,11 @@ export default function useCreateConditionViaKeyCombination({
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
+      const allowed = preventCreatingCommandsWhenFocus();
+      if (!allowed) {
+        console.log("You are inside input element");
+        return;
+      }
       pressedKeys.add(event.key.toLowerCase());
 
       if (
@@ -35,6 +41,7 @@ export default function useCreateConditionViaKeyCombination({
           (pressedKeys.has("с") && pressedKeys.has("щ")))
       ) {
         const _id = generateMongoObjectId();
+
         createPlotfield.mutate({
           _id,
           commandOrder:
@@ -76,6 +83,7 @@ export default function useCreateConditionViaKeyCombination({
           targetBlockId: newTopologyBlockId,
           topologyBlockId,
           conditionBlockId,
+          plotfieldCommandId: _id,
         });
       }
     };

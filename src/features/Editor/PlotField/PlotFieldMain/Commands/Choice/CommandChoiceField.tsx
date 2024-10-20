@@ -94,7 +94,7 @@ export default function CommandChoiceField({
       onMouseLeave={() => {
         setShowCopyCursor(false);
       }}
-      className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-center"
+      className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-start"
       style={{ cursor: showCopyCursor ? "cell" : "" }}
     >
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -111,6 +111,7 @@ export default function CommandChoiceField({
         timeLimit={timeLimit}
         amountOfOptions={amountOfOptions || 0}
         timeLimitDefaultOptionId={timeLimitDefaultOptionId}
+        insidePlotfield={true}
       />
 
       <button

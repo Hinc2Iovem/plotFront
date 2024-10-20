@@ -23,139 +23,117 @@ export default function ConditionBlockVariationAppearance({
   plotfieldCommandId,
   conditionBlockId,
 }: ConditionBlockVariationAppearanceTypes) {
-  const { storyId } = useParams();
-  const [showAppearancePromptModal, setShowAppearancePromptModal] =
+  const [showAppearancePartPromptModal, setShowAppearancePartPromptModal] =
     useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] =
+  const [highlightRedOnValueNonExisting, setHighlightRedOnValueNonExisting] =
     useState(false);
+  const [appearancePartId, setAppearancePartId] = useState("");
+  const [debouncedAppearancePartValue, setDebouncedAppearancePartValue] =
+    useState<DebouncedCheckAppearancePartTypes | null>(null);
+
   const {
     getConditionBlockById,
     updateConditionBlockName,
     updateConditionBlockValueId,
+    conditions,
   } = useConditionBlocks();
+
   const [currentConditionName, setCurrentConditionName] = useState(
     getConditionBlockById({ plotfieldCommandId, conditionBlockId })
       ?.conditionName || ""
   );
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const { data: appearances } = useGetTranslationAppearancePartsByStoryId({
-    storyId: storyId || "",
-    language: "russian",
-  });
-
-  const memoizedAppearances = useMemo(() => {
-    const allAppearances =
-      appearances?.flatMap((k) =>
-        k.translations.map((kt) => kt.text?.toLowerCase())
-      ) || [];
-
-    if (currentConditionName) {
-      return allAppearances.filter((k) =>
-        k?.includes(currentConditionName.toLowerCase())
-      );
+  useEffect(() => {
+    const conditionBlock = getConditionBlockById({
+      conditionBlockId,
+      plotfieldCommandId,
+    });
+    if (conditionBlock?.conditionName !== currentConditionName) {
+      setCurrentConditionName(conditionBlock?.conditionName || "");
     }
+  }, [conditions, conditionBlockId, plotfieldCommandId]);
 
-    return allAppearances;
-  }, [currentConditionName, appearances]);
+  useEffect(() => {
+    if (appearancePartId && currentConditionName) {
+      updateConditionBlockName({
+        conditionBlockId:
+          getConditionBlockById({
+            conditionBlockId,
+            plotfieldCommandId,
+          })?.conditionBlockId || "",
+        conditionName: currentConditionName,
+        plotfieldCommandId,
+      });
+
+      updateConditionBlockValueId({
+        blockValueId: appearancePartId,
+        conditionBlockId,
+        conditionType: "appearance",
+        plotfieldCommandId,
+      });
+      updateConditionBlock.mutate({
+        name: currentConditionName,
+        type: "appearance",
+        blockValueId: appearancePartId,
+      });
+    }
+  }, [appearancePartId]);
 
   const debouncedValue = useDebounce({
     delay: 700,
-    value:
-      getConditionBlockById({ plotfieldCommandId, conditionBlockId })
-        ?.conditionName || "",
+    value: currentConditionName,
   });
-
-  const handleUpdatingConditionContextValue = ({
-    appearanceId,
-  }: {
-    appearanceId: string;
-  }) => {
-    updateConditionBlockValueId({
-      blockValueId: appearanceId,
-      conditionBlockId,
-      conditionType: "appearance",
-      plotfieldCommandId,
-    });
-  };
 
   const updateConditionBlock = useUpdateConditionValue({
     conditionBlockId,
   });
 
-  const handleCheckValueCorrectnessBeforeUpdating = ({
-    onClick,
-  }: {
-    onClick: boolean;
-  }) => {
-    const existingAppearance = appearances?.find((mk) =>
-      mk.translations.find(
-        (mkt) =>
-          mkt.text?.trim()?.toLowerCase() ===
-          currentConditionName?.trim().toLowerCase()
-      )
-    );
-
-    if (existingAppearance) {
-      setShowAppearancePromptModal(false);
-      setHighlightRedOnValueOnExisting(false);
-      handleUpdatingConditionContextValue({
-        appearanceId: existingAppearance._id,
-      });
-      updateConditionBlock.mutate({
-        name: currentConditionName,
-        blockValueId: existingAppearance._id,
-      });
-    } else {
-      if (onClick) {
-        setShowCreateNewValueModal(true);
-        console.log("Show Modal to create appearance");
-        return;
-      } else {
-        setHighlightRedOnValueOnExisting(true);
-        console.log("Value doesn't exist");
-        return;
-      }
-    }
-  };
-
   useEffect(() => {
-    if (
-      debouncedValue?.trim().length &&
-      currentConditionName?.trim() !== debouncedValue.trim()
-    ) {
-      handleCheckValueCorrectnessBeforeUpdating({ onClick: false });
-    }
-  }, [debouncedValue]);
+    if (debouncedAppearancePartValue && !showAppearancePartPromptModal) {
+      updateConditionBlockName({
+        conditionBlockId:
+          getConditionBlockById({
+            conditionBlockId,
+            plotfieldCommandId,
+          })?.conditionBlockId || "",
+        conditionName: debouncedAppearancePartValue.partName,
+        plotfieldCommandId,
+      });
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowAppearancePromptModal,
-    showModal: showAppearancePromptModal,
-  });
+      updateConditionBlockValueId({
+        blockValueId: debouncedAppearancePartValue.partId,
+        conditionBlockId,
+        conditionType: "appearance",
+        plotfieldCommandId,
+      });
+
+      setCurrentConditionName(debouncedAppearancePartValue.partName);
+      setAppearancePartId(debouncedAppearancePartValue.partId);
+
+      updateConditionBlock.mutate({
+        name: debouncedAppearancePartValue.partName,
+        type: "appearance",
+        blockValueId: debouncedAppearancePartValue.partId,
+      });
+    }
+  }, [debouncedAppearancePartValue]);
 
   return (
-    <div className="w-full relative">
+    <div className="relative mt-[1.5rem]">
       <PlotfieldInput
         type="text"
-        placeholder="Одежда"
+        placeholder="Часть внешности"
         onClick={(e) => {
+          setShowAppearancePartPromptModal((prev) => !prev);
           e.stopPropagation();
-          setShowAppearancePromptModal((prev) => !prev);
         }}
-        value={
-          getConditionBlockById({
-            plotfieldCommandId,
-            conditionBlockId,
-          })?.conditionName || ""
-        }
+        value={currentConditionName}
         onChange={(e) => {
-          if (!showAppearancePromptModal) {
-            setShowAppearancePromptModal(true);
+          if (!showAppearancePartPromptModal) {
+            setShowAppearancePartPromptModal(true);
           }
-          setHighlightRedOnValueOnExisting(false);
+          setHighlightRedOnValueNonExisting(false);
           setCurrentConditionName(e.target.value);
           updateConditionBlockName({
             conditionBlockId:
@@ -167,47 +145,133 @@ export default function ConditionBlockVariationAppearance({
             plotfieldCommandId,
           });
         }}
-        className={`${
-          highlightRedOnValueNonExisting ? "border-red-300 border-[2px]" : ""
-        }`}
+        className={`${highlightRedOnValueNonExisting ? "" : ""}`}
       />
-      <AsideScrollable
-        ref={modalRef}
-        className={`${
-          showAppearancePromptModal ? "" : "hidden"
-        } translate-y-[.5rem]`}
-      >
-        {memoizedAppearances.map((mk, i) => (
-          <AsideScrollableButton
-            key={mk + "-" + i}
-            onClick={() => {
-              setShowAppearancePromptModal(false);
-              setCurrentConditionName(mk);
-              handleCheckValueCorrectnessBeforeUpdating({ onClick: true });
-              updateConditionBlockName({
-                conditionBlockId:
-                  getConditionBlockById({
-                    plotfieldCommandId,
-                    conditionBlockId,
-                  })?.conditionBlockId || "",
-                conditionName: mk,
-                plotfieldCommandId,
-              });
-            }}
-          >
-            {mk}
-          </AsideScrollableButton>
-        ))}
-      </AsideScrollable>
+
+      <AppearancePartPromptsModal
+        currentAppearancePartName={currentConditionName}
+        setCurrentAppearancePartName={setCurrentConditionName}
+        setShowAppearancePartPromptModal={setShowAppearancePartPromptModal}
+        showAppearancePartPromptModal={showAppearancePartPromptModal}
+        debouncedAppearancePart={debouncedValue}
+        setDebouncedAppearancePartValue={setDebouncedAppearancePartValue}
+        setAppearancePartId={setAppearancePartId}
+      />
 
       <CreateNewValueModal
         conditionName={currentConditionName}
         conditionBlockId={conditionBlockId}
-        setHighlightRedOnValueOnExisting={setHighlightRedOnValueOnExisting}
+        setHighlightRedOnValueNonExisting={setHighlightRedOnValueNonExisting}
         setShowCreateNewValueModal={setShowCreateNewValueModal}
         showCreateNewValueModal={showCreateNewValueModal}
       />
     </div>
+  );
+}
+
+export type DebouncedCheckAppearancePartTypes = {
+  partId: string;
+  partName: string;
+};
+
+type AppearancePartPromptsModalTypes = {
+  showAppearancePartPromptModal: boolean;
+  setShowAppearancePartPromptModal: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
+  setCurrentAppearancePartName: React.Dispatch<React.SetStateAction<string>>;
+  currentAppearancePartName: string;
+  debouncedAppearancePart: string;
+  setDebouncedAppearancePartValue: React.Dispatch<
+    React.SetStateAction<DebouncedCheckAppearancePartTypes | null>
+  >;
+  setAppearancePartId: React.Dispatch<React.SetStateAction<string>>;
+};
+
+function AppearancePartPromptsModal({
+  showAppearancePartPromptModal,
+  setCurrentAppearancePartName,
+  currentAppearancePartName,
+  setShowAppearancePartPromptModal,
+  setDebouncedAppearancePartValue,
+  setAppearancePartId,
+  debouncedAppearancePart,
+}: AppearancePartPromptsModalTypes) {
+  const { storyId } = useParams();
+  const { data: appearanceParts } = useGetTranslationAppearancePartsByStoryId({
+    storyId: storyId || "",
+  });
+
+  const memoizedAppearanceParts = useMemo(() => {
+    if (!appearanceParts) return [];
+
+    if (currentAppearancePartName) {
+      return appearanceParts?.filter((p) =>
+        p?.translations?.filter((pt) =>
+          pt.text
+            ?.toLowerCase()
+            .includes(currentAppearancePartName?.toLowerCase())
+        )
+      );
+    }
+    return appearanceParts;
+  }, [currentAppearancePartName, appearanceParts]);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (debouncedAppearancePart?.trim().length) {
+      const existingPart = memoizedAppearanceParts?.find((p) =>
+        p?.translations?.find(
+          (pt) =>
+            pt.text?.toLowerCase() === currentAppearancePartName.toLowerCase()
+        )
+      );
+      if (existingPart) {
+        setDebouncedAppearancePartValue({
+          partId: existingPart?.appearancePartId,
+          partName: (existingPart.translations || [])[0]?.text,
+        });
+      }
+    }
+  }, [debouncedAppearancePart]);
+
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowAppearancePartPromptModal,
+    showModal: showAppearancePartPromptModal,
+  });
+
+  return (
+    <AsideScrollable
+      ref={modalRef}
+      className={`${
+        showAppearancePartPromptModal ? "" : "hidden"
+      } translate-y-[.5rem]`}
+    >
+      {memoizedAppearanceParts?.length ? (
+        memoizedAppearanceParts.map((mp) => (
+          <AsideScrollableButton
+            key={mp._id}
+            onClick={() => {
+              setShowAppearancePartPromptModal(false);
+              setCurrentAppearancePartName((mp.translations || [])[0]?.text);
+              setAppearancePartId(mp._id);
+            }}
+          >
+            {(mp.translations || [])[0]?.text}
+          </AsideScrollableButton>
+        ))
+      ) : (
+        <AsideScrollableButton
+          onClick={() => {
+            setShowAppearancePartPromptModal(false);
+          }}
+        >
+          Пусто
+        </AsideScrollableButton>
+      )}
+    </AsideScrollable>
   );
 }
 
@@ -216,13 +280,13 @@ type CreateNewValueModalTypes = {
   conditionName: string;
   conditionBlockId: string;
   setShowCreateNewValueModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setHighlightRedOnValueOnExisting: React.Dispatch<
+  setHighlightRedOnValueNonExisting: React.Dispatch<
     React.SetStateAction<boolean>
   >;
 };
 
 function CreateNewValueModal({
-  setHighlightRedOnValueOnExisting,
+  setHighlightRedOnValueNonExisting,
   setShowCreateNewValueModal,
   showCreateNewValueModal,
   conditionName,
@@ -248,7 +312,7 @@ function CreateNewValueModal({
 
   const handleCreatingNewAppearance = () => {
     setShowCreateNewValueModal(false);
-    setHighlightRedOnValueOnExisting(false);
+    setHighlightRedOnValueNonExisting(false);
     const appearanceId = generateMongoObjectId();
     createNewAppearance.mutate({ appearancePartId: appearanceId });
     updateConditionBlock.mutate({
@@ -269,7 +333,7 @@ function CreateNewValueModal({
       className={`${showCreateNewValueModal ? "" : "hidden"}`}
     >
       <InformativeOrSuggestionText>
-        Такого ключа не существует, хотите создать?
+        Такой одежды не существует, хотите создать?
       </InformativeOrSuggestionText>
       <InformativeOrSuggestionButton
         ref={focusOnBtnRef}

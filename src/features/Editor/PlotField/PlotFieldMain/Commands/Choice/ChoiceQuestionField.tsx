@@ -33,7 +33,6 @@ export default function ChoiceQuestionField({
   topologyBlockId,
   plotFieldCommandId,
 }: ChoiceQuestionFieldTypes) {
-  const [initialCharacterId] = useState(characterId);
   const [initialCharacterEmotionId] = useState(characterEmotionId);
   const [initialQuestion, setInitialQuestion] = useState("");
 
@@ -121,23 +120,12 @@ export default function ChoiceQuestionField({
   }, [debouncedValue]);
 
   useEffect(() => {
-    if (initialCharacterId !== characterId && characterId?.trim().length) {
-      updateChoice.mutate({ characterId });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterId]);
-
-  useEffect(() => {
     if (initialCharacterEmotionId !== emotionId && emotionId?.trim().length) {
       updateChoice.mutate({ characterEmotionId: emotionId });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emotionId]);
 
-  const characterDebouncedValue = useDebounce({
-    value: characterName,
-    delay: 500,
-  });
   return (
     <div className="w-full flex-grow flex gap-[1rem] bg-primary rounded-md shadow-md p-[.5rem] flex-wrap items-center">
       {isAuthor ? (
@@ -146,43 +134,18 @@ export default function ChoiceQuestionField({
         </div>
       ) : (
         <>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setShowAllCharacters(false);
-            }}
-            className="w-full relative flex gap-[.5rem] items-center bg-primary  rounded-md"
-          >
-            <PlotfieldInput
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowAllCharacters(true);
-                setShowAllEmotions(false);
-              }}
-              value={characterName}
-              onChange={(e) => {
-                setShowAllCharacters(true);
-                setCharacterName(e.target.value);
-              }}
-              placeholder="Имя Персонажа"
-            />
-
-            <img
-              src={characterImg}
-              alt="CharacterImg"
-              className={`${
-                characterImg?.trim().length ? "" : "hidden"
-              } w-[4rem] object-cover rounded-md self-end`}
-            />
-            <PlotfieldCharacterPromptMain
-              characterDebouncedValue={characterDebouncedValue}
-              setCharacterId={setCharacterId}
-              setCharacterName={setCharacterName}
-              setShowCharacterModal={setShowAllCharacters}
-              showCharacterModal={showAllCharacters}
-              setCharacterImg={setCharacterImg}
-            />
-          </form>
+          <ChoiceQuestionCharacterField
+            characterId={characterId}
+            choiceId={choiceId}
+            showAllCharacters={showAllCharacters}
+            characterImg={characterImg}
+            characterName={characterName}
+            setCharacterId={setCharacterId}
+            setCharacterImg={setCharacterImg}
+            setCharacterName={setCharacterName}
+            setShowAllCharacters={setShowAllCharacters}
+            setShowAllEmotions={setShowAllEmotions}
+          />
 
           <div className="relative flex-grow">
             <button
@@ -259,5 +222,102 @@ export default function ChoiceQuestionField({
         />
       </div>
     </div>
+  );
+}
+
+type ChoiceQuestionCharacterFieldTypes = {
+  setShowAllCharacters: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowAllEmotions: React.Dispatch<React.SetStateAction<boolean>>;
+  setCharacterName: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterImg: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterId: React.Dispatch<React.SetStateAction<string>>;
+  showAllCharacters: boolean;
+  characterName: string;
+  characterImg: string;
+  characterId: string;
+  choiceId: string;
+};
+
+export type DebouncedCheckCharacterTypes = {
+  characterId: string;
+  characterImg?: string;
+  characterName: string;
+};
+
+function ChoiceQuestionCharacterField({
+  showAllCharacters,
+  characterName,
+  characterImg,
+  characterId,
+  choiceId,
+  setShowAllCharacters,
+  setShowAllEmotions,
+  setCharacterName,
+  setCharacterImg,
+  setCharacterId,
+}: ChoiceQuestionCharacterFieldTypes) {
+  const [initialCharacterId] = useState(characterId);
+  const [debouncedCharacter, setDebouncedCharacter] =
+    useState<DebouncedCheckCharacterTypes | null>(null);
+
+  const debouncedValue = useDebounce({ value: characterName, delay: 700 });
+
+  const updateChoice = useUpdateChoice({ choiceId });
+
+  useEffect(() => {
+    if (initialCharacterId !== characterId && characterId?.trim().length) {
+      updateChoice.mutate({ characterId });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [characterId]);
+
+  useEffect(() => {
+    if (debouncedCharacter) {
+      setCharacterId(debouncedCharacter?.characterId);
+      setCharacterImg(debouncedCharacter?.characterImg || "");
+    }
+  }, [debouncedCharacter]);
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        setShowAllCharacters(false);
+      }}
+      className="w-full relative flex gap-[.5rem] bg-primary rounded-md"
+    >
+      <PlotfieldInput
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowAllCharacters(true);
+          setShowAllEmotions(false);
+        }}
+        value={characterName}
+        onChange={(e) => {
+          setShowAllCharacters(true);
+          setCharacterName(e.target.value);
+        }}
+        placeholder="Имя Персонажа"
+      />
+
+      <img
+        src={characterImg}
+        alt="CharacterImg"
+        className={`${
+          characterImg?.trim().length ? "" : "hidden"
+        } w-[3rem] object-cover top-[1.5px] rounded-md right-0 absolute`}
+      />
+      <PlotfieldCharacterPromptMain
+        characterValue={characterName}
+        setCharacterId={setCharacterId}
+        setCharacterName={setCharacterName}
+        setShowCharacterModal={setShowAllCharacters}
+        showCharacterModal={showAllCharacters}
+        setCharacterImg={setCharacterImg}
+        translateAsideValue={"translate-y-[3.5rem]"}
+        debouncedValue={debouncedValue}
+        setDebouncedCharacter={setDebouncedCharacter}
+      />
+    </form>
   );
 }

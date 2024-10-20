@@ -3,6 +3,7 @@ import useCreateEmotion from "../../../../../../../../../hooks/Posting/Emotion/u
 import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
 import { EmotionsTypes } from "../../../../../../../../../types/StoryData/Character/CharacterTypes";
 import useUpdateNameOrEmotion from "../../../../hooks/Say/useUpdateNameOrEmotion";
+import { useQueryClient } from "@tanstack/react-query";
 
 type CommandSayCreateEmotionFieldModalTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,6 +24,7 @@ export default function CommandSayCreateEmotionFieldModal({
 }: CommandSayCreateEmotionFieldModalTypes) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
+  const queryClient = useQueryClient();
   const [newEmotionId, setNewEmotionId] = useState("");
 
   useEffect(() => {
@@ -39,6 +41,9 @@ export default function CommandSayCreateEmotionFieldModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createEmotion.mutate();
+    queryClient.invalidateQueries({
+      queryKey: ["character", characterId],
+    });
     setShowModal(false);
   };
 

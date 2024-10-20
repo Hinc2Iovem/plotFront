@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
 
 type CreateKeyTypes = {
@@ -6,6 +6,7 @@ type CreateKeyTypes = {
 };
 
 export default function useCreateNewKeyAsValue({ storyId }: CreateKeyTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       keyName,
@@ -18,5 +19,10 @@ export default function useCreateNewKeyAsValue({ storyId }: CreateKeyTypes) {
         keyName,
         keyId,
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["stories", storyId, "key"],
+      });
+    },
   });
 }

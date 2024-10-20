@@ -105,7 +105,7 @@ export default function CommandNameField({
           e.preventDefault();
           setShowCharacterList(false);
         }}
-        className="w-full relative flex gap-[.5rem] items-center"
+        className="w-full relative flex gap-[.5rem]"
       >
         <PlotfieldInput
           onClick={(e) => {
@@ -128,7 +128,9 @@ export default function CommandNameField({
           } w-[3rem] object-cover rounded-md self-end`}
         />
         <PlotfieldCharacterPromptMain
-          characterDebouncedValue={characterDebouncedValue}
+          debouncedValue={characterDebouncedValue}
+          characterValue={currentCharacterName}
+          translateAsideValue="translate-y-[3.5rem]"
           setCharacterId={setCurrentCharacterId}
           setCharacterName={setCurrentCharacterName}
           setShowCharacterModal={setShowCharacterList}

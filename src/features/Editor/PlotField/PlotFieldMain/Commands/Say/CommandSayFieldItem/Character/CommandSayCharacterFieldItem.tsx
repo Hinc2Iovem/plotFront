@@ -28,7 +28,10 @@ export default function CommandSayCharacterFieldItem({
   plotFieldCommandId,
   topologyBlockId,
 }: CommandSayCharacterFieldItemTypes) {
-  const { data: currentCharacter } = useGetCharacterById({ characterId });
+  const [currentCharacterId, setCurrentCharacterId] = useState(characterId);
+  const { data: currentCharacter } = useGetCharacterById({
+    characterId: currentCharacterId,
+  });
   const [initialValue, setInitialValue] = useState("");
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
@@ -105,12 +108,15 @@ export default function CommandSayCharacterFieldItem({
           setShowCharacters={setShowCharacters}
           setShowAllEmotions={setShowAllEmotions}
           showCharacters={showCharacters}
+          currentCharacterImg={currentCharacter?.img || ""}
+          currentCharacterId={currentCharacterId}
+          setCurrentCharacterId={setCurrentCharacterId}
         />
         <FormEmotion
           setEmotionValue={setEmotionValue}
           emotionValue={emotionValue}
           emotions={currentCharacter?.emotions || []}
-          characterId={characterId}
+          characterId={currentCharacterId}
           plotFieldCommandId={plotFieldCommandId}
           plotFieldCommandSayId={plotFieldCommandSayId}
           setShowCreateEmotionModal={setShowCreateEmotionModal}

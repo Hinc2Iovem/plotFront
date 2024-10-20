@@ -1,13 +1,12 @@
-import { ComponentProps } from "react";
+import { ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 type InformativeOrSuggestionButtonTypes = ComponentProps<"button">;
 
-export default function InformativeOrSuggestionButton({
-  className,
-  children,
-  ...props
-}: InformativeOrSuggestionButtonTypes) {
+const InformativeOrSuggestionButton = forwardRef<
+  HTMLButtonElement,
+  InformativeOrSuggestionButtonTypes
+>(({ className, children, ...props }: InformativeOrSuggestionButtonTypes) => {
   const theme = localStorage.getItem("theme");
   return (
     <button
@@ -22,4 +21,8 @@ export default function InformativeOrSuggestionButton({
       {children}
     </button>
   );
-}
+});
+
+InformativeOrSuggestionButton.displayName = "InformativeOrSuggestionButton";
+
+export default InformativeOrSuggestionButton;

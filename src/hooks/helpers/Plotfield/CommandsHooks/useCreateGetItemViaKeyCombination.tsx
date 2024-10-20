@@ -3,6 +3,7 @@ import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFie
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import useCreateGetItem from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/GetItem/useCreateGetItem";
 import { useEffect } from "react";
+import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
 
 type CreateGetItemViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -22,6 +23,11 @@ export default function useCreateGetItemViaKeyCombination({
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
+      const allowed = preventCreatingCommandsWhenFocus();
+      if (!allowed) {
+        console.log("You are inside input element");
+        return;
+      }
       pressedKeys.add(event.key.toLowerCase());
 
       if (

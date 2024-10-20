@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldButton from "../../../../../../shared/Buttons/PlotfieldButton";
 import useUpdateChoiceOptionTopologyBlock from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTopologyBlock";
 import useGetAllTopologyBlocksByEpisodeId from "../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../hooks/TopologyBlock/useGetTopologyBlockById";
 import useChoiceOptions from "../Context/ChoiceContext";
-import PlotfieldButton from "../../../../../../shared/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type OptionSelecteTopologyBlockTypes = {
   setShowAllTopologyBlocks: React.Dispatch<React.SetStateAction<boolean>>;
@@ -95,6 +95,7 @@ export default function OptionSelectTopologyBlock({
                   topologyBlockId: tb._id,
                   topologyBlockName: tb?.name || "",
                 });
+
                 updateOptionTopologyBlock.mutate({
                   targetBlockId: tb._id,
                   sourceBlockId: topologyBlockId,

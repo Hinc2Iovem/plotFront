@@ -56,7 +56,7 @@ const AsideScrollable = forwardRef<HTMLElement, AsideScrollableTypes>(
         className={twMerge(
           ` flex flex-col gap-[1rem] ${
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } z-[100] w-full translate-y-[3rem] absolute text-[1.5rem] shadow-sm shadow-second-lightest-gray text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] transition-shadow h-[15rem] overflow-y-auto | containerScroll`,
+          } z-[100] w-full translate-y-[3.5rem] absolute text-[1.5rem] shadow-sm shadow-second-lightest-gray text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] transition-shadow h-[15rem] overflow-y-auto | containerScroll`,
           className
         )}
         {...props}

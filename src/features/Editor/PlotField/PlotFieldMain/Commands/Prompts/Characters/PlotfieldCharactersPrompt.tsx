@@ -1,39 +1,41 @@
-import { useState } from "react";
-import useGetCharacterById from "../../../../../../../hooks/Fetching/Character/useGetCharacterById";
-import { TranslationCharacterTypes } from "../../../../../../../types/Additional/TranslationTypes";
-
 type EmotionCharacterNameTypes = {
   setCharacterName: React.Dispatch<React.SetStateAction<string>>;
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
   setCharacterImg?: React.Dispatch<React.SetStateAction<string>>;
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
-} & TranslationCharacterTypes;
+  setNewlyCreated: React.Dispatch<React.SetStateAction<boolean>> | undefined;
+  characterId: string;
+  characterName: string;
+  characterImg?: string;
+};
 
 export default function PlotfieldCharactersPrompt({
   characterId,
+  characterName,
+  characterImg,
   setCharacterName,
   setCharacterId,
   setShowCharacterModal,
   setCharacterImg,
-  translations,
+  setNewlyCreated,
 }: EmotionCharacterNameTypes) {
-  const { data: character } = useGetCharacterById({
-    characterId,
-  });
   const theme = localStorage.getItem("theme");
-  const [currentCharacterName] = useState((translations || [])[0]?.text || "");
 
   return (
     <>
-      {character?.img ? (
+      {characterImg ? (
         <button
           type="button"
-          onClick={() => {
-            setCharacterName(currentCharacterName);
+          onClick={(e) => {
+            e.stopPropagation();
+            setCharacterName(characterName);
             setCharacterId(characterId);
             setShowCharacterModal(false);
+            if (setNewlyCreated) {
+              setNewlyCreated(false);
+            }
             if (setCharacterImg) {
-              setCharacterImg(character?.img || "");
+              setCharacterImg(characterImg || "");
             }
           }}
           className={`whitespace-nowrap w-full ${
@@ -41,12 +43,12 @@ export default function PlotfieldCharactersPrompt({
           } focus-within:bg-primary-darker focus-within:text-text-light flex-wrap rounded-md flex px-[1rem] py-[.5rem] items-center justify-between hover:bg-primary-darker hover:text-text-light text-text-dark transition-all `}
         >
           <p className="text-[1.3rem] rounded-md">
-            {currentCharacterName.length > 20
-              ? currentCharacterName.substring(0, 20) + "..."
-              : currentCharacterName}
+            {characterName.length > 20
+              ? characterName.substring(0, 20) + "..."
+              : characterName}
           </p>
           <img
-            src={character?.img || ""}
+            src={characterImg || ""}
             alt="CharacterImg"
             className="w-[3rem] rounded-md"
           />
@@ -54,11 +56,15 @@ export default function PlotfieldCharactersPrompt({
       ) : (
         <button
           type="button"
-          onClick={() => {
-            setCharacterName(currentCharacterName);
+          onClick={(e) => {
+            e.stopPropagation();
+            setCharacterName(characterName);
             setCharacterId(characterId);
             setShowCharacterModal(false);
-            if (setCharacterImg) {
+            if (setNewlyCreated) {
+              setNewlyCreated(false);
+            }
+            if (setCharacterImg && !characterImg) {
               setCharacterImg("");
             }
           }}
@@ -66,9 +72,9 @@ export default function PlotfieldCharactersPrompt({
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
           } text-start text-[1.3rem] focus-within:bg-primary-darker focus-within:text-text-light rounded-md px-[1rem] py-[1rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all `}
         >
-          {currentCharacterName.length > 20
-            ? currentCharacterName.substring(0, 20) + "..."
-            : currentCharacterName}
+          {characterName.length > 20
+            ? characterName.substring(0, 20) + "..."
+            : characterName}
         </button>
       )}
     </>

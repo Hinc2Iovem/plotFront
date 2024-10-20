@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
+import useHandleAllCommandsCreatedViaKeyCombination from "../../hooks/helpers/Plotfield/useHandleAllCommandsCreatedViaKeyCombination";
 import useCheckKeysCombinationExpandFlowchart from "../../hooks/helpers/useCheckKeysCombinationExpandFlowchart";
 import useCheckKeysCombinationExpandPlotField from "../../hooks/helpers/useCheckKeysCombinationExpandPlotField";
 import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
@@ -9,15 +9,18 @@ import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
 import Flowchart from "./Flowchart/Flowchart";
 import "./Flowchart/FlowchartStyles.css";
 import PlotField from "./PlotField/PlotField";
-import useGetFirstTopologyBlock from "./PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetFirstTopologyBlock";
-import useHandleAllCommandsCreatedViaKeyCombination from "../../hooks/helpers/Plotfield/useHandleAllCommandsCreatedViaKeyCombination";
 
 type EditorMainTypes = {
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
+  currentTopologyBlockId: string;
 };
 
-export default function EditorMain({ setShowHeader }: EditorMainTypes) {
-  const { episodeId } = useParams();
+export default function EditorMain({
+  setCurrentTopologyBlockId,
+  setShowHeader,
+  currentTopologyBlockId,
+}: EditorMainTypes) {
   const { roles } = useGetDecodedJWTValues();
   const [command, setCommand] =
     useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
@@ -78,31 +81,11 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
 
   const [scale, setScale] = useState(1);
 
-  const { data: firstTopologyBlock } = useGetFirstTopologyBlock({
-    episodeId: episodeId || "",
-  });
-
-  const [localTopologyBlockId] = useState(
-    localStorage.getItem(`${episodeId}-topologyBlockId`)
-  );
-
-  const [currentTopologyBlockId, setCurrentTopologyBlockId] = useState(
-    firstTopologyBlock?._id || ""
-  );
-
   // const checkScrollbarPresence = () => {
   //   const hasScrollbar =
   //     document.documentElement.scrollHeight > window.innerHeight;
   //   setHasScrollbar(hasScrollbar);
   // };
-
-  useEffect(() => {
-    if (localTopologyBlockId) {
-      setCurrentTopologyBlockId(localTopologyBlockId);
-    } else if (firstTopologyBlock) {
-      setCurrentTopologyBlockId(firstTopologyBlock._id);
-    }
-  }, [firstTopologyBlock, localTopologyBlockId]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [scaleDivPosition, setScaleDivPosition] = useState(0);

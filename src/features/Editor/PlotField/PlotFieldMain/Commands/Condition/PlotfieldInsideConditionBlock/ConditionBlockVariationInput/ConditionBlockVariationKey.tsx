@@ -23,16 +23,19 @@ export default function ConditionBlockVariationKey({
   plotfieldCommandId,
   conditionBlockId,
 }: ConditionBlockVariationKeyTypes) {
-  const { storyId } = useParams();
   const [showKeyPromptModal, setShowKeyPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] =
     useState(false);
+  const [commandKeyId, setCommandKeyId] = useState("");
+  const [debouncedKeyValue, setDebouncedKeyValue] =
+    useState<DebouncedCheckKeyTypes | null>(null);
 
   const {
     getConditionBlockById,
     updateConditionBlockName,
     updateConditionBlockValueId,
+    conditions,
   } = useConditionBlocks();
 
   const [currentConditionName, setCurrentConditionName] = useState(
@@ -40,95 +43,83 @@ export default function ConditionBlockVariationKey({
       ?.conditionName || ""
   );
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const { data: keys } = useGetAllKeysByStoryId({ storyId: storyId || "" });
-
-  const memoizedKeys = useMemo(() => {
-    const allKeys = keys?.map((k) => k.text?.toLowerCase()) || [];
-    if (currentConditionName) {
-      return allKeys?.filter((k) =>
-        k?.includes(currentConditionName.toLowerCase())
-      );
+  useEffect(() => {
+    const conditionBlock = getConditionBlockById({
+      conditionBlockId,
+      plotfieldCommandId,
+    });
+    if (conditionBlock?.conditionName !== currentConditionName) {
+      setCurrentConditionName(conditionBlock?.conditionName || "");
     }
-    return allKeys;
-  }, [currentConditionName, keys]);
+  }, [conditions, conditionBlockId, plotfieldCommandId]);
+
+  useEffect(() => {
+    if (commandKeyId && currentConditionName) {
+      updateConditionBlockName({
+        conditionBlockId:
+          getConditionBlockById({
+            conditionBlockId,
+            plotfieldCommandId,
+          })?.conditionBlockId || "",
+        conditionName: currentConditionName,
+        plotfieldCommandId,
+      });
+
+      updateConditionBlockValueId({
+        blockValueId: commandKeyId,
+        conditionBlockId,
+        conditionType: "key",
+        plotfieldCommandId,
+      });
+      updateConditionBlock.mutate({
+        name: currentConditionName,
+        type: "key",
+        blockValueId: commandKeyId,
+      });
+    }
+  }, [commandKeyId]);
 
   const debouncedValue = useDebounce({
     delay: 700,
-    value:
-      getConditionBlockById({ plotfieldCommandId, conditionBlockId })
-        ?.conditionName || "",
+    value: currentConditionName,
   });
-
-  const handleUpdatingConditionContextValue = ({
-    keyId,
-  }: {
-    keyId: string;
-  }) => {
-    updateConditionBlockValueId({
-      blockValueId: keyId,
-      conditionBlockId,
-      conditionType: "key",
-      plotfieldCommandId,
-    });
-  };
 
   const updateConditionBlock = useUpdateConditionValue({
     conditionBlockId,
   });
 
-  const handleCheckValueCorrectnessBeforeUpdating = ({
-    onClick,
-  }: {
-    onClick: boolean;
-  }) => {
-    const existingKey = keys?.find(
-      (mk) =>
-        mk.text?.trim()?.toLowerCase() ===
-        currentConditionName?.trim().toLowerCase()
-    );
-
-    if (existingKey) {
-      setShowKeyPromptModal(false);
-      setHighlightRedOnValueOnExisting(false);
-      handleUpdatingConditionContextValue({
-        keyId: existingKey._id,
-      });
-      updateConditionBlock.mutate({
-        name: currentConditionName,
-        blockValueId: existingKey._id,
-      });
-    } else {
-      if (onClick) {
-        setShowCreateNewValueModal(true);
-        console.log("Show Modal to create key");
-        return;
-      } else {
-        setHighlightRedOnValueOnExisting(true);
-        console.log("Value doesn't exist");
-        return;
-      }
-    }
-  };
-
   useEffect(() => {
-    if (
-      debouncedValue?.trim().length &&
-      currentConditionName?.trim() !== debouncedValue.trim()
-    ) {
-      handleCheckValueCorrectnessBeforeUpdating({ onClick: false });
-    }
-  }, [debouncedValue]);
+    if (debouncedKeyValue && !showKeyPromptModal) {
+      updateConditionBlockName({
+        conditionBlockId:
+          getConditionBlockById({
+            conditionBlockId,
+            plotfieldCommandId,
+          })?.conditionBlockId || "",
+        conditionName: debouncedKeyValue.keyName,
+        plotfieldCommandId,
+      });
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowKeyPromptModal,
-    showModal: showKeyPromptModal,
-  });
+      updateConditionBlockValueId({
+        blockValueId: debouncedKeyValue.keyId,
+        conditionBlockId,
+        conditionType: "key",
+        plotfieldCommandId,
+      });
+
+      setCurrentConditionName(debouncedKeyValue.keyName);
+      setCommandKeyId(debouncedKeyValue.keyId);
+
+      updateConditionBlock.mutate({
+        name: debouncedKeyValue.keyName,
+        type: "key",
+        blockValueId: debouncedKeyValue.keyId,
+      });
+    }
+  }, [debouncedKeyValue]);
 
   return (
-    <div className="relative">
+    <div className="relative mt-[1.5rem]">
       <PlotfieldInput
         type="text"
         placeholder="Ключ"
@@ -136,12 +127,7 @@ export default function ConditionBlockVariationKey({
           setShowKeyPromptModal((prev) => !prev);
           e.stopPropagation();
         }}
-        value={
-          getConditionBlockById({
-            plotfieldCommandId,
-            conditionBlockId,
-          })?.conditionName || ""
-        }
+        value={currentConditionName}
         onChange={(e) => {
           if (!showKeyPromptModal) {
             setShowKeyPromptModal(true);
@@ -158,46 +144,18 @@ export default function ConditionBlockVariationKey({
             plotfieldCommandId,
           });
         }}
-        className={`${
-          highlightRedOnValueNonExisting ? "border-red-300 border-[2px]" : ""
-        }`}
+        className={`${highlightRedOnValueNonExisting ? "" : ""}`}
       />
-      <AsideScrollable
-        ref={modalRef}
-        className={`${showKeyPromptModal ? "" : "hidden"} translate-y-[.5rem]`}
-      >
-        {memoizedKeys?.length ? (
-          memoizedKeys.map((mk, i) => (
-            <AsideScrollableButton
-              key={mk + "-" + i}
-              onClick={() => {
-                setShowKeyPromptModal(false);
-                setCurrentConditionName(mk);
-                handleCheckValueCorrectnessBeforeUpdating({ onClick: true });
-                updateConditionBlockName({
-                  conditionBlockId:
-                    getConditionBlockById({
-                      plotfieldCommandId,
-                      conditionBlockId,
-                    })?.conditionBlockId || "",
-                  conditionName: mk,
-                  plotfieldCommandId,
-                });
-              }}
-            >
-              {mk}
-            </AsideScrollableButton>
-          ))
-        ) : (
-          <AsideScrollableButton
-            onClick={() => {
-              setShowKeyPromptModal(false);
-            }}
-          >
-            Пусто
-          </AsideScrollableButton>
-        )}
-      </AsideScrollable>
+
+      <KeyPromptsModal
+        currentKeyName={currentConditionName}
+        setCurrentKeyName={setCurrentConditionName}
+        setShowKeyPromptModal={setShowKeyPromptModal}
+        showKeyPromptModal={showKeyPromptModal}
+        debouncedKey={debouncedValue}
+        setDebouncedKeyValue={setDebouncedKeyValue}
+        setCommandKeyId={setCommandKeyId}
+      />
 
       <CreateNewValueModal
         conditionName={currentConditionName}
@@ -207,6 +165,107 @@ export default function ConditionBlockVariationKey({
         showCreateNewValueModal={showCreateNewValueModal}
       />
     </div>
+  );
+}
+// updateConditionBlockName({
+//   conditionBlockId:
+//     getConditionBlockById({
+//       plotfieldCommandId,
+//       conditionBlockId,
+//     })?.conditionBlockId || "",
+//   conditionName: mk,
+//   plotfieldCommandId,
+// });
+
+export type DebouncedCheckKeyTypes = {
+  keyId: string;
+  keyName: string;
+};
+
+type KeyPromptsModalTypes = {
+  showKeyPromptModal: boolean;
+  setShowKeyPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentKeyName: React.Dispatch<React.SetStateAction<string>>;
+  currentKeyName: string;
+  debouncedKey: string;
+  setDebouncedKeyValue: React.Dispatch<
+    React.SetStateAction<DebouncedCheckKeyTypes | null>
+  >;
+  setCommandKeyId: React.Dispatch<React.SetStateAction<string>>;
+};
+
+export function KeyPromptsModal({
+  showKeyPromptModal,
+  setCurrentKeyName,
+  currentKeyName,
+  setShowKeyPromptModal,
+  setDebouncedKeyValue,
+  setCommandKeyId,
+  debouncedKey,
+}: KeyPromptsModalTypes) {
+  const { storyId } = useParams();
+  const { data: keys } = useGetAllKeysByStoryId({ storyId: storyId || "" });
+
+  const memoizedKeys = useMemo(() => {
+    if (!keys) return [];
+
+    if (currentKeyName) {
+      return keys?.filter((k) =>
+        k?.text?.toLowerCase().includes(currentKeyName?.toLowerCase())
+      );
+    }
+    return keys;
+  }, [currentKeyName, keys]);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (debouncedKey?.trim().length) {
+      const existingKey = memoizedKeys?.find(
+        (k) => k.text?.toLowerCase() === currentKeyName?.toLowerCase()
+      );
+      if (existingKey) {
+        setDebouncedKeyValue({
+          keyId: existingKey._id,
+          keyName: existingKey.text,
+        });
+      }
+    }
+  }, [debouncedKey]);
+
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowKeyPromptModal,
+    showModal: showKeyPromptModal,
+  });
+  return (
+    <AsideScrollable
+      ref={modalRef}
+      className={`${showKeyPromptModal ? "" : "hidden"} translate-y-[.5rem]`}
+    >
+      {memoizedKeys?.length ? (
+        memoizedKeys.map((mk) => (
+          <AsideScrollableButton
+            key={mk._id}
+            onClick={() => {
+              setShowKeyPromptModal(false);
+              setCurrentKeyName(mk.text);
+              setCommandKeyId(mk._id);
+            }}
+          >
+            {mk.text}
+          </AsideScrollableButton>
+        ))
+      ) : (
+        <AsideScrollableButton
+          onClick={() => {
+            setShowKeyPromptModal(false);
+          }}
+        >
+          Пусто
+        </AsideScrollableButton>
+      )}
+    </AsideScrollable>
   );
 }
 

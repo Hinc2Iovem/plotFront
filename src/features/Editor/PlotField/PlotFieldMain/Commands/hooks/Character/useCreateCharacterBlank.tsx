@@ -37,12 +37,15 @@ export default function useCreateCharacterBlank({
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["translation", language, "character", "story", storyId],
-        exact: true,
-        type: "active",
       });
+      queryClient.invalidateQueries({
+        queryKey: ["story", storyId, "characters"],
+      });
+
       if (onSuccessCallback) {
         onSuccessCallback(variables.characterId);
       }
+
       // queryClient.invalidateQueries({
       //   queryKey: ["plotfieldComamnd", plotFieldCommandId, "say"],
       //   exact: true,

@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 
 type CreateAppearancePartTypes = {
@@ -10,6 +10,7 @@ export default function useCreateAppearancePartOptimistic({
   appearancePartName,
   storyId,
 }: CreateAppearancePartTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ appearancePartId }: { appearancePartId: string }) =>
       await axiosCustomized.post(
@@ -19,5 +20,16 @@ export default function useCreateAppearancePartOptimistic({
           appearancePartId,
         }
       ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          "translation",
+          "russian",
+          "story",
+          storyId,
+          "appearancePart",
+        ],
+      });
+    },
   });
 }

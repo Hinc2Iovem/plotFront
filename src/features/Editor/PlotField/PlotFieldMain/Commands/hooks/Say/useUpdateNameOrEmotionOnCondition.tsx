@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../../api/axios";
 
 type UpdateNameOrEmotionTypes = {
@@ -7,12 +7,8 @@ type UpdateNameOrEmotionTypes = {
   characterEmotionId: string;
 };
 
-export default function useUpdateNameOrEmotionOnCondition({
-  plotFieldCommandId,
-}: {
-  plotFieldCommandId: string;
-}) {
-  const queryClient = useQueryClient();
+export default function useUpdateNameOrEmotionOnCondition() {
+  // const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({
@@ -28,11 +24,11 @@ export default function useUpdateNameOrEmotionOnCondition({
         }
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["plotfieldComamnd", plotFieldCommandId, "say"],
-        exact: true,
-        type: "active",
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: ["plotfieldComamnd", plotFieldCommandId, "say"],
+      //   exact: true,
+      //   type: "active",
+      // });
       // queryClient.invalidateQueries({
       //   queryKey: ["character", characterId],
       //   exact: true,

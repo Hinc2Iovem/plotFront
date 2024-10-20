@@ -25,11 +25,17 @@ export default function useUpdateChoiceOptionTopologyBlock({
         `/plotFieldCommands/choices/options/${choiceOptionId}/sourceBlocks/${sourceBlockId}/targetBlocks/${targetBlockId}`
       );
     },
-    onSuccess: () => {
+
+    onSuccess: (_data, variables) => {
+      const { targetBlockId } = variables;
+
       queryClient.invalidateQueries({
         queryKey: ["connection", "episode", episodeId],
         exact: true,
         type: "active",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["plotfield", "topologyBlock", targetBlockId],
       });
     },
   });

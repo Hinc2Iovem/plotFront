@@ -4,6 +4,7 @@ import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
 import useCreateAchievement from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Achievement/useCreateAchievement";
 import { useParams } from "react-router-dom";
+import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
 
 type CreateAchievementViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -27,6 +28,11 @@ export default function useCreateAchievementViaKeyCombination({
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
+      const allowed = preventCreatingCommandsWhenFocus();
+      if (!allowed) {
+        console.log("You are inside input element");
+        return;
+      }
       pressedKeys.add(event.key.toLowerCase());
 
       if (

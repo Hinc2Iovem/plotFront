@@ -41,11 +41,7 @@ export default function ConditionSignField({
       </PlotfieldButton>
       <AsideScrollable
         ref={modalRef}
-        className={` ${showSignModal ? "" : "hidden"} ${
-          getConditionBlockById({ conditionBlockId, plotfieldCommandId })?.sign
-            ? "translate-y-[1rem]"
-            : "translate-y-[2rem]"
-        }  `}
+        className={` ${showSignModal ? "" : "hidden"} translate-y-[.5rem] `}
       >
         {AllConditionSigns &&
           AllConditionSigns?.map((c) => (

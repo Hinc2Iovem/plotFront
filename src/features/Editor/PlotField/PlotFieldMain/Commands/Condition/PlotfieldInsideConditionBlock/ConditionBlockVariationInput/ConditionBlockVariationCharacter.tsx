@@ -1,19 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
-import useConditionBlocks from "../../Context/ConditionContext";
-import useGetTranslationCharacters from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
-import useCreateCharacterBlank from "../../../hooks/Character/useCreateCharacterBlank";
-import ConditionSignField from "./ConditionSignField";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
 import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
+import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import { DebouncedCheckCharacterTypes } from "../../../Choice/ChoiceQuestionField";
+import useCreateCharacterBlank from "../../../hooks/Character/useCreateCharacterBlank";
+import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
+import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
+import useConditionBlocks from "../../Context/ConditionContext";
+import ConditionSignField from "./ConditionSignField";
 
 type ConditionBlockVariationCharacterTypes = {
   plotfieldCommandId: string;
@@ -24,13 +23,13 @@ export default function ConditionBlockVariationCharacter({
   plotfieldCommandId,
   conditionBlockId,
 }: ConditionBlockVariationCharacterTypes) {
-  const { storyId } = useParams();
   const [showCharacterPromptModal, setShowCharacterPromptModal] =
     useState(false);
   const {
     getConditionBlockById,
     updateConditionBlockName,
     updateConditionBlockValueId,
+    conditions,
   } = useConditionBlocks();
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] =
     useState(false);
@@ -39,29 +38,24 @@ export default function ConditionBlockVariationCharacter({
       ?.conditionName || ""
   );
 
-  const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
+  useEffect(() => {
+    const conditionBlock = getConditionBlockById({
+      conditionBlockId,
+      plotfieldCommandId,
+    });
+    if (conditionBlock?.conditionName !== currentConditionName) {
+      setCurrentConditionName(conditionBlock?.conditionName || "");
+    }
+  }, [conditions, conditionBlockId, plotfieldCommandId]);
+
+  const [characterImg, setCharacterImg] = useState("");
+  const [debouncedCharacter, setDebouncedCharacter] =
+    useState<DebouncedCheckCharacterTypes | null>(null);
+  const [characterId, setCharacterId] = useState("");
+
+  // const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
-  const { data: characters } = useGetTranslationCharacters({
-    storyId: storyId || "",
-    language: "russian",
-  });
-
-  const memoizedCharacters = useMemo(() => {
-    const allCharacters = characters
-      ?.flatMap((k) =>
-        k.translations
-          ?.filter((kt) => kt.textFieldName === "characterName")
-          ?.map((kt) => kt.text?.toLowerCase())
-      )
-      ?.filter(Boolean);
-    if (currentConditionName) {
-      return allCharacters?.filter((k) =>
-        k?.includes(currentConditionName.toLowerCase())
-      );
-    }
-    return allCharacters;
-  }, [currentConditionName, characters]);
 
   const updateConditionBlock = useUpdateConditionValue({
     conditionBlockId,
@@ -69,69 +63,40 @@ export default function ConditionBlockVariationCharacter({
 
   const debouncedConditionName = useDebounce({
     delay: 700,
-    value:
-      getConditionBlockById({ conditionBlockId, plotfieldCommandId })
-        ?.conditionName || "",
+    value: currentConditionName,
   });
 
-  const handleUpdatingConditionContextValue = ({
-    characterId,
-  }: {
-    characterId: string;
-  }) => {
-    updateConditionBlockValueId({
-      blockValueId: characterId,
-      conditionBlockId,
-      conditionType: "character",
-      plotfieldCommandId,
-    });
-  };
-
-  const handleCheckValueCorrectnessBeforeUpdating = ({
-    onClick,
-  }: {
-    onClick: boolean;
-  }) => {
-    const existingCharacter = characters?.find((mk) =>
-      mk.translations?.find(
-        (mkt) =>
-          mkt.textFieldName === "characterName" &&
-          mkt.text?.trim()?.toLowerCase() ===
-            currentConditionName?.trim().toLowerCase()
-      )
-    );
-
-    if (existingCharacter) {
-      setShowCharacterPromptModal(false);
-      setHighlightRedOnValueOnExisting(false);
-      handleUpdatingConditionContextValue({
-        characterId: existingCharacter._id,
+  useEffect(() => {
+    if (debouncedCharacter) {
+      updateConditionBlockName({
+        conditionBlockId:
+          getConditionBlockById({
+            conditionBlockId,
+            plotfieldCommandId,
+          })?.conditionBlockId || "",
+        conditionName: debouncedCharacter.characterName,
+        plotfieldCommandId,
       });
+
+      updateConditionBlockValueId({
+        blockValueId: debouncedCharacter.characterId,
+        conditionBlockId,
+        conditionType: "character",
+        plotfieldCommandId,
+      });
+
+      setCurrentConditionName(debouncedCharacter.characterName);
+      setCharacterImg(debouncedCharacter?.characterImg || "");
+      setCharacterId(debouncedCharacter.characterId);
+
       updateConditionBlock.mutate({
-        name: currentConditionName,
-        blockValueId: existingCharacter._id,
+        name: debouncedCharacter.characterName,
+        blockValueId: debouncedCharacter.characterId,
       });
     } else {
-      if (onClick) {
-        setShowCreateNewValueModal(true);
-        console.log("Show Modal to create character");
-        return;
-      } else {
-        setHighlightRedOnValueOnExisting(true);
-        console.log("Value doesn't exist");
-        return;
-      }
+      console.error("Such character doesn't exist");
     }
-  };
-
-  useEffect(() => {
-    if (
-      debouncedConditionName?.trim().length &&
-      currentConditionName?.trim() !== debouncedConditionName.trim()
-    ) {
-      handleCheckValueCorrectnessBeforeUpdating({ onClick: false });
-    }
-  }, [debouncedConditionName]);
+  }, [debouncedCharacter]);
 
   useOutOfModal({
     modalRef,
@@ -140,7 +105,7 @@ export default function ConditionBlockVariationCharacter({
   });
 
   return (
-    <div className="w-full flex gap-[1rem] flex-col">
+    <div className="w-full flex gap-[1rem] flex-col mt-[1.5rem]">
       <div className="w-full flex gap-[1rem] flex-shrink flex-wrap">
         <div className="w-full min-w-[10rem] relative">
           <PlotfieldInput
@@ -150,37 +115,39 @@ export default function ConditionBlockVariationCharacter({
               setShowCharacterPromptModal((prev) => !prev);
               e.stopPropagation();
             }}
-            value={
-              getConditionBlockById({ conditionBlockId, plotfieldCommandId })
-                ?.conditionName || ""
-            }
+            value={currentConditionName}
             onChange={(e) => {
               if (!showCharacterPromptModal) {
                 setShowCharacterPromptModal(true);
               }
               setHighlightRedOnValueOnExisting(false);
               setCurrentConditionName(e.target.value);
-              updateConditionBlockName({
-                conditionBlockId:
-                  getConditionBlockById({
-                    conditionBlockId,
-                    plotfieldCommandId,
-                  })?.conditionBlockId || "",
-                conditionName: e.target.value,
-                plotfieldCommandId,
-              });
             }}
-            className={`${
-              highlightRedOnValueNonExisting
-                ? " border-red-300 border-[2px]"
-                : ""
-            }`}
+            className={`${highlightRedOnValueNonExisting ? " " : ""}`}
           />
-          <AsideScrollable
+          {characterImg ? (
+            <img
+              src={characterImg}
+              alt="CharacterImg"
+              className="w-[3rem] absolute right-0 rounded-md top-0"
+            />
+          ) : null}
+          <PlotfieldCharacterPromptMain
+            characterValue={currentConditionName}
+            setCharacterId={setCharacterId}
+            setCharacterName={setCurrentConditionName}
+            setShowCharacterModal={setShowCharacterPromptModal}
+            showCharacterModal={showCharacterPromptModal}
+            translateAsideValue="translate-y-[.5rem]"
+            debouncedValue={debouncedConditionName}
+            setCharacterImg={setCharacterImg}
+            setDebouncedCharacter={setDebouncedCharacter}
+          />
+          {/* <AsideScrollable
             ref={modalRef}
             className={` ${
               showCharacterPromptModal ? "" : "hidden"
-            } translate-y-[1rem]`}
+            } translate-y-[.5rem]`}
           >
             {(memoizedCharacters || [])?.map((mk, i) => (
               <AsideScrollableButton
@@ -202,14 +169,14 @@ export default function ConditionBlockVariationCharacter({
                 {mk}
               </AsideScrollableButton>
             ))}
-          </AsideScrollable>
-          <CreateNewCharacterModal
+          </AsideScrollable> */}
+          {/* <CreateNewCharacterModal
             setShowCreateNewValueModal={setShowCreateNewValueModal}
             showCreateNewValueModal={showCreateNewValueModal}
             conditionName={currentConditionName}
             conditionBlockId={conditionBlockId}
             setHighlightRedOnValueOnExisting={setHighlightRedOnValueOnExisting}
-          />
+          /> */}
         </div>
 
         <ConditionSignField

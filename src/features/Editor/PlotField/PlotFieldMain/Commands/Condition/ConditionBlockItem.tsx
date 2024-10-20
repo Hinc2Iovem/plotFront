@@ -109,7 +109,9 @@ export default function ConditionBlockItem({
                 }}
                 type="button"
               >
-                {topologyBlockName || "Текущая Ветка"}
+                {topologyBlockName
+                  ? `Ветка - ${topologyBlockName}`
+                  : "Текущая Ветка"}
               </PlotfieldButton>
               <AsideScrollable
                 className={`${
@@ -170,7 +172,9 @@ export default function ConditionBlockItem({
               }}
               type="button"
             >
-              {topologyBlockName || "Текущая Ветка"}
+              {topologyBlockName
+                ? `Ветка - ${topologyBlockName}`
+                : "Текущая Ветка"}
             </PlotfieldButton>
             <AsideScrollable
               ref={modalRef}

@@ -3,6 +3,7 @@ import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/Top
 import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import useCreateMusic from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Music/useCreateMusic";
+import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
 
 type CreateMusicViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -22,6 +23,11 @@ export default function useCreateMusicViaKeyCombination({
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
+      const allowed = preventCreatingCommandsWhenFocus();
+      if (!allowed) {
+        console.log("You are inside input element");
+        return;
+      }
       pressedKeys.add(event.key.toLowerCase());
 
       if (

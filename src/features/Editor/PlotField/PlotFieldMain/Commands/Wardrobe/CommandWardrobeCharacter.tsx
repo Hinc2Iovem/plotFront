@@ -108,7 +108,7 @@ export default function CommandWardrobeCharacter({
     <>
       <form
         onSubmit={handleSubmit}
-        className="w-full relative flex gap-[.5rem] items-center"
+        className="w-full relative flex gap-[.5rem]"
       >
         <PlotfieldInput
           onClick={(e) => {
@@ -133,7 +133,9 @@ export default function CommandWardrobeCharacter({
           } w-[3rem] object-cover rounded-md self-end`}
         />
         <PlotfieldCharacterPromptMain
-          characterDebouncedValue={characterDebouncedValue}
+          characterValue={characterName}
+          debouncedValue={characterDebouncedValue}
+          translateAsideValue="translate-y-[3.5rem]"
           setCharacterId={setCharacterId}
           setCharacterName={setCharacterName}
           setShowCharacterModal={setShowCharacterModal}

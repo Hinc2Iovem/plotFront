@@ -9,6 +9,8 @@ import useGetChoiceOptionById from "../hooks/Choice/ChoiceOption/useGetChoiceOpt
 import useUpdateChoice from "../hooks/Choice/useUpdateChoice";
 import useGetAllTopologyBlocksByEpisodeId from "../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../hooks/TopologyBlock/useGetTopologyBlockById";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 
 type ChoiceVariationTypeBlockTypes = {
   exitBlockId: string;
@@ -22,6 +24,7 @@ type ChoiceVariationTypeBlockTypes = {
   >;
   timeLimitDefaultOptionId: string;
   amountOfOptions: number;
+  insidePlotfield?: boolean;
 };
 
 export default function ChoiceVariationTypeBlock({
@@ -34,6 +37,7 @@ export default function ChoiceVariationTypeBlock({
   setChoiceVariationTypes,
   amountOfOptions,
   timeLimitDefaultOptionId,
+  insidePlotfield = false,
 }: ChoiceVariationTypeBlockTypes) {
   const choiceVariationRef = useRef<HTMLDivElement>(null);
   const theme = localStorage.getItem("theme");
@@ -64,7 +68,7 @@ export default function ChoiceVariationTypeBlock({
           }}
           className={`w-full text-text-light text-start ${
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } whitespace-nowrap text-[1.3rem] bg-secondary rounded-md  shadow-md px-[1rem] py-[.5rem]`}
+          } h-full whitespace-nowrap text-[1.4rem] bg-secondary rounded-md shadow-md px-[1rem] py-[.5rem]`}
         >
           {choiceVariationTypes ? choiceVariationTypes : "Тип Выбора"}
         </button>
@@ -103,7 +107,7 @@ export default function ChoiceVariationTypeBlock({
           !choiceVariationTypes?.trim().length
             ? "hidden"
             : ""
-        } flex-grow shadow-md bg-secondary rounded-md relative`}
+        } flex-grow shadow-md bg-primary rounded-md relative`}
         onSubmit={(e) => e.preventDefault()}
       >
         <ChoiceTimeLimitBlock
@@ -116,6 +120,7 @@ export default function ChoiceVariationTypeBlock({
           showChoiceDefaultTimeLimitBlockModal={
             showChoiceDefaultTimeLimitBlockModal
           }
+          insidePlotfield={insidePlotfield}
           setTimeLimit={setTimeLimit}
           timeLimit={timeLimit}
           amountOfOptions={amountOfOptions}
@@ -149,6 +154,7 @@ type ChoiceTimeLimitBlockTypes = {
   setTimeLimit: React.Dispatch<React.SetStateAction<number>>;
   amountOfOptions: number;
   timeLimitDefaultOptionId: string;
+  insidePlotfield: boolean;
 };
 
 function ChoiceTimeLimitBlock({
@@ -161,6 +167,7 @@ function ChoiceTimeLimitBlock({
   timeLimit,
   amountOfOptions,
   timeLimitDefaultOptionId,
+  insidePlotfield,
 }: ChoiceTimeLimitBlockTypes) {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -199,67 +206,71 @@ function ChoiceTimeLimitBlock({
     <div
       className={`flex ${
         choiceVariationTypes === "timelimit" ? "" : "hidden"
-      } px-[.2rem] py-[.2rem] gap-[.5rem] w-full flex-wrap`}
+      } gap-[.5rem] w-full flex-wrap`}
     >
-      <input
+      <PlotfieldInput
         type="text"
-        className={`w-[5rem] text-[1.4rem] border-[2px] border-gray-400  border-dashed px-[1rem] py-[.5rem] rounded-md outline-gray-300`}
+        className="flex-grow"
         value={timeLimit || ""}
         onChange={(e) => setTimeLimit(+e.target.value)}
       />
 
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowChoiceVariationTypesModal(false);
-          setShowChoiceDefaultTimeLimitBlockModal((prev) => !prev);
-        }}
-        className={`flex-grow text-[1.4rem] border-[2px] border-gray-400  border-dashed px-[1rem] py-[.5rem] rounded-md outline-gray-300`}
-      >
-        {typeof currentChoiceOptionOrder === "number"
-          ? currentChoiceOptionOrder
-          : "Дефолтный Выбор"}
-      </button>
-      <aside
-        ref={modalRef}
-        className={`${
-          showChoiceDefaultTimeLimitBlockModal ? "" : "hidden"
-        } translate-y-[3.8rem] absolute z-10 flex flex-col gap-[1rem] bg-primary  rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
-      >
-        {(currentChoiceOptionOrder && amountOfOptions > 1) ||
-        (!currentChoiceOptionOrder && amountOfOptions > 0) ? (
-          [...Array.from({ length: amountOfOptions })]?.map((_, i) => (
-            <button
-              key={i}
-              className={`${
-                i === currentChoiceOptionOrder ? "hidden" : ""
-              } text-start outline-gray-300 whitespace-nowrap text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
-              onClick={() => {
-                setShowChoiceVariationTypesModal(false);
-                setShowChoiceDefaultTimeLimitBlockModal(false);
-                setCurrentChoiceOptionOrder(i);
-                updateChoice.mutate({
-                  choiceType: choiceVariationTypes || "timelimit",
-                  optionOrder: i,
-                });
-              }}
-            >
-              {i}
-            </button>
-          ))
-        ) : (
-          <button
-            className={`text-start outline-gray-300 text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
-            onClick={() => {
+      {!insidePlotfield ? (
+        <>
+          <PlotfieldButton
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
               setShowChoiceVariationTypesModal(false);
-              setShowChoiceDefaultTimeLimitBlockModal(false);
+              setShowChoiceDefaultTimeLimitBlockModal((prev) => !prev);
             }}
+            className="w-[calc(100%-5.5rem)]"
           >
-            Пусто
-          </button>
-        )}
-      </aside>
+            {typeof currentChoiceOptionOrder === "number"
+              ? currentChoiceOptionOrder
+              : "Дефолтный Выбор"}
+          </PlotfieldButton>
+          <aside
+            ref={modalRef}
+            className={`${
+              showChoiceDefaultTimeLimitBlockModal ? "" : "hidden"
+            } translate-y-[3.8rem] absolute z-10 flex flex-col gap-[1rem] bg-primary  rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
+          >
+            {(currentChoiceOptionOrder && amountOfOptions > 1) ||
+            (!currentChoiceOptionOrder && amountOfOptions > 0) ? (
+              [...Array.from({ length: amountOfOptions })]?.map((_, i) => (
+                <button
+                  key={i}
+                  className={`${
+                    i === currentChoiceOptionOrder ? "hidden" : ""
+                  } text-start outline-gray-300 whitespace-nowrap text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
+                  onClick={() => {
+                    setShowChoiceVariationTypesModal(false);
+                    setShowChoiceDefaultTimeLimitBlockModal(false);
+                    setCurrentChoiceOptionOrder(i);
+                    updateChoice.mutate({
+                      choiceType: choiceVariationTypes || "timelimit",
+                      optionOrder: i,
+                    });
+                  }}
+                >
+                  {i}
+                </button>
+              ))
+            ) : (
+              <button
+                className={`text-start outline-gray-300 text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
+                onClick={() => {
+                  setShowChoiceVariationTypesModal(false);
+                  setShowChoiceDefaultTimeLimitBlockModal(false);
+                }}
+              >
+                Пусто
+              </button>
+            )}
+          </aside>
+        </>
+      ) : null}
     </div>
   );
 }

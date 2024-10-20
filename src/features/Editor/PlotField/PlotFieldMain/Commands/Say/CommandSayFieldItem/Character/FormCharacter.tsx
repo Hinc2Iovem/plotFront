@@ -3,23 +3,27 @@ import { useParams } from "react-router-dom";
 import useGetTranslationCharacters from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
+import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import CommandSayCreateCharacterFieldModal from "./ModalCreateCharacter/CommandSayCreateCharacterFieldModal";
+import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
+import { useQueryClient } from "@tanstack/react-query";
 
 type FormCharacterTypes = {
   nameValue: string;
-  setNameValue: React.Dispatch<React.SetStateAction<string>>;
   plotFieldCommandSayId: string;
   plotFieldCommandId: string;
   setShowCreateCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setEmotionValue: React.Dispatch<React.SetStateAction<EmotionsTypes | null>>;
+  setNameValue: React.Dispatch<React.SetStateAction<string>>;
   setShowCharacters: React.Dispatch<React.SetStateAction<boolean>>;
   setShowAllEmotions: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentCharacterId: React.Dispatch<React.SetStateAction<string>>;
   showCharacters: boolean;
   showCreateCharacterModal: boolean;
+  currentCharacterId: string;
+  currentCharacterImg: string;
 };
 
 export default function FormCharacter({
@@ -31,18 +35,26 @@ export default function FormCharacter({
   setShowCreateCharacterModal,
   setShowCharacters,
   setShowAllEmotions,
+  currentCharacterId,
+  setCurrentCharacterId,
   showCharacters,
   showCreateCharacterModal,
+  currentCharacterImg,
 }: FormCharacterTypes) {
+  const queryClient = useQueryClient();
   const charactersRef = useRef<HTMLDivElement>(null);
   const { storyId } = useParams();
-  const [newCharacterId, setNewCharacterId] = useState("");
+  const [newlyCreated, setNewlyCreated] = useState(false);
+  const [newlyCreatedName, setNewlyCreatedName] = useState("");
+  const [characterImg, setCharacterImg] = useState("");
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
-    characterId: newCharacterId,
+    characterId: currentCharacterId,
     plotFieldCommandId,
     plotFieldCommandSayId,
   });
+
+  const debouncedValue = useDebounce({ value: nameValue, delay: 700 });
 
   const { data: translatedCharacters } = useGetTranslationCharacters({
     storyId: storyId ?? "",
@@ -59,34 +71,13 @@ export default function FormCharacter({
     return [];
   }, [translatedCharacters]);
 
-  const allNamesFiltered = useMemo(() => {
-    if (translatedCharacters) {
-      if (nameValue) {
-        const onlyNames = translatedCharacters.map((tc) =>
-          (tc.translations || [])[0].text.toLowerCase()
-        );
-        const names = onlyNames.filter((tc) =>
-          tc.includes(nameValue.toLowerCase())
-        );
-        return names;
-      } else {
-        const names = translatedCharacters.map((tc) =>
-          (tc.translations || [])[0].text.toLowerCase()
-        );
-        return names;
-      }
-    } else {
-      return [];
-    }
-  }, [translatedCharacters, nameValue]);
-
   useEffect(() => {
-    if (newCharacterId?.trim().length) {
+    if (currentCharacterId?.trim().length) {
       updateNameOrEmotion.mutate();
       setEmotionValue(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newCharacterId]);
+  }, [currentCharacterId]);
 
   const handleNameFormSubmit = (e: React.FormEvent, nf?: string) => {
     e.preventDefault();
@@ -106,7 +97,8 @@ export default function FormCharacter({
               (nf && tct.text.toLowerCase() === nf.toLowerCase())
           )
         ) {
-          setNewCharacterId(tc.characterId);
+          setCurrentCharacterId(tc.characterId);
+          setNameValue((tc.translations || [])[0]?.text);
           setEmotionValue(null);
         }
       });
@@ -115,6 +107,53 @@ export default function FormCharacter({
       return;
     }
   };
+
+  useEffect(() => {
+    if (debouncedValue?.trim().length && !showCharacters) {
+      console.log(newlyCreated);
+      if (newlyCreated) {
+        if (newlyCreatedName !== nameValue) {
+          console.log("obnyliaem emotion");
+          setEmotionValue(null);
+          return;
+        }
+        return;
+      }
+
+      setNewlyCreated(false);
+      const matchedCharacter = translatedCharacters?.find((tc) =>
+        tc.translations?.find(
+          (tct) =>
+            tct.textFieldName === "characterName" &&
+            tct.text?.toLowerCase() === nameValue.toLowerCase()
+        )
+      );
+
+      if (matchedCharacter) {
+        setCurrentCharacterId(matchedCharacter.characterId);
+        setNameValue((matchedCharacter.translations || [])[0].text);
+        queryClient.invalidateQueries({
+          queryKey: ["character", currentCharacterId],
+        });
+        updateNameOrEmotion.mutate();
+      } else {
+        if (!currentCharacterId?.trim().length) {
+          setCurrentCharacterId("");
+          setCharacterImg("");
+          setNameValue("");
+        }
+        queryClient.invalidateQueries({
+          queryKey: ["character", currentCharacterId],
+        });
+      }
+    }
+  }, [
+    debouncedValue,
+    translatedCharacters,
+    showCharacters,
+    newlyCreated,
+    currentCharacterId,
+  ]);
 
   useOutOfModal({
     modalRef: charactersRef,
@@ -126,62 +165,52 @@ export default function FormCharacter({
     <>
       <form
         onSubmit={handleNameFormSubmit}
-        className={`${showCharacters ? "z-[10]" : ""} w-full`}
+        className={`${showCharacters ? "z-[10]" : ""} w-full relative`}
       >
-        <div className="relative w-full">
-          <PlotfieldInput
-            type="text"
-            value={nameValue}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowCharacters((prev) => !prev);
-              setShowAllEmotions(false);
-            }}
-            placeholder="Персонаж"
-            onChange={(e) => {
-              setNameValue(e.target.value);
-              setShowCharacters(true);
-            }}
-          />
-          <AsideScrollable
-            ref={charactersRef}
-            className={`${
-              showCharacters && !showCreateCharacterModal ? "" : "hidden"
-            } translate-y-[.5rem]`}
-          >
-            <ul className="flex flex-col gap-[1rem] p-[.2rem]">
-              {allNamesFiltered.length ? (
-                allNamesFiltered?.map((nf, i) => {
-                  return (
-                    <li className="w-full" key={nf + "-" + i}>
-                      <AsideScrollableButton
-                        onClick={(e) => {
-                          setNameValue(nf);
-                          setShowCharacters(false);
-                          handleNameFormSubmit(e, nf);
-                        }}
-                      >
-                        {nf}
-                      </AsideScrollableButton>
-                    </li>
-                  );
-                })
-              ) : !nameValue?.trim().length ? (
-                <li>
-                  <AsideScrollableButton>Пусто</AsideScrollableButton>
-                </li>
-              ) : null}
-            </ul>
-          </AsideScrollable>
-        </div>
+        <PlotfieldInput
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowCharacters(true);
+            setShowAllEmotions(false);
+          }}
+          value={nameValue}
+          onChange={(e) => {
+            setShowCharacters(true);
+            setShowAllEmotions(false);
+            setNameValue(e.target.value);
+          }}
+          placeholder="Имя Персонажа"
+        />
+
+        <img
+          src={currentCharacterImg}
+          alt="CharacterImg"
+          className={`${
+            currentCharacterImg?.trim().length ? "" : "hidden"
+          } w-[3rem] object-cover top-[1.5px] rounded-md right-0 absolute`}
+        />
+        <PlotfieldCharacterPromptMain
+          characterValue={nameValue}
+          setCharacterId={setCurrentCharacterId}
+          setCharacterName={setNameValue}
+          setShowCharacterModal={setShowCharacters}
+          showCharacterModal={showCharacters}
+          setCharacterImg={setCharacterImg}
+          setNewlyCreated={setNewlyCreated}
+          translateAsideValue={"translate-y-[.5rem]"}
+        />
       </form>
       <CommandSayCreateCharacterFieldModal
         setEmotionValue={setEmotionValue}
         characterName={nameValue}
+        currentCharacterId={currentCharacterId}
+        setCurrentCharacterId={setCurrentCharacterId}
         commandSayId={plotFieldCommandSayId}
         plotFieldCommandId={plotFieldCommandId}
         setShowModal={setShowCreateCharacterModal}
         showModal={showCreateCharacterModal}
+        setNewlyCreated={setNewlyCreated}
+        setNewlyCreatedName={setNewlyCreatedName}
       />
     </>
   );

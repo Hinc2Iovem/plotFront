@@ -1,16 +1,16 @@
-import { ComponentProps } from "react";
+import { ComponentProps, forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 type AsideInformativeOrSuggestionTypes = ComponentProps<"aside">;
 
-export default function AsideInformativeOrSuggestion({
-  className,
-  children,
-  ...props
-}: AsideInformativeOrSuggestionTypes) {
+const AsideInformativeOrSuggestion = forwardRef<
+  HTMLDivElement,
+  AsideInformativeOrSuggestionTypes
+>(({ className, children, ...props }, ref) => {
   const theme = localStorage.getItem("theme");
   return (
     <aside
+      ref={ref}
       className={twMerge(
         `${
           theme === "light" ? "outline-gray-300" : "outline-gray-600"
@@ -22,4 +22,8 @@ export default function AsideInformativeOrSuggestion({
       {children}
     </aside>
   );
-}
+});
+
+AsideInformativeOrSuggestion.displayName = "AsideInformativeOrSuggestion";
+
+export default AsideInformativeOrSuggestion;

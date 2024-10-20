@@ -1,17 +1,25 @@
-import { useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
-import useGetCharacterTranslationByTextFieldNameAndSearch from "../../../../../../../hooks/Fetching/Character/useGetCharacterTranslationByTextFieldNameAndSearch";
+import useGetAllCharactersByStoryId from "../../../../../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
+import useGetTranslationCharacters from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import PlotfieldCharactersPrompt from "./PlotfieldCharactersPrompt";
 import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldCharactersPrompt from "./PlotfieldCharactersPrompt";
+import { DebouncedCheckCharacterTypes } from "../../Choice/ChoiceQuestionField";
 
 type PlotfieldCharacterPromptMainTypes = {
   setCharacterName: React.Dispatch<React.SetStateAction<string>>;
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCharacterImg?: React.Dispatch<React.SetStateAction<string>>;
+  setNewlyCreated?: React.Dispatch<React.SetStateAction<boolean>>;
   showCharacterModal: boolean;
-  characterDebouncedValue: string;
+  characterValue: string;
+  translateAsideValue: string;
+  debouncedValue?: string;
+  setDebouncedCharacter?: React.Dispatch<
+    React.SetStateAction<DebouncedCheckCharacterTypes | null>
+  >;
 };
 
 export default function PlotfieldCharacterPromptMain({
@@ -19,19 +27,85 @@ export default function PlotfieldCharacterPromptMain({
   setCharacterId,
   setCharacterImg,
   setShowCharacterModal,
+  setNewlyCreated,
+  setDebouncedCharacter,
+  debouncedValue,
   showCharacterModal,
-  characterDebouncedValue,
+  characterValue,
+  translateAsideValue,
 }: PlotfieldCharacterPromptMainTypes) {
   const { storyId } = useParams();
   const modalRef = useRef<HTMLDivElement>(null);
   const theme = localStorage.getItem("theme");
-  const { data: allCharacters } =
-    useGetCharacterTranslationByTextFieldNameAndSearch({
-      storyId: storyId ?? "",
-      language: "russian",
-      showCharacters: true,
-      debouncedValue: characterDebouncedValue,
-    });
+
+  const { data: allTranslatedCharacters } = useGetTranslationCharacters({
+    storyId: storyId || "",
+    language: "russian",
+  });
+
+  const { data: allCharacters } = useGetAllCharactersByStoryId({
+    storyId: storyId || "",
+  });
+
+  const combinedCharacters = useMemo(() => {
+    if (allTranslatedCharacters && allCharacters) {
+      return allCharacters.map((c) => {
+        const currentTranslatedCharacter = allTranslatedCharacters.find(
+          (tc) => tc.characterId === c._id
+        );
+        return {
+          characterImg: c?.img || "",
+          characterId: c._id,
+          characterName:
+            currentTranslatedCharacter?.translations?.find(
+              (tc) => tc.textFieldName === "characterName"
+            )?.text || "",
+        };
+      });
+    } else {
+      return [];
+    }
+  }, [allTranslatedCharacters, allCharacters]);
+
+  const filteredCharacters = useMemo(() => {
+    if (combinedCharacters) {
+      return combinedCharacters.filter((cc) =>
+        cc?.characterName?.toLowerCase().includes(characterValue?.toLowerCase())
+      );
+    } else {
+      return [];
+    }
+  }, [combinedCharacters, characterValue]);
+
+  useEffect(() => {
+    if (debouncedValue && !showCharacterModal) {
+      const tranlsatedCharacter = allTranslatedCharacters?.find((tc) =>
+        tc.translations?.find(
+          (tct) =>
+            tct.textFieldName === "characterName" &&
+            tct.text?.toLowerCase() === characterValue?.toLowerCase()
+        )
+      );
+      if (!tranlsatedCharacter) {
+        console.log("Non-existing character");
+        return;
+      }
+      const character = allCharacters?.find(
+        (c) => c._id === tranlsatedCharacter?.characterId
+      );
+
+      if (setDebouncedCharacter) {
+        setDebouncedCharacter({
+          characterId: character?._id || "",
+          characterName:
+            tranlsatedCharacter?.translations?.find(
+              (tct) => tct.textFieldName === "characterName"
+            )?.text || "",
+          characterImg: character?.img || "",
+        });
+      }
+    }
+  }, [debouncedValue, showCharacterModal]);
 
   useOutOfModal({
     modalRef,
@@ -43,21 +117,22 @@ export default function PlotfieldCharacterPromptMain({
     <AsideScrollable
       ref={modalRef}
       className={`${showCharacterModal ? "" : "hidden"} ${
-        !allCharacters?.length && characterDebouncedValue ? "hidden" : ""
-      }`}
+        !allCharacters?.length && characterValue ? "hidden" : ""
+      } ${translateAsideValue}`}
     >
-      {allCharacters?.length ? (
-        allCharacters?.map((c) => (
+      {filteredCharacters?.length ? (
+        filteredCharacters?.map((c, i) => (
           <PlotfieldCharactersPrompt
-            key={c._id}
+            key={`${c.characterId}-${i}`}
             setCharacterName={setCharacterName}
             setCharacterId={setCharacterId}
             setCharacterImg={setCharacterImg}
             setShowCharacterModal={setShowCharacterModal}
+            setNewlyCreated={setNewlyCreated}
             {...c}
           />
         ))
-      ) : !characterDebouncedValue?.trim().length ? (
+      ) : !filteredCharacters?.length ? (
         <button
           type="button"
           className={`text-start ${

@@ -25,7 +25,7 @@ export default function ChoiceOptionBlocksList({
   amountOfOptions,
   choiceId,
 }: ChoiceOptionBlockTypes) {
-  const { setChoiceOptions, getAllChoiceOptionsByChoiceId } =
+  const { setChoiceOptions, getAllChoiceOptionsByChoiceId, choices } =
     useChoiceOptions();
   const [showOptionPlot, setShowOptionPlot] = useState(false);
 
@@ -35,10 +35,12 @@ export default function ChoiceOptionBlocksList({
   });
 
   useEffect(() => {
-    if (allChoiceOptionBlocks) {
+    if (allChoiceOptionBlocks && !getAllChoiceOptionsByChoiceId({ choiceId })) {
       setChoiceOptions({ choiceId, choiceOptions: allChoiceOptionBlocks });
     }
   }, [allChoiceOptionBlocks]);
+
+  console.log("choices: ", choices);
 
   return (
     <section

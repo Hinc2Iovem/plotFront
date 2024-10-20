@@ -3,6 +3,7 @@ import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/Top
 import useCreateSayWithCertainCharacter from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Say/useCreateSayWithCertainCharacter";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import { useParams } from "react-router-dom";
+import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
 
 type CreateCertainCharacterViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -36,6 +37,11 @@ export default function useCreateCertainCharacterViaKeyCombination({
       "9": 9,
     };
     const handleKeyDown = (event: KeyboardEvent) => {
+      const allowed = preventCreatingCommandsWhenFocus();
+      if (!allowed) {
+        console.log("You are inside input element");
+        return;
+      }
       pressedKeys.add(event.key.toLowerCase());
       console.log(event.key);
       console.log(Object.keys(allPossibleNumbers).includes(event.key));
