@@ -1,14 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
-import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
-import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
-import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import { DebouncedCheckCharacterTypes } from "../../../Choice/ChoiceQuestionField";
-import useCreateCharacterBlank from "../../../hooks/Character/useCreateCharacterBlank";
 import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useConditionBlocks from "../../Context/ConditionContext";
@@ -52,6 +46,7 @@ export default function ConditionBlockVariationCharacter({
   const [debouncedCharacter, setDebouncedCharacter] =
     useState<DebouncedCheckCharacterTypes | null>(null);
   const [characterId, setCharacterId] = useState("");
+  console.log(characterId);
 
   // const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
 
@@ -195,77 +190,77 @@ export default function ConditionBlockVariationCharacter({
   );
 }
 
-type CreateNewCharacterModalTypes = {
-  setShowCreateNewValueModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setHighlightRedOnValueOnExisting: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
-  showCreateNewValueModal: boolean;
-  conditionName: string;
-  conditionBlockId: string;
-};
+// type CreateNewCharacterModalTypes = {
+//   setShowCreateNewValueModal: React.Dispatch<React.SetStateAction<boolean>>;
+//   setHighlightRedOnValueOnExisting: React.Dispatch<
+//     React.SetStateAction<boolean>
+//   >;
+//   showCreateNewValueModal: boolean;
+//   conditionName: string;
+//   conditionBlockId: string;
+// };
 
-function CreateNewCharacterModal({
-  setHighlightRedOnValueOnExisting,
-  setShowCreateNewValueModal,
-  showCreateNewValueModal,
-  conditionName,
-  conditionBlockId,
-}: CreateNewCharacterModalTypes) {
-  const { storyId } = useParams();
-  const focusOnBtnRef = useRef<HTMLButtonElement>(null);
-  const createNewCharacterModalRef = useRef<HTMLDivElement>(null);
+// function CreateNewCharacterModal({
+//   setHighlightRedOnValueOnExisting,
+//   setShowCreateNewValueModal,
+//   showCreateNewValueModal,
+//   conditionName,
+//   conditionBlockId,
+// }: CreateNewCharacterModalTypes) {
+//   const { storyId } = useParams();
+//   const focusOnBtnRef = useRef<HTMLButtonElement>(null);
+//   const createNewCharacterModalRef = useRef<HTMLDivElement>(null);
 
-  const createNewCharacter = useCreateCharacterBlank({
-    characterType: "minorcharacter",
-    name: conditionName,
-    storyId: storyId || "",
-    language: "russian",
-  });
-  const updateConditionBlock = useUpdateConditionValue({
-    conditionBlockId,
-  });
-  useEffect(() => {
-    if (focusOnBtnRef) {
-      focusOnBtnRef.current?.focus();
-    }
-  }, []);
+//   const createNewCharacter = useCreateCharacterBlank({
+//     characterType: "minorcharacter",
+//     name: conditionName,
+//     storyId: storyId || "",
+//     language: "russian",
+//   });
+//   const updateConditionBlock = useUpdateConditionValue({
+//     conditionBlockId,
+//   });
+//   useEffect(() => {
+//     if (focusOnBtnRef) {
+//       focusOnBtnRef.current?.focus();
+//     }
+//   }, []);
 
-  const handleCreatingNewCharacter = () => {
-    const characterId = generateMongoObjectId();
-    createNewCharacter.mutate({ characterId });
+//   const handleCreatingNewCharacter = () => {
+//     const characterId = generateMongoObjectId();
+//     createNewCharacter.mutate({ characterId });
 
-    updateConditionBlock.mutate({
-      name: conditionName,
-      blockValueId: characterId,
-    });
-    setShowCreateNewValueModal(false);
-    setHighlightRedOnValueOnExisting(false);
-  };
+//     updateConditionBlock.mutate({
+//       name: conditionName,
+//       blockValueId: characterId,
+//     });
+//     setShowCreateNewValueModal(false);
+//     setHighlightRedOnValueOnExisting(false);
+//   };
 
-  useOutOfModal({
-    modalRef: createNewCharacterModalRef,
-    setShowModal: setShowCreateNewValueModal,
-    showModal: showCreateNewValueModal,
-  });
+//   useOutOfModal({
+//     modalRef: createNewCharacterModalRef,
+//     setShowModal: setShowCreateNewValueModal,
+//     showModal: showCreateNewValueModal,
+//   });
 
-  return (
-    <AsideInformativeOrSuggestion
-      ref={createNewCharacterModalRef}
-      className={`${showCreateNewValueModal ? "" : "hidden"} `}
-    >
-      <InformativeOrSuggestionText>
-        Такого персонажа не существует, хотите создать?
-      </InformativeOrSuggestionText>
-      <InformativeOrSuggestionButton
-        ref={focusOnBtnRef}
-        onClick={handleCreatingNewCharacter}
-      >
-        Создать
-      </InformativeOrSuggestionButton>
-    </AsideInformativeOrSuggestion>
-  );
-}
+//   return (
+//     <AsideInformativeOrSuggestion
+//       ref={createNewCharacterModalRef}
+//       className={`${showCreateNewValueModal ? "" : "hidden"} `}
+//     >
+//       <InformativeOrSuggestionText>
+//         Такого персонажа не существует, хотите создать?
+//       </InformativeOrSuggestionText>
+//       <InformativeOrSuggestionButton
+//         ref={focusOnBtnRef}
+//         onClick={handleCreatingNewCharacter}
+//       >
+//         Создать
+//       </InformativeOrSuggestionButton>
+//     </AsideInformativeOrSuggestion>
+//   );
+// }
 
 type ConditionValueFieldTypes = {
   plotfieldCommandId: string;

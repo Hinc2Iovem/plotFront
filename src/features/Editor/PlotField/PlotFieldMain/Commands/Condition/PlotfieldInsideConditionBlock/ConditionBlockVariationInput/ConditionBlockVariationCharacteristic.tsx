@@ -1,19 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllCharacteristicsByStoryId from "../../../../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
-import useCreateCharacteristicOptimistic from "../../../../../../../../hooks/Posting/Characteristic/useCreateCharacteristicOptimistic";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
+import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import useConditionBlocks from "../../Context/ConditionContext";
 import ConditionSignField from "./ConditionSignField";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
-import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
-import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type ConditionBlockVariationCharacteristicTypes = {
   plotfieldCommandId: string;
@@ -369,74 +364,74 @@ export function CharacteristicsPromptModal({
   );
 }
 
-type CreateNewCharacteristicModalTypes = {
-  setShowCreateNewValueModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setHighlightRedOnValueOnExisting: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
-  showCreateNewValueModal: boolean;
-  conditionName: string;
-  conditionBlockId: string;
-};
+// type CreateNewCharacteristicModalTypes = {
+//   setShowCreateNewValueModal: React.Dispatch<React.SetStateAction<boolean>>;
+//   setHighlightRedOnValueOnExisting: React.Dispatch<
+//     React.SetStateAction<boolean>
+//   >;
+//   showCreateNewValueModal: boolean;
+//   conditionName: string;
+//   conditionBlockId: string;
+// };
 
-function CreateNewCharacteristicModal({
-  setHighlightRedOnValueOnExisting,
-  setShowCreateNewValueModal,
-  showCreateNewValueModal,
-  conditionName,
-  conditionBlockId,
-}: CreateNewCharacteristicModalTypes) {
-  const { storyId } = useParams();
-  const focusOnBtnRef = useRef<HTMLButtonElement>(null);
-  const createNewCharacteristicModalRef = useRef<HTMLDivElement>(null);
+// function CreateNewCharacteristicModal({
+//   setHighlightRedOnValueOnExisting,
+//   setShowCreateNewValueModal,
+//   showCreateNewValueModal,
+//   conditionName,
+//   conditionBlockId,
+// }: CreateNewCharacteristicModalTypes) {
+//   const { storyId } = useParams();
+//   const focusOnBtnRef = useRef<HTMLButtonElement>(null);
+//   const createNewCharacteristicModalRef = useRef<HTMLDivElement>(null);
 
-  const createNewCharacteristic = useCreateCharacteristicOptimistic({
-    characteristicName: conditionName,
-    storyId: storyId || "",
-    language: "russian",
-  });
+//   const createNewCharacteristic = useCreateCharacteristicOptimistic({
+//     characteristicName: conditionName,
+//     storyId: storyId || "",
+//     language: "russian",
+//   });
 
-  const updateConditionBlock = useUpdateConditionValue({
-    conditionBlockId,
-  });
-  useEffect(() => {
-    if (focusOnBtnRef) {
-      focusOnBtnRef.current?.focus();
-    }
-  }, []);
+//   const updateConditionBlock = useUpdateConditionValue({
+//     conditionBlockId,
+//   });
+//   useEffect(() => {
+//     if (focusOnBtnRef) {
+//       focusOnBtnRef.current?.focus();
+//     }
+//   }, []);
 
-  const handleCreatingNewCharacteristic = () => {
-    const characteristicId = generateMongoObjectId();
-    createNewCharacteristic.mutate({ characteristicId });
+//   const handleCreatingNewCharacteristic = () => {
+//     const characteristicId = generateMongoObjectId();
+//     createNewCharacteristic.mutate({ characteristicId });
 
-    updateConditionBlock.mutate({
-      name: conditionName,
-      blockValueId: characteristicId,
-    });
-    setShowCreateNewValueModal(false);
-    setHighlightRedOnValueOnExisting(false);
-  };
+//     updateConditionBlock.mutate({
+//       name: conditionName,
+//       blockValueId: characteristicId,
+//     });
+//     setShowCreateNewValueModal(false);
+//     setHighlightRedOnValueOnExisting(false);
+//   };
 
-  useOutOfModal({
-    modalRef: createNewCharacteristicModalRef,
-    setShowModal: setShowCreateNewValueModal,
-    showModal: showCreateNewValueModal,
-  });
+//   useOutOfModal({
+//     modalRef: createNewCharacteristicModalRef,
+//     setShowModal: setShowCreateNewValueModal,
+//     showModal: showCreateNewValueModal,
+//   });
 
-  return (
-    <AsideInformativeOrSuggestion
-      ref={createNewCharacteristicModalRef}
-      className={`${showCreateNewValueModal ? "" : "hidden"}`}
-    >
-      <InformativeOrSuggestionText>
-        Такой Характеристики не существует, хотите создать?
-      </InformativeOrSuggestionText>
-      <InformativeOrSuggestionButton
-        ref={focusOnBtnRef}
-        onClick={handleCreatingNewCharacteristic}
-      >
-        Создать
-      </InformativeOrSuggestionButton>
-    </AsideInformativeOrSuggestion>
-  );
-}
+//   return (
+//     <AsideInformativeOrSuggestion
+//       ref={createNewCharacteristicModalRef}
+//       className={`${showCreateNewValueModal ? "" : "hidden"}`}
+//     >
+//       <InformativeOrSuggestionText>
+//         Такой Характеристики не существует, хотите создать?
+//       </InformativeOrSuggestionText>
+//       <InformativeOrSuggestionButton
+//         ref={focusOnBtnRef}
+//         onClick={handleCreatingNewCharacteristic}
+//       >
+//         Создать
+//       </InformativeOrSuggestionButton>
+//     </AsideInformativeOrSuggestion>
+//   );
+// }

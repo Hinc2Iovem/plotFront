@@ -10,6 +10,8 @@ const PlotfieldInput = forwardRef<HTMLDivElement, PlotFieldInputTypes>(
     const modalRef = useRef<HTMLInputElement>(null);
     useBlurOutline({ modalRef });
 
+    console.log(ref);
+
     return (
       <input
         ref={modalRef}

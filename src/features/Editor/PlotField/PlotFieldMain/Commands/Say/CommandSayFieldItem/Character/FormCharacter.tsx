@@ -47,6 +47,7 @@ export default function FormCharacter({
   const [newlyCreated, setNewlyCreated] = useState(false);
   const [newlyCreatedName, setNewlyCreatedName] = useState("");
   const [characterImg, setCharacterImg] = useState("");
+  console.log(characterImg);
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     characterId: currentCharacterId,
