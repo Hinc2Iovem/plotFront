@@ -46,22 +46,15 @@ export default function useCreateCertainCharacterViaKeyCombination({
         const numberPressed = Object.entries(allPossibleNumbers).find(
           (key) => key[0] === event.key
         )?.[1];
-        console.log("numberPressed: ", numberPressed);
 
-        const keyByStory = `story-${storyId}-shift-${numberPressed}`;
-        const keyByEpisode = `episode-${episodeId}-shift-${numberPressed}`;
-        console.log("keyByStory: ", keyByStory);
+        const keyByStory = `story-${storyId}-c-${numberPressed}`;
+        const keyByEpisode = `episode-${episodeId}-c-${numberPressed}`;
 
         const savedValue = localStorage.getItem(keyByEpisode)
           ? localStorage.getItem(keyByEpisode)
           : localStorage.getItem(keyByStory);
 
-        console.log("savedValue: ", savedValue);
-
         if (!savedValue) {
-          console.log("Why he does see anything");
-          console.log("keyByStory: ", keyByStory);
-          console.log("savedValue: ", savedValue);
           console.log("You haven't assigned any characters yet.");
           return;
         }
