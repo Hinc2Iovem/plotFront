@@ -59,6 +59,9 @@ export default function useCreateCertainCharacterViaKeyCombination({
         console.log("savedValue: ", savedValue);
 
         if (!savedValue) {
+          console.log("Why he does see anything");
+          console.log("keyByStory: ", keyByStory);
+          console.log("savedValue: ", savedValue);
           console.log("You haven't assigned any characters yet.");
           return;
         }
