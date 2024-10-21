@@ -130,7 +130,7 @@ export default function ChoiceOptionBlock({
             <div
               className={`${
                 showAllSexualOrientationBlocks ? "" : "overflow-hidden"
-              } w-[calc(50%+2.5rem)] self-end`}
+              } w-[calc(50%+.5rem)] self-end`}
             >
               <OptionSelectSexualOrientationBlock
                 setShowAllSexualOrientationBlocks={
@@ -145,7 +145,7 @@ export default function ChoiceOptionBlock({
             <div
               className={`${
                 showAllTopologyBlocks || showAllOrders ? "" : "overflow-hidden"
-              } w-[18rem] flex flex-col`}
+              } w-[19.5rem] flex flex-col`}
             >
               <ChoiceOptionShowPlot
                 setShowOptionPlot={setShowOptionPlot}

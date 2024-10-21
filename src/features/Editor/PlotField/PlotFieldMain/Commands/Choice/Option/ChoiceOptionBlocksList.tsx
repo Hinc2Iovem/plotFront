@@ -53,7 +53,7 @@ export default function ChoiceOptionBlocksList({
       className={`w-full ${
         showOptionPlot
           ? ""
-          : "grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] items-center"
+          : "grid grid-cols-[repeat(auto-fill,minmax(23rem,1fr))] gap-[1rem] items-center"
       } bg-primary rounded-md shadow-md p-[.5rem]`}
     >
       <PlotfieldInsideChoiceOption
