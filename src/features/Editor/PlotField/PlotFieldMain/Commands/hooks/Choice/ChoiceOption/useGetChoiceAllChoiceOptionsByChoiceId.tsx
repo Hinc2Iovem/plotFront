@@ -27,5 +27,6 @@ export default function useGetAllChoiceOptionsByChoiceId({
         )
         .then((r) => r.data),
     enabled: !!plotFieldCommandChoiceId && !!language,
+    refetchOnWindowFocus: false,
   });
 }

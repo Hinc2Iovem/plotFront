@@ -27,6 +27,7 @@ export default function ChoiceOptionBlocksList({
 }: ChoiceOptionBlockTypes) {
   const { setChoiceOptions, getAllChoiceOptionsByChoiceId, choices } =
     useChoiceOptions();
+  const [updated, setUpdated] = useState(false);
   const [showOptionPlot, setShowOptionPlot] = useState(false);
 
   const { data: allChoiceOptionBlocks } = useGetAllChoiceOptionsByChoiceId({
@@ -35,12 +36,17 @@ export default function ChoiceOptionBlocksList({
   });
 
   useEffect(() => {
-    if (allChoiceOptionBlocks && !getAllChoiceOptionsByChoiceId({ choiceId })) {
+    if (allChoiceOptionBlocks) {
       setChoiceOptions({ choiceId, choiceOptions: allChoiceOptionBlocks });
+
+      return () => {
+        setUpdated(true);
+      };
     }
   }, [allChoiceOptionBlocks]);
 
   console.log("choices: ", choices);
+  console.log("allChoiceOptionBlocks: ", allChoiceOptionBlocks);
 
   return (
     <section
@@ -65,6 +71,7 @@ export default function ChoiceOptionBlocksList({
           currentTopologyBlockId={currentTopologyBlockId}
           amountOfOptions={amountOfOptions}
           setShowOptionPlot={setShowOptionPlot}
+          updated={updated}
           {...co}
         />
       ))}

@@ -2,6 +2,7 @@ import { useRef } from "react";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import useUpdateChoiceOptionOrder from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionOrder";
 import useChoiceOptions from "../Context/ChoiceContext";
+import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
 type OptionSelecteTopologyBlockTypes = {
   setShowAllOrders: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,7 +36,7 @@ export default function OptionSelectOrder({
   });
 
   return (
-    <div className="relative self-end pr-[.2rem] pb-[.2rem] z-[2]">
+    <div className="relative self-end pr-[.2rem] pb-[.2rem]">
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -49,7 +50,9 @@ export default function OptionSelectOrder({
       >
         {typeof getChoiceOptionById({ choiceId, choiceOptionId })
           ?.optionOrder === "number"
-          ? getChoiceOptionById({ choiceId, choiceOptionId })?.optionOrder
+          ? `Порядок Ответа - ${
+              getChoiceOptionById({ choiceId, choiceOptionId })?.optionOrder
+            }`
           : "Порядок Ответа"}
       </button>
       <aside
@@ -60,7 +63,7 @@ export default function OptionSelectOrder({
       >
         {amountOfOptions > 0 ? (
           [...Array.from({ length: amountOfOptions })]?.map((_, i) => (
-            <button
+            <AsideScrollableButton
               key={i}
               type="button"
               onClick={() => {
@@ -77,12 +80,10 @@ export default function OptionSelectOrder({
                   ?.optionOrder === i
                   ? "bg-primary-darker text-text-light"
                   : "text-text-dark bg-secondary"
-              } px-[1rem] py-[.5rem] whitespace-nowrap text-[1.3rem] ${
-                theme === "light" ? "outline-gray-300" : "outline-gray-600"
-              } hover:bg-primary-darker focus-within:bg-primary-darker hover:text-text-dark shadow-md transition-all rounded-md`}
+              }`}
             >
               {i}
-            </button>
+            </AsideScrollableButton>
           ))
         ) : (
           <button

@@ -17,6 +17,7 @@ type CreateChoiceOptionOnMutationTypes = {
   type: ChoiceOptionVariationsTypes;
   targetBlockId: string;
   choiceOptionId: string;
+  optionOrder: number;
 };
 
 export default function useCreateChoiceOption({
@@ -34,6 +35,7 @@ export default function useCreateChoiceOption({
       type,
       choiceOptionId,
       targetBlockId,
+      optionOrder,
     }: CreateChoiceOptionOnMutationTypes) =>
       await axiosCustomized.post(
         `/plotFieldCommands/${plotFieldCommandId}/choices/${plotFieldCommandChoiceId}/options`,
@@ -46,6 +48,7 @@ export default function useCreateChoiceOption({
           coordinatesX,
           coordinatesY,
           sourceBlockName,
+          optionOrder,
         }
       ),
     onSettled: () => {

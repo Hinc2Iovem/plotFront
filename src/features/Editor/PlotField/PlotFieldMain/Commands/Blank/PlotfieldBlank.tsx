@@ -35,6 +35,7 @@ import { generateMongoObjectId } from "../../../../../../utils/generateMongoObje
 import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import useConditionBlocks from "../Condition/Context/ConditionContext";
+import useChoiceOptions from "../Choice/Context/ChoiceContext";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 
 type PlotFieldBlankTypes = {
@@ -80,6 +81,7 @@ export default function PlotfieldBlank({
 
   const { getTopologyBlock } = useTopologyBlocks();
   const { addConditionBlock } = useConditionBlocks();
+  const {} = useChoiceOptions();
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
 
@@ -339,7 +341,8 @@ export default function PlotfieldBlank({
       } else if (allCommands === "call") {
         createCall.mutate({});
       } else if (allCommands === "choice") {
-        createChoice.mutate({});
+        const choiceId = generateMongoObjectId();
+        createChoice.mutate({ choiceId });
       } else if (allCommands === "condition") {
         const targetBlockId = generateMongoObjectId();
         const conditionBlockId = generateMongoObjectId();

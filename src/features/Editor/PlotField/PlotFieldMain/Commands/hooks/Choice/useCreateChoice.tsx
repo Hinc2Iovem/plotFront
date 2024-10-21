@@ -13,14 +13,19 @@ export default function useCreateChoice({
   return useMutation({
     mutationFn: async ({
       plotfieldCommandId,
+      choiceId,
     }: {
       plotfieldCommandId?: string;
+      choiceId?: string;
     }) => {
       const commandId = plotFieldCommandId?.trim().length
         ? plotFieldCommandId
         : plotfieldCommandId;
       await axiosCustomized.post(
-        `/choices/${commandId}/topologyBlocks/${topologyBlockId}/translations`
+        `/choices/${commandId}/topologyBlocks/${topologyBlockId}/translations`,
+        {
+          choiceId,
+        }
       );
     },
   });

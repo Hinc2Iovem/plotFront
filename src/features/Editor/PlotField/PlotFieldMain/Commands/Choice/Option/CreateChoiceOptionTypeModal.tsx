@@ -27,7 +27,7 @@ export default function CreateChoiceOptionTypeModal({
   setShowCreateChoiceOptionModal,
 }: CreateChoiceOptionTypeModalTypes) {
   const { getTopologyBlock, updateAmountOfChildBlocks } = useTopologyBlocks();
-  const { addChoiceOption } = useChoiceOptions();
+  const { addChoiceOption, getAmountOfChoiceOptions } = useChoiceOptions();
   const { episodeId } = useParams();
   const modalRef = useRef<HTMLDivElement>(null);
   const theme = localStorage.getItem("theme");
@@ -51,6 +51,9 @@ export default function CreateChoiceOptionTypeModal({
     const targetBlockId = generateMongoObjectId();
     setShowCreateChoiceOptionModal(false);
     updateAmountOfChildBlocks("add");
+    const amountOfChoiceOptions = getAmountOfChoiceOptions({
+      choiceId: plotFieldCommandChoiceId,
+    });
     addChoiceOption({
       choiceId: plotFieldCommandChoiceId,
       choiceOption: {
@@ -58,7 +61,7 @@ export default function CreateChoiceOptionTypeModal({
         optionText: "",
         optionType: cov,
         topologyBlockId: targetBlockId,
-        optionOrder: null,
+        optionOrder: amountOfChoiceOptions,
         topologyBlockName: makeTopologyBlockName({
           name: getTopologyBlock()?.name || "",
           amountOfOptions:
@@ -66,7 +69,12 @@ export default function CreateChoiceOptionTypeModal({
         }),
       },
     });
-    createChoiceOption.mutate({ type: cov, choiceOptionId, targetBlockId });
+    createChoiceOption.mutate({
+      type: cov,
+      choiceOptionId,
+      targetBlockId,
+      optionOrder: amountOfChoiceOptions,
+    });
   };
 
   useEffect(() => {

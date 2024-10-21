@@ -14,12 +14,13 @@ import OptionPremiumBlock from "./OptionVariations/OptionPremiumBlock";
 import OptionRelationshipBlock from "./OptionVariations/OptionRelationshipBlock";
 
 type ChoiceOptionBlockTypes = {
+  setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
   currentTopologyBlockId: string;
   plotFieldCommandId: string;
   showOptionPlot: boolean;
   amountOfOptions: number;
-  setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
   choiceId: string;
+  updated: boolean;
 } & ChoiceOptionItemTypes;
 
 export default function ChoiceOptionBlock({
@@ -31,6 +32,7 @@ export default function ChoiceOptionBlock({
   currentTopologyBlockId,
   amountOfOptions,
   optionText,
+  updated,
   setShowOptionPlot,
 }: ChoiceOptionBlockTypes) {
   const {
@@ -68,7 +70,7 @@ export default function ChoiceOptionBlock({
             ?.topologyBlockName || "",
       });
     }
-  }, [choiceOption]);
+  }, [choiceOption, updated]);
 
   const debouncedValue = useDebounce({
     value: getChoiceOptionText({ choiceId, choiceOptionId }),

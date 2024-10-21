@@ -84,6 +84,7 @@ export default function Login() {
                 className="w-full outline-0 text-[1.3rem] text-text-light px-[1rem] py-[.8rem] border-[1px] border-primary-darker rounded-md border-dotted"
                 type="text"
                 value={login}
+                autoComplete={"off"}
                 onChange={(e) => setLogin(e.target.value)}
               />
             </div>
