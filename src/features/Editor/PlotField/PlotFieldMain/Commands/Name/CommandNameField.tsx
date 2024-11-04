@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useGetCommandName from "../hooks/Name/useGetCommandName";
-import useUpdateNameText from "../hooks/Name/useUpdateNameText";
+import useGetCommandName from "../../../hooks/Name/useGetCommandName";
+import useUpdateNameText from "../../../hooks/Name/useUpdateNameText";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 
 type CommandNameFieldTypes = {
   plotFieldCommandId: string;
@@ -26,6 +27,10 @@ export default function CommandNameField({
   const { data: commandName } = useGetCommandName({
     plotFieldCommandId,
   });
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
+
   const [commandNameId, setCommandNameId] = useState("");
 
   const { data: character } = useGetCharacterById({
@@ -98,7 +103,13 @@ export default function CommandNameField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => {
@@ -136,6 +147,8 @@ export default function CommandNameField({
           setShowCharacterModal={setShowCharacterList}
           showCharacterModal={showCharacterList}
           setCharacterImg={setCurrentCharacterImg}
+          commandIfId=""
+          isElse={false}
         />
       </form>
       <form

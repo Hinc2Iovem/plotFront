@@ -4,8 +4,8 @@ import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useG
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import useGetCommandChoiceTranslation from "../hooks/Choice/useGetCommandChoiceTranslation";
-import useUpdateChoice from "../hooks/Choice/useUpdateChoice";
+import useGetCommandChoiceTranslation from "../../../hooks/Choice/useGetCommandChoiceTranslation";
+import useUpdateChoice from "../../../hooks/Choice/useUpdateChoice";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 import PlotfieldEmotionPromptMain from "../Prompts/Emotions/PlotfieldEmotionPromptMain";
 import CreateChoiceOptionTypeModal from "./Option/CreateChoiceOptionTypeModal";
@@ -13,6 +13,9 @@ import useUpdateChoiceTranslation from "../../../../../../hooks/Patching/Transla
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationTextFieldNameChoiceTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import TextSettingsModal from "../../../../components/TextSettingsModal";
+import { TextStyleTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
+import { checkTextStyle } from "../../../utils/checkTextStyleTextSide";
 
 type ChoiceQuestionFieldTypes = {
   characterId: string;
@@ -22,6 +25,7 @@ type ChoiceQuestionFieldTypes = {
   choiceId: string;
   plotFieldCommandId: string;
   topologyBlockId: string;
+  textStyle: TextStyleTypes;
 };
 
 export default function ChoiceQuestionField({
@@ -32,9 +36,11 @@ export default function ChoiceQuestionField({
   setCharacterId,
   topologyBlockId,
   plotFieldCommandId,
+  textStyle,
 }: ChoiceQuestionFieldTypes) {
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
   const [initialCharacterEmotionId] = useState(characterEmotionId);
-  const [initialQuestion, setInitialQuestion] = useState("");
 
   const [showCreateChoiceOptionModal, setShowCreateChoiceOptionModal] =
     useState(false);
@@ -50,7 +56,6 @@ export default function ChoiceQuestionField({
       translatedQuestion.translations?.map((tq) => {
         if (tq.textFieldName === "choiceQuestion") {
           setQuestion(tq.text);
-          setInitialQuestion(tq.text);
         }
       });
     }
@@ -109,12 +114,14 @@ export default function ChoiceQuestionField({
   const debouncedValue = useDebounce({ value: question, delay: 700 });
 
   useEffect(() => {
-    if (initialQuestion !== debouncedValue && debouncedValue?.trim().length) {
+    if (debouncedValue?.trim().length) {
       updateChoiceTranslation.mutate({
         text: question,
         textFieldName:
           TranslationTextFieldName.ChoiceQuestion as TranslationTextFieldNameChoiceTypes,
       });
+
+      checkTextStyle({ debouncedValue, setCurrentTextStyle });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
@@ -189,12 +196,36 @@ export default function ChoiceQuestionField({
         </>
       )}
 
-      <form className="flex-grow" onSubmit={(e) => e.preventDefault()}>
+      <form className="flex-grow relative" onSubmit={(e) => e.preventDefault()}>
         <PlotfieldInput
           type="text"
           value={question}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            setShowSettingsModal((prev) => !prev);
+          }}
           onChange={(e) => setQuestion(e.target.value)}
+          className={`${
+            currentTextStyle === "underscore"
+              ? "underline"
+              : currentTextStyle === "bold"
+              ? "font-bold"
+              : currentTextStyle === "italic"
+              ? "italic"
+              : ""
+          }`}
           placeholder="Вопрос"
+        />
+        <TextSettingsModal
+          plotfieldCommandId={plotFieldCommandId}
+          translateY="translate-y-[-11rem]"
+          setShowModal={setShowSettingsModal}
+          setTextValue={setQuestion}
+          showModal={showSettingsModal}
+          showTextSideRow={false}
+          showTextStyleRow={true}
+          currentTextStyle={currentTextStyle}
+          setCurrentTextStyle={setCurrentTextStyle}
         />
       </form>
 
@@ -317,6 +348,8 @@ function ChoiceQuestionCharacterField({
         translateAsideValue={"translate-y-[3.5rem]"}
         debouncedValue={debouncedValue}
         setDebouncedCharacter={setDebouncedCharacter}
+        commandIfId=""
+        isElse={false}
       />
     </form>
   );

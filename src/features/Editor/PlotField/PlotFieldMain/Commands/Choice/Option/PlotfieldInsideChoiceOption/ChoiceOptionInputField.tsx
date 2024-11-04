@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { ChoiceOptionVariationsTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import useUpdateChoiceOptionTranslationText from "../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
-import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
+import useUpdateChoiceOptionTranslationText from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
+import useGetTopologyBlockById from "../../../../../hooks/TopologyBlock/useGetTopologyBlockById";
 import useChoiceOptions from "../../Context/ChoiceContext";
 
 type ChoiceOptionInputFieldTypes = {

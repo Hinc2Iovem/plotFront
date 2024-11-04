@@ -6,7 +6,7 @@ import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
-import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
+import useUpdateConditionValue from "../../../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import useConditionBlocks from "../../Context/ConditionContext";
 import ConditionSignField from "./ConditionSignField";
 

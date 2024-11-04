@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useDebounce from "../../../../../../../hooks/utilities/useDebounce";
-import useGetChoiceOptionById from "../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
-import useUpdateChoiceOptionTranslationText from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
+import useGetChoiceOptionById from "../../../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
+import useUpdateChoiceOptionTranslationText from "../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
 import useChoiceOptions, {
   ChoiceOptionItemTypes,
 } from "../Context/ChoiceContext";
@@ -21,6 +21,7 @@ type ChoiceOptionBlockTypes = {
   amountOfOptions: number;
   choiceId: string;
   updated: boolean;
+  isFocusedBackground: boolean;
 } & ChoiceOptionItemTypes;
 
 export default function ChoiceOptionBlock({
@@ -33,6 +34,7 @@ export default function ChoiceOptionBlock({
   amountOfOptions,
   optionText,
   updated,
+  isFocusedBackground,
   setShowOptionPlot,
 }: ChoiceOptionBlockTypes) {
   const {
@@ -98,7 +100,7 @@ export default function ChoiceOptionBlock({
   return (
     <div
       className={`${
-        showOptionPlot ? "hidden" : ""
+        showOptionPlot || isFocusedBackground ? "hidden" : ""
       } w-full bg-secondary min-h-[10rem] h-full rounded-md shadow-md`}
     >
       <div className="w-full flex justify-between flex-col h-full">
@@ -153,7 +155,7 @@ export default function ChoiceOptionBlock({
                   getChoiceOptionById({ choiceId, choiceOptionId })
                     ?.topologyBlockId || ""
                 }
-                choiceId={choiceId}
+                plotfieldCommandId={plotFieldCommandId}
                 choiceOptionId={choiceOptionId}
               />
               <OptionSelectOrder

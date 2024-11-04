@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
-import "../../../../../../Flowchart/FlowchartStyles.css";
-import useUpdateNameOrEmotion from "../../../hooks/Say/useUpdateNameOrEmotion";
-import CommandSayCreateEmotionFieldModal from "./ModalCreateEmotion/CommandSayCreateEmotionFieldModal";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import "../../../../../../Flowchart/FlowchartStyles.css";
+import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
+import useUpdateNameOrEmotion from "../../../../../hooks/Say/useUpdateNameOrEmotion";
+import { EmotionTypes } from "./CommandSayCharacterFieldItem";
+import CommandSayCreateEmotionFieldModal from "./ModalCreateEmotion/CommandSayCreateEmotionFieldModal";
 
 type FormEmotionTypes = {
   plotFieldCommandSayId: string;
@@ -14,12 +16,16 @@ type FormEmotionTypes = {
   setShowCreateEmotionModal: React.Dispatch<React.SetStateAction<boolean>>;
   characterId: string;
   showCreateEmotionModal: boolean;
-  setEmotionValue: React.Dispatch<React.SetStateAction<EmotionsTypes | null>>;
-  emotionValue: EmotionsTypes | null;
   emotions: EmotionsTypes[];
   setShowAllEmotions: React.Dispatch<React.SetStateAction<boolean>>;
   setShowCharacters: React.Dispatch<React.SetStateAction<boolean>>;
+  setEmotionValue: React.Dispatch<React.SetStateAction<EmotionTypes>>;
+  emotionValue: EmotionTypes;
   showAllEmotions: boolean;
+  initialEmotionId: string;
+
+  commandIfId: string;
+  isElse: boolean;
 };
 
 export default function FormEmotion({
@@ -28,41 +34,48 @@ export default function FormEmotion({
   characterId,
   setShowCreateEmotionModal,
   showCreateEmotionModal,
-  emotionValue,
-  setEmotionValue,
   setShowCharacters,
   setShowAllEmotions,
+  setEmotionValue,
+  emotionValue,
   showAllEmotions,
   emotions,
+
+  commandIfId,
+  isElse,
 }: FormEmotionTypes) {
-  const [newEmotionId, setNewEmotionId] = useState("");
+  const {
+    updateEmotionProperties,
+    updateEmotionName,
+
+    updateEmotionPropertiesIf,
+    updateEmotionNameIf,
+  } = usePlotfieldCommands();
+
+  // const debouncedValue = useDebounce({
+  //   delay: 700,
+  //   value: emotionValue?.emotionName || "",
+  // });
+
   const emotionsRef = useRef<HTMLDivElement>(null);
+
   const allEmotions = useMemo(() => {
     const res = [...emotions];
     if (emotionValue?.emotionName) {
-      const ems = res.filter((r) =>
+      return res.filter((r) =>
         r.emotionName
           .toLowerCase()
-          .includes(emotionValue?.emotionName.toLowerCase() || "")
+          .includes(emotionValue?.emotionName?.toLowerCase() || "")
       );
-      return ems.map((e) => e.emotionName.toLowerCase());
     } else {
-      return res.map((r) => r.emotionName.toLowerCase());
+      return res;
     }
-  }, [emotions, emotionValue?.emotionName]);
+  }, [emotions, emotionValue]);
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
-    characterEmotionId: newEmotionId,
     plotFieldCommandId,
     plotFieldCommandSayId,
   });
-
-  useEffect(() => {
-    if (newEmotionId?.trim().length) {
-      updateNameOrEmotion.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newEmotionId]);
 
   const handleEmotionFormSubmit = (e: React.FormEvent, em?: string) => {
     e.preventDefault();
@@ -71,27 +84,80 @@ export default function FormEmotion({
       return;
     }
     if (
-      allEmotions.includes(emotionValue?.emotionName.toLowerCase() || "") ||
-      (em && allEmotions.includes(em.toLowerCase()))
+      allEmotions.map((e) =>
+        e.emotionName
+          ?.toLowerCase()
+          .includes(emotionValue?.emotionName?.toLowerCase() || "")
+      ) ||
+      (em &&
+        allEmotions.map((e) =>
+          e.emotionName?.toLowerCase().includes(em?.toLowerCase())
+        ))
     ) {
       const currentEmotion = emotions.find(
         (e) =>
           e.emotionName.toLowerCase() ===
-            emotionValue?.emotionName.toLowerCase() ||
+            emotionValue?.emotionName?.toLowerCase() ||
           (em && e.emotionName.toLowerCase() === em.toLowerCase())
       );
 
-      setNewEmotionId(currentEmotion?._id || "");
+      updateNameOrEmotion.mutate({ emotionBodyId: currentEmotion?._id });
       setEmotionValue({
-        emotionName: currentEmotion?.emotionName || "",
-        _id: currentEmotion?._id || "",
-        imgUrl: currentEmotion?.imgUrl || "",
+        _id: currentEmotion?._id || null,
+        emotionName: currentEmotion?.emotionName || null,
+        imgUrl: currentEmotion?.imgUrl || null,
       });
+
+      if (commandIfId?.trim().length) {
+        updateEmotionPropertiesIf({
+          emotionId: currentEmotion?._id || "",
+          emotionImg: currentEmotion?.imgUrl || "",
+          emotionName: currentEmotion?.emotionName || "",
+          id: plotFieldCommandId,
+          isElse,
+        });
+      } else {
+        updateEmotionProperties({
+          emotionId: currentEmotion?._id || "",
+          emotionImg: currentEmotion?.imgUrl || "",
+          emotionName: currentEmotion?.emotionName || "",
+          id: plotFieldCommandId,
+        });
+      }
     } else {
       setShowCreateEmotionModal(true);
       return;
     }
   };
+
+  // useEffect(() => {
+  //   if (debouncedValue?.trim().length && !showAllEmotions) {
+  //     const existingEmotion = emotions.find(
+  //       (e) =>
+  //         e.emotionName?.trim()?.toLowerCase() ===
+  //         emotionValue?.emotionName?.trim()?.toLowerCase()
+  //     );
+
+  //     if (existingEmotion) {
+  //       setEmotionValue({
+  //         _id: existingEmotion?._id || null,
+  //         emotionName: existingEmotion?.emotionName || null,
+  //         imgUrl: existingEmotion?.imgUrl || null,
+  //       });
+  //       updateEmotionProperties({
+  //         emotionId: existingEmotion?._id || "",
+  //         emotionImg: existingEmotion?.imgUrl || "",
+  //         emotionName: existingEmotion?.emotionName || "",
+  //         id: plotFieldCommandId,
+  //       });
+  //       updateNameOrEmotion.mutate({ emotionBodyId: existingEmotion?._id });
+  //     } else {
+  //       console.log("Such emotion wasn't found, on debounce");
+  //       setShowCreateEmotionModal(true);
+  //       return;
+  //     }
+  //   }
+  // }, [debouncedValue]);
 
   useOutOfModal({
     modalRef: emotionsRef,
@@ -116,14 +182,34 @@ export default function FormEmotion({
               setShowCharacters(false);
             }}
             onChange={(e) => {
-              setEmotionValue({
+              setEmotionValue((prev) => ({
+                ...prev,
                 emotionName: e.target.value,
-                _id: "",
-                imgUrl: "",
-              });
+              }));
+
+              if (commandIfId?.trim().length) {
+                updateEmotionNameIf({
+                  emotionName: e.target.value,
+                  id: plotFieldCommandId,
+                  isElse,
+                });
+              } else {
+                updateEmotionName({
+                  emotionName: e.target.value,
+                  id: plotFieldCommandId,
+                });
+              }
               setShowAllEmotions(true);
             }}
           />
+
+          {emotionValue?.imgUrl ? (
+            <img
+              src={emotionValue.imgUrl || ""}
+              alt={"EmotionImg"}
+              className="w-[3rem] rounded-md object-cover absolute right-0 top-[1.5px]"
+            />
+          ) : null}
 
           <AsideScrollable
             ref={emotionsRef}
@@ -135,29 +221,26 @@ export default function FormEmotion({
                   return (
                     <li key={em + "-" + i} className="flex justify-between">
                       <AsideScrollableButton
+                        className="relative"
                         onClick={(event) => {
-                          setEmotionValue({
-                            emotionName: em,
-                            _id: "",
-                            imgUrl: "",
-                          });
-                          handleEmotionFormSubmit(event, em);
+                          handleEmotionFormSubmit(event, em?.emotionName);
                           setShowAllEmotions(false);
                         }}
                       >
-                        {em}
+                        {em.emotionName}
+                        {em?.imgUrl ? (
+                          <img
+                            src={em.imgUrl || ""}
+                            alt={"EmotionImg"}
+                            className="w-[3rem] rounded-md object-cover absolute right-0 top-[1.5px]"
+                          />
+                        ) : null}
                       </AsideScrollableButton>
-                      {emotionValue?.imgUrl ? (
-                        <img
-                          src={emotionValue?.imgUrl || ""}
-                          alt={"EmotionImg"}
-                          className="w-[3rem] rounded-md object-cover"
-                        />
-                      ) : null}
                     </li>
                   );
                 })
-              ) : !emotionValue?.emotionName?.trim().length ? (
+              ) : !allEmotions.length &&
+                emotionValue?.emotionName?.trim().length ? (
                 <li>
                   <AsideScrollableButton
                     onClick={() => setShowAllEmotions(false)}
@@ -172,11 +255,14 @@ export default function FormEmotion({
       </form>
       <CommandSayCreateEmotionFieldModal
         characterId={characterId}
-        emotionName={emotionValue}
+        emotionName={emotionValue?.emotionName || ""}
         setShowModal={setShowCreateEmotionModal}
         showModal={showCreateEmotionModal}
         plotFieldCommandId={plotFieldCommandId}
         plotFieldCommandSayId={plotFieldCommandSayId}
+        setEmotionValue={setEmotionValue}
+        commandIfId={commandIfId}
+        isElse={isElse}
       />
     </>
   );

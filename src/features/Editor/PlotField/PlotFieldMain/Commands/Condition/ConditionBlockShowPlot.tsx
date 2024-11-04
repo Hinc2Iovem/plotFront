@@ -23,7 +23,6 @@ export default function ConditionBlockShowPlot({
           if (targetBlockId) {
             setShowConditionBlockPlot(true);
             updateCurrentlyOpenConditionBlock({
-              targetBlockId,
               conditionBlockId,
               plotfieldCommandId,
             });

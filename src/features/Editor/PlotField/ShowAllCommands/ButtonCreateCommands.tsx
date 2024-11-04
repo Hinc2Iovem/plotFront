@@ -5,7 +5,7 @@ import {
   ChoiceVariationsTypes,
 } from "../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import SyncLoad from "../../../shared/Loaders/SyncLoader";
-import useCreateMultipleCommands from "../PlotFieldMain/Commands/hooks/useCreateMultipleCommands";
+import useCreateMultipleCommands from "../hooks/useCreateMultipleCommands";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 
 type ButtonCreateCommandsTypes = {

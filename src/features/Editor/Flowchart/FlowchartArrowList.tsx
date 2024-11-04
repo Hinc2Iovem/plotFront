@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { TopologyBlockConnectionTypes } from "../../../types/TopologyBlock/TopologyBlockTypes";
-import useGetTopologyBlockById from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetTopologyBlockById";
+import useGetTopologyBlockById from "../PlotField/hooks/TopologyBlock/useGetTopologyBlockById";
 import { FlowchartArrow } from "./FlowchartArrow";
 import useCoordinates from "./Context/useCoordinates";
 

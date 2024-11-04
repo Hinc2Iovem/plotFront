@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
-import useUpdateChoiceOption from "../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
-import useGetRelationshipOption from "../../../hooks/Choice/ChoiceOptionVariation/useGetRelationshipOption";
+import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
+import useGetRelationshipOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetRelationshipOption";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 
 type OptionRelationshipBlockTypes = {
@@ -119,6 +119,8 @@ export default function OptionRelationshipBlock({
           showCharacterModal={showAllCharacters}
           setCharacterImg={setCharacterImg}
           translateAsideValue="translate-y-[3.5rem]"
+          commandIfId=""
+          isElse={false}
         />
       </form>
       <input

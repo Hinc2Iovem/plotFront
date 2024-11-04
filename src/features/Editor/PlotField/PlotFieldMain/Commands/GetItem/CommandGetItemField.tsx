@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateGetItemTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useGetSingleGetItemTranslation from "../hooks/GetItem/useGetSingleGetItemTranslation";
-import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationTextFieldNameGetItemTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import PlotfieldTextarea from "../../../../../shared/Textareas/PlotfieldTextarea";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useGetSingleGetItemTranslation from "../../../hooks/GetItem/useGetSingleGetItemTranslation";
 
 type CommandGetItemFieldTypes = {
   plotFieldCommandId: string;
@@ -26,6 +27,10 @@ export default function CommandGetItemField({
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
+
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
 
   const { data: getItem } = useGetSingleGetItemTranslation({
     plotFieldCommandId,
@@ -115,7 +120,13 @@ export default function CommandGetItemField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}

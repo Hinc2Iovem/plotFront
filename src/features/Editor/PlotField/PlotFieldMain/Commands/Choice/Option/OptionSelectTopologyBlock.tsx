@@ -4,9 +4,9 @@ import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import PlotfieldButton from "../../../../../../shared/Buttons/PlotfieldButton";
-import useUpdateChoiceOptionTopologyBlock from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTopologyBlock";
-import useGetAllTopologyBlocksByEpisodeId from "../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
-import useGetTopologyBlockById from "../../hooks/TopologyBlock/useGetTopologyBlockById";
+import useUpdateChoiceOptionTopologyBlock from "../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTopologyBlock";
+import useGetAllTopologyBlocksByEpisodeId from "../../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import useGetTopologyBlockById from "../../../../hooks/TopologyBlock/useGetTopologyBlockById";
 import useChoiceOptions from "../Context/ChoiceContext";
 
 type OptionSelecteTopologyBlockTypes = {

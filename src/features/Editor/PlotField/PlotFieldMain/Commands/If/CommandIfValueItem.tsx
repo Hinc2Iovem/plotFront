@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IfValueTypes } from "../../../../../../types/StoryEditor/PlotField/IfCommand/IfCommandTypes";
-import useUpdateIfConditionValue from "../hooks/If/Values/useUpdateIfConditionValue";
+import useUpdateIfConditionValue from "../../../hooks/If/Values/useUpdateIfConditionValue";
 import {
   AllConditionSigns,
   ConditionSignTypes,

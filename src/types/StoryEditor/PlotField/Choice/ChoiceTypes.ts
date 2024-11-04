@@ -19,6 +19,8 @@ export const ChoiceVariations: ChoiceVariationsTypes[] = [
   "multiple",
 ];
 
+export type TextStyleTypes = "default" | "italic" | "bold" | "underscore";
+
 export type ChoiceVariationsTypes = "common" | "multiple" | "timelimit";
 
 export type ChoiceTypes = {
@@ -32,6 +34,7 @@ export type ChoiceTypes = {
   timeLimit?: number;
   timeLimitDefaultOptionId?: string;
   amountOfOptions: number;
+  textStyle: TextStyleTypes;
 };
 
 export type ChoiceOptionTypes = {

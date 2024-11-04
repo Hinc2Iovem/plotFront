@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import PlotfieldHeader from "./PlotFieldHeader/PlotfieldHeader";
-import useGetTopologyBlockById from "./PlotFieldMain/Commands/hooks/TopologyBlock/useGetTopologyBlockById";
+import useGetTopologyBlockById from "./hooks/TopologyBlock/useGetTopologyBlockById";
 import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
 import ShowAllCommandsPlotfield from "./ShowAllCommands/ShowAllCommandsPlotfield";
 import usePlotfieldCommands from "./Context/PlotFieldContext";
@@ -32,9 +32,45 @@ export default function PlotField({
 }: PlotFieldProps) {
   const { setCurrentAmountOfCommands } = usePlotfieldCommands();
   const { updateTopologyBlock } = useTopologyBlocks();
-  const { data: currentTopologyBlock } = useGetTopologyBlockById({
+  const { data: rootTopologyBlock } = useGetTopologyBlockById({
     topologyBlockId,
   });
+
+  useEffect(() => {
+    if (rootTopologyBlock) {
+      setCurrentAmountOfCommands({
+        topologyBlockId,
+        amountOfCommands: rootTopologyBlock.topologyBlockInfo.amountOfCommands,
+      });
+
+      updateTopologyBlock({ newTopologyBlock: rootTopologyBlock });
+    }
+  }, [rootTopologyBlock, topologyBlockId, updateTopologyBlock]);
+
+  const [currentTopologyBlockId, setCurrentTopologyBlockId] = useState("");
+
+  const { data: currentTopologyBlock } = useGetTopologyBlockById({
+    topologyBlockId: currentTopologyBlockId,
+  });
+
+  useEffect(() => {
+    const handleUpdatingCommandsInfo = () => {
+      const currentTopologyBlockId = sessionStorage.getItem(
+        "focusedTopologyBlock"
+      );
+      if (
+        currentTopologyBlockId?.trim().length &&
+        currentTopologyBlockId !== topologyBlockId
+      ) {
+        setCurrentTopologyBlockId(currentTopologyBlockId);
+      }
+    };
+
+    window.addEventListener("storage", handleUpdatingCommandsInfo);
+    return () => {
+      window.removeEventListener("storage", handleUpdatingCommandsInfo);
+    };
+  }, [topologyBlockId]);
 
   useEffect(() => {
     if (currentTopologyBlock) {
@@ -46,10 +82,9 @@ export default function PlotField({
 
       updateTopologyBlock({ newTopologyBlock: currentTopologyBlock });
     }
-  }, [currentTopologyBlock]);
+  }, [currentTopologyBlock, topologyBlockId, updateTopologyBlock]);
 
   const [showAllCommands, setShowAllCommands] = useState<boolean>(false);
-
   return (
     <section
       className={`${
@@ -67,7 +102,7 @@ export default function PlotField({
         plotfieldExpanded={command === "expandPlotField"}
         setShowAllCommands={setShowAllCommands}
       />
-      {currentTopologyBlock ? (
+      {rootTopologyBlock ? (
         <PlotfieldHeader
           setShowAllCommands={setShowAllCommands}
           showAllCommands={showAllCommands}

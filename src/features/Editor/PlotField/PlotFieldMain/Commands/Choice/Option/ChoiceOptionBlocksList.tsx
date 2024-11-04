@@ -1,15 +1,20 @@
 import { useEffect, useState } from "react";
 import { ChoiceOptionVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import useGetAllChoiceOptionsByChoiceId from "../../hooks/Choice/ChoiceOption/useGetChoiceAllChoiceOptionsByChoiceId";
+import useGetAllChoiceOptionsByChoiceId from "../../../../hooks/Choice/ChoiceOption/useGetChoiceAllChoiceOptionsByChoiceId";
 import useChoiceOptions from "../Context/ChoiceContext";
 import ChoiceOptionBlock from "./ChoiceOptionBlock";
 import PlotfieldInsideChoiceOption from "./PlotfieldInsideChoiceOption/PlotfieldInsideChoiceOption";
+import useUpdateCurrentlyOpenChoiceOptionOnMount from "../../../../hooks/Choice/helpers/useUpdateCurrentlyOpenChoiceOptionOnMount";
 
 type ChoiceOptionBlockTypes = {
   currentTopologyBlockId: string;
   plotFieldCommandId: string;
   amountOfOptions: number;
   choiceId: string;
+  showOptionPlot: boolean;
+  isFocusedBackground: boolean;
+  setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export type ChoiceOptionTypesAndTopologyBlockIdsTypes = {
@@ -24,11 +29,14 @@ export default function ChoiceOptionBlocksList({
   plotFieldCommandId,
   amountOfOptions,
   choiceId,
+  showOptionPlot,
+  isFocusedBackground,
+  setShowOptionPlot,
+  setIsFocusedBackground,
 }: ChoiceOptionBlockTypes) {
-  const { setChoiceOptions, getAllChoiceOptionsByChoiceId, choices } =
+  const { setChoiceOptions, getAllChoiceOptionsByChoiceId } =
     useChoiceOptions();
   const [updated, setUpdated] = useState(false);
-  const [showOptionPlot, setShowOptionPlot] = useState(false);
 
   const { data: allChoiceOptionBlocks } = useGetAllChoiceOptionsByChoiceId({
     plotFieldCommandChoiceId: plotFieldCommandId,
@@ -37,7 +45,11 @@ export default function ChoiceOptionBlocksList({
 
   useEffect(() => {
     if (allChoiceOptionBlocks) {
-      setChoiceOptions({ choiceId, choiceOptions: allChoiceOptionBlocks });
+      setChoiceOptions({
+        choiceId,
+        choiceOptions: allChoiceOptionBlocks,
+        plotfieldCommandId: plotFieldCommandId,
+      });
 
       return () => {
         setUpdated(true);
@@ -45,13 +57,15 @@ export default function ChoiceOptionBlocksList({
     }
   }, [allChoiceOptionBlocks]);
 
-  console.log("choices: ", choices);
-  console.log("allChoiceOptionBlocks: ", allChoiceOptionBlocks);
+  useUpdateCurrentlyOpenChoiceOptionOnMount({
+    choiceOptions: allChoiceOptionBlocks,
+    plotFieldCommandId,
+  });
 
   return (
     <section
       className={`w-full ${
-        showOptionPlot
+        showOptionPlot || isFocusedBackground
           ? ""
           : "grid grid-cols-[repeat(auto-fill,minmax(23rem,1fr))] gap-[1rem] items-center"
       } bg-primary rounded-md shadow-md p-[.5rem]`}
@@ -59,12 +73,16 @@ export default function ChoiceOptionBlocksList({
       <PlotfieldInsideChoiceOption
         choiceId={choiceId}
         showOptionPlot={showOptionPlot}
+        plotfieldCommandId={plotFieldCommandId}
         setShowOptionPlot={setShowOptionPlot}
+        setIsFocusedBackground={setIsFocusedBackground}
+        isFocusedBackground={isFocusedBackground}
       />
 
       {getAllChoiceOptionsByChoiceId({ choiceId })?.map((co) => (
         <ChoiceOptionBlock
           key={co.choiceOptionId}
+          isFocusedBackground={isFocusedBackground}
           showOptionPlot={showOptionPlot}
           choiceId={choiceId}
           plotFieldCommandId={plotFieldCommandId}

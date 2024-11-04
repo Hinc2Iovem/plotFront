@@ -1,13 +1,15 @@
 import { useEffect } from "react";
 
 type useBlurOutlineProps = {
-  modalRef: React.MutableRefObject<HTMLInputElement | null>;
+  modalRef?: React.MutableRefObject<
+    HTMLInputElement | HTMLTextAreaElement | null
+  >;
 };
 
 export default function useBlurOutline({ modalRef }: useBlurOutlineProps) {
   useEffect(() => {
     const handleEscapeKey = (e: KeyboardEvent) => {
-      if (modalRef.current && e.key === "Escape") {
+      if (modalRef?.current && e.key === "Escape") {
         modalRef.current.blur();
       }
     };

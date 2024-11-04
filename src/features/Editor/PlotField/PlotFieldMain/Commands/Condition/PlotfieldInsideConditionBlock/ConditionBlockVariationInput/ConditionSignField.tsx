@@ -33,6 +33,7 @@ export default function ConditionSignField({
           setShowSignModal((prev) => !prev);
         }}
         type="button"
+        className="hover:bg-primary-darker"
       >
         {getConditionBlockById({ conditionBlockId, plotfieldCommandId })?.sign
           ? getConditionBlockById({ conditionBlockId, plotfieldCommandId })

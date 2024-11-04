@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import rejectImg from "../../../../../../assets/images/shared/rejectWhite.png";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useGetCommandWardrobe from "../hooks/Wardrobe/useGetCommandWardrobe";
-import useGetCommandWardrobeTranslation from "../hooks/Wardrobe/useGetCommandWardrobeTranslation";
-import useUpdateWardrobeCurrentDressedAndCharacterId from "../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
-import useUpdateWardrobeTranslationText from "../hooks/Wardrobe/useUpdateWardrobeTranslationText";
-import useGetAllWardrobeAppearancePartBlocks from "../hooks/Wardrobe/WardrobeAppearancePartBlock/useGetAllWardrobeAppearancePartBlocks";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useGetCommandWardrobe from "../../../hooks/Wardrobe/useGetCommandWardrobe";
+import useGetCommandWardrobeTranslation from "../../../hooks/Wardrobe/useGetCommandWardrobeTranslation";
+import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
+import useUpdateWardrobeTranslationText from "../../../hooks/Wardrobe/useUpdateWardrobeTranslationText";
+import useGetAllWardrobeAppearancePartBlocks from "../../../hooks/Wardrobe/WardrobeAppearancePartBlock/useGetAllWardrobeAppearancePartBlocks";
+import "../Prompts/promptStyles.css";
 import WardrobeAppearancePartBlock from "./WardrobeAppearancePartBlock";
 import WardrobeCharacterAppearancePartForm from "./WardrobeCharacterAppearancePartForm";
-import "../Prompts/promptStyles.css";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type CommandWardrobeFieldTypes = {
   plotFieldCommandId: string;
@@ -34,6 +36,12 @@ export default function CommandWardrobeField({
   const { data: commandWardrobe } = useGetCommandWardrobe({
     plotFieldCommandId,
   });
+
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
+
+  const appearancePartsRef = useRef<HTMLDivElement>(null);
 
   const { data: translatedWardrobe } = useGetCommandWardrobeTranslation({
     commandId: plotFieldCommandId || "",
@@ -81,10 +89,22 @@ export default function CommandWardrobeField({
       commandWardrobeId,
     });
 
+  useOutOfModal({
+    modalRef: appearancePartsRef,
+    showModal: showAllAppearancePartBlocks,
+    setShowModal: setShowAllAppearancePartBlocks,
+  });
+
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
@@ -136,13 +156,13 @@ export default function CommandWardrobeField({
           onMouseOver={() => setShowAllAppearancePartBlocks(true)}
           className={`w-fit  ${
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-[1.3rem] text-text-dark hover:text-text-light self-end px-[1rem] bg-secondary rounded-md shadow-md py-[.5rem]`}
+          } text-[1.4rem] text-text-dark hover:text-text-light self-end px-[1rem] bg-secondary rounded-md shadow-md py-[.5rem]`}
         >
           Посмотреть Одежду
         </button>
       </div>
       <div
-        onMouseLeave={() => setShowAllAppearancePartBlocks(false)}
+        ref={appearancePartsRef}
         className={`${
           showAllAppearancePartBlocks ? "" : "hidden"
         } bottom-0 left-0 flex flex-col w-full bg-primary-darker rounded-md p-[.5rem] max-h-[17rem] absolute`}

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { TopologyBlockTypes } from "../../../types/TopologyBlock/TopologyBlockTypes";
-import useUpdateTopologyBlockCoordinates from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useUpdateTopologyBlockCoordinates";
+import useUpdateTopologyBlockCoordinates from "../PlotField/hooks/TopologyBlock/useUpdateTopologyBlockCoordinates";
 import useCoordinates from "./Context/useCoordinates";
 import "./FlowchartStyles.css";
 import { useQueryClient } from "@tanstack/react-query";
-import { getAllPlotfieldCommands } from "../PlotField/PlotFieldMain/Commands/hooks/useGetAllPlotFieldCommands";
+import { getAllPlotfieldCommands } from "../PlotField/hooks/useGetAllPlotFieldCommands";
+import usePlotfieldCommands from "../PlotField/Context/PlotFieldContext";
 
 type FlowchartTopologyBlockTypes = {
   setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
@@ -22,6 +23,7 @@ export default function FlowchartTopologyBlock({
   currentTopologyBlockId,
 }: FlowchartTopologyBlockTypes) {
   const { coordinates, setCoordinates } = useCoordinates();
+  const { updateFocuseReset } = usePlotfieldCommands();
   const theme = localStorage.getItem("theme");
   const topologyBlockRef = useRef<HTMLDivElement>(null);
   const [localCoordinates, setLocalCoordinates] = useState<{
@@ -91,8 +93,11 @@ export default function FlowchartTopologyBlock({
               prefetchCommands();
               if (clicked) {
                 localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
+                sessionStorage.setItem(`focusedTopologyBlock`, _id);
+                sessionStorage.setItem(`focusedCommand`, `none-${_id}`);
                 setCurrentTopologyBlockId(_id);
                 setClicked(false);
+                updateFocuseReset({ value: true });
               } else {
                 setClicked(true);
                 setTimeout(() => {

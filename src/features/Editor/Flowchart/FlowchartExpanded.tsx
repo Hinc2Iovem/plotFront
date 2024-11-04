@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
-import useGetAllTopologyBlocksByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
+import useGetAllTopologyBlocksByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import FlowchartArrowList from "./FlowchartArrowList";
 import "./FlowchartStyles.css";
 import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useUpdateBackgroundMusicText from "../hooks/Background/useUpdateBackgroundMusicText";
-import useGetAllMusicByStoryId from "../hooks/Music/useGetAllMusicByStoryId";
-import useGetMusicById from "../hooks/Music/useGetMusicById";
+import useUpdateBackgroundMusicText from "../../../hooks/Background/useUpdateBackgroundMusicText";
+import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
+import useGetMusicById from "../../../hooks/Music/useGetMusicById";
 import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";

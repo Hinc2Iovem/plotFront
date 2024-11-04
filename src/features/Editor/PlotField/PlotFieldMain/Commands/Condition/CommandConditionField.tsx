@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import plus from "../../../../../../assets/images/shared/add.png";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import useGetConditionBlocksByCommandConditionId from "../hooks/Condition/ConditionBlock/useGetConditionBlocksByCommandConditionId";
-import useGetCommandCondition from "../hooks/Condition/useGetCommandCondition";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useGetConditionBlocksByCommandConditionId from "../../../hooks/Condition/ConditionBlock/useGetConditionBlocksByCommandConditionId";
+import useGoingDownInsideConditionBlocks from "../../../hooks/Condition/helpers/useGoingDownInsideConditionBlocks";
+import useGoingUpFromConditionBlocks from "../../../hooks/Condition/helpers/useGoingUpFromConditionBlocks";
+import useUpdateCurrentlyOpenConditionBlockOnMount from "../../../hooks/Condition/helpers/useUpdateCurrentlyOpenConditionBlockOnMount";
+import useGetCommandCondition from "../../../hooks/Condition/useGetCommandCondition";
 import ConditionBlockItem from "./ConditionBlockItem";
 import useConditionBlocks, {
   ConditionBlockItemTypes,
 } from "./Context/ConditionContext";
 import CreateConditionValueTypeModal from "./CreateConditionValueTypeModal";
 import PlotfieldInsideConditionBlock from "./PlotfieldInsideConditionBlock/PlotfieldInsideConditionBlock";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useCheckIfShowingPlotfieldInsideConditionOnMount from "../../../hooks/Condition/helpers/useCheckIfShowingPlotfieldInsideConditionOnMount";
+import useHandleNavigationThroughBlocksInsideCondition from "../../../hooks/Condition/helpers/useHandleNavigationThroughBlocksInsideCondition";
 
 type CommandConditionFieldTypes = {
   plotFieldCommandId: string;
@@ -24,14 +30,46 @@ export default function CommandConditionField({
 }: CommandConditionFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Condition");
 
-  const { getAllConditionBlocksByPlotfieldCommandId, setConditionBlocks } =
-    useConditionBlocks();
+  const { setConditionBlocks } = useConditionBlocks();
+
+  const [isFocusedIf, setIsFocusedIf] = useState(true);
+  const [isFocusedBackground, setIsFocusedBackground] = useState(false);
+  const [showConditionBlockPlot, setShowConditionBlockPlot] = useState(false);
+
+  useCheckIfShowingPlotfieldInsideConditionOnMount({
+    plotFieldCommandId,
+    setIsFocusedBackground,
+    setShowConditionBlockPlot,
+  });
+
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+    setIsFocusedIf,
+  });
+  const [commandConditionId, setCommandConditionId] = useState("");
+
+  useGoingDownInsideConditionBlocks({
+    conditionId: commandConditionId,
+    plotfieldCommandId: plotFieldCommandId,
+    setIsFocusedBackground,
+    setShowConditionBlockPlot,
+  });
+
+  useGoingUpFromConditionBlocks({
+    conditionId: commandConditionId,
+    plotfieldCommandId: plotFieldCommandId,
+    setIsFocusedBackground,
+    setShowConditionBlockPlot,
+  });
+
+  useHandleNavigationThroughBlocksInsideCondition({
+    plotfieldCommandId: plotFieldCommandId,
+  });
+
   const [showCreateValueType, setShowCreateValueType] = useState(false);
   const { data: commandCondition } = useGetCommandCondition({
     plotFieldCommandId,
   });
-  const [showConditionBlockPlot, setShowConditionBlockPlot] = useState(false);
-  const [commandConditionId, setCommandConditionId] = useState("");
 
   useEffect(() => {
     if (commandCondition) {
@@ -45,23 +83,30 @@ export default function CommandConditionField({
 
   useEffect(() => {
     if (conditionBlocks) {
-      if (
-        !getAllConditionBlocksByPlotfieldCommandId({
-          plotfieldCommandId: plotFieldCommandId,
-        }).length
-      ) {
-        setConditionBlocks({
-          conditionBlocks,
-          plotfieldCommandId: plotFieldCommandId,
-        });
-      }
+      setConditionBlocks({
+        conditionBlocks,
+        plotfieldCommandId: plotFieldCommandId,
+      });
     }
   }, [conditionBlocks]);
 
+  useUpdateCurrentlyOpenConditionBlockOnMount({
+    conditionBlocks,
+    plotFieldCommandId,
+  });
+
   return (
-    <div className="flex gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] flex-col">
+    <div className="flex gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] flex-col relative">
       <div className="min-w-[10rem] flex-grow w-full relative flex items-start gap-[1rem]">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            !isFocusedBackground && isCommandFocused && isFocusedIf
+              ? "bg-dark-dark-blue"
+              : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
         <ButtonHoverPromptModal
           contentName="Создать Блок"
           positionByAbscissa="right"
@@ -92,8 +137,12 @@ export default function CommandConditionField({
         commandConditionId={commandConditionId}
         topologyBlockId={topologyBlockId}
         plotFieldCommandId={plotFieldCommandId}
+        setIsFocusedBackground={setIsFocusedBackground}
         setShowConditionBlockPlot={setShowConditionBlockPlot}
         showConditionBlockPlot={showConditionBlockPlot}
+        isCommandFocused={isCommandFocused}
+        isFocusedIf={isFocusedIf}
+        isFocusedBackground={isFocusedBackground}
       />
     </div>
   );
@@ -101,37 +150,48 @@ export default function CommandConditionField({
 
 type ConditionBlocksListTypes = {
   setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
   showConditionBlockPlot: boolean;
   plotFieldCommandId: string;
   topologyBlockId: string;
   commandConditionId: string;
+  isFocusedIf: boolean;
+  isCommandFocused: boolean;
+  isFocusedBackground: boolean;
 };
 
 function ConditionBlocksList({
+  setIsFocusedBackground,
   setShowConditionBlockPlot,
   plotFieldCommandId,
   commandConditionId,
   topologyBlockId,
   showConditionBlockPlot,
+  isCommandFocused,
+  isFocusedIf,
+  isFocusedBackground,
 }: ConditionBlocksListTypes) {
   const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } =
     useConditionBlocks();
+
   return (
     <div className={`w-full bg-primary rounded-md p-[.5rem]`}>
       <div
         className={`${
-          showConditionBlockPlot ? "" : "hidden"
+          showConditionBlockPlot || isFocusedBackground ? "" : "hidden"
         } flex flex-col gap-[1rem]`}
       >
         <PlotfieldInsideConditionBlock
+          isFocusedBackground={isFocusedBackground}
           plotfieldCommandId={plotFieldCommandId}
           setShowConditionBlockPlot={setShowConditionBlockPlot}
+          setIsFocusedBackground={setIsFocusedBackground}
           showConditionBlockPlot={showConditionBlockPlot}
         />
       </div>
       <div
         className={`${
-          showConditionBlockPlot ? "hidden" : ""
+          showConditionBlockPlot || isFocusedBackground ? "hidden" : ""
         } flex flex-col gap-[1rem]`}
       >
         {(
@@ -161,7 +221,15 @@ function ConditionBlocksList({
           </div>
         ) : null}
         <div className="min-w-[10rem] w-full relative flex gap-[.5rem] flex-wrap bg-secondary rounded-md">
-          <PlotfieldCommandNameField>Else</PlotfieldCommandNameField>
+          <PlotfieldCommandNameField
+            className={`${
+              !isFocusedBackground && isCommandFocused && !isFocusedIf
+                ? "bg-dark-dark-blue"
+                : "bg-secondary"
+            }`}
+          >
+            Else
+          </PlotfieldCommandNameField>
           <ConditionBlockElse
             plotFieldCommandId={plotFieldCommandId}
             topologyBlockId={topologyBlockId}

@@ -1,3 +1,5 @@
+import { TextStyleTypes } from "../Choice/ChoiceTypes";
+
 export type CommandSideTypes = "right" | "left";
 export type CommandSayVariationTypes =
   | "character"
@@ -12,4 +14,5 @@ export type SayTypes = {
   characterId: string;
   type: CommandSayVariationTypes;
   characterEmotionId: string;
+  textStyle: TextStyleTypes;
 };

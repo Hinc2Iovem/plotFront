@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetching/Translation/useGetTranslationCharacteristic";
-import useUpdateChoiceOption from "../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
-import useGetCharacteristicOption from "../../../hooks/Choice/ChoiceOptionVariation/useGetCharacteristicOption";
+import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
+import useGetCharacteristicOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetCharacteristicOption";
 import PlotfieldCharacteristicPromptMain from "../../../Prompts/Characteristics/PlotfieldCharacteristicPromptMain";
 
 type OptionCharacteristicBlockTypes = {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import { AllSexualOrientations } from "../../../../../../../types/StoryEditor/PlotField/Choice/SEXUAL_ORIENTATION_TYPES";
-import useUpdateChoiceOptionSexualOrientation from "../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionSexualOrientation";
+import useUpdateChoiceOptionSexualOrientation from "../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionSexualOrientation";
 import "./OptionRaibowBtnStyles.css";
 
 type OptionSelectSexualOrientationBlockTypes = {

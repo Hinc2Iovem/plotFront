@@ -3,7 +3,7 @@ import {
   ConditionValueVariationType,
 } from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import useUpdateConditionValue from "../hooks/Condition/ConditionValue/useUpdateConditionValue";
+import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import useConditionBlocks from "./Context/ConditionContext";
 import ConditionBlockVariationAppearance from "./PlotfieldInsideConditionBlock/ConditionBlockVariationInput/ConditionBlockVariationAppearance";
 import ConditionBlockVariationCharacter from "./PlotfieldInsideConditionBlock/ConditionBlockVariationInput/ConditionBlockVariationCharacter";

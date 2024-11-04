@@ -6,7 +6,7 @@ import {
   ChoiceOptionVariationsTypes,
 } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import { generateMongoObjectId } from "../../../../../../../utils/generateMongoObjectId";
-import useCreateChoiceOption from "../../hooks/Choice/ChoiceOption/useCreateChoiceOption";
+import useCreateChoiceOption from "../../../../hooks/Choice/ChoiceOption/useCreateChoiceOption";
 import useChoiceOptions from "../Context/ChoiceContext";
 import useTopologyBlocks from "../../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../../Flowchart/utils/makeTopologyBlockName";

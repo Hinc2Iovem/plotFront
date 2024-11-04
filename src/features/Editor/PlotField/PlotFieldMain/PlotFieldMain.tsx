@@ -8,8 +8,8 @@ import {
 import { useEffect } from "react";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 import PlotfieldItem from "./Commands/PlotfieldItem";
-import useGetAllPlotFieldCommands from "./Commands/hooks/useGetAllPlotFieldCommands";
-import useUpdateCommandOrder from "./Commands/hooks/useUpdateCommandOrder";
+import useGetAllPlotFieldCommands from "../hooks/useGetAllPlotFieldCommands";
+import useUpdateCommandOrder from "../hooks/useUpdateCommandOrder";
 
 type PlotFieldMainTypes = {
   topologyBlockId: string;

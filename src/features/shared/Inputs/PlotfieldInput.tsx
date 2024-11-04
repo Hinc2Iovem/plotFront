@@ -4,17 +4,20 @@ import useBlurOutline from "../../../hooks/UI/useBlurOutline";
 
 type PlotFieldInputTypes = ComponentProps<"input">;
 
-const PlotfieldInput = forwardRef<HTMLDivElement, PlotFieldInputTypes>(
+const PlotfieldInput = forwardRef<HTMLInputElement, PlotFieldInputTypes>(
   ({ className, ...props }, ref) => {
     const theme = localStorage.getItem("theme");
-    const modalRef = useRef<HTMLInputElement>(null);
-    useBlurOutline({ modalRef });
 
-    console.log(ref);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const resolvedRef = ref || inputRef;
+
+    useBlurOutline({
+      modalRef: resolvedRef as React.MutableRefObject<HTMLInputElement | null>,
+    });
 
     return (
       <input
-        ref={modalRef}
+        ref={resolvedRef}
         className={twMerge(
           `${
             theme === "light"

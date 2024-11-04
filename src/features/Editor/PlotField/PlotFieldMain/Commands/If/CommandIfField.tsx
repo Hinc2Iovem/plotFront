@@ -8,22 +8,25 @@ import {
 import { useEffect, useRef, useState } from "react";
 import commandImg from "../../../../../../assets/images/Editor/command.png";
 import plus from "../../../../../../assets/images/shared/add.png";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import { PlotfieldOptimisticCommandInsideIfTypes } from "../../../Context/PlotfieldCommandIfSlice";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
-import useCreateBlankCommandInsideIf from "../hooks/If/useCreateBlankCommandInsideIf";
-import useGetCommandIf from "../hooks/If/useGetCommandIf";
-import useGetCurrentCommandOrderCommandIf from "../hooks/If/useGetCurrentCommandOrderCommandIf";
-import useUpdateOrderInsideCommandIf from "../hooks/If/useUpdateOrderInsideCommandIf";
-import useGetAllPlotFieldCommandsByIfIdInsideElse from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIElse";
-import useGetAllPlotFieldCommandsByIfIdInsideIf from "../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
+import useUpdateSessionStorageGoingDownForIfCommand from "../../../hooks/If/helpers/useUpdateSessionStorageGoingDownForIfCommand";
+import useUpdateSessionStorageGoingUpForIfCommand from "../../../hooks/If/helpers/useUpdateSessionStorageGoingUpForIfCommand";
+import useCreateBlankCommandInsideIf from "../../../hooks/If/useCreateBlankCommandInsideIf";
+import useGetCommandIf from "../../../hooks/If/useGetCommandIf";
+import useGetCurrentCommandOrderCommandIf from "../../../hooks/If/useGetCurrentCommandOrderCommandIf";
+import useUpdateOrderInsideCommandIf from "../../../hooks/If/useUpdateOrderInsideCommandIf";
+import useGetAllPlotFieldCommandsByIfIdInsideElse from "../../../hooks/useGetAllPlotFieldCommandsByIfIdInsideIElse";
+import useGetAllPlotFieldCommandsByIfIdInsideIf from "../../../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
 import PlotfieldItemInsideIf from "../PlotfieldItemInsideIf";
 import CommandIfValues from "./CommandIfValues";
-import useReorderIfCommands from "./useReorderIfCommands";
 import useReorderElseCommands from "./useReorderElseCommands";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useReorderIfCommands from "./useReorderIfCommands";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -37,23 +40,87 @@ export default function CommandIfField({
   topologyBlockId,
 }: CommandIfFieldTypes) {
   const {
-    addCommandIf,
     setAllIfCommands,
-    updateCommandIfInfo,
     setCurrentAmountOfIfCommands,
     getCommandsByCommandIfId,
     getCurrentAmountOfIfCommands,
-    removeCommandIfItem,
     updateCommandIfOrder,
+    updateFocuseReset,
+    updateFocuseIfReset,
+    getFirstCommandInsideIf,
   } = usePlotfieldCommands();
-  const [nameValue] = useState<string>(command ?? "If");
+
+  const [nameValue] = useState<string>(command || "If");
   const [hideIfCommands, setHideIfCommands] = useState(false);
   const [hideElseCommands, setHideElseCommands] = useState(false);
   const { data: commandIf } = useGetCommandIf({
     plotFieldCommandId,
   });
+
+  const [isFocusedIf, setIsFocusedIf] = useState(true);
+  const [isBackgroundFocused, setIsBackgroundFocused] = useState(false);
+  const onlyFirstRerender = useRef(true);
+  useEffect(() => {
+    if (onlyFirstRerender.current) {
+      const focusedCommand = sessionStorage
+        .getItem("focusedCommand")
+        ?.split("-");
+      const focusedCommandIf = sessionStorage
+        .getItem("focusedCommandIf")
+        ?.split("?")
+        .filter(Boolean);
+
+      const deepLevelCommandIf = focusedCommandIf?.includes("none")
+        ? null
+        : (focusedCommandIf?.length || 0) > 0
+        ? (focusedCommandIf?.length || 0) - 1
+        : null;
+      if (typeof deepLevelCommandIf === "number") {
+        const currentIfCommand = (focusedCommandIf || [])[
+          deepLevelCommandIf
+        ].split("-");
+        const currentPlotfieldCommandId = currentIfCommand[1];
+
+        if (
+          (focusedCommand || [])[1] === plotFieldCommandId &&
+          currentPlotfieldCommandId === plotFieldCommandId
+        ) {
+          setIsBackgroundFocused(true);
+        }
+      }
+    }
+
+    return () => {
+      onlyFirstRerender.current = false;
+    };
+  }, [plotFieldCommandId]);
+
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+    setIsFocusedIf,
+  });
+
   const theme = localStorage.getItem("theme");
   const [commandIfId, setCommandIfId] = useState("");
+
+  useUpdateSessionStorageGoingDownForIfCommand({
+    commandIfId,
+    plotfieldCommandId: plotFieldCommandId,
+    updateFocuseReset,
+    getFirstCommandInsideIf,
+    updateFocuseIfReset,
+    setIsBackgroundFocused,
+  });
+
+  useUpdateSessionStorageGoingUpForIfCommand({
+    commandIfId,
+    plotfieldCommandId: plotFieldCommandId,
+    updateFocuseReset,
+    getFirstCommandInsideIf,
+    updateFocuseIfReset,
+    setIsBackgroundFocused,
+  });
+
   const createCommandInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
     commandIfId,
@@ -105,18 +172,6 @@ export default function CommandIfField({
         commandIfId,
         isElse: true,
       });
-      addCommandIf({
-        commandIfId,
-        isElse: true,
-        newCommand: {
-          commandOrder: elseCommandOrder,
-          _id,
-          command: "" as AllPossiblePlotFieldComamndsTypes,
-          isElse: true,
-          topologyBlockId,
-          commandIfId,
-        },
-      });
       createCommandInsideElse.mutate({
         commandOrder: elseCommandOrder,
         _id,
@@ -125,29 +180,12 @@ export default function CommandIfField({
         topologyBlockId,
         commandIfId,
       });
-      updateCommandIfInfo({ addOrMinus: "add", commandIfId, isElse: true });
-      if (createCommandInsideElse.isError) {
-        removeCommandIfItem({ id: _id, isElse: true });
-        updateCommandIfInfo({ addOrMinus: "minus", commandIfId, isElse: true });
-        console.error(`Some error happened: ${createCommandInsideElse.error}`);
-      }
     } else {
       const ifCommandOrder = getCurrentAmountOfIfCommands({
         commandIfId,
         isElse: false,
       });
-      addCommandIf({
-        commandIfId,
-        isElse: false,
-        newCommand: {
-          commandOrder: ifCommandOrder,
-          _id,
-          command: "" as AllPossiblePlotFieldComamndsTypes,
-          isElse,
-          topologyBlockId,
-          commandIfId,
-        },
-      });
+
       createCommandInsideIf.mutate({
         commandOrder: ifCommandOrder,
         _id,
@@ -156,17 +194,6 @@ export default function CommandIfField({
         topologyBlockId,
         commandIfId,
       });
-      updateCommandIfInfo({ addOrMinus: "add", commandIfId, isElse: false });
-
-      if (createCommandInsideIf.isError) {
-        removeCommandIfItem({ id: _id, isElse: false });
-        updateCommandIfInfo({
-          addOrMinus: "minus",
-          commandIfId,
-          isElse: false,
-        });
-        console.error(`Some error happened: ${createCommandInsideIf.error}`);
-      }
     }
   };
 
@@ -343,7 +370,15 @@ export default function CommandIfField({
       <div className="min-w-[10rem] w-full flex flex-col gap-[1rem]">
         <div className="flex w-full relative items-center gap-[1rem]">
           <div className="flex gap-[.5rem] w-full">
-            <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+            <PlotfieldCommandNameField
+              className={`${
+                isCommandFocused && !isBackgroundFocused && isFocusedIf
+                  ? "bg-dark-dark-blue"
+                  : "bg-secondary"
+              }`}
+            >
+              {nameValue}
+            </PlotfieldCommandNameField>
             <button
               onClick={(e) => {
                 setHideIfCommands((prev) => !prev);
@@ -385,9 +420,11 @@ export default function CommandIfField({
       </div>
       <CommandIfValues ifId={commandIfId} />
       <div
-        className={`${
-          hideIfCommands ? "hidden" : ""
-        } flex flex-col bg-primary rounded-md w-full`}
+        className={`${hideIfCommands ? "hidden" : ""} flex ${
+          isBackgroundFocused && isFocusedIf
+            ? "bg-primary border-secondary border-dashed border-[3px]"
+            : "bg-primary"
+        } flex-col rounded-md w-full`}
       >
         <DragDropContext
           onDragStart={handleDragStart}
@@ -398,7 +435,7 @@ export default function CommandIfField({
               <ul
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className="flex flex-col gap-[.5rem] py-[.5rem] w-full bg-primary rounded-md"
+                className={`flex flex-col gap-[.5rem] py-[.5rem] w-full`}
               >
                 {getCommandsByCommandIfId({ commandIfId, isElse: false })?.map(
                   (p, i) => {
@@ -416,11 +453,19 @@ export default function CommandIfField({
             )}
           </Droppable>
         </DragDropContext>
-        <div className="h-[10vh] bg-primary w-full rounded-b-md"></div>
+        <div className={`h-[10rem] w-full`}></div>
       </div>
       <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem] p-[.5rem]">
         <div className="flex gap-[.5rem] w-full">
-          <PlotfieldCommandNameField>Else</PlotfieldCommandNameField>
+          <PlotfieldCommandNameField
+            className={`${
+              isCommandFocused && !isBackgroundFocused && !isFocusedIf
+                ? "bg-dark-dark-blue"
+                : "bg-secondary"
+            }`}
+          >
+            Else
+          </PlotfieldCommandNameField>
           <button
             onClick={(e) => {
               setHideElseCommands((prev) => !prev);
@@ -460,9 +505,11 @@ export default function CommandIfField({
         </ButtonHoverPromptModal>
       </div>
       <div
-        className={`${
-          hideElseCommands ? "hidden" : ""
-        } flex flex-col bg-secondary rounded-md w-full`}
+        className={`${hideElseCommands ? "hidden" : ""} flex flex-col ${
+          isBackgroundFocused && !isFocusedIf
+            ? "bg-secondary border-dark-mid-gray border-dashed border-[3px]"
+            : "bg-secondary"
+        } rounded-md w-full`}
       >
         <DragDropContext
           onDragStart={handleDragStartElse}
@@ -491,7 +538,7 @@ export default function CommandIfField({
             )}
           </Droppable>
         </DragDropContext>
-        <div className="h-[10vh] bg-secondary w-full rounded-b-md"></div>
+        <div className={`h-[10rem] bg-secondary w-full`}></div>
       </div>
     </div>
   );

@@ -1,36 +1,45 @@
 import { useEffect } from "react";
-import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
-import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateAchievement from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Achievement/useCreateAchievement";
 import { useParams } from "react-router-dom";
+import useCreateAchievement from "../../../../features/Editor/PlotField/hooks/Achievement/useCreateAchievement";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/hooks/useCreateBlankCommand";
+import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
+import useCreateBlankCommandInsideIf from "../../../../features/Editor/PlotField/hooks/If/useCreateBlankCommandInsideIf";
+import usePlotfieldCommands from "../../../../features/Editor/PlotField/Context/PlotFieldContext";
 
 type CreateAchievementViaKeyCombinationTypes = {
   topologyBlockId: string;
-  commandIfId: string;
-  isElse: boolean;
 };
 
 export default function useCreateAchievementViaKeyCombination({
   topologyBlockId,
-  commandIfId,
-  isElse,
 }: CreateAchievementViaKeyCombinationTypes) {
-  const { storyId } = useParams();
-  const createPlotfield = useCreateBlankCommand({ topologyBlockId });
+  const { storyId, episodeId } = useParams();
+  const createPlotfield = useCreateBlankCommand({
+    topologyBlockId,
+    episodeId: episodeId || "",
+  });
+
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
+    usePlotfieldCommands();
+
+  const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
+    topologyBlockId,
+  });
+
   const createAchievement = useCreateAchievement({
     storyId: storyId || "",
     topologyBlockId,
   });
-  const { getTopologyBlock } = useTopologyBlocks();
 
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
+      console.log(event.key);
+
       const allowed = preventCreatingCommandsWhenFocus();
       if (!allowed) {
-        console.log("You are inside input element");
+        // console.log("You are inside input element");
         return;
       }
       pressedKeys.add(event.key.toLowerCase());
@@ -41,16 +50,68 @@ export default function useCreateAchievementViaKeyCombination({
           (pressedKeys.has("ф") && pressedKeys.has("с")))
       ) {
         const _id = generateMongoObjectId();
-        createPlotfield.mutate({
-          _id,
-          commandOrder:
-            getTopologyBlock()?.topologyBlockInfo?.amountOfCommands || 2,
-          topologyBlockId,
-          commandIfId,
-          isElse,
-          commandName: "achievement",
-        });
         createAchievement.mutate({ plotfieldCommandId: _id });
+
+        const currentTopologyBlockId = sessionStorage.getItem(
+          "focusedTopologyBlock"
+        );
+        const commandIf = sessionStorage
+          .getItem("focusedCommandIf")
+          ?.split("?")
+          .filter(Boolean);
+
+        const deepLevelCommandIf = commandIf?.includes("none")
+          ? null
+          : (commandIf?.length || 0) > 0
+          ? (commandIf?.length || 0) - 1
+          : null;
+        let isElse;
+        let commandIfId;
+        let plotfieldCommandId;
+        if (typeof deepLevelCommandIf === "number") {
+          const currentCommandIf = (commandIf || [])[deepLevelCommandIf];
+          isElse = currentCommandIf?.split("-")[0] === "else";
+          plotfieldCommandId = currentCommandIf?.split("-")[1];
+          commandIfId = currentCommandIf?.split("-")[3];
+        }
+
+        const focusedCommand = sessionStorage
+          .getItem("focusedCommand")
+          ?.split("-");
+        let commandOrder;
+        if ((focusedCommand || [])[1] !== plotfieldCommandId) {
+          commandOrder =
+            (getCommandIfByPlotfieldCommandId({
+              plotfieldCommandId: (focusedCommand || [])[1] || "",
+              commandIfId: commandIfId || "",
+              isElse: isElse || false,
+            })?.commandOrder || 0) + 1;
+        }
+
+        if (commandIfId?.trim().length) {
+          createPlotfieldInsideIf.mutate({
+            _id,
+            topologyBlockId: currentTopologyBlockId || topologyBlockId,
+            commandIfId,
+            isElse: isElse || false,
+            command: "achievement",
+            commandOrder:
+              typeof commandOrder === "number"
+                ? commandOrder
+                : getCurrentAmountOfIfCommands({
+                    commandIfId,
+                    isElse: isElse || false,
+                  }),
+          });
+        } else {
+          createPlotfield.mutate({
+            _id,
+            topologyBlockId: currentTopologyBlockId || topologyBlockId,
+            commandIfId,
+            isElse,
+            commandName: "achievement",
+          });
+        }
       }
     };
 
@@ -65,5 +126,5 @@ export default function useCreateAchievementViaKeyCombination({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [topologyBlockId]);
 }

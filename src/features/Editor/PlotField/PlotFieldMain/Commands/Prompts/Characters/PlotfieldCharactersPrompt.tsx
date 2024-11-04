@@ -1,26 +1,49 @@
+import usePlotfieldCommands from "../../../../Context/PlotFieldContext";
+import {
+  CharacterValueTypes,
+  EmotionTypes,
+} from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
+
 type EmotionCharacterNameTypes = {
-  setCharacterName: React.Dispatch<React.SetStateAction<string>>;
-  setCharacterId: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterName?: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterId?: React.Dispatch<React.SetStateAction<string>>;
   setCharacterImg?: React.Dispatch<React.SetStateAction<string>>;
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setNewlyCreated: React.Dispatch<React.SetStateAction<boolean>> | undefined;
   characterId: string;
   characterName: string;
   characterImg?: string;
+  plotfieldCommandId?: string;
+
+  commandIfId: string;
+  isElse: boolean;
+
+  currentCharacterId?: string;
+  setCharacterValue?: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
+  setEmotionValue?: React.Dispatch<React.SetStateAction<EmotionTypes>>;
 };
 
 export default function PlotfieldCharactersPrompt({
   characterId,
   characterName,
   characterImg,
-  setCharacterName,
-  setCharacterId,
+  plotfieldCommandId,
+  currentCharacterId,
+
+  commandIfId,
+  isElse,
+
   setShowCharacterModal,
+  setCharacterName,
   setCharacterImg,
+  setCharacterId,
   setNewlyCreated,
+  setEmotionValue,
+  setCharacterValue,
 }: EmotionCharacterNameTypes) {
   const theme = localStorage.getItem("theme");
-
+  const { updateCharacterProperties, updateCharacterPropertiesIf } =
+    usePlotfieldCommands();
   return (
     <>
       {characterImg ? (
@@ -28,8 +51,40 @@ export default function PlotfieldCharactersPrompt({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            setCharacterName(characterName);
-            setCharacterId(characterId);
+            if (currentCharacterId !== characterId && setEmotionValue) {
+              setEmotionValue({ _id: null, emotionName: null, imgUrl: null });
+            }
+            if (setCharacterValue) {
+              setCharacterValue({
+                _id: characterId,
+                characterName: characterName,
+                imgUrl: characterImg,
+              });
+            }
+            if (plotfieldCommandId) {
+              if (commandIfId?.trim().length) {
+                updateCharacterPropertiesIf({
+                  characterId,
+                  characterName,
+                  id: plotfieldCommandId,
+                  characterImg,
+                  isElse,
+                });
+              } else {
+                updateCharacterProperties({
+                  characterId,
+                  characterName,
+                  id: plotfieldCommandId,
+                  characterImg,
+                });
+              }
+            }
+            if (setCharacterName) {
+              setCharacterName(characterName);
+            }
+            if (setCharacterId) {
+              setCharacterId(characterId);
+            }
             setShowCharacterModal(false);
             if (setNewlyCreated) {
               setNewlyCreated(false);
@@ -58,8 +113,40 @@ export default function PlotfieldCharactersPrompt({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            setCharacterName(characterName);
-            setCharacterId(characterId);
+            if (currentCharacterId !== characterId && setEmotionValue) {
+              setEmotionValue({ _id: null, emotionName: null, imgUrl: null });
+            }
+            if (setCharacterValue) {
+              setCharacterValue({
+                _id: characterId,
+                characterName: characterName,
+                imgUrl: null,
+              });
+            }
+            if (plotfieldCommandId) {
+              if (commandIfId?.trim().length) {
+                updateCharacterPropertiesIf({
+                  characterId,
+                  characterName,
+                  id: plotfieldCommandId,
+                  characterImg,
+                  isElse,
+                });
+              } else {
+                updateCharacterProperties({
+                  characterId,
+                  characterName,
+                  id: plotfieldCommandId,
+                  characterImg,
+                });
+              }
+            }
+            if (setCharacterName) {
+              setCharacterName(characterName);
+            }
+            if (setCharacterId) {
+              setCharacterId(characterId);
+            }
             setShowCharacterModal(false);
             if (setNewlyCreated) {
               setNewlyCreated(false);

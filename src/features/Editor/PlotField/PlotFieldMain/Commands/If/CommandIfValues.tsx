@@ -1,4 +1,4 @@
-import useGetAllIfValuesByCommandIfId from "../hooks/If/Values/useGetIfValueByCommandIfId";
+import useGetAllIfValuesByCommandIfId from "../../../hooks/If/Values/useGetIfValueByCommandIfId";
 import CommandIfValueItem from "./CommandIfValueItem";
 
 type CommandIfValuesTypes = {

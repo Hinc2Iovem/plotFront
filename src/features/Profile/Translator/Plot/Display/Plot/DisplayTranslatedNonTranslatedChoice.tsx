@@ -6,7 +6,7 @@ import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationTextFieldNameChoiceTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import "../../../../../Editor/Flowchart/FlowchartStyles.css";
-import useMemoizeChoiceOptions from "../../../../../Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/ChoiceOption/useMemoizeChoiceOptions";
+import useMemoizeChoiceOptions from "../../../../../Editor/PlotField/hooks/Choice/ChoiceOption/useMemoizeChoiceOptions";
 import { CombinedTranslatedAndNonTranslatedChoiceTypes } from "../../Filters/FiltersEverythingPlotChoice";
 import DisplayTranslatedNonTranslatedChoiceOption from "./DisplayTranslatedNonTranslatedChoiceOption";
 

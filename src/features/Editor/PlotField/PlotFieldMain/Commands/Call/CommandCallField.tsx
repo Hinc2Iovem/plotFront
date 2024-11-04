@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import useGetCommandCall from "../hooks/Call/useGetCommandCall";
-import useUpdateCallText from "../hooks/Call/useUpdateCallText";
-import useGetTopologyBlockById from "../hooks/TopologyBlock/useGetTopologyBlockById";
-import useGetAllTopologyBlocksByEpisodeId from "../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useUpdateCallCommandIndex from "../hooks/Call/useUpdateCallCommandIndex";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useGetCommandCall from "../../../hooks/Call/useGetCommandCall";
+import useUpdateCallCommandIndex from "../../../hooks/Call/useUpdateCallCommandIndex";
+import useUpdateCallText from "../../../hooks/Call/useUpdateCallText";
+import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
 
 type CommandCallFieldTypes = {
   plotFieldCommandId: string;
@@ -27,6 +28,10 @@ export default function CommandCallField({
   const { data: commandCall } = useGetCommandCall({
     plotFieldCommandId,
     topologyBlockId,
+  });
+
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
   });
 
   const [commandCallId, setCommandCallId] = useState("");
@@ -60,7 +65,13 @@ export default function CommandCallField({
   return (
     <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <div className="flex gap-[.5rem] sm:w-fit w-full flex-grow">
         <ChooseReferencedCommandIndex

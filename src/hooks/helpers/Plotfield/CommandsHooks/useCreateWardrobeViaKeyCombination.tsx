@@ -1,31 +1,39 @@
 import { useEffect } from "react";
-import useTopologyBlocks from "../../../../features/Editor/Flowchart/Context/TopologyBlockContext";
-import useCreateBlankCommand from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useCreateBlankCommand";
+import useCreateBlankCommand from "../../../../features/Editor/PlotField/hooks/useCreateBlankCommand";
+import useCreateWardrobe from "../../../../features/Editor/PlotField/hooks/Wardrobe/useCreateWardrobe";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
-import useCreateWardrobe from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/Wardrobe/useCreateWardrobe";
 import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
+import { useParams } from "react-router-dom";
+import usePlotfieldCommands from "../../../../features/Editor/PlotField/Context/PlotFieldContext";
+import useCreateBlankCommandInsideIf from "../../../../features/Editor/PlotField/hooks/If/useCreateBlankCommandInsideIf";
 
 type CreateWardrobeViaKeyCombinationTypes = {
   topologyBlockId: string;
-  commandIfId: string;
-  isElse: boolean;
 };
 
 export default function useCreateWardrobeViaKeyCombination({
   topologyBlockId,
-  commandIfId,
-  isElse,
 }: CreateWardrobeViaKeyCombinationTypes) {
-  const createPlotfield = useCreateBlankCommand({ topologyBlockId });
+  const { episodeId } = useParams();
+  const createPlotfield = useCreateBlankCommand({
+    topologyBlockId,
+    episodeId: episodeId || "",
+  });
   const createWardrobe = useCreateWardrobe({ topologyBlockId });
-  const { getTopologyBlock } = useTopologyBlocks();
+
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
+    usePlotfieldCommands();
+
+  const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
+    topologyBlockId,
+  });
 
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
       const allowed = preventCreatingCommandsWhenFocus();
       if (!allowed) {
-        console.log("You are inside input element");
+        // console.log("You are inside input element");
         return;
       }
       pressedKeys.add(event.key.toLowerCase());
@@ -36,16 +44,68 @@ export default function useCreateWardrobeViaKeyCombination({
           (pressedKeys.has("ц") && pressedKeys.has("в")))
       ) {
         const _id = generateMongoObjectId();
-        createPlotfield.mutate({
-          _id,
-          commandOrder:
-            getTopologyBlock()?.topologyBlockInfo?.amountOfCommands || 2,
-          topologyBlockId,
-          commandIfId,
-          isElse,
-          commandName: "wardrobe",
-        });
         createWardrobe.mutate({ plotfieldCommandId: _id });
+
+        const currentTopologyBlockId = sessionStorage.getItem(
+          "focusedTopologyBlock"
+        );
+        const commandIf = sessionStorage
+          .getItem("focusedCommandIf")
+          ?.split("?")
+          .filter(Boolean);
+
+        const deepLevelCommandIf = commandIf?.includes("none")
+          ? null
+          : (commandIf?.length || 0) > 0
+          ? (commandIf?.length || 0) - 1
+          : null;
+        let isElse;
+        let commandIfId;
+        let plotfieldCommandId;
+        if (typeof deepLevelCommandIf === "number") {
+          const currentCommandIf = (commandIf || [])[deepLevelCommandIf];
+          isElse = currentCommandIf?.split("-")[0] === "else";
+          plotfieldCommandId = currentCommandIf?.split("-")[1];
+          commandIfId = currentCommandIf?.split("-")[3];
+        }
+
+        const focusedCommand = sessionStorage
+          .getItem("focusedCommand")
+          ?.split("-");
+        let commandOrder;
+        if ((focusedCommand || [])[1] !== plotfieldCommandId) {
+          commandOrder =
+            (getCommandIfByPlotfieldCommandId({
+              plotfieldCommandId: (focusedCommand || [])[1] || "",
+              commandIfId: commandIfId || "",
+              isElse: isElse || false,
+            })?.commandOrder || 0) + 1;
+        }
+
+        if (commandIfId?.trim().length) {
+          createPlotfieldInsideIf.mutate({
+            _id,
+            topologyBlockId: currentTopologyBlockId || topologyBlockId,
+            commandIfId,
+            isElse: isElse || false,
+            command: "wardrobe",
+            commandOrder:
+              typeof commandOrder === "number"
+                ? commandOrder
+                : getCurrentAmountOfIfCommands({
+                    commandIfId,
+                    isElse: isElse || false,
+                  }),
+          });
+        } else {
+          createPlotfield.mutate({
+            _id,
+            topologyBlockId: currentTopologyBlockId || topologyBlockId,
+            commandIfId,
+            isElse,
+            commandName: "wardrobe",
+          });
+        }
       }
     };
 

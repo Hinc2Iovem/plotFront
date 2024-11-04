@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
-import useGetCommandCutScene from "../hooks/CutScene/useGetCommandCutScene";
+import { useEffect, useRef, useState } from "react";
+import useGetCommandCutScene from "../../../hooks/CutScene/useGetCommandCutScene";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateCutSceneText from "../hooks/CutScene/useUpdateCutSceneText";
+import useUpdateCutSceneText from "../../../hooks/CutScene/useUpdateCutSceneText";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 
 type CommandCutSceneFieldTypes = {
   plotFieldCommandId: string;
@@ -20,6 +22,12 @@ export default function CommandCutSceneField({
     plotFieldCommandId,
   });
   const [commandCutSceneId, setCommandCutSceneId] = useState("");
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
+
+  const currentInput = useRef<HTMLInputElement | null>(null);
+  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
   useEffect(() => {
     if (commandCutScene) {
@@ -53,13 +61,20 @@ export default function CommandCutSceneField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
         className="sm:w-[77%] flex-grow w-full"
       >
         <PlotfieldInput
+          ref={currentInput}
           value={textValue}
           type="text"
           placeholder="Such a lovely day"

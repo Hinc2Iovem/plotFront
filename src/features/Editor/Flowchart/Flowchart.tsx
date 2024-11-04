@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import useGetAllTopologyBlocksByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import useGetAllTopologyBlocksByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
 import FlowchartArrowList from "./FlowchartArrowList";
-import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
+import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
 import "./FlowchartStyles.css";
-import useCreateTopologyBlock from "../PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useCreateTopologyBlock";
+import useCreateTopologyBlock from "../PlotField/hooks/TopologyBlock/useCreateTopologyBlock";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 
 type FlowChartTypes = {

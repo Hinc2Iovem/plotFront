@@ -8,29 +8,29 @@ import { AllPossiblePlotFieldComamndsTypes } from "../../../../types/StoryEditor
 import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
-import useCreateAchievement from "../PlotFieldMain/Commands/hooks/Achievement/useCreateAchievement";
-import useCreateAmbient from "../PlotFieldMain/Commands/hooks/Ambient/useCreateAmbient";
-import useCreateBackground from "../PlotFieldMain/Commands/hooks/Background/useCreateBackground";
-import useCreateCall from "../PlotFieldMain/Commands/hooks/Call/useCreateCall";
-import useCreateChoice from "../PlotFieldMain/Commands/hooks/Choice/useCreateChoice";
-import useCreateComment from "../PlotFieldMain/Commands/hooks/Comment/useCreateComment";
-import useCreateCondition from "../PlotFieldMain/Commands/hooks/Condition/useCreateCondition";
-import useCreateCutScene from "../PlotFieldMain/Commands/hooks/CutScene/useCreateCutScene";
-import useCreateEffect from "../PlotFieldMain/Commands/hooks/Effect/useCreateEffect";
-import useCreateGetItem from "../PlotFieldMain/Commands/hooks/GetItem/useCreateGetItem";
-import useCreateCommandIf from "../PlotFieldMain/Commands/hooks/If/useCreateCommandIf";
-import useCreateKey from "../PlotFieldMain/Commands/hooks/Key/useCreateKey";
-import useCreateMove from "../PlotFieldMain/Commands/hooks/Move/useCreateMove";
-import useCreateMusic from "../PlotFieldMain/Commands/hooks/Music/useCreateMusic";
-import useCreateName from "../PlotFieldMain/Commands/hooks/Name/useCreateName";
-import useCreateSayCommandBlank from "../PlotFieldMain/Commands/hooks/Say/useCreateSayCommandBlank";
-import useCreateSound from "../PlotFieldMain/Commands/hooks/Sound/useCreateSound";
-import useCreateSuit from "../PlotFieldMain/Commands/hooks/Suit/useCreateSuit";
-import useUpdateTopologyBlockAmountOfCommands from "../PlotFieldMain/Commands/hooks/TopologyBlock/useUpdateTopologyBlockAmountOfCommands";
-import useCreateBlankCommand from "../PlotFieldMain/Commands/hooks/useCreateBlankCommand";
-import useUpdateCommandName from "../PlotFieldMain/Commands/hooks/useUpdateCommandName";
-import useCreateWait from "../PlotFieldMain/Commands/hooks/Wait/useCreateWait";
-import useCreateWardrobe from "../PlotFieldMain/Commands/hooks/Wardrobe/useCreateWardrobe";
+import useCreateAchievement from "../hooks/Achievement/useCreateAchievement";
+import useCreateAmbient from "../hooks/Ambient/useCreateAmbient";
+import useCreateBackground from "../hooks/Background/useCreateBackground";
+import useCreateCall from "../hooks/Call/useCreateCall";
+import useCreateChoice from "../hooks/Choice/useCreateChoice";
+import useCreateComment from "../hooks/Comment/useCreateComment";
+import useCreateCondition from "../hooks/Condition/useCreateCondition";
+import useCreateCutScene from "../hooks/CutScene/useCreateCutScene";
+import useCreateEffect from "../hooks/Effect/useCreateEffect";
+import useCreateGetItem from "../hooks/GetItem/useCreateGetItem";
+import useCreateCommandIf from "../hooks/If/useCreateCommandIf";
+import useCreateKey from "../hooks/Key/useCreateKey";
+import useCreateMove from "../hooks/Move/useCreateMove";
+import useCreateMusic from "../hooks/Music/useCreateMusic";
+import useCreateName from "../hooks/Name/useCreateName";
+import useCreateSayCommandBlank from "../hooks/Say/useCreateSayCommandBlank";
+import useCreateSound from "../hooks/Sound/useCreateSound";
+import useCreateSuit from "../hooks/Suit/useCreateSuit";
+import useUpdateTopologyBlockAmountOfCommands from "../hooks/TopologyBlock/useUpdateTopologyBlockAmountOfCommands";
+import useCreateBlankCommand from "../hooks/useCreateBlankCommand";
+import useUpdateCommandName from "../hooks/useUpdateCommandName";
+import useCreateWait from "../hooks/Wait/useCreateWait";
+import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 import useTopologyBlocks from "../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../Flowchart/utils/makeTopologyBlockName";
 import useConditionBlocks from "../PlotFieldMain/Commands/Condition/Context/ConditionContext";
@@ -48,8 +48,10 @@ export default function CreatingCommandViaButtonClick({
 }: CreatingCommandViaButtonClickTypes) {
   const { storyId } = useParams();
   const { episodeId } = useParams();
-  const { getCurrentAmountOfCommands, updateCommandInfo } =
-    usePlotfieldCommands();
+  const currentlyFocusedTopologyBlock = sessionStorage.getItem(
+    "focusedTopologyBlock"
+  );
+  const { updateCommandInfo } = usePlotfieldCommands();
   const { addConditionBlock } = useConditionBlocks();
   const { getTopologyBlock } = useTopologyBlocks();
   // const { data: translatedCharacters } = useGetTranslationCharacters({
@@ -89,11 +91,15 @@ export default function CreatingCommandViaButtonClick({
   //   }
   // }, [allCharacterNames, characterName]);
 
-  const newPlotFieldCommand = useCreateBlankCommand({ topologyBlockId });
+  const newPlotFieldCommand = useCreateBlankCommand({
+    topologyBlockId,
+    episodeId: episodeId || "",
+  });
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
     value,
+    topologyBlockId: currentlyFocusedTopologyBlock || "",
   });
 
   const createSayCommand = useCreateSayCommandBlank({
@@ -314,7 +320,6 @@ export default function CreatingCommandViaButtonClick({
         const _id = generateMongoObjectId();
         newPlotFieldCommand.mutate({
           _id,
-          commandOrder: getCurrentAmountOfCommands({ topologyBlockId }),
           topologyBlockId,
         });
         updateCommandInfo({ topologyBlockId, addOrMinus: "add" });

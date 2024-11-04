@@ -6,10 +6,15 @@ import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import PlotfieldCharactersPrompt from "./PlotfieldCharactersPrompt";
 import { DebouncedCheckCharacterTypes } from "../../Choice/ChoiceQuestionField";
+import usePlotfieldCommands from "../../../../Context/PlotFieldContext";
+import {
+  CharacterValueTypes,
+  EmotionTypes,
+} from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 type PlotfieldCharacterPromptMainTypes = {
-  setCharacterName: React.Dispatch<React.SetStateAction<string>>;
-  setCharacterId: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterName?: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterId?: React.Dispatch<React.SetStateAction<string>>;
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCharacterImg?: React.Dispatch<React.SetStateAction<string>>;
   setNewlyCreated?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,12 +22,22 @@ type PlotfieldCharacterPromptMainTypes = {
   characterValue: string;
   translateAsideValue: string;
   debouncedValue?: string;
+  plotfieldCommandId?: string;
+  currentCharacterId?: string;
+  setCharacterValue?: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
+  setEmotionValue?: React.Dispatch<React.SetStateAction<EmotionTypes>>;
   setDebouncedCharacter?: React.Dispatch<
     React.SetStateAction<DebouncedCheckCharacterTypes | null>
   >;
+
+  commandIfId: string;
+  isElse: boolean;
 };
 
 export default function PlotfieldCharacterPromptMain({
+  setCharacterValue,
+  setEmotionValue,
+  currentCharacterId,
   setCharacterName,
   setCharacterId,
   setCharacterImg,
@@ -33,11 +48,21 @@ export default function PlotfieldCharacterPromptMain({
   showCharacterModal,
   characterValue,
   translateAsideValue,
+  plotfieldCommandId,
+
+  commandIfId,
+  isElse,
 }: PlotfieldCharacterPromptMainTypes) {
   const { storyId } = useParams();
   const modalRef = useRef<HTMLDivElement>(null);
   const theme = localStorage.getItem("theme");
+  const {
+    updateCharacterProperties,
+    updateEmotionProperties,
 
+    updateCharacterPropertiesIf,
+    updateEmotionPropertiesIf,
+  } = usePlotfieldCommands();
   const { data: allTranslatedCharacters } = useGetTranslationCharacters({
     storyId: storyId || "",
     language: "russian",
@@ -69,9 +94,15 @@ export default function PlotfieldCharacterPromptMain({
 
   const filteredCharacters = useMemo(() => {
     if (combinedCharacters) {
-      return combinedCharacters.filter((cc) =>
-        cc?.characterName?.toLowerCase().includes(characterValue?.toLowerCase())
-      );
+      if (characterValue?.trim().length) {
+        return combinedCharacters.filter((cc) =>
+          cc?.characterName
+            ?.toLowerCase()
+            .includes(characterValue?.toLowerCase())
+        );
+      } else {
+        return combinedCharacters;
+      }
     } else {
       return [];
     }
@@ -90,10 +121,87 @@ export default function PlotfieldCharacterPromptMain({
         console.log("Non-existing character");
         return;
       }
+
       const character = allCharacters?.find(
         (c) => c._id === tranlsatedCharacter?.characterId
       );
 
+      if (
+        setEmotionValue &&
+        currentCharacterId?.trim().length &&
+        currentCharacterId !== character?._id
+      ) {
+        setEmotionValue({
+          _id: null,
+          emotionName: null,
+          imgUrl: null,
+        });
+
+        if (commandIfId?.trim().length) {
+          updateEmotionPropertiesIf({
+            emotionId: "",
+            emotionName: "",
+            id: plotfieldCommandId || "",
+            emotionImg: "",
+            isElse,
+          });
+        } else {
+          updateEmotionProperties({
+            emotionId: "",
+            emotionName: "",
+            id: plotfieldCommandId || "",
+            emotionImg: "",
+          });
+        }
+      }
+
+      if (setCharacterValue) {
+        setCharacterValue({
+          _id: character?._id || null,
+          characterName:
+            tranlsatedCharacter?.translations?.find(
+              (t) => t.textFieldName === "characterName"
+            )?.text || null,
+          imgUrl: character?.img || null,
+        });
+      }
+
+      if (setCharacterId) {
+        setCharacterId(character?._id || "");
+      }
+      if (setCharacterName) {
+        setCharacterName(
+          tranlsatedCharacter?.translations?.find(
+            (t) => t.textFieldName === "characterName"
+          )?.text || ""
+        );
+      }
+      if (setCharacterImg) {
+        setCharacterImg(character?.img || "");
+      }
+
+      if (commandIfId?.trim().length) {
+        updateCharacterPropertiesIf({
+          characterId: character?._id || "",
+          characterName:
+            tranlsatedCharacter?.translations?.find(
+              (t) => t.textFieldName === "characterName"
+            )?.text || "",
+          id: plotfieldCommandId || "",
+          characterImg: character?.img || "",
+          isElse,
+        });
+      } else {
+        updateCharacterProperties({
+          characterId: character?._id || "",
+          characterName:
+            tranlsatedCharacter?.translations?.find(
+              (t) => t.textFieldName === "characterName"
+            )?.text || "",
+          id: plotfieldCommandId || "",
+          characterImg: character?.img || "",
+        });
+      }
       if (setDebouncedCharacter) {
         setDebouncedCharacter({
           characterId: character?._id || "",
@@ -129,6 +237,12 @@ export default function PlotfieldCharacterPromptMain({
             setCharacterImg={setCharacterImg}
             setShowCharacterModal={setShowCharacterModal}
             setNewlyCreated={setNewlyCreated}
+            plotfieldCommandId={plotfieldCommandId}
+            setCharacterValue={setCharacterValue}
+            setEmotionValue={setEmotionValue}
+            currentCharacterId={currentCharacterId}
+            commandIfId={commandIfId}
+            isElse={isElse}
             {...c}
           />
         ))

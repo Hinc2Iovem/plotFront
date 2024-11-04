@@ -3,7 +3,7 @@ import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { ChoiceOptionTranslationsTypes } from "../../../../../../types/Additional/TranslationTypes";
 import { ChoiceOptionVariationsTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import useUpdateChoiceOptionTranslationText from "../../../../../Editor/PlotField/PlotFieldMain/Commands/hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
+import useUpdateChoiceOptionTranslationText from "../../../../../Editor/PlotField/hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
 
 type DisplayTranslatedNonTranslatedChoiceOptionTypes = {
   currentLanguage: CurrentlyAvailableLanguagesTypes;

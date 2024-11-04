@@ -1,17 +1,22 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import useCreateEmotion from "../../../../../../../../../hooks/Posting/Emotion/useCreateEmotion";
 import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
-import { EmotionsTypes } from "../../../../../../../../../types/StoryData/Character/CharacterTypes";
-import useUpdateNameOrEmotion from "../../../../hooks/Say/useUpdateNameOrEmotion";
-import { useQueryClient } from "@tanstack/react-query";
+import usePlotfieldCommands from "../../../../../../Context/PlotFieldContext";
+import useUpdateNameOrEmotion from "../../../../../../hooks/Say/useUpdateNameOrEmotion";
+import { EmotionTypes } from "../CommandSayCharacterFieldItem";
 
 type CommandSayCreateEmotionFieldModalTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   showModal: boolean;
-  emotionName: EmotionsTypes | null;
+  emotionName: string;
   characterId: string;
   plotFieldCommandId: string;
   plotFieldCommandSayId: string;
+  setEmotionValue: React.Dispatch<React.SetStateAction<EmotionTypes>>;
+
+  commandIfId: string;
+  isElse: boolean;
 };
 
 export default function CommandSayCreateEmotionFieldModal({
@@ -21,11 +26,17 @@ export default function CommandSayCreateEmotionFieldModal({
   characterId,
   plotFieldCommandId,
   plotFieldCommandSayId,
+  setEmotionValue,
+
+  commandIfId,
+  isElse,
 }: CommandSayCreateEmotionFieldModalTypes) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
   const queryClient = useQueryClient();
   const [newEmotionId, setNewEmotionId] = useState("");
+  const { updateEmotionProperties, updateEmotionPropertiesIf } =
+    usePlotfieldCommands();
 
   useEffect(() => {
     if (showModal) {
@@ -34,7 +45,7 @@ export default function CommandSayCreateEmotionFieldModal({
   }, [showModal]);
 
   const createEmotion = useCreateEmotion({
-    emotionName: emotionName?.emotionName || "",
+    emotionName: emotionName || "",
     characterId,
   });
 
@@ -51,7 +62,28 @@ export default function CommandSayCreateEmotionFieldModal({
     if (createEmotion.status === "success") {
       console.log("happened?");
       const lastEmotion = createEmotion.data.emotions.length;
+      setEmotionValue((prev) => ({
+        _id: createEmotion.data.emotions[lastEmotion - 1]._id || "",
+        emotionName: prev.emotionName,
+        imgUrl: null,
+      }));
       setNewEmotionId(createEmotion.data.emotions[lastEmotion - 1]._id || "");
+      if (commandIfId?.trim().length) {
+        updateEmotionPropertiesIf({
+          emotionId: createEmotion.data.emotions[lastEmotion - 1]._id || "",
+          emotionImg: "",
+          emotionName: emotionName || "",
+          id: plotFieldCommandId,
+          isElse,
+        });
+      } else {
+        updateEmotionProperties({
+          emotionId: createEmotion.data.emotions[lastEmotion - 1]._id || "",
+          emotionImg: "",
+          emotionName: emotionName || "",
+          id: plotFieldCommandId,
+        });
+      }
     }
   }, [createEmotion]);
 
@@ -64,7 +96,7 @@ export default function CommandSayCreateEmotionFieldModal({
 
   useEffect(() => {
     if (newEmotionId?.trim().length) {
-      updateNameOrEmotion.mutate();
+      updateNameOrEmotion.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newEmotionId]);

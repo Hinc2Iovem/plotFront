@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
-import useCreateCharacterBlank from "../hooks/Character/useCreateCharacterBlank";
-import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
-import useUpdateCommandName from "../hooks/useUpdateCommandName";
+import useCreateCharacterBlank from "../../../hooks/Character/useCreateCharacterBlank";
+import useCreateSayCommand from "../../../hooks/Say/useCreateSayCommand";
+import useUpdateCommandName from "../../../hooks/useUpdateCommandName";
 
 type PlotFieldBlankCreateCharacterTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -27,6 +27,9 @@ export default function PlotFieldBlankCreateCharacter({
   isElse,
 }: PlotFieldBlankCreateCharacterTypes) {
   const { storyId } = useParams();
+  const currentlyFocusedTopologyBlock = sessionStorage.getItem(
+    "focusedTopologyBlock"
+  );
   const {
     updateCommandName: updateCommandNameOptimistic,
     updateCommandIfName: updateCommandIfNameOptimistic,
@@ -59,10 +62,12 @@ export default function PlotFieldBlankCreateCharacter({
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
     value: characterName,
+    topologyBlockId: currentlyFocusedTopologyBlock || "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (commandIfId?.trim().length) {
       updateCommandIfNameOptimistic({
         id: plotFieldCommandId,

@@ -30,147 +30,51 @@ type HandleAllCommandsCreatedViaKeyCombinationTypes = {
 export default function useHandleAllCommandsCreatedViaKeyCombination({
   topologyBlockId,
 }: HandleAllCommandsCreatedViaKeyCombinationTypes) {
-  useCreateAchievementViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateAchievementViaKeyCombination({ topologyBlockId });
 
-  useCreateAmbientViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateAmbientViaKeyCombination({ topologyBlockId });
 
-  useCreateBackgroundViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateBackgroundViaKeyCombination({ topologyBlockId });
 
-  useCreateCallViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateCallViaKeyCombination({ topologyBlockId });
 
-  useCreateChoiceViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateChoiceViaKeyCombination({ topologyBlockId });
 
-  useCreateCommentViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateCommentViaKeyCombination({ topologyBlockId });
 
-  useCreateCutSceneViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateCutSceneViaKeyCombination({ topologyBlockId });
 
-  useCreateEffectViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateEffectViaKeyCombination({ topologyBlockId });
 
-  useCreateGetItemViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateGetItemViaKeyCombination({ topologyBlockId });
 
-  useCreateIfViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateIfViaKeyCombination({ topologyBlockId });
 
-  useCreateKeyViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateKeyViaKeyCombination({ topologyBlockId });
 
-  useCreateMoveViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateMoveViaKeyCombination({ topologyBlockId });
 
-  useCreateMusicViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateMusicViaKeyCombination({ topologyBlockId });
 
-  useCreateNameViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateNameViaKeyCombination({ topologyBlockId });
 
-  useCreateSoundViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateSoundViaKeyCombination({ topologyBlockId });
 
-  useCreateSuitViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateSuitViaKeyCombination({ topologyBlockId });
 
-  useCreateWaitViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateWaitViaKeyCombination({ topologyBlockId });
 
-  useCreateWardrobeViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateWardrobeViaKeyCombination({ topologyBlockId });
 
-  useCreateAuthorViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateAuthorViaKeyCombination({ topologyBlockId });
 
-  useCreateHintViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateHintViaKeyCombination({ topologyBlockId });
 
-  useCreateNotifyViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateNotifyViaKeyCombination({ topologyBlockId });
 
-  useCreateCharacterViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateCharacterViaKeyCombination({ topologyBlockId });
 
-  useCreateConditionViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateConditionViaKeyCombination({ topologyBlockId });
 
-  useCreateCertainCharacterViaKeyCombination({
-    commandIfId: "",
-    isElse: false,
-    topologyBlockId,
-  });
+  useCreateCertainCharacterViaKeyCombination({ topologyBlockId });
 }

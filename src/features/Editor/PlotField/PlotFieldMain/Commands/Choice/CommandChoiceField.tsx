@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import { ChoiceVariationsTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import useGetCommandChoice from "../hooks/Choice/useGetCommandChoice";
-import useUpdateChoiceIsAuthor from "../hooks/Choice/useUpdateChoiceIsAuthor";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useCheckIfShowingPlotfieldInsideChoiceOnMount from "../../../hooks/Choice/helpers/useCheckIfShowingPlotfieldInsideChoiceOnMount";
+import useGoingDownInsideChoiceOption from "../../../hooks/Choice/helpers/useGoingDownInsideChoiceOption";
+import useGetCommandChoice from "../../../hooks/Choice/useGetCommandChoice";
+import useUpdateChoiceIsAuthor from "../../../hooks/Choice/useUpdateChoiceIsAuthor";
 import ChoiceQuestionField from "./ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./ChoiceVariationTypeBlock";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useHandleNavigationThroughOptionsInsideChoice from "../../../hooks/Choice/helpers/useHandleNavigationThroughOptionsInsideChoice";
+import useGoingUpFromChoiceOptions from "../../../hooks/Choice/helpers/useGoingUpFromChoiceOption";
 
 type CommandChoiceFieldTypes = {
   plotFieldCommandId: string;
@@ -20,7 +25,6 @@ export default function CommandChoiceField({
 }: CommandChoiceFieldTypes) {
   const [timeLimit, setTimeLimit] = useState<number>(0);
   const [exitBlockId, setExitBlockId] = useState("");
-  const [showCopyCursor, setShowCopyCursor] = useState(false);
   const theme = localStorage.getItem("theme");
   const [nameValue] = useState<string>(command ?? "Choice");
   const [commandChoiceId, setCommandChoiceId] = useState("");
@@ -32,6 +36,36 @@ export default function CommandChoiceField({
     useState<ChoiceVariationsTypes>("" as ChoiceVariationsTypes);
   const { data: commandChoice } = useGetCommandChoice({
     plotFieldCommandId,
+  });
+
+  const [isFocusedBackground, setIsFocusedBackground] = useState(false);
+  const [showOptionPlot, setShowOptionPlot] = useState(false);
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
+
+  useCheckIfShowingPlotfieldInsideChoiceOnMount({
+    plotFieldCommandId: plotFieldCommandId,
+    setIsFocusedBackground,
+    setShowChoiceBlockPlot: setShowOptionPlot,
+  });
+
+  useGoingDownInsideChoiceOption({
+    choiceId: commandChoiceId,
+    plotfieldCommandId: plotFieldCommandId,
+    setIsFocusedBackground,
+    setShowChoiceOptionPlot: setShowOptionPlot,
+  });
+
+  useGoingUpFromChoiceOptions({
+    choiceId: commandChoiceId,
+    plotfieldCommandId: plotFieldCommandId,
+    setIsFocusedBackground,
+    setShowChoiceOptionPlot: setShowOptionPlot,
+  });
+
+  useHandleNavigationThroughOptionsInsideChoice({
+    plotfieldCommandId: plotFieldCommandId,
   });
 
   useEffect(() => {
@@ -69,36 +103,16 @@ export default function CommandChoiceField({
     }
   }, [updateChoiceIsAuthor]);
 
-  // const createChoiceDuplicate = useCreateChoice({
-  //   plotFieldCommandId,
-  //   topologyBlockId,
-  // });
-  // const fillChoiceDuplicateWithData = useUpdateChoice({
-  //   choiceId: commandChoiceId,
-  // });
-
   return (
-    <div
-      onMouseMoveCapture={(e) => {
-        if (e.ctrlKey) {
-          setShowCopyCursor(true);
-        } else {
-          setShowCopyCursor(false);
-        }
-      }}
-      onClick={() => {
-        // if (showCopyCursor) {
-        //   handleCopyingCommand();
-        // }
-      }}
-      onMouseLeave={() => {
-        setShowCopyCursor(false);
-      }}
-      className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-start"
-      style={{ cursor: showCopyCursor ? "cell" : "" }}
-    >
+    <div className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-start">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
 
       <ChoiceVariationTypeBlock
@@ -135,6 +149,7 @@ export default function CommandChoiceField({
       </button>
 
       <ChoiceQuestionField
+        textStyle={commandChoice?.textStyle || "default"}
         topologyBlockId={topologyBlockId}
         plotFieldCommandId={plotFieldCommandId}
         characterEmotionId={commandChoice?.characterEmotionId || ""}
@@ -150,6 +165,10 @@ export default function CommandChoiceField({
           amountOfOptions={amountOfOptions || 0}
           plotFieldCommandId={plotFieldCommandId}
           currentTopologyBlockId={topologyBlockId}
+          setShowOptionPlot={setShowOptionPlot}
+          setIsFocusedBackground={setIsFocusedBackground}
+          showOptionPlot={showOptionPlot}
+          isFocusedBackground={isFocusedBackground}
         />
       ) : null}
     </div>

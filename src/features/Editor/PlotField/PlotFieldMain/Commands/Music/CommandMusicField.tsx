@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useGetAllMusicByStoryId from "../hooks/Music/useGetAllMusicByStoryId";
-import useGetCommandMusic from "../hooks/Music/useGetCommandMusic";
-import useGetMusicById from "../hooks/Music/useGetMusicById";
-import useUpdateMusicText from "../hooks/Music/useUpdateMusicText";
-import "../Prompts/promptStyles.css";
-import CreateMusicField from "./CreateMusicField";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
+import useGetCommandMusic from "../../../hooks/Music/useGetCommandMusic";
+import useGetMusicById from "../../../hooks/Music/useGetMusicById";
+import useUpdateMusicText from "../../../hooks/Music/useUpdateMusicText";
+import "../Prompts/promptStyles.css";
+import CreateMusicField from "./CreateMusicField";
 
 type CommandMusicFieldTypes = {
   plotFieldCommandId: string;
@@ -27,6 +28,9 @@ export default function CommandMusicField({
   const [showMusicDropDown, setShowMusicDropDown] = useState(false);
   const [showCreateMusicModal, setShowCreateMusicModal] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
 
   const { data: allMusic } = useGetAllMusicByStoryId({
     storyId: storyId ?? "",
@@ -106,7 +110,13 @@ export default function CommandMusicField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <div
         className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}

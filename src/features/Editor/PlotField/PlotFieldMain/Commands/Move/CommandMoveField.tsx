@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import useGetCommandMove from "../hooks/Move/useGetCommandMove";
-import useUpdateMoveText from "../hooks/Move/useUpdateMoveText";
+import { useEffect, useRef, useState } from "react";
+import useGetCommandMove from "../../../hooks/Move/useGetCommandMove";
+import useUpdateMoveText from "../../../hooks/Move/useUpdateMoveText";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 
 type CommandMoveFieldTypes = {
   plotFieldCommandId: string;
@@ -21,6 +23,13 @@ export default function CommandMoveField({
   const { data: commandMove } = useGetCommandMove({
     plotFieldCommandId,
   });
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
+
+  const currentInput = useRef<HTMLInputElement | null>(null);
+  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
+
   const [commandMoveId, setCommandMoveId] = useState("");
 
   useEffect(() => {
@@ -55,13 +64,20 @@ export default function CommandMoveField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
         className="sm:w-[77%] flex-grow w-full"
       >
         <PlotfieldInput
+          ref={currentInput}
           value={moveValue || ""}
           type="text"
           placeholder="Such a lovely day"

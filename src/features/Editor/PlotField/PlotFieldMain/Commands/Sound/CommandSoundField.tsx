@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useGetAllSoundByStoryIdAndIsGlobal from "../hooks/Sound/useGetAllSoundsByStoryIdAndIsGlobal";
-import useGetCommandSound from "../hooks/Sound/useGetCommandSound";
-import useGetSoundById from "../hooks/Sound/useGetSoundById";
-import useUpdateSoundText from "../hooks/Sound/useUpdateSoundText";
-import "../Prompts/promptStyles.css";
-import CreateSoundField from "./CreateSoundField";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useGetAllSoundByStoryIdAndIsGlobal from "../../../hooks/Sound/useGetAllSoundsByStoryIdAndIsGlobal";
+import useGetCommandSound from "../../../hooks/Sound/useGetCommandSound";
+import useGetSoundById from "../../../hooks/Sound/useGetSoundById";
+import useUpdateSoundText from "../../../hooks/Sound/useUpdateSoundText";
+import "../Prompts/promptStyles.css";
+import CreateSoundField from "./CreateSoundField";
 
 type CommandSoundFieldTypes = {
   plotFieldCommandId: string;
@@ -28,6 +29,9 @@ export default function CommandSoundField({
   const [soundName, setSoundName] = useState<string>("");
   const { data: allSound } = useGetAllSoundByStoryIdAndIsGlobal({
     storyId: storyId ?? "",
+  });
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
   });
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -104,7 +108,13 @@ export default function CommandSoundField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <div
         className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}

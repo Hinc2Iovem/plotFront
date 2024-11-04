@@ -36,6 +36,11 @@ export default function PlotfieldItemInsideIf({
   characterId,
   characterName,
   sayType,
+  commandSide,
+  characterImg,
+  emotionId,
+  emotionImg,
+  emotionName,
 }: PlotFieldItemTypes) {
   return (
     <li
@@ -61,6 +66,13 @@ export default function PlotfieldItemInsideIf({
           characterId={characterId}
           characterName={characterName}
           sayType={sayType}
+          commandIfId={commandIfId}
+          characterImg={characterImg}
+          emotionId={emotionId}
+          emotionImg={emotionImg}
+          emotionName={emotionName}
+          isElse={isElse}
+          commandSide={commandSide}
         />
       ) : command === "achievement" ? (
         <CommandAchievementField
@@ -129,6 +141,9 @@ export default function PlotfieldItemInsideIf({
       ) : command === "comment" ? (
         <CommandCommentField command={command} plotFieldCommandId={_id} />
       ) : null}
+      {/* <span className="w-[3rem] bg-green-400 text-center text-text-light rounded-md text-[1.5rem]">
+        {commandOrder}
+      </span> */}
     </li>
   );
 }

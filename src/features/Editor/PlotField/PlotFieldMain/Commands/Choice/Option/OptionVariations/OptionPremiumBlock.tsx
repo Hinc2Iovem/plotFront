@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import useUpdateChoiceOption from "../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
-import useGetPremiumOption from "../../../hooks/Choice/ChoiceOptionVariation/useGetPremiumOption";
+import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
+import useGetPremiumOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetPremiumOption";
 
 type OptionPremiumBlockTypes = {
   choiceOptionId: string;

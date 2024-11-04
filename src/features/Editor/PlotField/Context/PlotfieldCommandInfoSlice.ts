@@ -5,15 +5,11 @@ type CommandsInfo = {
   topologyBlockId: string;
 };
 
-type UpdateCommandInfoSignType = "add" | "minus";
+export type UpdateCommandInfoSignType = "add" | "minus";
 
 export type PlotfieldCommandInfoSliceTypes = {
   commandsInfo: CommandsInfo[];
-  getCurrentAmountOfCommands: ({
-    topologyBlockId,
-  }: {
-    topologyBlockId: string;
-  }) => number;
+
   setCurrentAmountOfCommands: ({
     amountOfCommands,
     topologyBlockId,
@@ -35,7 +31,7 @@ export const createPlotfieldCommandInfoSlice: StateCreator<
   [],
   [],
   PlotfieldCommandInfoSliceTypes
-> = (set, get) => ({
+> = (set) => ({
   commandsInfo: [],
   setCurrentAmountOfCommands: ({ topologyBlockId, amountOfCommands }) =>
     set((state) => {
@@ -60,12 +56,7 @@ export const createPlotfieldCommandInfoSlice: StateCreator<
         ],
       };
     }),
-  getCurrentAmountOfCommands: ({ topologyBlockId }) => {
-    const currentAmount =
-      get().commandsInfo.find((c) => c.topologyBlockId === topologyBlockId)
-        ?.amountOfCommands || 1;
-    return currentAmount;
-  },
+
   updateCommandInfo: ({ topologyBlockId, addOrMinus }) =>
     set((state) => ({
       commandsInfo: state.commandsInfo.map((c) =>

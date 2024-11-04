@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useGetCommandSuit from "../hooks/Suit/useGetCommandSuit";
-import useUpdateSuitText from "../hooks/Suit/useUpdateSuitText";
-import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
+import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
+import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 
 type CommandSuitFieldTypes = {
   plotFieldCommandId: string;
@@ -23,10 +24,13 @@ export default function CommandSuitField({
   const [currentCharacterImg, setCurrentCharacterImg] = useState("");
   const [currentCharacterName, setCurrentCharacterName] = useState("");
   const [showCharacterList, setShowCharacterList] = useState(false);
-
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
   const { data: commandSuit } = useGetCommandSuit({
     plotFieldCommandId,
   });
+
   const [commandSuitId, setCommandSuitId] = useState("");
 
   const { data: character } = useGetCharacterById({
@@ -88,7 +92,13 @@ export default function CommandSuitField({
   return (
     <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => {
@@ -126,6 +136,8 @@ export default function CommandSuitField({
           setShowCharacterModal={setShowCharacterList}
           showCharacterModal={showCharacterList}
           setCharacterImg={setCurrentCharacterImg}
+          commandIfId=""
+          isElse={false}
         />
       </form>
 

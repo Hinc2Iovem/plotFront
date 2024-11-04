@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
+import useUpdateConditionValue from "../../../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import useConditionBlocks from "../../Context/ConditionContext";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
 import useGetTranslationAppearancePartsByStoryId from "../../../../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";

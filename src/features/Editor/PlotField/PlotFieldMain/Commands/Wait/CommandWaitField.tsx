@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import useGetCommandWait from "../hooks/Wait/useGetCommandWait";
-import useUpdateWaitText from "../hooks/Wait/useUpdateWaitText";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useGetCommandWait from "../../../hooks/Wait/useGetCommandWait";
+import useUpdateWaitText from "../../../hooks/Wait/useUpdateWaitText";
 
 type CommandWaitFieldTypes = {
   plotFieldCommandId: string;
@@ -16,6 +17,9 @@ export default function CommandWaitField({
   const [nameValue] = useState<string>(command ?? "Wait");
   const [waitValue, setWaitValue] = useState("");
   const { data: commandWait } = useGetCommandWait({
+    plotFieldCommandId,
+  });
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
   const [commandWaitId, setCommandWaitId] = useState("");
@@ -48,7 +52,13 @@ export default function CommandWaitField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}

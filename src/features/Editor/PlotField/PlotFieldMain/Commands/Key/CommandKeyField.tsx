@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
-import useGetCommandKey from "../hooks/Key/useGetCommandKey";
+import { useEffect, useRef, useState } from "react";
+import useGetCommandKey from "../../../hooks/Key/useGetCommandKey";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateKeyText from "../hooks/Key/useUpdateKeyText";
+import useUpdateKeyText from "../../../hooks/Key/useUpdateKeyText";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 
 type CommandKeyFieldTypes = {
   plotFieldCommandId: string;
@@ -19,6 +21,12 @@ export default function CommandKeyField({
   const { data: commandKey } = useGetCommandKey({
     plotFieldCommandId,
   });
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
+  const currentInput = useRef<HTMLInputElement | null>(null);
+  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
+
   const [commandKeyId, setCommandKeyId] = useState("");
 
   useEffect(() => {
@@ -50,13 +58,20 @@ export default function CommandKeyField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
         className="sm:w-[77%] flex-grow w-full"
       >
         <PlotfieldInput
+          ref={currentInput}
           value={textValue}
           type="text"
           placeholder="Such a lovely day"

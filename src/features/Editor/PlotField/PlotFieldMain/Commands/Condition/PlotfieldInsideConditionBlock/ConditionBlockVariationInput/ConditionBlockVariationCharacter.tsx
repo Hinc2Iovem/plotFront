@@ -3,7 +3,7 @@ import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import { DebouncedCheckCharacterTypes } from "../../../Choice/ChoiceQuestionField";
-import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
+import useUpdateConditionValue from "../../../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useConditionBlocks from "../../Context/ConditionContext";
 import ConditionSignField from "./ConditionSignField";
@@ -46,7 +46,8 @@ export default function ConditionBlockVariationCharacter({
   const [debouncedCharacter, setDebouncedCharacter] =
     useState<DebouncedCheckCharacterTypes | null>(null);
   const [characterId, setCharacterId] = useState("");
-  console.log(characterId);
+
+  console.log(characterId === "1" ? characterId : "");
 
   // const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
 
@@ -137,6 +138,8 @@ export default function ConditionBlockVariationCharacter({
             debouncedValue={debouncedConditionName}
             setCharacterImg={setCharacterImg}
             setDebouncedCharacter={setDebouncedCharacter}
+            commandIfId=""
+            isElse={false}
           />
           {/* <AsideScrollable
             ref={modalRef}

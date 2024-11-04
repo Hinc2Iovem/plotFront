@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useCreateWardrobeAppearanceTypeBlock from "../hooks/Wardrobe/WardrobeAppearancePartBlock/useCreateWardrobeAppearanceTypeBlock";
+import useCreateWardrobeAppearanceTypeBlock from "../../../hooks/Wardrobe/WardrobeAppearancePartBlock/useCreateWardrobeAppearanceTypeBlock";
 import PlotfieldAppearancePartPromptMain from "../Prompts/AppearanceParts/PlotfieldAppearancePartPromptMain";
 import CommandWardrobeChoosingAppearanceType from "./CommandWardrobeChoosingAppearanceType";
 import CommandWardrobeCharacter from "./CommandWardrobeCharacter";

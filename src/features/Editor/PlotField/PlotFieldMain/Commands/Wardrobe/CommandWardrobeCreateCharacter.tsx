@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCreateCharacterBlank from "../hooks/Character/useCreateCharacterBlank";
+import useCreateCharacterBlank from "../../../hooks/Character/useCreateCharacterBlank";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useUpdateWardrobeCurrentDressedAndCharacterId from "../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
+import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
 
 type CommandSayCreateCharacterFieldTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;

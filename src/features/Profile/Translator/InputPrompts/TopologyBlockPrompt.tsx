@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
-import useGetAllTopologyBlocksByEpisodeId from "../../../Editor/PlotField/PlotFieldMain/Commands/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import useGetAllTopologyBlocksByEpisodeId from "../../../Editor/PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 
 type TopologyBlockPromptTypes = {
   setTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;

@@ -5,7 +5,7 @@ import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Tra
 import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
-import useUpdateWardrobeCurrentDressedAndCharacterId from "../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
+import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
 import CommandWardrobeCreateCharacter from "./CommandWardrobeCreateCharacter";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
@@ -130,7 +130,7 @@ export default function CommandWardrobeCharacter({
           alt="CharacterImg"
           className={`${
             characterImg?.trim().length ? "" : "hidden"
-          } w-[3rem] object-cover rounded-md self-end`}
+          } w-[3rem] object-cover rounded-md right-0 top-[1.5px] absolute`}
         />
         <PlotfieldCharacterPromptMain
           characterValue={characterName}
@@ -141,6 +141,8 @@ export default function CommandWardrobeCharacter({
           setShowCharacterModal={setShowCharacterModal}
           showCharacterModal={showCharacterModal}
           setCharacterImg={setCharacterImg}
+          commandIfId=""
+          isElse={false}
         />
       </form>
       <CommandWardrobeCreateCharacter

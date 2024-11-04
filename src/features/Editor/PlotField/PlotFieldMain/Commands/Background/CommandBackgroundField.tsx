@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useGetCommandBackground from "../hooks/Background/useGetCommandBackground";
-import useUpdateBackgroundText from "../hooks/Background/useUpdateBackgroundText";
+import useGetCommandBackground from "../../../hooks/Background/useGetCommandBackground";
+import useUpdateBackgroundText from "../../../hooks/Background/useUpdateBackgroundText";
 import BackgroundMusicForm from "./BackgroundMusicForm";
 import BackgroundNameAndImage from "./BackgroundNameAndImage";
 import BackgroundPointOfMovement from "./BackgroundPointOfMovement";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 
 type CommandBackgroundFieldTypes = {
   plotFieldCommandId: string;
@@ -24,6 +25,10 @@ export default function CommandBackgroundField({
   const { data: commandBackground } = useGetCommandBackground({
     plotFieldCommandId,
   });
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
+
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>("");
   const [commandBackgroundId, setCommandBackgroundId] = useState("");
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -75,7 +80,13 @@ export default function CommandBackgroundField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField>{nameValue}</PlotfieldCommandNameField>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
+          }`}
+        >
+          {nameValue}
+        </PlotfieldCommandNameField>
       </div>
       <BackgroundNameAndImage
         backgroundName={backgroundName}

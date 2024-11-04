@@ -15,23 +15,11 @@ import Wardrobe from "./features/Wardrobe/Wardrobe";
 import AuthLayout from "./layouts/AuthLayout";
 import ProfileLayout from "./layouts/ProfileLayout";
 import StoryLayout from "./layouts/StoryLayout";
-import { useEffect } from "react";
 import KeyBinds from "./features/StorySinglePage/KeyBinds/KeyBinds";
+import useHandleTheme from "./hooks/helpers/useHandleTheme";
 
 export default function App() {
-  useEffect(() => {
-    localStorage.setItem("theme", "dark");
-
-    const selectedTheme = localStorage.getItem("theme");
-
-    if (selectedTheme) {
-      document.body.classList.add(selectedTheme);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.add("light");
-    }
-  }, []);
+  useHandleTheme();
 
   return (
     <AuthProvider>

@@ -1,78 +1,67 @@
-import { useEffect, useState } from "react";
-import PlotFieldMain from "../../../../PlotFieldMain";
-import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "../ChoiceOptionBlocksList";
-import ButtonHoverPromptModal from "../../../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import { useParams } from "react-router-dom";
 import command from "../../../../../../../../assets/images/Editor/command.png";
 import plus from "../../../../../../../../assets/images/shared/add.png";
-import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
-import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
-import ChoiceOptionInputField from "./ChoiceOptionInputField";
+import ButtonHoverPromptModal from "../../../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import useCreateBlankCommand from "../../../../../hooks/useCreateBlankCommand";
+import PlotFieldMain from "../../../../PlotFieldMain";
 import useChoiceOptions from "../../Context/ChoiceContext";
+import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "../ChoiceOptionBlocksList";
+import ChoiceOptionInputField from "./ChoiceOptionInputField";
 
 type PlotfieldInsideChoiceOptionTypes = {
   showOptionPlot: boolean;
   choiceId: string;
+  plotfieldCommandId: string;
+  isFocusedBackground: boolean;
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function PlotfieldInsideChoiceOption({
   showOptionPlot,
   choiceId,
+  plotfieldCommandId,
+  isFocusedBackground,
   setShowOptionPlot,
+  setIsFocusedBackground,
 }: PlotfieldInsideChoiceOptionTypes) {
+  const { episodeId } = useParams();
+
   const {
     getCurrentlyOpenChoiceOption,
     getAllChoiceOptionsByChoiceId,
     getCurrentlyOpenChoiceOptionPlotId,
   } = useChoiceOptions();
 
-  const { data: topologyBlock } = useGetTopologyBlockById({
-    topologyBlockId:
-      getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
-  });
   // const [showMessage, setShowMessage] = useState("");
-
-  const [currentAmountOfCommands, setCurrentAmountOfCommands] =
-    useState<number>(0);
-
-  useEffect(() => {
-    if (topologyBlock) {
-      setCurrentAmountOfCommands(
-        topologyBlock.topologyBlockInfo?.amountOfCommands || 0
-      );
-    }
-  }, [topologyBlock]);
 
   const createCommand = useCreateBlankCommand({
     topologyBlockId:
       getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
+    episodeId: episodeId || "",
   });
 
   const handleCreateCommand = () => {
     const _id = generateMongoObjectId();
     createCommand.mutate({
       _id,
-      commandOrder: currentAmountOfCommands,
       topologyBlockId:
         getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
     });
-    setCurrentAmountOfCommands((prev) => prev + 1);
-    if (createCommand.isError) {
-      setCurrentAmountOfCommands((prev) => prev - 1);
-    }
   };
 
   return (
     <section
       className={`${
-        showOptionPlot ? "" : "hidden"
+        showOptionPlot || isFocusedBackground ? "" : "hidden"
       } flex flex-col gap-[1rem] relative`}
     >
       <button
         onClick={(e) => {
           e.stopPropagation();
           setShowOptionPlot(false);
+          setIsFocusedBackground(false);
         }}
         className="w-[2.5rem] h-[1rem] bg-secondary rounded-md shadow-sm absolute right-[-.3rem] top-[-.3rem] hover:shadow-md transition-shadow"
       ></button>
@@ -102,6 +91,8 @@ export default function PlotfieldInsideChoiceOption({
             {...op}
             choiceId={choiceId}
             type={op.optionType}
+            isFocusedBackground={isFocusedBackground}
+            plotfieldCommandId={plotfieldCommandId}
             showedOptionPlotTopologyBlockId={getCurrentlyOpenChoiceOptionPlotId(
               { choiceId }
             )}
@@ -152,6 +143,8 @@ export default function PlotfieldInsideChoiceOption({
 
 type OptionVariationButtonTypes = {
   showedOptionPlotTopologyBlockId: string;
+  plotfieldCommandId: string;
+  isFocusedBackground: boolean;
   choiceId: string;
 } & ChoiceOptionTypesAndTopologyBlockIdsTypes;
 
@@ -160,6 +153,8 @@ function OptionVariationButton({
   type,
   topologyBlockId,
   choiceOptionId,
+  plotfieldCommandId,
+  isFocusedBackground,
   choiceId,
 }: OptionVariationButtonTypes) {
   const {
@@ -174,8 +169,7 @@ function OptionVariationButton({
         e.currentTarget.blur();
         if (topologyBlockId) {
           updateCurrentlyOpenChoiceOption({
-            topologyBlockId,
-            choiceId,
+            plotfieldCommandId,
             choiceOptionId,
           });
         } else {
@@ -190,6 +184,11 @@ function OptionVariationButton({
         getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
           ? "bg-primary-darker text-text-light focus-within:outline-secondary"
           : "bg-secondary"
+      } ${
+        isFocusedBackground &&
+        getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
+          ? "border-dark-blue border-dashed border-[2px]"
+          : ""
       } ${
         !topologyBlockId
           ? "hover:outline-red-200 focus-within:outline-red-200"

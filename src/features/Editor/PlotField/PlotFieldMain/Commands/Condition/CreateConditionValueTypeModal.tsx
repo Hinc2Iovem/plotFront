@@ -6,7 +6,7 @@ import { generateMongoObjectId } from "../../../../../../utils/generateMongoObje
 import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
-import useAddAnotherConditionBlock from "../hooks/Condition/ConditionBlock/useAddAnotherConditionBlock";
+import useAddAnotherConditionBlock from "../../../hooks/Condition/ConditionBlock/useAddAnotherConditionBlock";
 import useConditionBlocks from "./Context/ConditionContext";
 
 type CreateConditionValueTypeModalTypes = {

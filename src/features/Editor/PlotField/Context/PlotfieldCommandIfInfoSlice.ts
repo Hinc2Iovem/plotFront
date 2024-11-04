@@ -10,13 +10,7 @@ type UpdateCommandInfoSignType = "add" | "minus";
 
 export type PlotfieldCommandIfInfoSliceTypes = {
   commandsIfInfo: CommandsIfInfo[];
-  getCurrentAmountOfIfCommands: ({
-    commandIfId,
-    isElse,
-  }: {
-    commandIfId: string;
-    isElse: boolean;
-  }) => number;
+
   setCurrentAmountOfIfCommands: ({
     amountOfCommandsInsideElse,
     amountOfCommandsInsideIf,
@@ -42,7 +36,7 @@ export const createPlotfieldCommandIfInfoSlice: StateCreator<
   [],
   [],
   PlotfieldCommandIfInfoSliceTypes
-> = (set, get) => ({
+> = (set) => ({
   commandsIfInfo: [],
   setCurrentAmountOfIfCommands: ({
     commandIfId,
@@ -71,19 +65,6 @@ export const createPlotfieldCommandIfInfoSlice: StateCreator<
         ],
       };
     }),
-  getCurrentAmountOfIfCommands: ({ commandIfId, isElse }) => {
-    if (isElse) {
-      const currentAmount =
-        get().commandsIfInfo.find((c) => c.commandIfId === commandIfId)
-          ?.amountOfCommandsInsideElse || 0;
-      return currentAmount;
-    } else {
-      const currentAmount =
-        get().commandsIfInfo.find((c) => c.commandIfId === commandIfId)
-          ?.amountOfCommandsInsideIf || 0;
-      return currentAmount;
-    }
-  },
   updateCommandIfInfo: ({ commandIfId, addOrMinus, isElse }) =>
     set((state) => ({
       commandsIfInfo: state.commandsIfInfo.map((c) =>

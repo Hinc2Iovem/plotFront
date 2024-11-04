@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
-import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
+import useHandleDuplicationOfAllCommands from "../../hooks/helpers/Plotfield/Duplication/useHandleDuplicationOfAllCommands";
 import useHandleAllCommandsCreatedViaKeyCombination from "../../hooks/helpers/Plotfield/useHandleAllCommandsCreatedViaKeyCombination";
-import useCheckKeysCombinationExpandFlowchart from "../../hooks/helpers/useCheckKeysCombinationExpandFlowchart";
-import useCheckKeysCombinationExpandPlotField from "../../hooks/helpers/useCheckKeysCombinationExpandPlotField";
+import useHandleNavigationThroughCommands from "../../hooks/helpers/Plotfield/useHandleNavigationThroughCommands";
+import useHandleResizeOfEditorWindows from "../../hooks/helpers/Plotfield/useHandleResizeOfEditorWindows";
+import useResizeEditorWindow from "../../hooks/helpers/Plotfield/useResizeEditorWindow";
 import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
 import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
 import Flowchart from "./Flowchart/Flowchart";
@@ -21,7 +22,6 @@ export default function EditorMain({
   setShowHeader,
   currentTopologyBlockId,
 }: EditorMainTypes) {
-  const { roles } = useGetDecodedJWTValues();
   const [command, setCommand] =
     useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
       "" as PossibleCommandsCreatedByCombinationOfKeysTypes
@@ -33,88 +33,30 @@ export default function EditorMain({
     "" as "right" | "left"
   );
 
-  const [afterFirstRerender, setAfterFirstRerender] = useState(false);
-  const keyCombinationToExpandPlotField =
-    useCheckKeysCombinationExpandPlotField({
-      setCommand,
-      setHideFlowchartFromScriptwriter,
-      setExpansionDivDirection,
-      command,
-    });
-
-  useCheckKeysCombinationExpandFlowchart({
-    setCommand,
-    setHideFlowchartFromScriptwriter,
-    setExpansionDivDirection,
+  const keyCombinationToExpandPlotField = useHandleResizeOfEditorWindows({
     command,
+    hideFlowchartFromScriptwriter,
+    setCommand,
+    setExpansionDivDirection,
+    setHideFlowchartFromScriptwriter,
   });
 
-  useEffect(() => {
-    // makes only plotfield to show up(for roles below);
-    // setAfterFirstRerender - needs to be here for this effect to work only when page loads first time
-    if (roles && typeof hideFlowchartFromScriptwriter !== "boolean") {
-      if (
-        roles.includes("editor") ||
-        roles.includes("headscriptwriter") ||
-        roles.includes("scriptwriter")
-      ) {
-        setHideFlowchartFromScriptwriter(true);
-        setCommand("expandPlotField");
-      } else {
-        setHideFlowchartFromScriptwriter(false);
-        setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
-      }
-      setAfterFirstRerender(true);
-    }
-  }, [roles, keyCombinationToExpandPlotField]);
-
-  useEffect(() => {
-    // when clicked on the shrink btn, changes command to show both plotfield and flowchart
-    if (
-      afterFirstRerender &&
-      !hideFlowchartFromScriptwriter &&
-      command !== "expandFlowchart"
-    ) {
-      setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
-    }
-  }, [afterFirstRerender, hideFlowchartFromScriptwriter]);
-
   const [scale, setScale] = useState(1);
-
-  // const checkScrollbarPresence = () => {
-  //   const hasScrollbar =
-  //     document.documentElement.scrollHeight > window.innerHeight;
-  //   setHasScrollbar(hasScrollbar);
-  // };
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [scaleDivPosition, setScaleDivPosition] = useState(0);
 
-  useEffect(() => {
-    const updateHalfSize = () => {
-      if (containerRef.current) {
-        if (command === "expandFlowchart") {
-          setScaleDivPosition(
-            window.innerWidth / 2 - containerRef.current.clientWidth / 2 + 10
-          );
-        } else {
-          setScaleDivPosition(window.innerWidth / 2 + 10);
-        }
-      }
-    };
-
-    updateHalfSize();
-
-    window.addEventListener("resize", updateHalfSize);
-
-    return () => {
-      window.removeEventListener("resize", updateHalfSize);
-    };
-  }, [command]);
+  useResizeEditorWindow({ command, containerRef, setScaleDivPosition });
 
   useHandleAllCommandsCreatedViaKeyCombination({
     topologyBlockId: currentTopologyBlockId,
   });
+
+  useHandleDuplicationOfAllCommands({
+    topologyBlockId: currentTopologyBlockId,
+  });
+
+  useHandleNavigationThroughCommands();
 
   return (
     <>

@@ -36,6 +36,12 @@ export default function PlotfieldItem({
   characterName,
   sayType,
   isElse,
+  characterImg,
+  commandSide,
+  emotionId,
+  emotionImg,
+  emotionName,
+  commandOrder,
 }: PlotFieldItemTypes) {
   return (
     <li
@@ -60,6 +66,13 @@ export default function PlotfieldItem({
           characterId={characterId}
           characterName={characterName}
           sayType={sayType}
+          commandIfId={commandIfId}
+          characterImg={characterImg}
+          emotionId={emotionId}
+          emotionImg={emotionImg}
+          emotionName={emotionName}
+          isElse={isElse}
+          commandSide={commandSide}
         />
       ) : command === "achievement" ? (
         <CommandAchievementField
@@ -128,6 +141,9 @@ export default function PlotfieldItem({
       ) : command === "comment" ? (
         <CommandCommentField command={command} plotFieldCommandId={_id} />
       ) : null}
+      <span className="w-[3rem] bg-red-500 text-center text-text-light rounded-md text-[1.5rem]">
+        {commandOrder}
+      </span>
     </li>
   );
 }

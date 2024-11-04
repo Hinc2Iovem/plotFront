@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useUpdateMusicText from "../hooks/Music/useUpdateMusicText";
+import useUpdateMusicText from "../../../hooks/Music/useUpdateMusicText";
 
 type CreateMusicFieldTypes = {
   storyId: string;

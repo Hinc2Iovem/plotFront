@@ -1,6 +1,6 @@
 import { useQueries } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
-import useGetAllTranslatablePlotFieldCommands from "../../../../features/Editor/PlotField/PlotFieldMain/Commands/hooks/useGetAllTranslatablePlotFieldCommands";
+import useGetAllTranslatablePlotFieldCommands from "../../../../features/Editor/PlotField/hooks/useGetAllTranslatablePlotFieldCommands";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCommandTypes } from "../../../../types/Additional/TranslationTypes";
 

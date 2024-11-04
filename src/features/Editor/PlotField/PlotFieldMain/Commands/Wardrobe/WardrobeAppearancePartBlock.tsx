@@ -83,7 +83,7 @@ export default function WardrobeAppearancePartBlock({
             setShowFullName(true);
           }
         }}
-        className="text-[1.3rem] whitespace-nowrap px-[1rem]"
+        className="text-[1.4rem] whitespace-nowrap px-[1rem] text-text-light"
       >
         {appearancePartName?.trim().length > 13
           ? appearancePartName.substring(0, 13) + "..."

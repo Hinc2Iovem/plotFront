@@ -5,38 +5,40 @@ import {
   AllPossibleSayPlotFieldCommands,
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import usePlotfieldCommands from "../../../Context/PlotFieldContext";
-import useCreateAchievement from "../hooks/Achievement/useCreateAchievement";
-import useCreateAmbient from "../hooks/Ambient/useCreateAmbient";
-import useCreateBackground from "../hooks/Background/useCreateBackground";
-import useCreateCall from "../hooks/Call/useCreateCall";
-import useCreateChoice from "../hooks/Choice/useCreateChoice";
-import useCreateComment from "../hooks/Comment/useCreateComment";
-import useCreateCondition from "../hooks/Condition/useCreateCondition";
-import useCreateCutScene from "../hooks/CutScene/useCreateCutScene";
-import useCreateEffect from "../hooks/Effect/useCreateEffect";
-import useCreateGetItem from "../hooks/GetItem/useCreateGetItem";
-import useCreateCommandIf from "../hooks/If/useCreateCommandIf";
-import useCreateKey from "../hooks/Key/useCreateKey";
-import useCreateMove from "../hooks/Move/useCreateMove";
-import useCreateMusic from "../hooks/Music/useCreateMusic";
-import useCreateName from "../hooks/Name/useCreateName";
-import useCreateSayCommand from "../hooks/Say/useCreateSayCommand";
-import useCreateSound from "../hooks/Sound/useCreateSound";
-import useCreateSuit from "../hooks/Suit/useCreateSuit";
-import useUpdateCommandName from "../hooks/useUpdateCommandName";
-import useCreateWait from "../hooks/Wait/useCreateWait";
-import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
-import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
+import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
+import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useConditionBlocks from "../Condition/Context/ConditionContext";
-import useChoiceOptions from "../Choice/Context/ChoiceContext";
-import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import useCreateAchievement from "../../../hooks/Achievement/useCreateAchievement";
+import useCreateAmbient from "../../../hooks/Ambient/useCreateAmbient";
+import useCreateBackground from "../../../hooks/Background/useCreateBackground";
+import useCreateCall from "../../../hooks/Call/useCreateCall";
+import useCreateChoice from "../../../hooks/Choice/useCreateChoice";
+import useCreateComment from "../../../hooks/Comment/useCreateComment";
+import useCreateCondition from "../../../hooks/Condition/useCreateCondition";
+import useCreateCutScene from "../../../hooks/CutScene/useCreateCutScene";
+import useCreateEffect from "../../../hooks/Effect/useCreateEffect";
+import useCreateGetItem from "../../../hooks/GetItem/useCreateGetItem";
+import useCreateCommandIf from "../../../hooks/If/useCreateCommandIf";
+import useCreateKey from "../../../hooks/Key/useCreateKey";
+import useCreateMove from "../../../hooks/Move/useCreateMove";
+import useCreateMusic from "../../../hooks/Music/useCreateMusic";
+import useCreateName from "../../../hooks/Name/useCreateName";
+import useCreateSayCommand from "../../../hooks/Say/useCreateSayCommand";
+import useCreateSound from "../../../hooks/Sound/useCreateSound";
+import useCreateSuit from "../../../hooks/Suit/useCreateSuit";
+import useUpdateCommandName from "../../../hooks/useUpdateCommandName";
+import useCreateWait from "../../../hooks/Wait/useCreateWait";
+import useCreateWardrobe from "../../../hooks/Wardrobe/useCreateWardrobe";
+import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
+import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -78,10 +80,14 @@ export default function PlotfieldBlank({
 }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
   const { episodeId } = useParams();
+  const isCommandFocused = useCheckIsCurrentFieldFocused({
+    plotFieldCommandId,
+  });
+  const currentInput = useRef<HTMLInputElement | null>(null);
+  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
   const { getTopologyBlock } = useTopologyBlocks();
   const { addConditionBlock } = useConditionBlocks();
-  const {} = useChoiceOptions();
   const [showCreateCharacterModal, setShowCreateCharacterModal] =
     useState(false);
 
@@ -134,17 +140,20 @@ export default function PlotfieldBlank({
     }
   }, [allPromptValues, value]);
 
-  const currentInput = useRef<HTMLInputElement | null>(null);
-
   useEffect(() => {
     if (!showCreateCharacterModal && !commandIfId?.trim().length) {
       currentInput.current?.focus();
     }
   }, [showCreateCharacterModal]);
 
+  const currentlyFocusedTopologyBlock = sessionStorage.getItem(
+    "focusedTopologyBlock"
+  );
+
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
     value,
+    topologyBlockId: currentlyFocusedTopologyBlock || "",
   });
 
   const createSayCommand = useCreateSayCommand({
@@ -416,6 +425,7 @@ export default function PlotfieldBlank({
           commandName: allCommands,
         });
       }
+
       updateCommandName.mutate({ valueForSay: false });
     }
   };
@@ -441,13 +451,14 @@ export default function PlotfieldBlank({
       ) {
         type = "character";
       } else {
-        type = value as CommandSayVariationTypes;
+        type = value.toLowerCase() as CommandSayVariationTypes;
       }
 
       submittedByCharacter = true;
       handleSubmit({ submittedByCharacter, type });
-    } else if (AllPossiblePlotFieldCommands.includes(value.toLowerCase())) {
+    } else if (AllPossiblePlotFieldCommands.includes(value?.toLowerCase())) {
       // if it's any another existing command beside say and it's variations
+
       submittedByCharacter = false;
       handleSubmit({ submittedByCharacter });
     } else {
@@ -465,12 +476,14 @@ export default function PlotfieldBlank({
   });
 
   return (
-    <div className="shadow-sm shadow-gray-300 bg-secondary rounded-md relative w-full">
+    <div className="bg-secondary rounded-md relative w-full">
       <form
-        className="px-[1rem] py-[.5rem] w-full relative"
+        className={`${
+          isCommandFocused ? "bg-dark-dark-blue" : "bg-primary-darker"
+        } w-full relative rounded-md p-[.5rem]`}
         onSubmit={handleFormSubmit}
       >
-        <input
+        <PlotfieldInput
           ref={currentInput}
           type="text"
           value={value}
@@ -486,13 +499,15 @@ export default function PlotfieldBlank({
               setShowPromptValues(true);
             }
           }}
-          className="outline-none text-[1.5rem] text-text-light w-full"
+          className={`${
+            isCommandFocused ? "bg-dark-dark-blue" : ""
+          } text-[1.5rem] text-text-light w-full`}
         />
         <AsideScrollable
           ref={promptRef}
           className={`${
             showPromptValues && !showCreateCharacterModal ? "" : "hidden"
-          } translate-y-[1rem] left-0`}
+          } translate-y-[.5rem] left-0`}
         >
           {filteredPromptValues.length > 0 ? (
             filteredPromptValues.map((pv) => (

@@ -3,14 +3,14 @@ import useChoiceOptions from "../Context/ChoiceContext";
 type ChoiceOptionShowPlotTypes = {
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
   topologyBlockId: string;
-  choiceId: string;
+  plotfieldCommandId: string;
   choiceOptionId: string;
 };
 
 export default function ChoiceOptionShowPlot({
   setShowOptionPlot,
   topologyBlockId,
-  choiceId,
+  plotfieldCommandId,
   choiceOptionId,
 }: ChoiceOptionShowPlotTypes) {
   const { updateCurrentlyOpenChoiceOption } = useChoiceOptions();
@@ -23,8 +23,7 @@ export default function ChoiceOptionShowPlot({
           if (topologyBlockId) {
             setShowOptionPlot(true);
             updateCurrentlyOpenChoiceOption({
-              topologyBlockId,
-              choiceId,
+              plotfieldCommandId,
               choiceOptionId,
             });
           } else {

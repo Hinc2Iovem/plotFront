@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useUpdateConditionBlockTopologyBlockId from "../hooks/Condition/ConditionBlock/useUpdateConditionBlockTopologyBlockId";
-import useGetAllTopologyBlocksByEpisodeId from "../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
-import useGetTopologyBlockById from "../hooks/TopologyBlock/useGetTopologyBlockById";
+import useUpdateConditionBlockTopologyBlockId from "../../../hooks/Condition/ConditionBlock/useUpdateConditionBlockTopologyBlockId";
+import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
 import ConditionValueItem from "./ConditionValueItem";
 import useConditionBlocks, {
   ConditionBlockItemTypes,

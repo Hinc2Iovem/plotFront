@@ -15,6 +15,7 @@ import {
   createPlotfieldCommandSlice,
   CreatePlotfieldCommandSliceTypes,
 } from "./PlotfieldCommandSlice";
+import { devtools } from "zustand/middleware";
 
 type UsePlotfieldCommandsStoreTypes = PlotfieldCommandIfInfoSliceTypes &
   PlotfieldCommandInfoSliceTypes &
@@ -22,12 +23,15 @@ type UsePlotfieldCommandsStoreTypes = PlotfieldCommandIfInfoSliceTypes &
   CreatePlotfieldCommandIfSliceTypes;
 
 const usePlotfieldCommands = create<UsePlotfieldCommandsStoreTypes>()(
-  (...a) => ({
-    ...createPlotfieldCommandSlice(...a),
-    ...createPlotfieldCommandInfoSlice(...a),
-    ...createPlotfieldIfCommandSlice(...a),
-    ...createPlotfieldCommandIfInfoSlice(...a),
-  })
+  devtools(
+    (...a) => ({
+      ...createPlotfieldCommandSlice(...a),
+      ...createPlotfieldCommandInfoSlice(...a),
+      ...createPlotfieldIfCommandSlice(...a),
+      ...createPlotfieldCommandIfInfoSlice(...a),
+    }),
+    { name: "PlotfieldName", store: "PlotfieldStore" }
+  )
 );
 
 export default usePlotfieldCommands;

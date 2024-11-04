@@ -1,41 +1,45 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
-import { EmotionsTypes } from "../../../../../../../../../types/StoryData/Character/CharacterTypes";
 import { generateMongoObjectId } from "../../../../../../../../../utils/generateMongoObjectId";
-import useCreateCharacterBlank from "../../../../hooks/Character/useCreateCharacterBlank";
-import useUpdateNameOrEmotionOnCondition from "../../../../hooks/Say/useUpdateNameOrEmotionOnCondition";
-import { useQueryClient } from "@tanstack/react-query";
+import usePlotfieldCommands from "../../../../../../Context/PlotFieldContext";
+import useCreateCharacterBlank from "../../../../../../hooks/Character/useCreateCharacterBlank";
+import useUpdateNameOrEmotionOnCondition from "../../../../../../hooks/Say/useUpdateNameOrEmotionOnCondition";
+import { CharacterValueTypes } from "../CommandSayCharacterFieldItem";
 
 type CommandSayCreateCharacterFieldTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setNewlyCreated: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrentCharacterId: React.Dispatch<React.SetStateAction<string>>;
-  setEmotionValue: React.Dispatch<React.SetStateAction<EmotionsTypes | null>>;
-  setNewlyCreatedName: React.Dispatch<React.SetStateAction<string>>;
+  setCharacterValue: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
   showModal: boolean;
   characterName: string;
   plotFieldCommandId: string;
-  currentCharacterId: string;
   commandSayId: string;
+  characterId: string;
+
+  commandIfId: string;
+  isElse: boolean;
 };
 
 export default function CommandSayCreateCharacterFieldModal({
   setShowModal,
-  setCurrentCharacterId,
-  setNewlyCreatedName,
+  setCharacterValue,
   showModal,
   characterName,
-  currentCharacterId,
   commandSayId,
-  setEmotionValue,
-  setNewlyCreated,
+  plotFieldCommandId,
+  characterId,
+
+  commandIfId,
+  isElse,
 }: CommandSayCreateCharacterFieldTypes) {
   const queryClient = useQueryClient();
   const { storyId } = useParams();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
-  const [characterId, setCharacterId] = useState("");
+  const { updateEmotionProperties, updateEmotionPropertiesIf } =
+    usePlotfieldCommands();
+  const [newCharacterId, setNewCharacterId] = useState("");
 
   useEffect(() => {
     if (showModal) {
@@ -52,33 +56,52 @@ export default function CommandSayCreateCharacterFieldModal({
   const updateNameOrEmotion = useUpdateNameOrEmotionOnCondition();
 
   useEffect(() => {
-    if (characterId?.trim().length) {
+    if (newCharacterId?.trim().length) {
       updateNameOrEmotion.mutate({
         characterEmotionId: "",
-        characterId,
+        characterId: newCharacterId,
         plotFieldCommandSayId: commandSayId,
       });
-      setEmotionValue(null);
+
+      setCharacterValue((prev) => ({
+        _id: newCharacterId,
+        characterName: prev.characterName,
+        imgUrl: null,
+      }));
+
+      if (commandIfId?.trim().length) {
+        updateEmotionPropertiesIf({
+          id: plotFieldCommandId,
+          emotionId: "",
+          emotionName: "",
+          emotionImg: "",
+          isElse,
+        });
+      } else {
+        updateEmotionProperties({
+          id: plotFieldCommandId,
+          emotionId: "",
+          emotionName: "",
+          emotionImg: "",
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterId]);
+  }, [newCharacterId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newCharacterId = generateMongoObjectId();
+    const newCharId = generateMongoObjectId();
+    setNewCharacterId(newCharId);
 
-    setNewlyCreated(true);
     queryClient.invalidateQueries({
-      queryKey: ["character", currentCharacterId],
+      queryKey: ["character", characterId],
     });
     queryClient.invalidateQueries({
       queryKey: ["translation", "russian", "character", characterId],
     });
-    setCharacterId(newCharacterId);
-    setCurrentCharacterId(newCharacterId);
-    setNewlyCreatedName(characterName);
 
-    createCharacter.mutate({ characterId: newCharacterId });
+    createCharacter.mutate({ characterId: newCharId });
     setShowModal(false);
   };
 
