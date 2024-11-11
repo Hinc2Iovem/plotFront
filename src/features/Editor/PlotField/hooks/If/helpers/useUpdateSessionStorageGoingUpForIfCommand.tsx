@@ -29,7 +29,6 @@ export default function useUpdateSessionStorageGoingUpForIfCommand({
       const key = event.key.toLowerCase();
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
-
       if (key === "arrowup" && pressedKeys.has("control")) {
         event.preventDefault();
         const currentFocusedCommandIf =
@@ -49,104 +48,96 @@ export default function useUpdateSessionStorageGoingUpForIfCommand({
           ?.split("?")
           .filter(Boolean);
 
+        const focusedCommandInsideType = sessionStorage
+          .getItem("focusedCommandInsideType")
+          ?.split("?")
+          .filter(Boolean);
+
         const focusedCommandPlotfieldId = (focusedCommand || [])[1];
 
-        if (currentFocusedCommandIf !== "none") {
-          const deepLevelCommandIf = focusedCommandIf?.includes("none")
-            ? null
-            : (focusedCommandIf?.length || 0) > 0
-            ? (focusedCommandIf?.length || 0) - 1
-            : null;
+        const deepLevelCommandIf = focusedCommandIf?.includes("none")
+          ? null
+          : (focusedCommandIf?.length || 0) > 0
+          ? (focusedCommandIf?.length || 0) - 1
+          : null;
 
-          if (typeof deepLevelCommandIf === "number") {
-            const currentFocusedCommandIfId = (focusedCommandIf || [])[
-              deepLevelCommandIf
-            ];
-            const currentFocusedCommandIfPlotfieldCommandId =
-              currentFocusedCommandIfId?.split("-")[1];
+        const deepLevelCommandInsideType =
+          (focusedCommandInsideType?.length || 0) > 1
+            ? (focusedCommandInsideType?.length || 0) - 1
+            : 1;
 
-            const isCommandIf = currentFocusedCommandIfId?.split("-")[0];
-            const currentFocusedCommandIfCommandIfId =
-              currentFocusedCommandIfId?.split("-")[3];
+        if (typeof deepLevelCommandIf === "number") {
+          const currentFocusedCommandIfId = (focusedCommandIf || [])[
+            deepLevelCommandIf
+          ];
+          const currentFocusedCommandIfPlotfieldCommandId =
+            currentFocusedCommandIfId?.split("-")[1];
 
-            if (
-              plotfieldCommandId !== currentFocusedCommandIfPlotfieldCommandId
-            ) {
-              console.log("Not for you");
-              return;
-            }
-
-            if (deepLevelCommandIf === 0) {
-              const currentFocuse = `${isCommandIf}-${currentFocusedCommandIfPlotfieldCommandId}-ifId-${currentFocusedCommandIfCommandIfId}`;
-
-              if (
-                focusedCommandPlotfieldId ===
-                currentFocusedCommandIfPlotfieldCommandId
-              ) {
-                sessionStorage.setItem(
-                  "focusedCommand",
-                  `if-${currentFocusedCommandIfPlotfieldCommandId}-${isCommandIf}`
-                );
-                sessionStorage.setItem("focusedCommandIf", "none");
-                setIsBackgroundFocused(false);
-                return;
-              } else {
-                sessionStorage.setItem(
-                  "focusedCommand",
-                  `if-${currentFocusedCommandIfPlotfieldCommandId}-${
-                    isCommandIf === "if" ? "if" : "else"
-                  }`
-                );
-                setIsBackgroundFocused(true);
-                sessionStorage.setItem("focusedCommandIf", `${currentFocuse}?`);
-                return;
-              }
-            }
-
-            if (
-              currentFocusedCommandIfPlotfieldCommandId !==
-              focusedCommandPlotfieldId
-            ) {
-              // Inside command if, focused on background
-              if (deepLevelCommandIf === 0) {
-                const newFocusedCommandIfArray = (focusedCommandIf || []).slice(
-                  0,
-                  -1
-                );
-                sessionStorage.setItem(
-                  "focusedCommandIf",
-                  newFocusedCommandIfArray.join("?")
-                );
-              } else {
-                sessionStorage.setItem("focusedCommandIf", `none`);
-              }
-              sessionStorage.setItem(
-                "focusedCommand",
-                `if-${plotfieldCommandId}-${
-                  isCommandIf === "if" ? "if" : "else"
-                }`
-              );
-
-              setIsBackgroundFocused(false);
-            } else {
-              // Inside command if, focused on some command
-              setIsBackgroundFocused(true);
-
-              sessionStorage.setItem(
-                "focusedCommand",
-                `if-${plotfieldCommandId}-${
-                  isCommandIf === "if" ? "if" : "else"
-                }`
-              );
-            }
-          } else {
-            console.log("You are not inside if command, how did you do that");
+          if (
+            plotfieldCommandId !== currentFocusedCommandIfPlotfieldCommandId
+          ) {
+            console.log("Not for you");
             return;
           }
-        }
 
-        // updateFocuseIfReset({ value: false });
-        // updateFocuseReset({ value: false });
+          // going completely out of if
+          if (
+            focusedCommandPlotfieldId ===
+            currentFocusedCommandIfPlotfieldCommandId
+          ) {
+            const newFocusedCommandIfArray = (focusedCommandIf || []).slice(
+              0,
+              -1
+            );
+
+            if (deepLevelCommandIf === 0) {
+              sessionStorage.setItem("focusedCommandIf", "none");
+            } else {
+              sessionStorage.setItem(
+                "focusedCommandIf",
+                `${newFocusedCommandIfArray?.join("?")}?`
+              );
+            }
+
+            const currentFocusedCommandInsideType = (focusedCommandInsideType ||
+              [])[deepLevelCommandInsideType]?.split("-");
+            const isIfOrElse = currentFocusedCommandInsideType[1];
+
+            sessionStorage.setItem(
+              "focusedCommand",
+              `if-${currentFocusedCommandIfPlotfieldCommandId}-${isIfOrElse}`
+            );
+
+            const newFocusedCommandInsideType = (
+              focusedCommandInsideType || []
+            )?.slice(0, -1);
+
+            sessionStorage.setItem(
+              "focusedCommandInsideType",
+              `${newFocusedCommandInsideType?.join("?")}?`
+            );
+
+            setIsBackgroundFocused(false);
+            event.stopImmediatePropagation();
+            return;
+          } else {
+            // going to the top level
+            const currentFocusedCommandInsideType = (focusedCommandInsideType ||
+              [])[deepLevelCommandInsideType]?.split("-");
+            const isIfOrElse = currentFocusedCommandInsideType[1];
+
+            sessionStorage.setItem(
+              "focusedCommand",
+              `if-${currentFocusedCommandIfPlotfieldCommandId}-${isIfOrElse}`
+            );
+
+            setIsBackgroundFocused(true);
+            return;
+          }
+        } else {
+          console.log("You are not inside if command, how did you do that");
+          return;
+        }
       }
     };
 

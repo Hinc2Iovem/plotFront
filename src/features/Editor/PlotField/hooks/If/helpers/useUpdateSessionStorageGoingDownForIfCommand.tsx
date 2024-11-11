@@ -35,9 +35,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
 
       if (key === "arrowdown" && pressedKeys.has("shift")) {
         event.preventDefault();
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
 
         const focusedCommandIfOrElse = (focusedCommand || [])[2];
         const focusedCommandPlotfieldId = (focusedCommand || [])[1];
@@ -46,20 +44,23 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
           return;
         }
 
-        const currentFocusedCommandIf =
-          sessionStorage.getItem("focusedCommandIf");
+        const currentFocusedCommandIf = sessionStorage.getItem("focusedCommandIf");
 
         const newFocusedCommandIf = `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${commandIfId}`;
 
+        const focusedCommandInsideType = sessionStorage.getItem("focusedCommandInsideType");
+
         if (currentFocusedCommandIf === "none") {
           sessionStorage.setItem("focusedCommandIf", `${newFocusedCommandIf}?`);
+
+          sessionStorage.setItem(
+            "focusedCommandInsideType",
+            `${focusedCommandInsideType}${plotfieldCommandId}-if-${focusedCommandIfOrElse === "if" ? "if" : "else"}?`
+          );
           setIsBackgroundFocused(true);
           return;
         } else if (currentFocusedCommandIf !== "none") {
-          const focusedCommandIf = sessionStorage
-            .getItem("focusedCommandIf")
-            ?.split("?")
-            .filter(Boolean);
+          const focusedCommandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
           const deepLevelCommandIf = focusedCommandIf?.includes("none")
             ? null
@@ -68,18 +69,20 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
             : null;
 
           if (typeof deepLevelCommandIf === "number") {
-            const currentFocusedCommandIfId = (focusedCommandIf || [])[
-              deepLevelCommandIf
-            ];
+            const currentFocusedCommandIfId = (focusedCommandIf || [])[deepLevelCommandIf];
 
             if (currentFocusedCommandIfId !== newFocusedCommandIf) {
+              sessionStorage.setItem("focusedCommandIf", `${currentFocusedCommandIf}${newFocusedCommandIf}?`);
               sessionStorage.setItem(
-                "focusedCommandIf",
-                `${currentFocusedCommandIf}${newFocusedCommandIf}?`
+                "focusedCommandInsideType",
+                `${focusedCommandInsideType}${plotfieldCommandId}-if-${
+                  focusedCommandIfOrElse === "if" ? "if" : "else"
+                }?`
               );
               setIsBackgroundFocused(true);
             } else {
               setIsBackgroundFocused(false);
+              event.stopImmediatePropagation();
               GoingDownInsideIf({
                 currentCommandId: commandIfId,
                 insideIf: focusedCommandIfOrElse === "if",
@@ -90,10 +93,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
               });
             }
           } else {
-            sessionStorage.setItem(
-              "focusedCommandIf",
-              `${newFocusedCommandIf}?`
-            );
+            sessionStorage.setItem("focusedCommandIf", `${newFocusedCommandIf}?`);
             setIsBackgroundFocused(true);
           }
         }
@@ -114,13 +114,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [
-    commandIfId,
-    getFirstCommandInsideIf,
-    updateFocuseReset,
-    updateFocuseIfReset,
-    plotfieldCommandId,
-  ]);
+  }, [commandIfId, getFirstCommandInsideIf, updateFocuseReset, updateFocuseIfReset, plotfieldCommandId]);
 }
 
 // const currentFocusedCommandIf =

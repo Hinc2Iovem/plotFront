@@ -183,6 +183,8 @@ export default function PlotfieldHeader({
           sessionStorage.setItem("focusedCommandChoice", `none`);
           sessionStorage.setItem("focusedCommandCondition", `none`);
           sessionStorage.setItem("focusedConditionBlock", `none`);
+          sessionStorage.setItem("focusedCommandInsideType", `default?`);
+          sessionStorage.setItem("focusedChoiceOption", `none`);
           updateFocuseReset({ value: true });
         }}
         className={`absolute hover:bg-dark-blue bg-dark-dark-blue text-center w-[15rem] text-text-light text-[1.4rem] overflow-hidden transition-all rounded-md left-1/2 -translate-x-1/2 top-0`}

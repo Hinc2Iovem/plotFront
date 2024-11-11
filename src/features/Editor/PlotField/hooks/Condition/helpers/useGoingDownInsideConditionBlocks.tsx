@@ -31,9 +31,7 @@ export default function useGoingDownInsideConditionBlocks({
       pressedKeys.add(key);
 
       if (key === "arrowdown" && pressedKeys.has("shift")) {
-        const currentFocusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const currentFocusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         const currentCommandPlotfieldId = (currentFocusedCommand || [])[1];
         const isElse = (currentFocusedCommand || [])[2];
         if (currentCommandPlotfieldId !== plotfieldCommandId) {
@@ -44,41 +42,30 @@ export default function useGoingDownInsideConditionBlocks({
         // firstly I need to check the depth of my current sessionStorage focusedCommandCondition, then I need to check if the value === "none", if so assign focusedCommandCondition and return
         // if it's not === to none then I need to check If I already have this value as my last array element, if so it's the second shift + arrownDown, if not it's the first time.
 
-        const focusedCommandCondition = sessionStorage
-          .getItem("focusedCommandCondition")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedCommandCondition = sessionStorage.getItem("focusedCommandCondition")?.split("?").filter(Boolean);
 
         const newConditionValue = `${
           isElse === "else" ? "else" : "if"
         }-${plotfieldCommandId}-conditionId-${conditionId}`;
 
-        const deepLevelCommandCondition = focusedCommandCondition?.includes(
-          "none"
-        )
+        const deepLevelCommandCondition = focusedCommandCondition?.includes("none")
           ? null
           : (focusedCommandCondition?.length || 0) > 0
           ? (focusedCommandCondition?.length || 0) - 1
           : null;
 
         if (typeof deepLevelCommandCondition === "number") {
-          const currentFocusedCommandCondition = (focusedCommandCondition ||
-            [])[deepLevelCommandCondition].split("-");
+          const currentFocusedCommandCondition = (focusedCommandCondition || [])[deepLevelCommandCondition].split("-");
 
-          const currentFocusedCommandConditionPlotfieldId =
-            currentFocusedCommandCondition[1];
+          const currentFocusedCommandConditionPlotfieldId = currentFocusedCommandCondition[1];
 
-          if (
-            currentFocusedCommandConditionPlotfieldId === plotfieldCommandId
-          ) {
+          if (currentFocusedCommandConditionPlotfieldId === plotfieldCommandId) {
             // second click
             const currentlyOpenConditionBlock = getCurrentlyOpenConditionBlock({
               plotfieldCommandId,
             });
             if (!currentlyOpenConditionBlock) {
-              console.log(
-                "You should have an open conditionBlock. How did you do that?"
-              );
+              console.log("You should have an open conditionBlock. How did you do that?");
               return;
             }
 
@@ -87,9 +74,7 @@ export default function useGoingDownInsideConditionBlocks({
             });
 
             if (!fisrtCommand) {
-              console.log(
-                "Oops, probably you haven't created any command inside condition yet."
-              );
+              console.log("Oops, probably you haven't created any command inside condition yet.");
               return;
             }
 
@@ -97,12 +82,12 @@ export default function useGoingDownInsideConditionBlocks({
 
             sessionStorage.setItem(
               "focusedCommand",
-              `${
-                fisrtCommand?.sayType?.trim().length
-                  ? fisrtCommand.sayType
-                  : fisrtCommand?.command
-              }-${fisrtCommand?._id}`
+              `${fisrtCommand?.sayType?.trim().length ? fisrtCommand.sayType : fisrtCommand?.command}-${
+                fisrtCommand?._id
+              }`
             );
+
+            event.stopImmediatePropagation();
             setIsFocusedBackground(false);
             return;
           } else {
@@ -113,48 +98,38 @@ export default function useGoingDownInsideConditionBlocks({
               );
               return;
             }
-            const firstConditionBlock =
-              getFirstConditionBlockWithTopologyBlockId({
-                insideElse: isElse === "else",
-                plotfieldCommandId,
-              });
+            const firstConditionBlock = getFirstConditionBlockWithTopologyBlockId({
+              insideElse: isElse === "else",
+              plotfieldCommandId,
+            });
 
-            if (
-              !firstConditionBlock ||
-              (isElse === "else" && !firstConditionBlock.isElse)
-            ) {
-              console.log(
-                "There are probably no condition block with assigned TopologyBlock"
-              );
+            if (!firstConditionBlock || (isElse === "else" && !firstConditionBlock.isElse)) {
+              console.log("There are probably no condition block with assigned TopologyBlock");
               return;
             }
 
+            const focusedCommandInsideType = sessionStorage.getItem("focusedCommandInsideType");
+
             sessionStorage.setItem(
-              "focusedCommandCondition",
-              `${focusedCommandCondition?.join("?")}${newConditionValue}?`
+              "focusedCommandInsideType",
+              `${focusedCommandInsideType}${plotfieldCommandId}-condition-${isElse}?`
             );
 
-            const currentConditionBlocksSession = sessionStorage.getItem(
-              "focusedConditionBlock"
+            sessionStorage.setItem(
+              "focusedCommandCondition",
+              `${focusedCommandCondition?.join("?")}?${newConditionValue}?`
             );
+
+            const currentConditionBlocksSession = sessionStorage.getItem("focusedConditionBlock");
 
             sessionStorage.setItem(
               "focusedConditionBlock",
-              `${currentConditionBlocksSession}${
-                firstConditionBlock.isElse
-                  ? "else"
-                  : firstConditionBlock.conditionType
-                  ? firstConditionBlock.conditionType
-                  : ""
-              }-${
+              `${currentConditionBlocksSession}${firstConditionBlock.isElse ? "else" : "if"}-${
                 firstConditionBlock.conditionBlockId
               }-plotfieldCommandId-${currentCommandPlotfieldId}?`
             );
 
-            sessionStorage.setItem(
-              "focusedTopologyBlock",
-              firstConditionBlock.targetBlockId
-            );
+            sessionStorage.setItem("focusedTopologyBlock", firstConditionBlock.targetBlockId);
 
             updateCurrentlyOpenConditionBlock({
               conditionBlockId: firstConditionBlock.conditionBlockId,
@@ -165,48 +140,37 @@ export default function useGoingDownInsideConditionBlocks({
           }
         } else {
           // deepLevel === 0
-          const firstConditionBlock = getFirstConditionBlockWithTopologyBlockId(
-            { insideElse: isElse === "else", plotfieldCommandId }
-          );
-
-          console.log("firstConditionBlock: ", firstConditionBlock);
-
-          console.log("isElse: ", isElse);
-          console.log(isElse === "if" && firstConditionBlock?.isElse);
+          const firstConditionBlock = getFirstConditionBlockWithTopologyBlockId({
+            insideElse: isElse === "else",
+            plotfieldCommandId,
+          });
 
           if (
             !firstConditionBlock ||
             (isElse === "else" && !firstConditionBlock.isElse) ||
             (isElse === "if" && firstConditionBlock.isElse)
           ) {
-            console.log(
-              "There are probably no condition block with assigned TopologyBlock"
-            );
+            console.log("There are probably no condition block with assigned TopologyBlock");
             return;
           }
 
+          const focusedCommandInsideType = sessionStorage.getItem("focusedCommandInsideType");
+
           sessionStorage.setItem(
-            "focusedCommandCondition",
-            `${newConditionValue}?`
+            "focusedCommandInsideType",
+            `${focusedCommandInsideType}${plotfieldCommandId}-condition-${isElse}?`
           );
+
+          sessionStorage.setItem("focusedCommandCondition", `${newConditionValue}?`);
 
           sessionStorage.setItem(
             "focusedConditionBlock",
-            `${
-              firstConditionBlock.isElse
-                ? "else"
-                : firstConditionBlock.conditionType
-                ? firstConditionBlock.conditionType
-                : ""
-            }-${
+            `${firstConditionBlock.isElse ? "else" : "if"}-${
               firstConditionBlock.conditionBlockId
             }-plotfieldCommandId-${currentCommandPlotfieldId}?`
           );
 
-          sessionStorage.setItem(
-            "focusedTopologyBlock",
-            firstConditionBlock.targetBlockId
-          );
+          sessionStorage.setItem("focusedTopologyBlock", firstConditionBlock.targetBlockId);
 
           updateCurrentlyOpenConditionBlock({
             conditionBlockId: firstConditionBlock.conditionBlockId,

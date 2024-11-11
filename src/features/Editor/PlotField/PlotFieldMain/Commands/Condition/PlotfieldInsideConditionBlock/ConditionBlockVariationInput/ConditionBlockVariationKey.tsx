@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
-import useUpdateConditionValue from "../../../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import useCreateNewKeyAsValue from "../../../../../hooks/Key/useCreateNewKeyAsValue";
 import useGetAllKeysByStoryId from "../../../../../hooks/Key/useGetAllKeysByStoryId";
 import useConditionBlocks from "../../Context/ConditionContext";
@@ -13,68 +12,56 @@ import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/Asid
 import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
 import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
 import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import useUpdateConditionKey from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionKey";
+import useGetKeyById from "../../../../../hooks/Key/useGetKeyById";
 
 type ConditionBlockVariationKeyTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
+  conditionBlockKeyId: string;
+  keyId?: string;
+  conditionBlockVariationId: string;
 };
 
 export default function ConditionBlockVariationKey({
   plotfieldCommandId,
   conditionBlockId,
+  conditionBlockVariationId,
+  keyId,
 }: ConditionBlockVariationKeyTypes) {
   const [showKeyPromptModal, setShowKeyPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] =
-    useState(false);
-  const [commandKeyId, setCommandKeyId] = useState("");
-  const [debouncedKeyValue, setDebouncedKeyValue] =
-    useState<DebouncedCheckKeyTypes | null>(null);
+  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
+  const [commandKeyId, setCommandKeyId] = useState(keyId || "");
+  const [debouncedKeyValue, setDebouncedKeyValue] = useState<DebouncedCheckKeyTypes | null>(null);
 
-  const {
-    getConditionBlockById,
-    updateConditionBlockName,
-    updateConditionBlockValueId,
-    conditions,
-  } = useConditionBlocks();
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
 
-  const [currentConditionName, setCurrentConditionName] = useState(
-    getConditionBlockById({ plotfieldCommandId, conditionBlockId })
-      ?.conditionName || ""
-  );
+  const [currentConditionName, setCurrentConditionName] = useState("");
+
+  const { data: commandKey } = useGetKeyById({ keyId: commandKeyId });
+
+  const updateConditionBlock = useUpdateConditionKey({
+    conditionBlockKeyId: conditionBlockVariationId || "",
+  });
 
   useEffect(() => {
-    const conditionBlock = getConditionBlockById({
-      conditionBlockId,
-      plotfieldCommandId,
-    });
-    if (conditionBlock?.conditionName !== currentConditionName) {
-      setCurrentConditionName(conditionBlock?.conditionName || "");
+    if (commandKey) {
+      setCurrentConditionName(commandKey.text);
     }
-  }, [conditions, conditionBlockId, plotfieldCommandId]);
+  }, [commandKey]);
 
   useEffect(() => {
     if (commandKeyId && currentConditionName) {
-      updateConditionBlockName({
-        conditionBlockId:
-          getConditionBlockById({
-            conditionBlockId,
-            plotfieldCommandId,
-          })?.conditionBlockId || "",
-        conditionName: currentConditionName,
+      updateConditionBlockVariationValue({
+        conditionBlockId,
         plotfieldCommandId,
+        conditionBlockVariationId,
+        commandKeyId,
       });
 
-      updateConditionBlockValueId({
-        blockValueId: commandKeyId,
-        conditionBlockId,
-        conditionType: "key",
-        plotfieldCommandId,
-      });
       updateConditionBlock.mutate({
-        name: currentConditionName,
-        type: "key",
-        blockValueId: commandKeyId,
+        keyId: commandKeyId,
       });
     }
   }, [commandKeyId]);
@@ -84,42 +71,26 @@ export default function ConditionBlockVariationKey({
     value: currentConditionName,
   });
 
-  const updateConditionBlock = useUpdateConditionValue({
-    conditionBlockId,
-  });
-
   useEffect(() => {
     if (debouncedKeyValue && !showKeyPromptModal) {
-      updateConditionBlockName({
-        conditionBlockId:
-          getConditionBlockById({
-            conditionBlockId,
-            plotfieldCommandId,
-          })?.conditionBlockId || "",
-        conditionName: debouncedKeyValue.keyName,
-        plotfieldCommandId,
-      });
-
-      updateConditionBlockValueId({
-        blockValueId: debouncedKeyValue.keyId,
+      updateConditionBlockVariationValue({
         conditionBlockId,
-        conditionType: "key",
         plotfieldCommandId,
+        conditionBlockVariationId,
+        commandKeyId,
       });
 
       setCurrentConditionName(debouncedKeyValue.keyName);
       setCommandKeyId(debouncedKeyValue.keyId);
 
       updateConditionBlock.mutate({
-        name: debouncedKeyValue.keyName,
-        type: "key",
-        blockValueId: debouncedKeyValue.keyId,
+        keyId: debouncedKeyValue.keyId,
       });
     }
   }, [debouncedKeyValue]);
 
   return (
-    <div className="relative mt-[1.5rem]">
+    <div className="relative">
       <PlotfieldInput
         type="text"
         placeholder="Ключ"
@@ -134,15 +105,6 @@ export default function ConditionBlockVariationKey({
           }
           setHighlightRedOnValueOnExisting(false);
           setCurrentConditionName(e.target.value);
-          updateConditionBlockName({
-            conditionBlockId:
-              getConditionBlockById({
-                plotfieldCommandId,
-                conditionBlockId,
-              })?.conditionBlockId || "",
-            conditionName: e.target.value,
-            plotfieldCommandId,
-          });
         }}
         className={`${highlightRedOnValueNonExisting ? "" : ""}`}
       />
@@ -159,7 +121,7 @@ export default function ConditionBlockVariationKey({
 
       <CreateNewValueModal
         conditionName={currentConditionName}
-        conditionBlockId={conditionBlockId}
+        conditionBlockKeyId={conditionBlockVariationId}
         setHighlightRedOnValueOnExisting={setHighlightRedOnValueOnExisting}
         setShowCreateNewValueModal={setShowCreateNewValueModal}
         showCreateNewValueModal={showCreateNewValueModal}
@@ -188,9 +150,7 @@ type KeyPromptsModalTypes = {
   setCurrentKeyName: React.Dispatch<React.SetStateAction<string>>;
   currentKeyName: string;
   debouncedKey: string;
-  setDebouncedKeyValue: React.Dispatch<
-    React.SetStateAction<DebouncedCheckKeyTypes | null>
-  >;
+  setDebouncedKeyValue: React.Dispatch<React.SetStateAction<DebouncedCheckKeyTypes | null>>;
   setCommandKeyId: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -210,9 +170,7 @@ export function KeyPromptsModal({
     if (!keys) return [];
 
     if (currentKeyName) {
-      return keys?.filter((k) =>
-        k?.text?.toLowerCase().includes(currentKeyName?.toLowerCase())
-      );
+      return keys?.filter((k) => k?.text?.toLowerCase().includes(currentKeyName?.toLowerCase()));
     }
     return keys;
   }, [currentKeyName, keys]);
@@ -221,9 +179,7 @@ export function KeyPromptsModal({
 
   useEffect(() => {
     if (debouncedKey?.trim().length) {
-      const existingKey = memoizedKeys?.find(
-        (k) => k.text?.toLowerCase() === currentKeyName?.toLowerCase()
-      );
+      const existingKey = memoizedKeys?.find((k) => k.text?.toLowerCase() === currentKeyName?.toLowerCase());
       if (existingKey) {
         setDebouncedKeyValue({
           keyId: existingKey._id,
@@ -238,11 +194,9 @@ export function KeyPromptsModal({
     setShowModal: setShowKeyPromptModal,
     showModal: showKeyPromptModal,
   });
+
   return (
-    <AsideScrollable
-      ref={modalRef}
-      className={`${showKeyPromptModal ? "" : "hidden"} translate-y-[.5rem]`}
-    >
+    <AsideScrollable ref={modalRef} className={`${showKeyPromptModal ? "" : "hidden"} translate-y-[.5rem]`}>
       {memoizedKeys?.length ? (
         memoizedKeys.map((mk) => (
           <AsideScrollableButton
@@ -272,11 +226,9 @@ export function KeyPromptsModal({
 type CreateNewValueModalTypes = {
   showCreateNewValueModal: boolean;
   conditionName: string;
-  conditionBlockId: string;
+  conditionBlockKeyId: string;
   setShowCreateNewValueModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setHighlightRedOnValueOnExisting: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setHighlightRedOnValueOnExisting: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function CreateNewValueModal({
@@ -284,14 +236,14 @@ function CreateNewValueModal({
   setShowCreateNewValueModal,
   showCreateNewValueModal,
   conditionName,
-  conditionBlockId,
+  conditionBlockKeyId,
 }: CreateNewValueModalTypes) {
   const { storyId } = useParams();
   const focusOnBtnRef = useRef<HTMLButtonElement>(null);
   const createNewKeyModalRef = useRef<HTMLDivElement>(null);
 
-  const updateConditionBlock = useUpdateConditionValue({
-    conditionBlockId,
+  const updateConditionBlock = useUpdateConditionKey({
+    conditionBlockKeyId,
   });
 
   useEffect(() => {
@@ -307,8 +259,7 @@ function CreateNewValueModal({
     const keyId = generateMongoObjectId();
     createNewKey.mutate({ keyName: conditionName, keyId });
     updateConditionBlock.mutate({
-      name: conditionName,
-      blockValueId: keyId,
+      keyId,
     });
   };
 
@@ -319,17 +270,9 @@ function CreateNewValueModal({
   });
 
   return (
-    <AsideInformativeOrSuggestion
-      ref={createNewKeyModalRef}
-      className={`${showCreateNewValueModal ? "" : "hidden"}`}
-    >
-      <InformativeOrSuggestionText>
-        Такого ключа не существует, хотите создать?
-      </InformativeOrSuggestionText>
-      <InformativeOrSuggestionButton
-        ref={focusOnBtnRef}
-        onClick={handleCreatingNewKey}
-      >
+    <AsideInformativeOrSuggestion ref={createNewKeyModalRef} className={`${showCreateNewValueModal ? "" : "hidden"}`}>
+      <InformativeOrSuggestionText>Такого ключа не существует, хотите создать?</InformativeOrSuggestionText>
+      <InformativeOrSuggestionButton ref={focusOnBtnRef} onClick={handleCreatingNewKey}>
         Создать
       </InformativeOrSuggestionButton>
     </AsideInformativeOrSuggestion>

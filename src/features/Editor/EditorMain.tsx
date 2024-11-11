@@ -10,6 +10,7 @@ import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
 import Flowchart from "./Flowchart/Flowchart";
 import "./Flowchart/FlowchartStyles.css";
 import PlotField from "./PlotField/PlotField";
+import useHandleDeletionOfCommand from "./PlotField/hooks/helpers/useHandleDeletionOfCommand";
 
 type EditorMainTypes = {
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
@@ -58,6 +59,7 @@ export default function EditorMain({
 
   useHandleNavigationThroughCommands();
 
+  useHandleDeletionOfCommand();
   return (
     <>
       {typeof hideFlowchartFromScriptwriter === "boolean" && (

@@ -21,6 +21,8 @@ import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
 import { PlotfieldOptimisticCommandTypes } from "../../Context/PlotfieldCommandSlice";
+import { useEffect } from "react";
+import usePlotfieldCommands from "../../Context/PlotFieldContext";
 
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
@@ -43,6 +45,52 @@ export default function PlotfieldItem({
   emotionName,
   commandOrder,
 }: PlotFieldItemTypes) {
+  const { getCommandOnlyByPlotfieldCommandId } = usePlotfieldCommands();
+
+  useEffect(() => {
+    const handleUpdatingChoiceSession = () => {
+      const currentCommandChoice = sessionStorage.getItem("focusedCommandChoice")?.split("?").filter(Boolean);
+
+      const deepLevelChoice = currentCommandChoice?.includes("none")
+        ? null
+        : (currentCommandChoice?.length || 0) > 0
+        ? (currentCommandChoice?.length || 0) - 1
+        : null;
+
+      if (typeof deepLevelChoice !== "number") {
+        console.error("Extremely wierd staff");
+        return;
+      }
+
+      if (deepLevelChoice === 0) {
+        console.log("Went only inside the first level");
+        return;
+      }
+
+      const lastCommandChoice = (currentCommandChoice || [])[deepLevelChoice]?.split("-");
+      const secondToLastCommandChoice = (currentCommandChoice || [])[deepLevelChoice - 1]?.split("-");
+
+      const lastChoicePlotfieldId = lastCommandChoice[0];
+      const secondToLastChoicePlotfieldId = secondToLastCommandChoice[0];
+
+      const lastChoicePlotfieldCommand = getCommandOnlyByPlotfieldCommandId({
+        plotfieldCommandId: lastChoicePlotfieldId,
+      });
+      const secondToLastChoicePlotfieldCommand = getCommandOnlyByPlotfieldCommandId({
+        plotfieldCommandId: secondToLastChoicePlotfieldId,
+      });
+
+      if (lastChoicePlotfieldCommand?.topologyBlockId !== secondToLastChoicePlotfieldCommand?.topologyBlockId) {
+        // basically if last command choice is not inside the secondToLast
+      }
+    };
+
+    window.addEventListener("storage", handleUpdatingChoiceSession);
+    return () => {
+      window.removeEventListener("storage", handleUpdatingChoiceSession);
+    };
+  }, [getCommandOnlyByPlotfieldCommandId]);
+
   return (
     <li
       {...provided.draggableProps}
@@ -75,11 +123,7 @@ export default function PlotfieldItem({
           commandSide={commandSide}
         />
       ) : command === "achievement" ? (
-        <CommandAchievementField
-          topologyBlockId={topologyBlockId}
-          command={command}
-          plotFieldCommandId={_id}
-        />
+        <CommandAchievementField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "ambient" ? (
         <CommandAmbientField command={command} plotFieldCommandId={_id} />
       ) : command === "cutscene" ? (
@@ -103,47 +147,21 @@ export default function PlotfieldItem({
       ) : command === "background" ? (
         <CommandBackgroundField command={command} plotFieldCommandId={_id} />
       ) : command === "getitem" ? (
-        <CommandGetItemField
-          topologyBlockId={topologyBlockId}
-          command={command}
-          plotFieldCommandId={_id}
-        />
+        <CommandGetItemField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "if" ? (
-        <CommandIfField
-          topologyBlockId={topologyBlockId}
-          command={command}
-          plotFieldCommandId={_id}
-        />
+        <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "wardrobe" ? (
-        <CommandWardrobeField
-          topologyBlockId={topologyBlockId}
-          command={command}
-          plotFieldCommandId={_id}
-        />
+        <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "choice" ? (
-        <CommandChoiceField
-          command={command}
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={_id}
-        />
+        <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
       ) : command === "call" ? (
-        <CommandCallField
-          command={command}
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={_id}
-        />
+        <CommandCallField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
       ) : command === "condition" ? (
-        <CommandConditionField
-          command={command}
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={_id}
-        />
+        <CommandConditionField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
       ) : command === "comment" ? (
         <CommandCommentField command={command} plotFieldCommandId={_id} />
       ) : null}
-      <span className="w-[3rem] bg-red-500 text-center text-text-light rounded-md text-[1.5rem]">
-        {commandOrder}
-      </span>
+      <span className="w-[3rem] bg-red-500 text-center text-text-light rounded-md text-[1.5rem]">{commandOrder}</span>
     </li>
   );
 }

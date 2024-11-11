@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
-import { AllConditionSigns } from "../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
+import {
+  AllConditionSigns,
+  ConditionValueVariationType,
+} from "../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import { PlotfieldConditionSingsPrompt } from "../../ConditionValueItem";
 import useConditionBlocks from "../../Context/ConditionContext";
 import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
@@ -9,14 +12,18 @@ import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton
 type ConditionSignFieldTypes = {
   conditionBlockId: string;
   plotfieldCommandId: string;
+  conditionBlockVariationId: string;
+  type: ConditionValueVariationType;
 };
 
 export default function ConditionSignField({
   conditionBlockId,
   plotfieldCommandId,
+  conditionBlockVariationId,
+  type,
 }: ConditionSignFieldTypes) {
   const modalRef = useRef<HTMLDivElement>(null);
-  const { getConditionBlockById } = useConditionBlocks();
+  const { getConditionBlockVariationById } = useConditionBlocks();
 
   const [showSignModal, setShowSignModal] = useState(false);
 
@@ -35,15 +42,11 @@ export default function ConditionSignField({
         type="button"
         className="hover:bg-primary-darker"
       >
-        {getConditionBlockById({ conditionBlockId, plotfieldCommandId })?.sign
-          ? getConditionBlockById({ conditionBlockId, plotfieldCommandId })
-              ?.sign
+        {getConditionBlockVariationById({ conditionBlockId, plotfieldCommandId, conditionBlockVariationId })?.sign
+          ? getConditionBlockVariationById({ conditionBlockId, plotfieldCommandId, conditionBlockVariationId })?.sign
           : "Знак"}
       </PlotfieldButton>
-      <AsideScrollable
-        ref={modalRef}
-        className={` ${showSignModal ? "" : "hidden"} translate-y-[.5rem] `}
-      >
+      <AsideScrollable ref={modalRef} className={` ${showSignModal ? "" : "hidden"} translate-y-[.5rem] `}>
         {AllConditionSigns &&
           AllConditionSigns?.map((c) => (
             <PlotfieldConditionSingsPrompt
@@ -52,6 +55,8 @@ export default function ConditionSignField({
               setShowSignModal={setShowSignModal}
               conditionBlockId={conditionBlockId}
               plotfieldCommandId={plotfieldCommandId}
+              conditionBlockVariationId={conditionBlockVariationId}
+              type={type}
             />
           ))}
       </AsideScrollable>

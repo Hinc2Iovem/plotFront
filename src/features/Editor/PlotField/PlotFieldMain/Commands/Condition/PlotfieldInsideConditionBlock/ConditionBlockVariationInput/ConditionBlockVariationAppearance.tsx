@@ -1,81 +1,67 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import useGetTranslationAppearancePartsByStoryId from "../../../../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
+import useGetTranslationAppearancePart from "../../../../../../../../hooks/Fetching/Translation/useGetTranslationAppearancePart";
+import useCreateAppearancePartOptimistic from "../../../../../../../../hooks/Posting/AppearancePart/useCreateAppearancePartOptimistic";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import useUpdateConditionValue from "../../../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
-import useConditionBlocks from "../../Context/ConditionContext";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
-import useGetTranslationAppearancePartsByStoryId from "../../../../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
-import useCreateAppearancePartOptimistic from "../../../../../../../../hooks/Posting/AppearancePart/useCreateAppearancePartOptimistic";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
 import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
+import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import useConditionBlocks from "../../Context/ConditionContext";
+import useUpdateConditionAppearance from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionAppearance";
 
 type ConditionBlockVariationAppearanceTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
+  currentAppearancePartId: string;
+  conditionBlockVariationId: string;
 };
 
 export default function ConditionBlockVariationAppearance({
   plotfieldCommandId,
   conditionBlockId,
+  currentAppearancePartId,
+  conditionBlockVariationId,
 }: ConditionBlockVariationAppearanceTypes) {
-  const [showAppearancePartPromptModal, setShowAppearancePartPromptModal] =
-    useState(false);
+  const [showAppearancePartPromptModal, setShowAppearancePartPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueNonExisting] =
-    useState(false);
-  const [appearancePartId, setAppearancePartId] = useState("");
+  const [highlightRedOnValueNonExisting, setHighlightRedOnValueNonExisting] = useState(false);
+  const [appearancePartId, setAppearancePartId] = useState(currentAppearancePartId || "");
   const [debouncedAppearancePartValue, setDebouncedAppearancePartValue] =
     useState<DebouncedCheckAppearancePartTypes | null>(null);
 
-  const {
-    getConditionBlockById,
-    updateConditionBlockName,
-    updateConditionBlockValueId,
-    conditions,
-  } = useConditionBlocks();
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
 
-  const [currentConditionName, setCurrentConditionName] = useState(
-    getConditionBlockById({ plotfieldCommandId, conditionBlockId })
-      ?.conditionName || ""
-  );
+  const [currentConditionName, setCurrentConditionName] = useState("");
+
+  const { data: appearancePart } = useGetTranslationAppearancePart({ appearancePartId, language: "russian" });
+
+  const updateConditionBlock = useUpdateConditionAppearance({
+    conditionBlockAppearanceId: conditionBlockVariationId,
+  });
 
   useEffect(() => {
-    const conditionBlock = getConditionBlockById({
-      conditionBlockId,
-      plotfieldCommandId,
-    });
-    if (conditionBlock?.conditionName !== currentConditionName) {
-      setCurrentConditionName(conditionBlock?.conditionName || "");
+    if (appearancePart) {
+      setCurrentConditionName((appearancePart.translations || [])[0]?.text);
     }
-  }, [conditions, conditionBlockId, plotfieldCommandId]);
+  }, [appearancePart, appearancePartId]);
 
   useEffect(() => {
     if (appearancePartId && currentConditionName) {
-      updateConditionBlockName({
-        conditionBlockId:
-          getConditionBlockById({
-            conditionBlockId,
-            plotfieldCommandId,
-          })?.conditionBlockId || "",
-        conditionName: currentConditionName,
+      updateConditionBlockVariationValue({
+        conditionBlockId,
         plotfieldCommandId,
+        conditionBlockVariationId,
+        appearancePartId,
       });
 
-      updateConditionBlockValueId({
-        blockValueId: appearancePartId,
-        conditionBlockId,
-        conditionType: "appearance",
-        plotfieldCommandId,
-      });
       updateConditionBlock.mutate({
-        name: currentConditionName,
-        type: "appearance",
-        blockValueId: appearancePartId,
+        appearancePartId,
       });
     }
   }, [appearancePartId]);
@@ -85,42 +71,26 @@ export default function ConditionBlockVariationAppearance({
     value: currentConditionName,
   });
 
-  const updateConditionBlock = useUpdateConditionValue({
-    conditionBlockId,
-  });
-
   useEffect(() => {
     if (debouncedAppearancePartValue && !showAppearancePartPromptModal) {
-      updateConditionBlockName({
-        conditionBlockId:
-          getConditionBlockById({
-            conditionBlockId,
-            plotfieldCommandId,
-          })?.conditionBlockId || "",
-        conditionName: debouncedAppearancePartValue.partName,
-        plotfieldCommandId,
-      });
-
-      updateConditionBlockValueId({
-        blockValueId: debouncedAppearancePartValue.partId,
+      updateConditionBlockVariationValue({
         conditionBlockId,
-        conditionType: "appearance",
         plotfieldCommandId,
+        conditionBlockVariationId,
+        appearancePartId,
       });
 
       setCurrentConditionName(debouncedAppearancePartValue.partName);
       setAppearancePartId(debouncedAppearancePartValue.partId);
 
       updateConditionBlock.mutate({
-        name: debouncedAppearancePartValue.partName,
-        type: "appearance",
-        blockValueId: debouncedAppearancePartValue.partId,
+        appearancePartId,
       });
     }
   }, [debouncedAppearancePartValue]);
 
   return (
-    <div className="relative mt-[1.5rem]">
+    <div className="relative">
       <PlotfieldInput
         type="text"
         placeholder="Часть внешности"
@@ -135,15 +105,6 @@ export default function ConditionBlockVariationAppearance({
           }
           setHighlightRedOnValueNonExisting(false);
           setCurrentConditionName(e.target.value);
-          updateConditionBlockName({
-            conditionBlockId:
-              getConditionBlockById({
-                plotfieldCommandId,
-                conditionBlockId,
-              })?.conditionBlockId || "",
-            conditionName: e.target.value,
-            plotfieldCommandId,
-          });
         }}
         className={`${highlightRedOnValueNonExisting ? "" : ""}`}
       />
@@ -160,7 +121,7 @@ export default function ConditionBlockVariationAppearance({
 
       <CreateNewValueModal
         conditionName={currentConditionName}
-        conditionBlockId={conditionBlockId}
+        conditionBlockAppearanceId={conditionBlockVariationId}
         setHighlightRedOnValueNonExisting={setHighlightRedOnValueNonExisting}
         setShowCreateNewValueModal={setShowCreateNewValueModal}
         showCreateNewValueModal={showCreateNewValueModal}
@@ -176,15 +137,11 @@ export type DebouncedCheckAppearancePartTypes = {
 
 type AppearancePartPromptsModalTypes = {
   showAppearancePartPromptModal: boolean;
-  setShowAppearancePartPromptModal: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setShowAppearancePartPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentAppearancePartName: React.Dispatch<React.SetStateAction<string>>;
   currentAppearancePartName: string;
   debouncedAppearancePart: string;
-  setDebouncedAppearancePartValue: React.Dispatch<
-    React.SetStateAction<DebouncedCheckAppearancePartTypes | null>
-  >;
+  setDebouncedAppearancePartValue: React.Dispatch<React.SetStateAction<DebouncedCheckAppearancePartTypes | null>>;
   setAppearancePartId: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -207,11 +164,7 @@ function AppearancePartPromptsModal({
 
     if (currentAppearancePartName) {
       return appearanceParts?.filter((p) =>
-        p?.translations?.filter((pt) =>
-          pt.text
-            ?.toLowerCase()
-            .includes(currentAppearancePartName?.toLowerCase())
-        )
+        p?.translations?.filter((pt) => pt.text?.toLowerCase().includes(currentAppearancePartName?.toLowerCase()))
       );
     }
     return appearanceParts;
@@ -222,10 +175,7 @@ function AppearancePartPromptsModal({
   useEffect(() => {
     if (debouncedAppearancePart?.trim().length) {
       const existingPart = memoizedAppearanceParts?.find((p) =>
-        p?.translations?.find(
-          (pt) =>
-            pt.text?.toLowerCase() === currentAppearancePartName.toLowerCase()
-        )
+        p?.translations?.find((pt) => pt.text?.toLowerCase() === currentAppearancePartName.toLowerCase())
       );
       if (existingPart) {
         setDebouncedAppearancePartValue({
@@ -243,12 +193,7 @@ function AppearancePartPromptsModal({
   });
 
   return (
-    <AsideScrollable
-      ref={modalRef}
-      className={`${
-        showAppearancePartPromptModal ? "" : "hidden"
-      } translate-y-[.5rem]`}
-    >
+    <AsideScrollable ref={modalRef} className={`${showAppearancePartPromptModal ? "" : "hidden"} translate-y-[.5rem]`}>
       {memoizedAppearanceParts?.length ? (
         memoizedAppearanceParts.map((mp) => (
           <AsideScrollableButton
@@ -278,11 +223,9 @@ function AppearancePartPromptsModal({
 type CreateNewValueModalTypes = {
   showCreateNewValueModal: boolean;
   conditionName: string;
-  conditionBlockId: string;
+  conditionBlockAppearanceId: string;
   setShowCreateNewValueModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setHighlightRedOnValueNonExisting: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setHighlightRedOnValueNonExisting: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function CreateNewValueModal({
@@ -290,13 +233,13 @@ function CreateNewValueModal({
   setShowCreateNewValueModal,
   showCreateNewValueModal,
   conditionName,
-  conditionBlockId,
+  conditionBlockAppearanceId,
 }: CreateNewValueModalTypes) {
   const { storyId } = useParams();
   const focusOnBtnRef = useRef<HTMLButtonElement>(null);
   const createNewAppearanceModalRef = useRef<HTMLDivElement>(null);
-  const updateConditionBlock = useUpdateConditionValue({
-    conditionBlockId,
+  const updateConditionBlock = useUpdateConditionAppearance({
+    conditionBlockAppearanceId,
   });
 
   useEffect(() => {
@@ -316,8 +259,7 @@ function CreateNewValueModal({
     const appearanceId = generateMongoObjectId();
     createNewAppearance.mutate({ appearancePartId: appearanceId });
     updateConditionBlock.mutate({
-      name: conditionName,
-      blockValueId: appearanceId,
+      appearancePartId: appearanceId,
     });
   };
 
@@ -332,13 +274,8 @@ function CreateNewValueModal({
       ref={createNewAppearanceModalRef}
       className={`${showCreateNewValueModal ? "" : "hidden"}`}
     >
-      <InformativeOrSuggestionText>
-        Такой одежды не существует, хотите создать?
-      </InformativeOrSuggestionText>
-      <InformativeOrSuggestionButton
-        ref={focusOnBtnRef}
-        onClick={handleCreatingNewAppearance}
-      >
+      <InformativeOrSuggestionText>Такой одежды не существует, хотите создать?</InformativeOrSuggestionText>
+      <InformativeOrSuggestionButton ref={focusOnBtnRef} onClick={handleCreatingNewAppearance}>
         Создать
       </InformativeOrSuggestionButton>
     </AsideInformativeOrSuggestion>

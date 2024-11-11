@@ -3,53 +3,35 @@ import {
   ConditionValueVariationType,
 } from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import useUpdateConditionValue from "../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
-import useConditionBlocks from "./Context/ConditionContext";
-import ConditionBlockVariationAppearance from "./PlotfieldInsideConditionBlock/ConditionBlockVariationInput/ConditionBlockVariationAppearance";
-import ConditionBlockVariationCharacter from "./PlotfieldInsideConditionBlock/ConditionBlockVariationInput/ConditionBlockVariationCharacter";
-import ConditionBlockVariationCharacteristic from "./PlotfieldInsideConditionBlock/ConditionBlockVariationInput/ConditionBlockVariationCharacteristic";
-import ConditionBlockVariationKey from "./PlotfieldInsideConditionBlock/ConditionBlockVariationInput/ConditionBlockVariationKey";
+import useUpdateConditionCharacter from "../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacter";
+import useUpdateConditionCharacteristic from "../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
+import useUpdateConditionRetry from "../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionRetry";
+import useConditionBlocks, { ConditionBlockItemTypes } from "./Context/ConditionContext";
+import { ConditionBlockInputFieldItem } from "./PlotfieldInsideConditionBlock/ConditionBlockInputField";
 
 type ConditionValueItemTypes = {
-  conditionBlockId: string;
-  name: string | undefined;
-  sign: ConditionSignTypes | undefined;
-  value: string | null | undefined;
   plotfieldCommandId: string;
-  conditionType: ConditionValueVariationType;
-};
+  conditionBlockId: string;
+} & ConditionBlockItemTypes;
 
 export default function ConditionValueItem({
-  conditionBlockId,
-  conditionType,
   plotfieldCommandId,
+  conditionBlockId,
+  conditionBlockVariations,
 }: ConditionValueItemTypes) {
   return (
     <form
-      className="w-full flex-grow flex flex-col gap-[1rem] bg-secondary rounded-md h-fit"
+      className="w-full flex-grow flex flex-col gap-[1.5rem] bg-secondary rounded-md h-fit"
       onSubmit={(e) => e.preventDefault()}
     >
-      {conditionType === "key" ? (
-        <ConditionBlockVariationKey
-          conditionBlockId={conditionBlockId}
+      {conditionBlockVariations.map((cbv) => (
+        <ConditionBlockInputFieldItem
+          key={cbv.conditionBlockVariationId}
+          {...cbv}
           plotfieldCommandId={plotfieldCommandId}
-        />
-      ) : conditionType === "appearance" ? (
-        <ConditionBlockVariationAppearance
           conditionBlockId={conditionBlockId}
-          plotfieldCommandId={plotfieldCommandId}
         />
-      ) : conditionType === "character" ? (
-        <ConditionBlockVariationCharacter
-          conditionBlockId={conditionBlockId}
-          plotfieldCommandId={plotfieldCommandId}
-        />
-      ) : conditionType === "characteristic" ? (
-        <ConditionBlockVariationCharacteristic
-          conditionBlockId={conditionBlockId}
-          plotfieldCommandId={plotfieldCommandId}
-        />
-      ) : null}
+      ))}
     </form>
   );
 }
@@ -59,6 +41,8 @@ type PlotfieldSingsPromptTypes = {
   signName: ConditionSignTypes;
   conditionBlockId: string;
   plotfieldCommandId: string;
+  type: ConditionValueVariationType;
+  conditionBlockVariationId: string;
 };
 
 export function PlotfieldConditionSingsPrompt({
@@ -66,21 +50,34 @@ export function PlotfieldConditionSingsPrompt({
   signName,
   conditionBlockId,
   plotfieldCommandId,
+  conditionBlockVariationId,
+  type,
 }: PlotfieldSingsPromptTypes) {
-  const { updateConditionBlockSign } = useConditionBlocks();
-  const updateValue = useUpdateConditionValue({ conditionBlockId });
+  const { updateConditionBlockVariationSign } = useConditionBlocks();
+  const updateValueCharacter = useUpdateConditionCharacter({ conditionBlockCharacterId: conditionBlockVariationId });
+  const updateValueCharacteristic = useUpdateConditionCharacteristic({
+    conditionBlockCharacteristicId: conditionBlockVariationId,
+  });
+  const updateValueRetry = useUpdateConditionRetry({ conditionBlockRetryId: conditionBlockVariationId });
 
   return (
     <AsideScrollableButton
       type="button"
       onClick={() => {
-        updateConditionBlockSign({
+        if (type === "character") {
+          updateValueCharacter.mutate({ sign: signName });
+        } else if (type === "characteristic") {
+          updateValueCharacteristic.mutate({ sign: signName });
+        } else if (type === "retry") {
+          updateValueRetry.mutate({ sign: signName });
+        }
+        updateConditionBlockVariationSign({
           conditionBlockId,
-          plotfieldCommandId,
           sign: signName,
+          conditionBlockVariationId,
+          plotFieldCommandId: plotfieldCommandId,
         });
         setShowSignModal(false);
-        updateValue.mutate({ sign: signName });
       }}
     >
       {signName}

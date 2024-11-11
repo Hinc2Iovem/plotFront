@@ -15,11 +15,8 @@ export default function useGoingDownInsideChoiceOption({
   setShowChoiceOptionPlot,
   setIsFocusedBackground,
 }: GoingDownInsideChoiceOptionTypes) {
-  const {
-    getCurrentlyOpenChoiceOption,
-    updateCurrentlyOpenChoiceOption,
-    getFirstChoiceOptionWithTopologyBlockId,
-  } = useChoiceOptions();
+  const { getCurrentlyOpenChoiceOption, updateCurrentlyOpenChoiceOption, getFirstChoiceOptionWithTopologyBlockId } =
+    useChoiceOptions();
 
   const { getFirstCommandByTopologyBlockId } = usePlotfieldCommands();
 
@@ -32,9 +29,7 @@ export default function useGoingDownInsideChoiceOption({
       pressedKeys.add(key);
 
       if (key === "arrowdown" && pressedKeys.has("shift")) {
-        const currentFocusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const currentFocusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         const currentCommandPlotfieldId = (currentFocusedCommand || [])[1];
 
         if (currentCommandPlotfieldId !== plotfieldCommandId) {
@@ -45,10 +40,7 @@ export default function useGoingDownInsideChoiceOption({
         // firstly I need to check the depth of my current sessionStorage focusedCommandChoice, then I need to check if the value === "none", if so assign focusedCommandChoice and return
         // if it's not === to none then I need to check If I already have this value as my last array element, if so it's the second shift + arrownDown, if not it's the first time.
 
-        const focusedCommandChoice = sessionStorage
-          .getItem("focusedCommandChoice")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedCommandChoice = sessionStorage.getItem("focusedCommandChoice")?.split("?").filter(Boolean);
 
         const newChoiceValue = `${plotfieldCommandId}-choiceId-${choiceId}`;
 
@@ -59,9 +51,7 @@ export default function useGoingDownInsideChoiceOption({
           : null;
 
         if (typeof deepLevelCommandChoice === "number") {
-          const currentFocusedCommandChoice = (focusedCommandChoice || [])[
-            deepLevelCommandChoice
-          ].split("-");
+          const currentFocusedCommandChoice = (focusedCommandChoice || [])[deepLevelCommandChoice].split("-");
 
           const currentFocusedCommandChoiceId = currentFocusedCommandChoice[2];
 
@@ -71,9 +61,7 @@ export default function useGoingDownInsideChoiceOption({
               choiceId: currentFocusedCommandChoiceId,
             });
             if (!currentlyOpenChoiceOption) {
-              console.log(
-                "You should have an open choiceOption. How did you do that?"
-              );
+              console.log("You should have an open choiceOption. How did you do that?");
               return;
             }
 
@@ -82,9 +70,7 @@ export default function useGoingDownInsideChoiceOption({
             });
 
             if (!fisrtCommand) {
-              console.log(
-                "Oops, probably you haven't created any command inside choice yet."
-              );
+              console.log("Oops, probably you haven't created any command inside choice yet.");
               return;
             }
 
@@ -92,13 +78,13 @@ export default function useGoingDownInsideChoiceOption({
 
             sessionStorage.setItem(
               "focusedCommand",
-              `${
-                fisrtCommand?.sayType?.trim().length
-                  ? fisrtCommand.sayType
-                  : fisrtCommand?.command
-              }-${fisrtCommand?._id}`
+              `${fisrtCommand?.sayType?.trim().length ? fisrtCommand.sayType : fisrtCommand?.command}-${
+                fisrtCommand?._id
+              }`
             );
+
             setIsFocusedBackground(false);
+            event.stopImmediatePropagation();
             return;
           } else {
             // first click
@@ -113,30 +99,27 @@ export default function useGoingDownInsideChoiceOption({
             });
 
             if (!firstChoiceOption) {
-              console.log(
-                "There are probably no choice option with assigned TopologyBlock"
-              );
+              console.log("There are probably no choice option with assigned TopologyBlock");
               return;
             }
 
-            sessionStorage.setItem(
-              "focusedCommandChoice",
-              `${focusedCommandChoice?.join("?")}${newChoiceValue}?`
-            );
+            sessionStorage.setItem("focusedCommandChoice", `${focusedCommandChoice?.join("?")}?${newChoiceValue}?`);
 
-            const currentChoiceOptionsSession = sessionStorage.getItem(
-              "focusedChoiceOption"
-            );
+            const currentChoiceOptionsSession = sessionStorage.getItem("focusedChoiceOption");
 
             sessionStorage.setItem(
               "focusedChoiceOption",
-              `${currentChoiceOptionsSession}-${firstChoiceOption.optionType}-${firstChoiceOption.choiceOptionId}-plotfieldCommandId-${currentCommandPlotfieldId}?`
+              `${currentChoiceOptionsSession}${firstChoiceOption.optionType}-${firstChoiceOption.choiceOptionId}-plotfieldCommandId-${currentCommandPlotfieldId}?`
             );
 
+            const focusedCommandInsideType = sessionStorage.getItem("focusedCommandInsideType");
+
             sessionStorage.setItem(
-              "focusedTopologyBlock",
-              firstChoiceOption.topologyBlockId
+              "focusedCommandInsideType",
+              `${focusedCommandInsideType}${plotfieldCommandId}-choice?`
             );
+
+            sessionStorage.setItem("focusedTopologyBlock", firstChoiceOption.topologyBlockId);
 
             updateCurrentlyOpenChoiceOption({
               choiceOptionId: firstChoiceOption.choiceOptionId,
@@ -152,9 +135,7 @@ export default function useGoingDownInsideChoiceOption({
           });
 
           if (!firstChoiceOption) {
-            console.log(
-              "There are probably no choice option with assigned TopologyBlock"
-            );
+            console.log("There are probably no choice option with assigned TopologyBlock");
             return;
           }
 
@@ -165,10 +146,14 @@ export default function useGoingDownInsideChoiceOption({
             `${firstChoiceOption.optionType}-${firstChoiceOption.choiceOptionId}-plotfieldCommandId-${currentCommandPlotfieldId}?`
           );
 
+          const focusedCommandInsideType = sessionStorage.getItem("focusedCommandInsideType");
+
           sessionStorage.setItem(
-            "focusedTopologyBlock",
-            firstChoiceOption.topologyBlockId
+            "focusedCommandInsideType",
+            `${focusedCommandInsideType}${plotfieldCommandId}-choice?`
           );
+
+          sessionStorage.setItem("focusedTopologyBlock", firstChoiceOption.topologyBlockId);
 
           updateCurrentlyOpenChoiceOption({
             choiceOptionId: firstChoiceOption.choiceOptionId,

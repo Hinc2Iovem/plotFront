@@ -16,76 +16,55 @@ export default function EpisodeEditor() {
 
   const { updateFocuseReset } = usePlotfieldCommands();
 
-  const [localTopologyBlockId] = useState(
-    localStorage.getItem(`${episodeId}-topologyBlockId`)
-  );
+  const [localTopologyBlockId] = useState(localStorage.getItem(`${episodeId}-topologyBlockId`));
 
-  const [currentTopologyBlockId, setCurrentTopologyBlockId] = useState(
-    firstTopologyBlock?._id || ""
-  );
+  const [currentTopologyBlockId, setCurrentTopologyBlockId] = useState(firstTopologyBlock?._id || "");
 
   useEffect(() => {
     if (localTopologyBlockId || firstTopologyBlock) {
-      const currentTopologyBlockId = sessionStorage.getItem(
-        "focusedTopologyBlock"
-      );
+      const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
       const currentEpisodeId = sessionStorage.getItem("episode");
-      if (
-        !currentTopologyBlockId?.trim().length ||
-        currentEpisodeId !== episodeId
-      ) {
+      if (!currentTopologyBlockId?.trim().length || currentEpisodeId !== episodeId) {
         sessionStorage.setItem(
           `focusedTopologyBlock`,
-          localTopologyBlockId
-            ? localTopologyBlockId
-            : firstTopologyBlock?._id || ""
+          localTopologyBlockId ? localTopologyBlockId : firstTopologyBlock?._id || ""
         );
         sessionStorage.setItem("episode", `${episodeId}`);
         sessionStorage.setItem(
           `focusedCommand`,
-          `none-${
-            localTopologyBlockId
-              ? localTopologyBlockId
-              : firstTopologyBlock?._id || ""
-          }`
+          `none-${localTopologyBlockId ? localTopologyBlockId : firstTopologyBlock?._id || ""}`
         );
         sessionStorage.setItem("focusedCommandIf", `none`);
         sessionStorage.setItem("focusedCommandCondition", `none`);
         sessionStorage.setItem("focusedCommandChoice", `none`);
+        sessionStorage.setItem("focusedConditionBlock", `none`);
+        sessionStorage.setItem("focusedChoiceOption", `none`);
+        sessionStorage.setItem("focusedCommandInsideType", `default?`);
         updateFocuseReset({ value: false });
       }
 
-      setCurrentTopologyBlockId(
-        localTopologyBlockId
-          ? localTopologyBlockId
-          : firstTopologyBlock?._id || ""
-      );
+      setCurrentTopologyBlockId(localTopologyBlockId ? localTopologyBlockId : firstTopologyBlock?._id || "");
     }
   }, [firstTopologyBlock, localTopologyBlockId, updateFocuseReset, episodeId]);
 
   useEffect(() => {
-    const isReload =
-      performance.getEntriesByType("navigation")[0]?.entryType === "reload";
+    const isReload = performance.getEntriesByType("navigation")[0]?.entryType === "reload";
 
     if (isReload && (firstTopologyBlock || localTopologyBlockId)) {
       sessionStorage.setItem(
         "focusedTopologyBlock",
-        localTopologyBlockId?.trim().length
-          ? localTopologyBlockId
-          : firstTopologyBlock?._id || ""
+        localTopologyBlockId?.trim().length ? localTopologyBlockId : firstTopologyBlock?._id || ""
       );
       sessionStorage.setItem(
         "focusedCommand",
-        `none-${
-          localTopologyBlockId?.trim().length
-            ? localTopologyBlockId
-            : firstTopologyBlock?._id
-        }`
+        `none-${localTopologyBlockId?.trim().length ? localTopologyBlockId : firstTopologyBlock?._id}`
       );
       sessionStorage.setItem("focusedCommandIf", "none");
       sessionStorage.setItem("focusedCommandCondition", "none");
       sessionStorage.setItem("focusedCommandChoice", "none");
-      sessionStorage.setItem("focusedConditionBlock", `none`);
+      sessionStorage.setItem("focusedConditionBlock", "none");
+      sessionStorage.setItem("focusedChoiceOption", "none");
+      sessionStorage.setItem("focusedCommandInsideType", "default?");
     }
   }, [firstTopologyBlock, localTopologyBlockId]);
 

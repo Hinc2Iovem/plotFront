@@ -28,13 +28,7 @@ type CommandChoiceStoreTypes = {
     choiceId: string;
     choiceOptions: TranslationChoiceOptionTypes[];
   }) => void;
-  addChoiceOption: ({
-    choiceOption,
-    choiceId,
-  }: {
-    choiceId: string;
-    choiceOption: ChoiceOptionItemTypes;
-  }) => void;
+  addChoiceOption: ({ choiceOption, choiceId }: { choiceId: string; choiceOption: ChoiceOptionItemTypes }) => void;
   updateChoiceOptionTopologyBlockId: ({
     choiceOptionId,
     topologyBlockId,
@@ -53,18 +47,9 @@ type CommandChoiceStoreTypes = {
   }: {
     id: string;
     choiceId: string;
-
     optionType: ChoiceOptionVariationsTypes;
   }) => void;
-  updateChoiceOptionText: ({
-    id,
-    optionText,
-    choiceId,
-  }: {
-    choiceId: string;
-    id: string;
-    optionText: string;
-  }) => void;
+  updateChoiceOptionText: ({ id, optionText, choiceId }: { choiceId: string; id: string; optionText: string }) => void;
   updateChoiceOptionOrder: ({
     choiceOptionId,
     optionOrder,
@@ -82,16 +67,8 @@ type CommandChoiceStoreTypes = {
     choiceOptionId: string;
   }) => void;
   getAmountOfChoiceOptions: ({ choiceId }: { choiceId: string }) => number;
-  getCurrentlyOpenChoiceOptionPlotId: ({
-    choiceId,
-  }: {
-    choiceId: string;
-  }) => string;
-  getAllChoiceOptionsByChoiceId: ({
-    choiceId,
-  }: {
-    choiceId: string;
-  }) => ChoiceOptionItemTypes[];
+  getCurrentlyOpenChoiceOptionPlotId: ({ choiceId }: { choiceId: string }) => string;
+  getAllChoiceOptionsByChoiceId: ({ choiceId }: { choiceId: string }) => ChoiceOptionItemTypes[];
   getFirstChoiceOptionWithTopologyBlockId: ({
     plotfieldCommandId,
   }: {
@@ -118,18 +95,15 @@ type CommandChoiceStoreTypes = {
     choiceOptionId: string;
     choiceId: string;
   }) => ChoiceOptionItemTypes | null;
-  getChoiceOptionText: ({
-    choiceId,
+  getChoiceOptionText: ({ choiceId, choiceOptionId }: { choiceId: string; choiceOptionId: string }) => string;
+  getCurrentlyOpenChoiceOption: ({ choiceId }: { choiceId: string }) => ChoiceOptionItemTypes | null;
+  removeChoiceOption: ({
+    plotfieldCommandId,
     choiceOptionId,
   }: {
-    choiceId: string;
+    plotfieldCommandId: string;
     choiceOptionId: string;
-  }) => string;
-  getCurrentlyOpenChoiceOption: ({
-    choiceId,
-  }: {
-    choiceId: string;
-  }) => ChoiceOptionItemTypes | null;
+  }) => void;
 };
 
 const useChoiceOptions = create<CommandChoiceStoreTypes>()(
@@ -137,9 +111,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
     (set, get) => ({
       choices: [],
       getAmountOfChoiceOptions: ({ choiceId }) => {
-        const currentChoice = get().choices.find(
-          (c) => c.choiceId === choiceId
-        );
+        const currentChoice = get().choices.find((c) => c.choiceId === choiceId);
         if (currentChoice) {
           return currentChoice.choiceOptions.length;
         } else {
@@ -149,9 +121,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
       getChoiceOptionText: ({ choiceId, choiceOptionId }) => {
         const currentChoiceOptionText = get()
           .choices.find((c) => c.choiceId === choiceId)
-          ?.choiceOptions.find(
-            (co) => co.choiceOptionId === choiceOptionId
-          )?.optionText;
+          ?.choiceOptions.find((co) => co.choiceOptionId === choiceOptionId)?.optionText;
 
         if (currentChoiceOptionText) {
           return currentChoiceOptionText;
@@ -182,9 +152,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
       getIndexOfChoiceOptionById: ({ plotfieldCommandId, choiceOptionId }) => {
         const currentConditionBlocIndex = get()
           .choices.find((c) => c.plotfieldCommandId === plotfieldCommandId)
-          ?.choiceOptions.findIndex(
-            (co) => co.choiceOptionId === choiceOptionId
-          );
+          ?.choiceOptions.findIndex((co) => co.choiceOptionId === choiceOptionId);
 
         if (typeof currentConditionBlocIndex === "number") {
           return currentConditionBlocIndex;
@@ -193,9 +161,8 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
         }
       },
       getChoiceOptionByIndex: ({ plotfieldCommandId, index }) => {
-        const currentConditionBlocIndex = get().choices.find(
-          (c) => c.plotfieldCommandId === plotfieldCommandId
-        )?.choiceOptions[index];
+        const currentConditionBlocIndex = get().choices.find((c) => c.plotfieldCommandId === plotfieldCommandId)
+          ?.choiceOptions[index];
 
         if (currentConditionBlocIndex) {
           return currentConditionBlocIndex;
@@ -204,9 +171,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
         }
       },
       getAllChoiceOptionsByChoiceId: ({ choiceId }) => {
-        const choiceOptions = get().choices.find(
-          (c) => c.choiceId === choiceId
-        )?.choiceOptions;
+        const choiceOptions = get().choices.find((c) => c.choiceId === choiceId)?.choiceOptions;
         if (choiceOptions) {
           return choiceOptions;
         } else {
@@ -218,9 +183,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
           .choices.find((c) => c.choiceId === choiceId)
           ?.choiceOptions.find(
             (c) =>
-              c.choiceOptionId ===
-              get().choices.find((c) => c.choiceId === choiceId)
-                ?.currentlyOpenChoiceOptionPlotId
+              c.choiceOptionId === get().choices.find((c) => c.choiceId === choiceId)?.currentlyOpenChoiceOptionPlotId
           );
         if (choiceOption) {
           return choiceOption;
@@ -238,39 +201,27 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
           return null;
         }
       },
-      updateChoiceOptionTopologyBlockId: ({
-        choiceId,
-        choiceOptionId,
-        topologyBlockId,
-        topologyBlockName,
-      }) =>
+      updateChoiceOptionTopologyBlockId: ({ choiceId, choiceOptionId, topologyBlockId, topologyBlockName }) =>
         set((state) => ({
           choices: state.choices.map((c) =>
             c.choiceId === choiceId
               ? {
                   ...c,
                   choiceOptions: c.choiceOptions.map((co) =>
-                    co.choiceOptionId === choiceOptionId
-                      ? { ...co, topologyBlockId, topologyBlockName }
-                      : co
+                    co.choiceOptionId === choiceOptionId ? { ...co, topologyBlockId, topologyBlockName } : co
                   ),
                 }
               : c
           ),
         })),
-      updateCurrentlyOpenChoiceOption: ({
-        plotfieldCommandId,
-        choiceOptionId,
-      }) =>
+      updateCurrentlyOpenChoiceOption: ({ plotfieldCommandId, choiceOptionId }) =>
         set((state) => ({
           choices: state.choices.map((c) =>
             c.plotfieldCommandId === plotfieldCommandId
               ? {
                   ...c,
                   currentlyOpenChoiceOptionPlotId: choiceOptionId,
-                  choiceOptions: c.choiceOptions.map((co) =>
-                    co.choiceOptionId === choiceOptionId ? { ...co } : co
-                  ),
+                  choiceOptions: c.choiceOptions.map((co) => (co.choiceOptionId === choiceOptionId ? { ...co } : co)),
                 }
               : c
           ),
@@ -281,9 +232,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
             c.choiceId === choiceId
               ? {
                   ...c,
-                  choiceOptions: c.choiceOptions.map((co) =>
-                    co.choiceOptionId === id ? { ...co, optionText } : co
-                  ),
+                  choiceOptions: c.choiceOptions.map((co) => (co.choiceOptionId === id ? { ...co, optionText } : co)),
                 }
               : c
           ),
@@ -294,9 +243,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
             c.choiceId === choiceId
               ? {
                   ...c,
-                  choiceOptions: c.choiceOptions.find(
-                    (co) => co.choiceOptionId === choiceOption.choiceOptionId
-                  )
+                  choiceOptions: c.choiceOptions.find((co) => co.choiceOptionId === choiceOption.choiceOptionId)
                     ? c.choiceOptions
                     : [...c.choiceOptions, choiceOption],
                 }
@@ -305,9 +252,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
         })),
       setChoiceOptions: ({ choiceOptions, choiceId, plotfieldCommandId }) =>
         set((state) => {
-          const existingChoice = state.choices.find(
-            (c) => c.choiceId === choiceId
-          );
+          const existingChoice = state.choices.find((c) => c.choiceId === choiceId);
           if (existingChoice) {
             return {
               choices: state.choices.map((c) =>
@@ -353,10 +298,7 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
               ? {
                   ...c,
                   choiceOptions: c.choiceOptions.map((co) => {
-                    if (
-                      co.optionOrder === optionOrder &&
-                      choiceOptionId !== co.choiceOptionId
-                    ) {
+                    if (co.optionOrder === optionOrder && choiceOptionId !== co.choiceOptionId) {
                       return { ...co, optionOrder: null };
                     }
 
@@ -375,9 +317,18 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
             c.choiceId === choiceId
               ? {
                   ...c,
-                  choiceOptions: c.choiceOptions.map((co) =>
-                    co.choiceOptionId === id ? { ...co, optionType } : co
-                  ),
+                  choiceOptions: c.choiceOptions.map((co) => (co.choiceOptionId === id ? { ...co, optionType } : co)),
+                }
+              : c
+          ),
+        })),
+      removeChoiceOption: ({ choiceOptionId, plotfieldCommandId }) =>
+        set((state) => ({
+          choices: state.choices.map((c) =>
+            c.plotfieldCommandId === plotfieldCommandId
+              ? {
+                  ...c,
+                  choiceOptions: c.choiceOptions.filter((co) => co.choiceOptionId !== choiceOptionId),
                 }
               : c
           ),

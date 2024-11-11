@@ -67,6 +67,8 @@ export default function useHandleNavigationThroughBlocksInsideCondition({
             [])[deepLevelCommandCondition]?.split("-");
           const currentFocusedCommandConditionPlotfieldId =
             currentFocusedCommandCondition[1];
+          const currentFocusedCommandConditionId =
+            currentFocusedCommandCondition[3];
 
           if (
             currentFocusedCommandConditionPlotfieldId !== plotfieldCommandId
@@ -127,6 +129,7 @@ export default function useHandleNavigationThroughBlocksInsideCondition({
                 getConditionBlockByIndex,
                 updateCurrentlyOpenConditionBlock,
                 deepLevelConditionBlocks,
+                currentFocusedCommandConditionId,
               });
             } else if (
               indexOfCurrentBlock === currentAmountOfBlocks - 1 &&
@@ -138,6 +141,7 @@ export default function useHandleNavigationThroughBlocksInsideCondition({
                 getConditionBlockByIndex,
                 updateCurrentlyOpenConditionBlock,
                 deepLevelConditionBlocks,
+                currentFocusedCommandConditionId,
               });
             } else {
               navigateBetweenBlocks({
@@ -147,6 +151,7 @@ export default function useHandleNavigationThroughBlocksInsideCondition({
                 updateCurrentlyOpenConditionBlock,
                 deepLevelConditionBlocks,
                 isArrowDown: key === "arrowdown",
+                currentFocusedCommandConditionId,
               });
             }
           }

@@ -8,12 +8,16 @@ import PlotFieldMain from "../../../../PlotFieldMain";
 import useChoiceOptions from "../../Context/ChoiceContext";
 import { ChoiceOptionTypesAndTopologyBlockIdsTypes } from "../ChoiceOptionBlocksList";
 import ChoiceOptionInputField from "./ChoiceOptionInputField";
+import useDeleteChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useDeleteChoiceOption";
+import { useEffect, useRef, useState } from "react";
+import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 
 type PlotfieldInsideChoiceOptionTypes = {
   showOptionPlot: boolean;
   choiceId: string;
   plotfieldCommandId: string;
   isFocusedBackground: boolean;
+  currentTopologyBlockId: string;
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
   setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -23,22 +27,19 @@ export default function PlotfieldInsideChoiceOption({
   choiceId,
   plotfieldCommandId,
   isFocusedBackground,
+  currentTopologyBlockId,
   setShowOptionPlot,
   setIsFocusedBackground,
 }: PlotfieldInsideChoiceOptionTypes) {
   const { episodeId } = useParams();
 
-  const {
-    getCurrentlyOpenChoiceOption,
-    getAllChoiceOptionsByChoiceId,
-    getCurrentlyOpenChoiceOptionPlotId,
-  } = useChoiceOptions();
+  const { getCurrentlyOpenChoiceOption, getAllChoiceOptionsByChoiceId, getCurrentlyOpenChoiceOptionPlotId } =
+    useChoiceOptions();
 
   // const [showMessage, setShowMessage] = useState("");
 
   const createCommand = useCreateBlankCommand({
-    topologyBlockId:
-      getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
+    topologyBlockId: getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
     episodeId: episodeId || "",
   });
 
@@ -46,17 +47,12 @@ export default function PlotfieldInsideChoiceOption({
     const _id = generateMongoObjectId();
     createCommand.mutate({
       _id,
-      topologyBlockId:
-        getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
+      topologyBlockId: getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
     });
   };
 
   return (
-    <section
-      className={`${
-        showOptionPlot || isFocusedBackground ? "" : "hidden"
-      } flex flex-col gap-[1rem] relative`}
-    >
+    <section className={`${showOptionPlot || isFocusedBackground ? "" : "hidden"} flex flex-col gap-[1rem] relative`}>
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -68,14 +64,7 @@ export default function PlotfieldInsideChoiceOption({
       <form onSubmit={(e) => e.preventDefault()}>
         {getAllChoiceOptionsByChoiceId({ choiceId }).map((op, i) => (
           <ChoiceOptionInputField
-            key={
-              "optionValueInput-" +
-              op.topologyBlockId +
-              "-" +
-              op.optionType +
-              "-" +
-              i
-            }
+            key={"optionValueInput-" + op.topologyBlockId + "-" + op.optionType + "-" + i}
             option={op.optionText || ""}
             topologyBlockId={op.topologyBlockId || ""}
             type={op.optionType}
@@ -93,9 +82,10 @@ export default function PlotfieldInsideChoiceOption({
             type={op.optionType}
             isFocusedBackground={isFocusedBackground}
             plotfieldCommandId={plotfieldCommandId}
-            showedOptionPlotTopologyBlockId={getCurrentlyOpenChoiceOptionPlotId(
-              { choiceId }
-            )}
+            currentTopologyBlockId={currentTopologyBlockId}
+            showedOptionPlotTopologyBlockId={getCurrentlyOpenChoiceOptionPlotId({ choiceId })}
+            setIsFocusedBackground={setIsFocusedBackground}
+            setShowOptionPlot={setShowOptionPlot}
           />
         ))}
       </header>
@@ -132,9 +122,7 @@ export default function PlotfieldInsideChoiceOption({
         <PlotFieldMain
           showAllCommands={false}
           renderedAsSubPlotfield={true}
-          topologyBlockId={
-            getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || ""
-          }
+          topologyBlockId={getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || ""}
         />
       </main>
     </section>
@@ -146,6 +134,9 @@ type OptionVariationButtonTypes = {
   plotfieldCommandId: string;
   isFocusedBackground: boolean;
   choiceId: string;
+  currentTopologyBlockId: string;
+  setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
 } & ChoiceOptionTypesAndTopologyBlockIdsTypes;
 
 function OptionVariationButton({
@@ -156,46 +147,221 @@ function OptionVariationButton({
   plotfieldCommandId,
   isFocusedBackground,
   choiceId,
+  currentTopologyBlockId,
+  setIsFocusedBackground,
+  setShowOptionPlot,
 }: OptionVariationButtonTypes) {
+  const { episodeId } = useParams();
   const {
     updateCurrentlyOpenChoiceOption,
     getCurrentlyOpenChoiceOptionPlotId,
+    getChoiceOptionById,
+    getAmountOfChoiceOptions,
   } = useChoiceOptions();
 
-  return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        e.currentTarget.blur();
-        if (topologyBlockId) {
-          updateCurrentlyOpenChoiceOption({
-            plotfieldCommandId,
-            choiceOptionId,
-          });
+  const [suggestDeleting, setSuggestDeleting] = useState(false);
+  const deleteRef = useRef<HTMLDivElement | null>(null);
+
+  const deleteOption = useDeleteChoiceOption({
+    choiceId,
+    choiceOptionId,
+    episodeId: episodeId || "",
+    plotfieldCommandId,
+    topologyBlockId: currentTopologyBlockId,
+  });
+
+  const buttonDeleteRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (buttonDeleteRef.current) {
+      buttonDeleteRef.current.focus();
+    }
+  }, [suggestDeleting]);
+
+  useOutOfModal({
+    modalRef: deleteRef,
+    setShowModal: setSuggestDeleting,
+    showModal: suggestDeleting,
+  });
+
+  const handleUpdatingSessionStorage = () => {
+    // 1) changing at the same level
+    // 2) changing at different level(may go up or down)
+
+    const currentFocusedCommandChoice = sessionStorage.getItem("focusedCommandChoice")?.split("?").filter(Boolean);
+    const currentFocusedChoiceOption = sessionStorage.getItem("focusedChoiceOption")?.split("?").filter(Boolean);
+    const currentFocusedCommandInsideType = sessionStorage
+      .getItem("focusedCommandInsideType")
+      ?.split("?")
+      .filter(Boolean);
+
+    const deepLevelChoice = currentFocusedCommandChoice?.includes("none")
+      ? null
+      : (currentFocusedCommandChoice?.length || 0) > 0
+      ? (currentFocusedCommandChoice?.length || 0) - 1
+      : null;
+
+    if (typeof deepLevelChoice === "number") {
+      // I'm inside some commandChoice
+      // it may be somewhere in the back or at the front
+
+      const currentChoiceIndex = currentFocusedCommandChoice?.findIndex((c) => c.includes(plotfieldCommandId)) || null;
+      const currentChoiceOptionIndex =
+        currentFocusedChoiceOption?.findIndex((c) => c.includes(plotfieldCommandId)) || null;
+      const currentFocusedCommandInsideTypeIndex =
+        currentFocusedCommandInsideType?.findIndex((c) => c.includes(plotfieldCommandId)) || 0;
+
+      const insideTypeDeepLevel = (currentFocusedCommandInsideType?.length || 1) - 1;
+
+      const newChoiceOption = getChoiceOptionById({ choiceOptionId, choiceId });
+
+      sessionStorage.setItem("focusedTopologyBlock", newChoiceOption?.topologyBlockId || "");
+      sessionStorage.setItem("focusedCommand", `choice-${plotfieldCommandId}`);
+
+      if (
+        typeof currentChoiceOptionIndex !== "number" ||
+        currentChoiceOptionIndex < 0 ||
+        typeof currentChoiceIndex !== "number" ||
+        currentChoiceIndex < 0
+      ) {
+        // I assume that I have some level of deepness(basically I'm inside some choice command) but I'm going deeper
+        console.log("lol");
+
+        sessionStorage.setItem(
+          "focusedCommandChoice",
+          `${currentFocusedCommandChoice?.join("?")}?${plotfieldCommandId}-choiceId-${choiceId}?`
+        );
+
+        sessionStorage.setItem(
+          "focusedChoiceOption",
+          `${currentFocusedChoiceOption?.join("?")}?${newChoiceOption?.optionType}-${
+            newChoiceOption?.choiceOptionId
+          }-plotfieldCommandId-${plotfieldCommandId}?`
+        );
+
+        sessionStorage.setItem(
+          "focusedCommandInsideType",
+          `${currentFocusedCommandInsideType?.join("?")}?${plotfieldCommandId}-choice?`
+        );
+        return;
+      }
+
+      const currentChoice = (currentFocusedCommandChoice || [])[currentChoiceIndex];
+      // const currentChoiceOption = (currentFocusedChoiceOption || [])[currentChoiceOptionIndex];
+
+      // const currentInsideType = (currentFocusedCommandInsideType || [])[currentFocusedCommandInsideTypeIndex];
+
+      const currentChoiceSplitted = currentChoice?.split("-");
+      // const currentChoiceOptionSplitted = currentChoiceOption?.split("-");
+
+      const currentChoicePlotfieldId = (currentChoiceSplitted || [])[0];
+
+      if (currentChoicePlotfieldId === plotfieldCommandId) {
+        // changing option inside the same choice
+        (currentFocusedChoiceOption || [])[
+          currentChoiceOptionIndex
+        ] = `${newChoiceOption?.optionType}-${newChoiceOption?.choiceOptionId}-plotfieldCommandId-${plotfieldCommandId}`;
+
+        sessionStorage.setItem("focusedChoiceOption", `${currentFocusedChoiceOption?.join("?")}?`);
+      } else {
+        // going up
+        const newFocusedChoice = currentFocusedCommandChoice?.splice(0, currentChoiceIndex);
+        const newFocusedChoiceOption = currentFocusedChoiceOption?.splice(0, currentChoiceOptionIndex);
+
+        sessionStorage.setItem("focusedCommandChoice", `${newFocusedChoice?.join("?")}?`);
+        sessionStorage.setItem("focusedChoiceOption", `${newFocusedChoiceOption?.join("?")}?`);
+        if (insideTypeDeepLevel === 0) {
+          // at the top level
+          sessionStorage.setItem("focusedCommandInsideType", `default?${plotfieldCommandId}-choice?`);
         } else {
-          console.log("Выберите Топологический Блок");
-          // setShowOptionPlot(false);
-          // setShowedOptionPlotTopologyBlockId("");
-          // setAllChoiceOptionTypesAndTopologyBlockIds([]);
+          const newFocusedCommandInsideType = currentFocusedCommandInsideType?.splice(
+            0,
+            currentFocusedCommandInsideTypeIndex
+          );
+          sessionStorage.setItem("focusedCommandInsideType", `${newFocusedCommandInsideType?.join("?")}?`);
         }
-      }}
-      className={`${
-        topologyBlockId === showedOptionPlotTopologyBlockId ||
-        getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
-          ? "bg-primary-darker text-text-light focus-within:outline-secondary"
-          : "bg-secondary"
-      } ${
-        isFocusedBackground &&
-        getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
-          ? "border-dark-blue border-dashed border-[2px]"
-          : ""
-      } ${
-        !topologyBlockId
-          ? "hover:outline-red-200 focus-within:outline-red-200"
-          : `focus-within:bg-primary-darker focus-within:text-text-dark`
-      } text-[1.5rem] outline-none rounded-md px-[1rem] py-[.5rem] shadow-sm transition-all hover:text-text-light text-text-dark hover:bg-primary-darker `}
-    >
-      {type}
-    </button>
+      }
+    } else {
+      // I assume that user goes deeper in terms of deepness level
+      // currently not focused inside choice on any command or choice itself
+      // here then I need to update inside component by using useEffect
+
+      const newChoiceOption = getChoiceOptionById({ choiceOptionId, choiceId });
+
+      sessionStorage.setItem("focusedCommand", `choice-${plotfieldCommandId}`);
+      sessionStorage.setItem("focusedTopologyBlock", newChoiceOption?.topologyBlockId || "");
+      sessionStorage.setItem("focusedCommandChoice", `${plotfieldCommandId}-choiceId-${choiceId}?`);
+      sessionStorage.setItem(
+        "focusedChoiceOption",
+        `${newChoiceOption?.optionType}-${newChoiceOption?.choiceOptionId}-plotfieldCommandId-${plotfieldCommandId}?`
+      );
+      sessionStorage.setItem("focusedCommandInsideType", `default?${plotfieldCommandId}-choice?`);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setSuggestDeleting(true);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.currentTarget.blur();
+          if (topologyBlockId) {
+            updateCurrentlyOpenChoiceOption({
+              plotfieldCommandId,
+              choiceOptionId,
+            });
+            handleUpdatingSessionStorage();
+          } else {
+            console.log("Выберите Топологический Блок");
+            // setShowOptionPlot(false);
+            // setShowedOptionPlotTopologyBlockId("");
+            // setAllChoiceOptionTypesAndTopologyBlockIds([]);
+          }
+        }}
+        className={`${
+          topologyBlockId === showedOptionPlotTopologyBlockId ||
+          getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
+            ? "bg-primary-darker text-text-light focus-within:outline-secondary"
+            : "bg-secondary"
+        } ${
+          isFocusedBackground && getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
+            ? "border-dark-blue border-dashed border-[2px]"
+            : ""
+        } ${
+          !topologyBlockId
+            ? "hover:outline-red-200 focus-within:outline-red-200"
+            : `focus-within:bg-primary-darker focus-within:text-text-dark`
+        } text-[1.5rem] outline-none rounded-md px-[1rem] py-[.5rem] shadow-sm transition-all hover:text-text-light text-text-dark hover:bg-primary-darker `}
+      >
+        {type}
+      </button>
+
+      <aside
+        ref={deleteRef}
+        className={`${
+          suggestDeleting ? "" : "hidden"
+        } absolute translate-y-[10%] z-[1001] w-full text-center rounded-md bg-primary text-text-light text-[1.5rem]`}
+      >
+        <button
+          ref={buttonDeleteRef}
+          className="hover:bg-primary-darker transition-all w-full rounded-md p-[1rem] outline-light-gray focus-within:border-light-gray focus-within:border-[2px]"
+          onClick={() => {
+            const amount = getAmountOfChoiceOptions({ choiceId });
+            if (amount - 1 === 0) {
+              setIsFocusedBackground(false);
+              setShowOptionPlot(false);
+            }
+            setSuggestDeleting(false);
+            deleteOption.mutate();
+          }}
+        >
+          Удалить
+        </button>
+      </aside>
+    </div>
   );
 }

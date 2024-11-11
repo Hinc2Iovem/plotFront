@@ -18,12 +18,14 @@ type FromLastToFirstBlockTypes = {
     conditionBlockId: string;
   }) => void;
   deepLevelConditionBlocks: number;
+  currentFocusedCommandConditionId: string;
 };
 
 export function fromLastToFirstBlock({
   currentFocusedCommandConditionPlotfieldId,
   currentFocusedConditionBlockId,
   deepLevelConditionBlocks,
+  currentFocusedCommandConditionId,
   getConditionBlockByIndex,
   updateCurrentlyOpenConditionBlock,
 }: FromLastToFirstBlockTypes) {
@@ -42,34 +44,33 @@ export function fromLastToFirstBlock({
     return;
   }
 
-  const newConditionBlockValue = `${
-    newConditionBlock.isElse ? "else" : newConditionBlock.conditionType
-  }-${
+  const currentFocusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
+  const currentFocusedCommandPlotfieldId = (currentFocusedCommand || [])[1];
+
+  sessionStorage.setItem("focusedCommand", `condition-${currentFocusedCommandPlotfieldId}-else`);
+
+  sessionStorage.setItem(
+    "focusedCommandCondition",
+    `else-${currentFocusedCommandConditionPlotfieldId}-conditionId-${currentFocusedCommandConditionId}`
+  );
+
+  const newConditionBlockValue = `${newConditionBlock.isElse ? "else" : "if"}-${
     newConditionBlock.conditionBlockId
   }-plotfieldCommandId-${currentFocusedCommandConditionPlotfieldId}?`;
 
   if (deepLevelConditionBlocks === 0) {
-    sessionStorage.setItem(
-      "focusedConditionBlock",
-      `${newConditionBlockValue}`
-    );
+    sessionStorage.setItem("focusedConditionBlock", `${newConditionBlockValue}`);
   } else {
-    const prevValue = sessionStorage
-      .getItem("focusedConditionBlock")
-      ?.split("?")
-      .filter(Boolean);
+    const prevValue = sessionStorage.getItem("focusedConditionBlock")?.split("?").filter(Boolean);
     const prevValueWithoutPrevBlock = prevValue?.slice(0, -1);
 
     sessionStorage.setItem(
       "focusedConditionBlock",
-      `${prevValueWithoutPrevBlock?.join("?")}${newConditionBlockValue}`
+      `${prevValueWithoutPrevBlock?.join("?")}?${newConditionBlockValue}`
     );
   }
 
-  sessionStorage.setItem(
-    "focusedTopologyBlock",
-    newConditionBlock.targetBlockId
-  );
+  sessionStorage.setItem("focusedTopologyBlock", newConditionBlock.targetBlockId);
   updateCurrentlyOpenConditionBlock({
     conditionBlockId: newConditionBlock.conditionBlockId,
     plotfieldCommandId: currentFocusedCommandConditionPlotfieldId,

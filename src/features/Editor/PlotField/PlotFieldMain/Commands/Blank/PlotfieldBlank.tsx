@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   AllPossiblePlotFieldCommands,
@@ -6,15 +6,16 @@ import {
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
-import useConditionBlocks from "../Condition/Context/ConditionContext";
 import useCreateAchievement from "../../../hooks/Achievement/useCreateAchievement";
 import useCreateAmbient from "../../../hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../../../hooks/Background/useCreateBackground";
@@ -36,9 +37,8 @@ import useCreateSuit from "../../../hooks/Suit/useCreateSuit";
 import useUpdateCommandName from "../../../hooks/useUpdateCommandName";
 import useCreateWait from "../../../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../../../hooks/Wardrobe/useCreateWardrobe";
+import useConditionBlocks from "../Condition/Context/ConditionContext";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -88,8 +88,7 @@ export default function PlotfieldBlank({
 
   const { getTopologyBlock } = useTopologyBlocks();
   const { addConditionBlock } = useConditionBlocks();
-  const [showCreateCharacterModal, setShowCreateCharacterModal] =
-    useState(false);
+  const [showCreateCharacterModal, setShowCreateCharacterModal] = useState(false);
 
   const { data: translatedCharacters } = useGetTranslationCharacters({
     storyId: storyId || "",
@@ -104,9 +103,7 @@ export default function PlotfieldBlank({
     const res = [...AllCommands];
     if (translatedCharacters) {
       translatedCharacters.map((tc) => {
-        const characterName = tc.translations?.find(
-          (t) => t.textFieldName === "characterName"
-        )?.text;
+        const characterName = tc.translations?.find((t) => t.textFieldName === "characterName")?.text;
         if (characterName) {
           res.push(characterName);
         }
@@ -119,9 +116,7 @@ export default function PlotfieldBlank({
     const res: string[] = [];
     if (translatedCharacters) {
       translatedCharacters.map((tc) => {
-        const characterName = tc.translations?.find(
-          (t) => t.textFieldName === "characterName"
-        )?.text;
+        const characterName = tc.translations?.find((t) => t.textFieldName === "characterName")?.text;
         if (characterName) {
           res.push(characterName.toLowerCase());
         }
@@ -132,23 +127,13 @@ export default function PlotfieldBlank({
 
   const filteredPromptValues = useMemo(() => {
     if (value?.trim().length) {
-      return allPromptValues.filter((pv) =>
-        pv.toLowerCase().includes(value.toLowerCase())
-      );
+      return allPromptValues.filter((pv) => pv.toLowerCase().includes(value.toLowerCase()));
     } else {
       return allPromptValues;
     }
   }, [allPromptValues, value]);
 
-  useEffect(() => {
-    if (!showCreateCharacterModal && !commandIfId?.trim().length) {
-      currentInput.current?.focus();
-    }
-  }, [showCreateCharacterModal]);
-
-  const currentlyFocusedTopologyBlock = sessionStorage.getItem(
-    "focusedTopologyBlock"
-  );
+  const currentlyFocusedTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
@@ -198,10 +183,8 @@ export default function PlotfieldBlank({
     topologyBlockId,
   });
 
-  const {
-    updateCommandName: updateCommandNameOptimistic,
-    updateCommandIfName: updateCommandIfNameOptimistic,
-  } = usePlotfieldCommands();
+  const { updateCommandName: updateCommandNameOptimistic, updateCommandIfName: updateCommandIfNameOptimistic } =
+    usePlotfieldCommands();
 
   const handleCreatingOptimisticCommand = ({
     commandName,
@@ -293,10 +276,7 @@ export default function PlotfieldBlank({
       if (type === "character") {
         translatedCharacters?.map((tc) => {
           tc.translations?.map((tct) => {
-            if (
-              tct.textFieldName === "characterName" &&
-              tct.text.toLowerCase() === value.toLowerCase()
-            ) {
+            if (tct.textFieldName === "characterName" && tct.text.toLowerCase() === value.toLowerCase()) {
               if (commandIfId?.trim().length) {
                 handleCreatingOptimisticCommandIf({
                   valueForSay: true,
@@ -339,8 +319,7 @@ export default function PlotfieldBlank({
       }
       updateCommandName.mutate({ valueForSay: true });
     } else if (!submittedByCharacter) {
-      const allCommands: AllPossiblePlotFieldComamndsTypes =
-        value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
+      const allCommands: AllPossiblePlotFieldComamndsTypes = value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
       if (allCommands === "achievement") {
         createCommandAchievement.mutate({});
       } else if (allCommands === "ambient") {
@@ -359,17 +338,15 @@ export default function PlotfieldBlank({
           plotfieldCommandId: plotFieldCommandId,
           conditionBlock: {
             conditionBlockId,
-            conditionType: "else",
             isElse: true,
             orderOfExecution: null,
+            conditionBlockVariations: [],
+            logicalOperators: "",
             targetBlockId,
             topologyBlockName: makeTopologyBlockName({
               name: getTopologyBlock()?.name || "",
-              amountOfOptions:
-                getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+              amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
             }),
-            conditionName: "",
-            conditionValue: null,
           },
         });
 
@@ -378,8 +355,7 @@ export default function PlotfieldBlank({
           coordinatesY: getTopologyBlock().coordinatesY,
           sourceBlockName: makeTopologyBlockName({
             name: getTopologyBlock()?.name || "",
-            amountOfOptions:
-              getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+            amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
           }),
           targetBlockId,
           topologyBlockId,
@@ -444,11 +420,7 @@ export default function PlotfieldBlank({
       AllPossibleSayPlotFieldCommands.includes(value.toLowerCase())
     ) {
       let type: CommandSayVariationTypes = "" as CommandSayVariationTypes;
-      if (
-        value.toLowerCase() !== "hint" &&
-        value.toLowerCase() !== "author" &&
-        value.toLowerCase() !== "notify"
-      ) {
+      if (value.toLowerCase() !== "hint" && value.toLowerCase() !== "author" && value.toLowerCase() !== "notify") {
         type = "character";
       } else {
         type = value.toLowerCase() as CommandSayVariationTypes;
@@ -499,15 +471,11 @@ export default function PlotfieldBlank({
               setShowPromptValues(true);
             }
           }}
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : ""
-          } text-[1.5rem] text-text-light w-full`}
+          className={`${isCommandFocused ? "bg-dark-dark-blue" : ""} text-[1.5rem] text-text-light w-full`}
         />
         <AsideScrollable
           ref={promptRef}
-          className={`${
-            showPromptValues && !showCreateCharacterModal ? "" : "hidden"
-          } translate-y-[.5rem] left-0`}
+          className={`${showPromptValues && !showCreateCharacterModal ? "" : "hidden"} translate-y-[.5rem] left-0`}
         >
           {filteredPromptValues.length > 0 ? (
             filteredPromptValues.map((pv) => (

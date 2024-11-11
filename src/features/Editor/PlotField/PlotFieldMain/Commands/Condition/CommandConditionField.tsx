@@ -4,18 +4,16 @@ import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotf
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useGetConditionBlocksByCommandConditionId from "../../../hooks/Condition/ConditionBlock/useGetConditionBlocksByCommandConditionId";
+import useCheckIfShowingPlotfieldInsideConditionOnMount from "../../../hooks/Condition/helpers/useCheckIfShowingPlotfieldInsideConditionOnMount";
 import useGoingDownInsideConditionBlocks from "../../../hooks/Condition/helpers/useGoingDownInsideConditionBlocks";
 import useGoingUpFromConditionBlocks from "../../../hooks/Condition/helpers/useGoingUpFromConditionBlocks";
+import useHandleNavigationThroughBlocksInsideCondition from "../../../hooks/Condition/helpers/useHandleNavigationThroughBlocksInsideCondition";
 import useUpdateCurrentlyOpenConditionBlockOnMount from "../../../hooks/Condition/helpers/useUpdateCurrentlyOpenConditionBlockOnMount";
 import useGetCommandCondition from "../../../hooks/Condition/useGetCommandCondition";
 import ConditionBlockItem from "./ConditionBlockItem";
-import useConditionBlocks, {
-  ConditionBlockItemTypes,
-} from "./Context/ConditionContext";
+import useConditionBlocks, { ConditionBlockItemTypes } from "./Context/ConditionContext";
 import CreateConditionValueTypeModal from "./CreateConditionValueTypeModal";
 import PlotfieldInsideConditionBlock from "./PlotfieldInsideConditionBlock/PlotfieldInsideConditionBlock";
-import useCheckIfShowingPlotfieldInsideConditionOnMount from "../../../hooks/Condition/helpers/useCheckIfShowingPlotfieldInsideConditionOnMount";
-import useHandleNavigationThroughBlocksInsideCondition from "../../../hooks/Condition/helpers/useHandleNavigationThroughBlocksInsideCondition";
 
 type CommandConditionFieldTypes = {
   plotFieldCommandId: string;
@@ -83,8 +81,21 @@ export default function CommandConditionField({
 
   useEffect(() => {
     if (conditionBlocks) {
+      const finedConditionBlocks: ConditionBlockItemTypes[] = [];
+      conditionBlocks.map((co) => {
+        finedConditionBlocks.push({
+          isElse: co.isElse,
+          conditionBlockId: co._id,
+          conditionBlockVariations: [],
+          logicalOperators: "",
+          orderOfExecution: co.orderOfExecution,
+          targetBlockId: co.targetBlockId,
+          topologyBlockName: "",
+        });
+      });
+
       setConditionBlocks({
-        conditionBlocks,
+        conditionBlocks: finedConditionBlocks,
         plotfieldCommandId: plotFieldCommandId,
       });
     }
@@ -100,9 +111,7 @@ export default function CommandConditionField({
       <div className="min-w-[10rem] flex-grow w-full relative flex items-start gap-[1rem]">
         <PlotfieldCommandNameField
           className={`${
-            !isFocusedBackground && isCommandFocused && isFocusedIf
-              ? "bg-dark-dark-blue"
-              : "bg-secondary"
+            !isFocusedBackground && isCommandFocused && isFocusedIf ? "bg-dark-dark-blue" : "bg-secondary"
           }`}
         >
           {nameValue}
@@ -118,11 +127,7 @@ export default function CommandConditionField({
           }}
           variant="rectangle"
         >
-          <img
-            src={plus}
-            alt="Commands"
-            className="w-[3.5rem] h-full p-[.2rem]"
-          />
+          <img src={plus} alt="Commands" className="w-[3.5rem] h-full p-[.2rem]" />
         </ButtonHoverPromptModal>
 
         <CreateConditionValueTypeModal
@@ -171,16 +176,11 @@ function ConditionBlocksList({
   isFocusedIf,
   isFocusedBackground,
 }: ConditionBlocksListTypes) {
-  const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } =
-    useConditionBlocks();
+  const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } = useConditionBlocks();
 
   return (
     <div className={`w-full bg-primary rounded-md p-[.5rem]`}>
-      <div
-        className={`${
-          showConditionBlockPlot || isFocusedBackground ? "" : "hidden"
-        } flex flex-col gap-[1rem]`}
-      >
+      <div className={`${showConditionBlockPlot || isFocusedBackground ? "" : "hidden"} flex flex-col gap-[1rem]`}>
         <PlotfieldInsideConditionBlock
           isFocusedBackground={isFocusedBackground}
           plotfieldCommandId={plotFieldCommandId}
@@ -189,11 +189,7 @@ function ConditionBlocksList({
           showConditionBlockPlot={showConditionBlockPlot}
         />
       </div>
-      <div
-        className={`${
-          showConditionBlockPlot || isFocusedBackground ? "hidden" : ""
-        } flex flex-col gap-[1rem]`}
-      >
+      <div className={`${showConditionBlockPlot || isFocusedBackground ? "hidden" : ""} flex flex-col gap-[1rem]`}>
         {(
           getAllConditionBlocksElseOrIfByPlotfieldCommandId({
             plotfieldCommandId: plotFieldCommandId,
@@ -201,7 +197,7 @@ function ConditionBlocksList({
           }) as ConditionBlockItemTypes[]
         ).length ? (
           <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-[1rem] w-full bg-primary rounded-md`}
+            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] gap-[1rem] w-full bg-primary rounded-md`}
           >
             {(
               getAllConditionBlocksElseOrIfByPlotfieldCommandId({
@@ -223,9 +219,7 @@ function ConditionBlocksList({
         <div className="min-w-[10rem] w-full relative flex gap-[.5rem] flex-wrap bg-secondary rounded-md">
           <PlotfieldCommandNameField
             className={`${
-              !isFocusedBackground && isCommandFocused && !isFocusedIf
-                ? "bg-dark-dark-blue"
-                : "bg-secondary"
+              !isFocusedBackground && isCommandFocused && !isFocusedIf ? "bg-dark-dark-blue" : "bg-secondary"
             }`}
           >
             Else
@@ -255,8 +249,7 @@ function ConditionBlockElse({
   topologyBlockId,
   commandConditionId,
 }: ConditionBlockElseTypes) {
-  const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } =
-    useConditionBlocks();
+  const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } = useConditionBlocks();
 
   return (
     <>

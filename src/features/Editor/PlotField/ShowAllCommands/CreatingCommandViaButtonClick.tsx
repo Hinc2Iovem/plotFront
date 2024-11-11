@@ -48,9 +48,7 @@ export default function CreatingCommandViaButtonClick({
 }: CreatingCommandViaButtonClickTypes) {
   const { storyId } = useParams();
   const { episodeId } = useParams();
-  const currentlyFocusedTopologyBlock = sessionStorage.getItem(
-    "focusedTopologyBlock"
-  );
+  const currentlyFocusedTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
   const { updateCommandInfo } = usePlotfieldCommands();
   const { addConditionBlock } = useConditionBlocks();
   const { getTopologyBlock } = useTopologyBlocks();
@@ -173,11 +171,10 @@ export default function CreatingCommandViaButtonClick({
     topologyBlockId,
   });
 
-  const updateTopologyBlockAmountOfCommands =
-    useUpdateTopologyBlockAmountOfCommands({
-      topologyBlockId,
-      addOrMinusAmountOfCommand: "add",
-    });
+  const updateTopologyBlockAmountOfCommands = useUpdateTopologyBlockAmountOfCommands({
+    topologyBlockId,
+    addOrMinusAmountOfCommand: "add",
+  });
 
   const handleSubmit = ({
     submittedByCharacter,
@@ -192,8 +189,7 @@ export default function CreatingCommandViaButtonClick({
       createSayCommand.mutate({ type });
       updateCommandName.mutate({ valueForSay: true });
     } else if (!submittedByCharacter) {
-      const allCommands: AllPossiblePlotFieldComamndsTypes =
-        value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
+      const allCommands: AllPossiblePlotFieldComamndsTypes = value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
       if (allCommands === "achievement") {
         createCommandAchievement.mutate({});
       } else if (allCommands === "ambient") {
@@ -212,17 +208,15 @@ export default function CreatingCommandViaButtonClick({
           plotfieldCommandId,
           conditionBlock: {
             conditionBlockId,
-            conditionType: "else",
             isElse: true,
             orderOfExecution: null,
+            conditionBlockVariations: [],
+            logicalOperators: "",
             targetBlockId,
             topologyBlockName: makeTopologyBlockName({
               name: getTopologyBlock()?.name || "",
-              amountOfOptions:
-                getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+              amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
             }),
-            conditionName: "",
-            conditionValue: null,
           },
         });
 
@@ -232,8 +226,7 @@ export default function CreatingCommandViaButtonClick({
           coordinatesY: (getTopologyBlock()?.coordinatesY || 0) + 50,
           sourceBlockName: makeTopologyBlockName({
             name: getTopologyBlock()?.name || "",
-            amountOfOptions:
-              getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks,
+            amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks,
           }),
           targetBlockId,
           topologyBlockId,
@@ -271,13 +264,7 @@ export default function CreatingCommandViaButtonClick({
     setShowAllCommands(false);
   };
 
-  const handleFormSubmit = ({
-    pc,
-    plotfieldCommandId,
-  }: {
-    pc: string;
-    plotfieldCommandId: string;
-  }) => {
+  const handleFormSubmit = ({ pc, plotfieldCommandId }: { pc: string; plotfieldCommandId: string }) => {
     if (!pc.trim().length) {
       console.log("Заполните поле");
       return;

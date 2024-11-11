@@ -26,8 +26,7 @@ export default function useCreateConditionViaKeyCombination({
   const { getTopologyBlock, updateAmountOfChildBlocks } = useTopologyBlocks();
   const { addConditionBlock } = useConditionBlocks();
 
-  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
-    usePlotfieldCommands();
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
 
   const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -45,19 +44,13 @@ export default function useCreateConditionViaKeyCombination({
 
       if (
         pressedKeys.has("shift") &&
-        ((pressedKeys.has("c") && pressedKeys.has("o")) ||
-          (pressedKeys.has("с") && pressedKeys.has("щ")))
+        ((pressedKeys.has("c") && pressedKeys.has("o")) || (pressedKeys.has("с") && pressedKeys.has("щ")))
       ) {
         const _id = generateMongoObjectId();
         updateAmountOfChildBlocks("add");
 
-        const currentTopologyBlockId = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
-        const commandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const commandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = commandIf?.includes("none")
           ? null
@@ -74,9 +67,7 @@ export default function useCreateConditionViaKeyCombination({
           commandIfId = currentCommandIf?.split("-")[3];
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         let commandOrder;
         if ((focusedCommand || [])[1] !== plotfieldCommandId) {
           commandOrder =
@@ -118,17 +109,15 @@ export default function useCreateConditionViaKeyCombination({
           plotfieldCommandId: _id,
           conditionBlock: {
             conditionBlockId,
-            conditionType: "else",
             isElse: true,
+            logicalOperators: "",
+            conditionBlockVariations: [],
             orderOfExecution: null,
             targetBlockId: newTopologyBlockId,
             topologyBlockName: makeTopologyBlockName({
               name: getTopologyBlock()?.name || "",
-              amountOfOptions:
-                getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+              amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
             }),
-            conditionName: "",
-            conditionValue: null,
           },
         });
 
@@ -137,8 +126,7 @@ export default function useCreateConditionViaKeyCombination({
           coordinatesY: getTopologyBlock().coordinatesY,
           sourceBlockName: makeTopologyBlockName({
             name: getTopologyBlock()?.name || "",
-            amountOfOptions:
-              getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+            amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
           }),
           targetBlockId: newTopologyBlockId,
           topologyBlockId: currentTopologyBlockId || topologyBlockId,

@@ -1,10 +1,10 @@
 import { SexualOrientationTypes } from "./SEXUAL_ORIENTATION_TYPES";
 
 export const ChoiceOptionVariations: ChoiceOptionVariationsTypes[] = [
-  "characteristic",
   "common",
   "premium",
   "relationship",
+  "characteristic",
 ];
 
 export type ChoiceOptionVariationsTypes =

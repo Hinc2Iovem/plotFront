@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import { ConditionValueVariationType } from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
@@ -16,13 +15,6 @@ type CreateConditionValueTypeModalTypes = {
   plotfieldCommandId: string;
 };
 
-const AllConditionValueVariationTypes: ConditionValueVariationType[] = [
-  "character",
-  "key",
-  "characteristic",
-  "appearance",
-];
-
 export default function CreateConditionValueTypeModal({
   setShowCreateValueType,
   showCreateValueType,
@@ -30,8 +22,7 @@ export default function CreateConditionValueTypeModal({
   plotfieldCommandId,
 }: CreateConditionValueTypeModalTypes) {
   const { episodeId } = useParams();
-  const { addConditionBlock, getAmountOfOnlyIfConditionBlocks } =
-    useConditionBlocks();
+  const { addConditionBlock, getAmountOfOnlyIfConditionBlocks } = useConditionBlocks();
   const { getTopologyBlock, updateAmountOfChildBlocks } = useTopologyBlocks();
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +30,7 @@ export default function CreateConditionValueTypeModal({
     commandConditionId,
     episodeId: episodeId || "",
   });
-  const handleConditionValueCreation = (cv: ConditionValueVariationType) => {
+  const handleConditionValueCreation = () => {
     const targetBlockId = generateMongoObjectId();
     const conditionBlockId = generateMongoObjectId();
 
@@ -48,7 +39,8 @@ export default function CreateConditionValueTypeModal({
     addConditionBlock({
       conditionBlock: {
         conditionBlockId,
-        conditionType: cv,
+        conditionBlockVariations: [],
+        logicalOperators: "",
         isElse: false,
         orderOfExecution:
           getAmountOfOnlyIfConditionBlocks({ plotfieldCommandId }) < 1
@@ -57,23 +49,18 @@ export default function CreateConditionValueTypeModal({
         targetBlockId,
         topologyBlockName: makeTopologyBlockName({
           name: getTopologyBlock()?.name || "",
-          amountOfOptions:
-            getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+          amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
         }),
-        conditionName: "",
-        conditionValue: null,
       },
       plotfieldCommandId,
     });
 
     createCommandinsideCondition.mutate({
-      type: cv,
       coordinatesX: getTopologyBlock().coordinatesX,
       coordinatesY: getTopologyBlock().coordinatesY,
       sourceBlockName: makeTopologyBlockName({
         name: getTopologyBlock()?.name || "",
-        amountOfOptions:
-          getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+        amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
       }),
       targetBlockId,
       topologyBlockId: getTopologyBlock()._id,
@@ -98,14 +85,7 @@ export default function CreateConditionValueTypeModal({
         showCreateValueType ? "" : "hidden"
       } w-fit flex flex-col gap-[.5rem] p-[.5rem] z-[10]`}
     >
-      {AllConditionValueVariationTypes.map((cv) => (
-        <PlotfieldButton
-          key={cv}
-          onClick={() => handleConditionValueCreation(cv)}
-        >
-          {cv}
-        </PlotfieldButton>
-      ))}
+      <PlotfieldButton onClick={() => handleConditionValueCreation()}>Создать Блок</PlotfieldButton>
     </aside>
   );
 }

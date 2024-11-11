@@ -62,6 +62,13 @@ export type CreatePlotfieldCommandIfSliceTypes = {
     commandIfId: string;
     isElse: boolean;
   }) => PlotfieldOptimisticCommandInsideIfTypes | null;
+  getCommandIfOnlyByPlotfieldCommandId: ({
+    plotfieldCommandId,
+    isElse,
+  }: {
+    plotfieldCommandId: string;
+    isElse: boolean;
+  }) => PlotfieldOptimisticCommandInsideIfTypes | null;
   getPreviousCommandIfByPlotfieldId: ({
     commandIfId,
     plotfieldCommandId,
@@ -230,6 +237,15 @@ export const createPlotfieldIfCommandSlice: StateCreator<
           ?.commandsInsideIf.find((c) => c._id === plotfieldCommandId) || null;
       return command;
     }
+  },
+  getCommandIfOnlyByPlotfieldCommandId: ({ plotfieldCommandId, isElse }) => {
+    return (
+      get()
+        .commandsIf.flatMap((c) =>
+          isElse ? c.commandsInsideElse : c.commandsInsideIf
+        )
+        .find((cc) => cc._id === plotfieldCommandId) || null
+    );
   },
   getCurrentAmountOfIfCommands: ({ commandIfId, isElse }) => {
     if (isElse) {

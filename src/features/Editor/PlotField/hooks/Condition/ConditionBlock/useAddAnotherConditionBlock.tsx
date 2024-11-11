@@ -7,7 +7,6 @@ type AddAnotherConditionBlockTypes = {
 };
 
 type AddAnotherConditionBlockTypesOnMutation = {
-  type: string;
   coordinatesX: number;
   coordinatesY: number;
   orderOfExecution: number;
@@ -17,10 +16,7 @@ type AddAnotherConditionBlockTypesOnMutation = {
   conditionBlockId: string;
 };
 
-export default function useAddAnotherConditionBlock({
-  commandConditionId,
-  episodeId,
-}: AddAnotherConditionBlockTypes) {
+export default function useAddAnotherConditionBlock({ commandConditionId, episodeId }: AddAnotherConditionBlockTypes) {
   // const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
@@ -29,23 +25,18 @@ export default function useAddAnotherConditionBlock({
       sourceBlockName,
       targetBlockId,
       topologyBlockId,
-      type,
       conditionBlockId,
       orderOfExecution,
     }: AddAnotherConditionBlockTypesOnMutation) =>
-      await axiosCustomized.post(
-        `/commandConditions/${commandConditionId}/episodes/${episodeId}/conditionBlocks`,
-        {
-          coordinatesX,
-          coordinatesY,
-          sourceBlockName,
-          targetBlockId,
-          topologyBlockId,
-          type,
-          conditionBlockId,
-          orderOfExecution,
-        }
-      ),
+      await axiosCustomized.post(`/commandConditions/${commandConditionId}/episodes/${episodeId}/conditionBlocks`, {
+        coordinatesX,
+        coordinatesY,
+        sourceBlockName,
+        targetBlockId,
+        topologyBlockId,
+        conditionBlockId,
+        orderOfExecution,
+      }),
     // onSuccess: () => {
     //   queryClient.invalidateQueries({
     //     queryKey: ["commandCondition", commandConditionId, "conditionBlock"],

@@ -75,11 +75,7 @@ export default function PlotfieldItemInsideIf({
           commandSide={commandSide}
         />
       ) : command === "achievement" ? (
-        <CommandAchievementField
-          topologyBlockId={topologyBlockId}
-          command={command}
-          plotFieldCommandId={_id}
-        />
+        <CommandAchievementField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "ambient" ? (
         <CommandAmbientField command={command} plotFieldCommandId={_id} />
       ) : command === "cutscene" ? (
@@ -103,41 +99,17 @@ export default function PlotfieldItemInsideIf({
       ) : command === "background" ? (
         <CommandBackgroundField command={command} plotFieldCommandId={_id} />
       ) : command === "getitem" ? (
-        <CommandGetItemField
-          topologyBlockId={topologyBlockId}
-          command={command}
-          plotFieldCommandId={_id}
-        />
+        <CommandGetItemField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "if" ? (
-        <CommandIfField
-          topologyBlockId={topologyBlockId}
-          command={command}
-          plotFieldCommandId={_id}
-        />
+        <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "wardrobe" ? (
-        <CommandWardrobeField
-          topologyBlockId={topologyBlockId}
-          command={command}
-          plotFieldCommandId={_id}
-        />
+        <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "choice" ? (
-        <CommandChoiceField
-          command={command}
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={_id}
-        />
+        <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
       ) : command === "call" ? (
-        <CommandCallField
-          command={command}
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={_id}
-        />
+        <CommandCallField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
       ) : command === "condition" ? (
-        <CommandConditionField
-          command={command}
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={_id}
-        />
+        <CommandConditionField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
       ) : command === "comment" ? (
         <CommandCommentField command={command} plotFieldCommandId={_id} />
       ) : null}

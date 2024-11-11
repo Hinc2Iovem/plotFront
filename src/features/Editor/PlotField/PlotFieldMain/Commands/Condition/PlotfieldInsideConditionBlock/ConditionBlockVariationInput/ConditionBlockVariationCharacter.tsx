@@ -3,58 +3,58 @@ import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import { DebouncedCheckCharacterTypes } from "../../../Choice/ChoiceQuestionField";
-import useUpdateConditionValue from "../../../../../hooks/Condition/ConditionValue/useUpdateConditionValue";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useConditionBlocks from "../../Context/ConditionContext";
 import ConditionSignField from "./ConditionSignField";
+import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
+import useUpdateConditionCharacter from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacter";
+import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 
 type ConditionBlockVariationCharacterTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
+  currentCharacterId: string;
+  conditionBlockCharacterId: string;
 };
 
 export default function ConditionBlockVariationCharacter({
   plotfieldCommandId,
   conditionBlockId,
+  currentCharacterId,
+  conditionBlockCharacterId,
 }: ConditionBlockVariationCharacterTypes) {
-  const [showCharacterPromptModal, setShowCharacterPromptModal] =
-    useState(false);
-  const {
-    getConditionBlockById,
-    updateConditionBlockName,
-    updateConditionBlockValueId,
-    conditions,
-  } = useConditionBlocks();
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] =
-    useState(false);
-  const [currentConditionName, setCurrentConditionName] = useState(
-    getConditionBlockById({ conditionBlockId, plotfieldCommandId })
-      ?.conditionName || ""
-  );
+  const [showCharacterPromptModal, setShowCharacterPromptModal] = useState(false);
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
 
-  useEffect(() => {
-    const conditionBlock = getConditionBlockById({
-      conditionBlockId,
-      plotfieldCommandId,
-    });
-    if (conditionBlock?.conditionName !== currentConditionName) {
-      setCurrentConditionName(conditionBlock?.conditionName || "");
-    }
-  }, [conditions, conditionBlockId, plotfieldCommandId]);
+  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
+  const [currentConditionName, setCurrentConditionName] = useState("");
+
+  const [characterId, setCharacterId] = useState(currentCharacterId || "");
+
+  const { data: currentCharacter } = useGetCharacterById({ characterId });
+  const { data: translatedCharacter } = useGetTranslationCharacterById({ characterId, language: "russian" });
 
   const [characterImg, setCharacterImg] = useState("");
-  const [debouncedCharacter, setDebouncedCharacter] =
-    useState<DebouncedCheckCharacterTypes | null>(null);
-  const [characterId, setCharacterId] = useState("");
+  const [debouncedCharacter, setDebouncedCharacter] = useState<DebouncedCheckCharacterTypes | null>(null);
 
-  console.log(characterId === "1" ? characterId : "");
+  useEffect(() => {
+    if (currentCharacter) {
+      setCharacterImg(currentCharacter?.img || "");
+    }
+  }, [currentCharacter, characterId]);
+
+  useEffect(() => {
+    if (translatedCharacter) {
+      setCharacterImg((translatedCharacter?.translations || [])[0].text || "");
+    }
+  }, [translatedCharacter, characterId]);
 
   // const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const updateConditionBlock = useUpdateConditionValue({
-    conditionBlockId,
+  const updateConditionBlock = useUpdateConditionCharacter({
+    conditionBlockCharacterId,
   });
 
   const debouncedConditionName = useDebounce({
@@ -64,21 +64,11 @@ export default function ConditionBlockVariationCharacter({
 
   useEffect(() => {
     if (debouncedCharacter) {
-      updateConditionBlockName({
-        conditionBlockId:
-          getConditionBlockById({
-            conditionBlockId,
-            plotfieldCommandId,
-          })?.conditionBlockId || "",
-        conditionName: debouncedCharacter.characterName,
-        plotfieldCommandId,
-      });
-
-      updateConditionBlockValueId({
-        blockValueId: debouncedCharacter.characterId,
+      updateConditionBlockVariationValue({
         conditionBlockId,
-        conditionType: "character",
+        characterId: debouncedCharacter.characterName,
         plotfieldCommandId,
+        conditionBlockVariationId: conditionBlockCharacterId,
       });
 
       setCurrentConditionName(debouncedCharacter.characterName);
@@ -86,8 +76,7 @@ export default function ConditionBlockVariationCharacter({
       setCharacterId(debouncedCharacter.characterId);
 
       updateConditionBlock.mutate({
-        name: debouncedCharacter.characterName,
-        blockValueId: debouncedCharacter.characterId,
+        characterId: debouncedCharacter.characterId,
       });
     } else {
       console.error("Such character doesn't exist");
@@ -122,11 +111,7 @@ export default function ConditionBlockVariationCharacter({
             className={`${highlightRedOnValueNonExisting ? " " : ""}`}
           />
           {characterImg ? (
-            <img
-              src={characterImg}
-              alt="CharacterImg"
-              className="w-[3rem] absolute right-0 rounded-md top-0"
-            />
+            <img src={characterImg} alt="CharacterImg" className="w-[3rem] absolute right-0 rounded-md top-0" />
           ) : null}
           <PlotfieldCharacterPromptMain
             characterValue={currentConditionName}
@@ -180,6 +165,8 @@ export default function ConditionBlockVariationCharacter({
         <ConditionSignField
           conditionBlockId={conditionBlockId}
           plotfieldCommandId={plotfieldCommandId}
+          conditionBlockVariationId={conditionBlockCharacterId}
+          type="character"
         />
 
         <ConditionValueField
@@ -187,6 +174,7 @@ export default function ConditionBlockVariationCharacter({
           conditionBlockId={conditionBlockId}
           setShowCharacterPromptModal={setShowCharacterPromptModal}
           showCharacterPromptModal={showCharacterPromptModal}
+          conditionBlockVariationId={conditionBlockCharacterId}
         />
       </div>
     </div>
@@ -270,61 +258,44 @@ type ConditionValueFieldTypes = {
   setShowCharacterPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
   showCharacterPromptModal: boolean;
   conditionBlockId: string;
+  conditionBlockVariationId: string;
 };
 
 function ConditionValueField({
   plotfieldCommandId,
   showCharacterPromptModal,
   conditionBlockId,
+  conditionBlockVariationId,
   setShowCharacterPromptModal,
 }: ConditionValueFieldTypes) {
-  const { getConditionBlockById, updateConditionBlockValue } =
-    useConditionBlocks();
+  const { getConditionBlockVariationById, updateConditionBlockVariationValue } = useConditionBlocks();
 
   const [currentConditionValue, setCurrentConditionValue] = useState(
-    getConditionBlockById({ conditionBlockId, plotfieldCommandId })
-      ?.conditionValue || ""
+    getConditionBlockVariationById({ conditionBlockId, plotfieldCommandId, conditionBlockVariationId })?.value || null
   );
-  const debouncedConditionValue = useDebounce({
-    delay: 700,
-    value:
-      getConditionBlockById({ conditionBlockId, plotfieldCommandId })
-        ?.conditionValue || "",
-  });
 
-  const updateConditionBlock = useUpdateConditionValue({
-    conditionBlockId,
+  const updateConditionBlock = useUpdateConditionCharacter({
+    conditionBlockCharacterId: conditionBlockVariationId,
   });
-
-  useEffect(() => {
-    if (
-      debouncedConditionValue?.trim().length &&
-      currentConditionValue?.trim() !== debouncedConditionValue.trim()
-    ) {
-      updateConditionBlock.mutate({ value: currentConditionValue });
-    }
-  }, [debouncedConditionValue]);
 
   return (
     <div className="min-w-[10rem] w-full">
       <PlotfieldInput
         type="text"
         placeholder="Значение"
-        value={
-          getConditionBlockById({ conditionBlockId, plotfieldCommandId })
-            ?.conditionValue || ""
-        }
+        value={currentConditionValue || ""}
         onChange={(e) => {
           if (showCharacterPromptModal) {
             setShowCharacterPromptModal(false);
           }
-          setCurrentConditionValue(e.target.value);
-          updateConditionBlockValue({
-            conditionBlockId:
-              getConditionBlockById({ conditionBlockId, plotfieldCommandId })
-                ?.conditionBlockId || "",
-            conditionValue: e.target.value,
+          updateConditionBlock.mutate({ value: +e.target.value });
+          setCurrentConditionValue(+e.target.value);
+
+          updateConditionBlockVariationValue({
             plotfieldCommandId,
+            conditionBlockId,
+            conditionBlockVariationId,
+            conditionValue: +e.target.value,
           });
         }}
         className={`text-[1.5rem]`}

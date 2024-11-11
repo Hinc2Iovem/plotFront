@@ -18,11 +18,7 @@ type CommandChoiceFieldTypes = {
   topologyBlockId: string;
 };
 
-export default function CommandChoiceField({
-  plotFieldCommandId,
-  command,
-  topologyBlockId,
-}: CommandChoiceFieldTypes) {
+export default function CommandChoiceField({ plotFieldCommandId, command, topologyBlockId }: CommandChoiceFieldTypes) {
   const [timeLimit, setTimeLimit] = useState<number>(0);
   const [exitBlockId, setExitBlockId] = useState("");
   const theme = localStorage.getItem("theme");
@@ -32,8 +28,7 @@ export default function CommandChoiceField({
   const [timeLimitDefaultOptionId, setTimeLimitDefaultOptionId] = useState("");
   const [characterId, setCharacterId] = useState("");
   const [isAuthor, setIsAuthor] = useState<boolean>();
-  const [choiceVariationTypes, setChoiceVariationTypes] =
-    useState<ChoiceVariationsTypes>("" as ChoiceVariationsTypes);
+  const [choiceVariationTypes, setChoiceVariationTypes] = useState<ChoiceVariationsTypes>("" as ChoiceVariationsTypes);
   const { data: commandChoice } = useGetCommandChoice({
     plotFieldCommandId,
   });
@@ -106,11 +101,7 @@ export default function CommandChoiceField({
   return (
     <div className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-start">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
@@ -137,9 +128,7 @@ export default function CommandChoiceField({
         disabled={disabledBtn}
         className={`rounded-md ${
           isAuthor
-            ? `${
-                theme === "light" ? "bg-green-300" : "bg-green-400"
-              } text-text-dark`
+            ? `${theme === "light" ? "bg-green-300" : "bg-green-400"} text-text-dark`
             : "bg-secondary text-gray-700"
         } ${disabledBtn ? "cursor-not-allowed" : ""} ${
           theme === "light" ? "outline-gray-300" : "outline-gray-600"

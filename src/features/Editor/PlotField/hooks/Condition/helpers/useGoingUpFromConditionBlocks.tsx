@@ -21,11 +21,8 @@ export default function useGoingUpFromConditionBlocks({
     getCurrentlyOpenConditionBlock,
   } = useConditionBlocks();
 
-  const {
-    getFirstCommandByTopologyBlockId,
-    getCommandIfByPlotfieldCommandId,
-    getCommandOnlyByPlotfieldCommandId,
-  } = usePlotfieldCommands();
+  const { getFirstCommandByTopologyBlockId, getCommandIfByPlotfieldCommandId, getCommandOnlyByPlotfieldCommandId } =
+    usePlotfieldCommands();
 
   useEffect(() => {
     const pressedKeys = new Set();
@@ -36,98 +33,65 @@ export default function useGoingUpFromConditionBlocks({
       pressedKeys.add(key);
 
       if (key === "arrowup" && pressedKeys.has("control")) {
-        const currentFocusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const currentFocusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
 
         const currentFocusedCommandIsElse = (currentFocusedCommand || [])[2];
-        const currentFocusedCommandPlotfieldCommandId =
-          (currentFocusedCommand || [])[1];
-        const focusedCommandCondition = sessionStorage
-          .getItem("focusedCommandCondition")
-          ?.split("?")
-          .filter(Boolean);
+        const currentFocusedCommandPlotfieldCommandId = (currentFocusedCommand || [])[1];
+        const focusedCommandCondition = sessionStorage.getItem("focusedCommandCondition")?.split("?").filter(Boolean);
 
-        const focusedConditionBlocks = sessionStorage
-          .getItem("focusedConditionBlock")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedConditionBlocks = sessionStorage.getItem("focusedConditionBlock")?.split("?").filter(Boolean);
 
-        const deepLevelCommandCondition = focusedCommandCondition?.includes(
-          "none"
-        )
+        const deepLevelCommandCondition = focusedCommandCondition?.includes("none")
           ? null
           : (focusedCommandCondition?.length || 0) > 0
           ? (focusedCommandCondition?.length || 0) - 1
           : null;
 
-        const deepLevelConditionBlocks = focusedConditionBlocks?.includes(
-          "none"
-        )
+        const deepLevelConditionBlocks = focusedConditionBlocks?.includes("none")
           ? null
           : (focusedConditionBlocks?.length || 0) > 0
           ? (focusedConditionBlocks?.length || 0) - 1
           : null;
 
         if (typeof deepLevelCommandCondition === "number") {
-          const currentFocusedCommandCondition = (focusedCommandCondition ||
-            [])[deepLevelCommandCondition]?.split("-");
-          const currentFocusedCommandConditionPlotfieldId =
-            currentFocusedCommandCondition[1];
+          const currentFocusedCommandCondition = (focusedCommandCondition || [])[deepLevelCommandCondition]?.split("-");
+          const currentFocusedCommandConditionPlotfieldId = currentFocusedCommandCondition[1];
 
-          if (
-            currentFocusedCommandConditionPlotfieldId !== plotfieldCommandId
-          ) {
+          if (currentFocusedCommandConditionPlotfieldId !== plotfieldCommandId) {
             console.log("Not for you");
             return;
           }
 
-          if (currentFocusedCommandPlotfieldCommandId === plotfieldCommandId) {
+          event.stopPropagation();
+
+          if (currentFocusedCommandConditionPlotfieldId === currentFocusedCommandPlotfieldCommandId) {
             // going completely out of conditionBlock
             const currentlyOpenConditionBlock = getCurrentlyOpenConditionBlock({
               plotfieldCommandId: currentFocusedCommandConditionPlotfieldId,
             });
 
             if (!currentlyOpenConditionBlock) {
-              console.log(
-                "There are probably no condition block with assigned TopologyBlock"
-              );
+              console.log("There are probably no condition block with assigned TopologyBlock");
               return;
             }
 
             if (deepLevelCommandCondition > 0) {
-              const newFocusedCommandConditionArray = (
-                focusedCommandCondition || []
-              ).slice(0, -1);
+              const newFocusedCommandConditionArray = (focusedCommandCondition || []).slice(0, -1);
 
-              sessionStorage.setItem(
-                "focusedCommandCondition",
-                `${newFocusedCommandConditionArray?.join("?")}`
-              );
+              sessionStorage.setItem("focusedCommandCondition", `${newFocusedCommandConditionArray?.join("?")}?`);
             } else {
               sessionStorage.setItem("focusedCommandCondition", `none`);
             }
 
-            if (
-              typeof deepLevelConditionBlocks === "number" &&
-              deepLevelConditionBlocks > 0
-            ) {
-              const newFocusedConditionBlockArray = (
-                focusedConditionBlocks || []
-              ).slice(0, -1);
+            if (typeof deepLevelConditionBlocks === "number" && deepLevelConditionBlocks > 0) {
+              const newFocusedConditionBlockArray = (focusedConditionBlocks || []).slice(0, -1);
 
-              sessionStorage.setItem(
-                "focusedConditionBlock",
-                `${newFocusedConditionBlockArray?.join("?")}`
-              );
+              sessionStorage.setItem("focusedConditionBlock", `${newFocusedConditionBlockArray?.join("?")}?`);
             } else {
               sessionStorage.setItem("focusedConditionBlock", `none`);
             }
 
-            const focusedCommandIf = sessionStorage
-              .getItem("focusedCommandIf")
-              ?.split("?")
-              .filter(Boolean);
+            const focusedCommandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
             const deepLevel = focusedCommandIf?.includes("none")
               ? null
@@ -142,9 +106,7 @@ export default function useGoingUpFromConditionBlocks({
 
             // if this condition command is inside if command
             if (typeof deepLevel === "number") {
-              const currentCommandIf = (focusedCommandIf || [])[
-                deepLevel
-              ].split("-");
+              const currentCommandIf = (focusedCommandIf || [])[deepLevel].split("-");
               const currentCommandIfId = currentCommandIf[3];
               const currentCommandCondition = getCommandIfByPlotfieldCommandId({
                 commandIfId: currentCommandIfId,
@@ -152,22 +114,24 @@ export default function useGoingUpFromConditionBlocks({
                 plotfieldCommandId: currentFocusedCommandConditionPlotfieldId,
               });
 
-              sessionStorage.setItem(
-                "focusedTopologyBlock",
-                currentCommandCondition?.topologyBlockId || ""
-              );
+              sessionStorage.setItem("focusedTopologyBlock", currentCommandCondition?.topologyBlockId || "");
             } else {
               // if this condition command is not inside if command
-              const currentCommandCondition =
-                getCommandOnlyByPlotfieldCommandId({
-                  plotfieldCommandId: currentFocusedCommandConditionPlotfieldId,
-                });
+              const currentCommandCondition = getCommandOnlyByPlotfieldCommandId({
+                plotfieldCommandId: currentFocusedCommandConditionPlotfieldId,
+              });
 
-              sessionStorage.setItem(
-                "focusedTopologyBlock",
-                currentCommandCondition?.topologyBlockId || ""
-              );
+              sessionStorage.setItem("focusedTopologyBlock", currentCommandCondition?.topologyBlockId || "");
             }
+
+            const focusedCommandInsideType = sessionStorage
+              .getItem("focusedCommandInsideType")
+              ?.split("?")
+              .filter(Boolean);
+
+            const newFocusedCommandInsideType = focusedCommandInsideType?.slice(0, -1);
+
+            sessionStorage.setItem("focusedCommandInsideType", `${newFocusedCommandInsideType?.join("?")}?`);
 
             setIsFocusedBackground(false);
             setShowConditionBlockPlot(false);
@@ -178,9 +142,7 @@ export default function useGoingUpFromConditionBlocks({
             const isElse = (currentFocusedCommandCondition || [])[0];
             sessionStorage.setItem(
               "focusedCommand",
-              `condition-${currentFocusedCommandConditionPlotfieldId}${
-                isElse === "else" ? "-else" : "-if"
-              }`
+              `condition-${currentFocusedCommandConditionPlotfieldId}${isElse === "else" ? "-else" : "-if"}`
             );
             setIsFocusedBackground(true);
             return;

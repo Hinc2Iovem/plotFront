@@ -47,22 +47,13 @@ export function fromLastToFirstOption({
   if (deepLevelChoiceOptions === 0) {
     sessionStorage.setItem("focusedChoiceOption", `${newChoiceOptionValue}`);
   } else {
-    const prevValue = sessionStorage
-      .getItem("focusedChoiceOption")
-      ?.split("?")
-      .filter(Boolean);
+    const prevValue = sessionStorage.getItem("focusedChoiceOption")?.split("?").filter(Boolean);
     const prevValueWithoutPrevOption = prevValue?.slice(0, -1);
 
-    sessionStorage.setItem(
-      "focusedChoiceOption",
-      `${prevValueWithoutPrevOption?.join("?")}${newChoiceOptionValue}`
-    );
+    sessionStorage.setItem("focusedChoiceOption", `${prevValueWithoutPrevOption?.join("?")}?${newChoiceOptionValue}`);
   }
 
-  sessionStorage.setItem(
-    "focusedTopologyBlock",
-    newChoiceOption.topologyBlockId
-  );
+  sessionStorage.setItem("focusedTopologyBlock", newChoiceOption.topologyBlockId);
   updateCurrentlyOpenChoiceOption({
     choiceOptionId: newChoiceOption.choiceOptionId,
     plotfieldCommandId: currentFocusedCommandChoicePlotfieldId,

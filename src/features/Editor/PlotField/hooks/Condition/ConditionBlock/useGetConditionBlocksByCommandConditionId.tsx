@@ -13,9 +13,7 @@ export default function useGetConditionBlocksByCommandConditionId({
     queryKey: ["commandCondition", commandConditionId, "conditionBlock"],
     queryFn: async () =>
       await axiosCustomized
-        .get<ConditionBlockTypes[]>(
-          `/commandConditions/${commandConditionId}/conditionBlocks`
-        )
+        .get<ConditionBlockTypes[]>(`/commandConditions/${commandConditionId}/conditionBlocks`)
         .then((r) => r.data),
     enabled: !!commandConditionId,
   });

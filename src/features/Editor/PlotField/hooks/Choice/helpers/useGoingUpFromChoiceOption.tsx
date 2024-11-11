@@ -15,17 +15,11 @@ export default function useGoingUpFromChoiceOptions({
   plotfieldCommandId,
   choiceId,
 }: GoingUpFromChoiceOptionsTypes) {
-  const {
-    getFirstChoiceOptionWithTopologyBlockId,
-    getCurrentlyOpenChoiceOption,
-    updateCurrentlyOpenChoiceOption,
-  } = useChoiceOptions();
+  const { getFirstChoiceOptionWithTopologyBlockId, getCurrentlyOpenChoiceOption, updateCurrentlyOpenChoiceOption } =
+    useChoiceOptions();
 
-  const {
-    getFirstCommandByTopologyBlockId,
-    getCommandIfByPlotfieldCommandId,
-    getCommandOnlyByPlotfieldCommandId,
-  } = usePlotfieldCommands();
+  const { getFirstCommandByTopologyBlockId, getCommandIfByPlotfieldCommandId, getCommandOnlyByPlotfieldCommandId } =
+    usePlotfieldCommands();
 
   useEffect(() => {
     const pressedKeys = new Set();
@@ -36,22 +30,13 @@ export default function useGoingUpFromChoiceOptions({
       pressedKeys.add(key);
 
       if (key === "arrowup" && pressedKeys.has("control")) {
-        const currentFocusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const currentFocusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
 
         const currentFocusedCommandIsElse = (currentFocusedCommand || [])[2];
-        const currentFocusedCommandPlotfieldCommandId =
-          (currentFocusedCommand || [])[1];
-        const focusedCommandChoice = sessionStorage
-          .getItem("focusedCommandChoice")
-          ?.split("?")
-          .filter(Boolean);
+        const currentFocusedCommandPlotfieldCommandId = (currentFocusedCommand || [])[1];
+        const focusedCommandChoice = sessionStorage.getItem("focusedCommandChoice")?.split("?").filter(Boolean);
 
-        const focusedChoiceOptions = sessionStorage
-          .getItem("focusedChoiceOption")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedChoiceOptions = sessionStorage.getItem("focusedChoiceOption")?.split("?").filter(Boolean);
 
         const deepLevelCommandChoice = focusedCommandChoice?.includes("none")
           ? null
@@ -66,64 +51,45 @@ export default function useGoingUpFromChoiceOptions({
           : null;
 
         if (typeof deepLevelCommandChoice === "number") {
-          const currentFocusedCommandChoice = (focusedCommandChoice || [])[
-            deepLevelCommandChoice
-          ]?.split("-");
-          const currentFocusedCommandChoiceId = currentFocusedCommandChoice[2];
-          const currentFocusedCommandChoicePlotfieldCommandId =
-            currentFocusedCommandChoice[0];
+          const currentFocusedCommandChoice = (focusedCommandChoice || [])[deepLevelCommandChoice]?.split("-");
+          const currentFocusedCommandChoicePlotfieldCommandId = currentFocusedCommandChoice[0];
 
-          if (currentFocusedCommandChoiceId !== choiceId) {
+          if (currentFocusedCommandChoicePlotfieldCommandId !== plotfieldCommandId) {
+            // filtering commands, so other choice commands would be stop here
             console.log("Not for you");
             return;
           }
 
-          if (currentFocusedCommandPlotfieldCommandId === plotfieldCommandId) {
+          event.stopPropagation();
+
+          if (currentFocusedCommandPlotfieldCommandId === currentFocusedCommandChoicePlotfieldCommandId) {
             // going completely out of choiceOption
             const currentlyOpenChoiceOption = getCurrentlyOpenChoiceOption({
               choiceId,
             });
 
             if (!currentlyOpenChoiceOption) {
-              console.log(
-                "There are probably no choice block with assigned TopologyBlock"
-              );
+              console.log("There are probably no choice block with assigned TopologyBlock");
               return;
             }
 
             if (deepLevelCommandChoice > 0) {
-              const newFocusedCommandChoiceArray = (
-                focusedCommandChoice || []
-              ).slice(0, -1);
+              const newFocusedCommandChoiceArray = (focusedCommandChoice || []).slice(0, -1);
 
-              sessionStorage.setItem(
-                "focusedCommandChoice",
-                `${newFocusedCommandChoiceArray?.join("?")}`
-              );
+              sessionStorage.setItem("focusedCommandChoice", `${newFocusedCommandChoiceArray?.join("?")}?`);
             } else {
               sessionStorage.setItem("focusedCommandChoice", `none`);
             }
 
-            if (
-              typeof deepLevelChoiceOptions === "number" &&
-              deepLevelChoiceOptions > 0
-            ) {
-              const newFocusedChoiceOptionArray = (
-                focusedChoiceOptions || []
-              ).slice(0, -1);
+            if (typeof deepLevelChoiceOptions === "number" && deepLevelChoiceOptions > 0) {
+              const newFocusedChoiceOptionArray = (focusedChoiceOptions || []).slice(0, -1);
 
-              sessionStorage.setItem(
-                "focusedChoiceOption",
-                `${newFocusedChoiceOptionArray?.join("?")}`
-              );
+              sessionStorage.setItem("focusedChoiceOption", `${newFocusedChoiceOptionArray?.join("?")}?`);
             } else {
               sessionStorage.setItem("focusedChoiceOption", `none`);
             }
 
-            const focusedCommandIf = sessionStorage
-              .getItem("focusedCommandIf")
-              ?.split("?")
-              .filter(Boolean);
+            const focusedCommandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
             const deepLevel = focusedCommandIf?.includes("none")
               ? null
@@ -138,9 +104,7 @@ export default function useGoingUpFromChoiceOptions({
 
             // if this choice command is inside if command
             if (typeof deepLevel === "number") {
-              const currentCommandIf = (focusedCommandIf || [])[
-                deepLevel
-              ].split("-");
+              const currentCommandIf = (focusedCommandIf || [])[deepLevel].split("-");
               const currentCommandIfId = currentCommandIf[3];
               const currentCommandChoice = getCommandIfByPlotfieldCommandId({
                 commandIfId: currentCommandIfId,
@@ -148,21 +112,24 @@ export default function useGoingUpFromChoiceOptions({
                 plotfieldCommandId: currentFocusedCommandPlotfieldCommandId,
               });
 
-              sessionStorage.setItem(
-                "focusedTopologyBlock",
-                currentCommandChoice?.topologyBlockId || ""
-              );
+              sessionStorage.setItem("focusedTopologyBlock", currentCommandChoice?.topologyBlockId || "");
             } else {
               // if this choice command is not inside if command
               const currentCommandChoice = getCommandOnlyByPlotfieldCommandId({
                 plotfieldCommandId: currentFocusedCommandPlotfieldCommandId,
               });
 
-              sessionStorage.setItem(
-                "focusedTopologyBlock",
-                currentCommandChoice?.topologyBlockId || ""
-              );
+              sessionStorage.setItem("focusedTopologyBlock", currentCommandChoice?.topologyBlockId || "");
             }
+
+            const focusedCommandInsideType = sessionStorage
+              .getItem("focusedCommandInsideType")
+              ?.split("?")
+              .filter(Boolean);
+
+            const newFocusedCommandInsideType = focusedCommandInsideType?.slice(0, -1);
+
+            sessionStorage.setItem("focusedCommandInsideType", `${newFocusedCommandInsideType?.join("?")}?`);
 
             setIsFocusedBackground(false);
             setShowChoiceOptionPlot(false);
@@ -170,10 +137,8 @@ export default function useGoingUpFromChoiceOptions({
           } else {
             // going to the top level of choiceOption
 
-            sessionStorage.setItem(
-              "focusedCommand",
-              `choice-${currentFocusedCommandChoicePlotfieldCommandId}`
-            );
+            sessionStorage.setItem("focusedCommand", `choice-${currentFocusedCommandChoicePlotfieldCommandId}`);
+            event.stopImmediatePropagation();
             setIsFocusedBackground(true);
             return;
           }

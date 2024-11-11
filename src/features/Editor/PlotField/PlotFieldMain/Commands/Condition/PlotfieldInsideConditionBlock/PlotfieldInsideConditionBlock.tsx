@@ -5,9 +5,7 @@ import { generateMongoObjectId } from "../../../../../../../utils/generateMongoO
 import ButtonHoverPromptModal from "../../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import useCreateBlankCommand from "../../../../hooks/useCreateBlankCommand";
 import PlotFieldMain from "../../../PlotFieldMain";
-import useConditionBlocks, {
-  ConditionBlockItemTypes,
-} from "../Context/ConditionContext";
+import useConditionBlocks, { ConditionBlockItemTypes } from "../Context/ConditionContext";
 import ConditionBlockInputField from "./ConditionBlockInputField";
 
 type PlotfieldInsideConditionBlockTypes = {
@@ -36,9 +34,7 @@ export default function PlotfieldInsideConditionBlock({
   // const [showMessage, setShowMessage] = useState("");
 
   const createCommand = useCreateBlankCommand({
-    topologyBlockId:
-      getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.targetBlockId ||
-      "",
+    topologyBlockId: getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.targetBlockId || "",
     episodeId: episodeId || "",
   });
 
@@ -46,9 +42,7 @@ export default function PlotfieldInsideConditionBlock({
     const _id = generateMongoObjectId();
     createCommand.mutate({
       _id,
-      topologyBlockId:
-        getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.targetBlockId ||
-        "",
+      topologyBlockId: getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.targetBlockId || "",
     });
   };
 
@@ -56,9 +50,7 @@ export default function PlotfieldInsideConditionBlock({
 
   return (
     <section
-      className={`${
-        showConditionBlockPlot || isFocusedBackground ? "" : "hidden"
-      } flex flex-col gap-[1rem] relative`}
+      className={`${showConditionBlockPlot || isFocusedBackground ? "" : "hidden"} flex flex-col gap-[1rem] relative`}
     >
       <button
         onClick={(e) => {
@@ -77,16 +69,8 @@ export default function PlotfieldInsideConditionBlock({
           }) as ConditionBlockItemTypes[]
         )?.map((op, i) => (
           <ConditionBlockInputField
-            key={
-              "optionValueInput-" +
-              op.targetBlockId +
-              "-" +
-              op.conditionType +
-              "-" +
-              i
-            }
-            conditionType={op.conditionType}
-            conditionBlockId={op.conditionBlockId}
+            key={"optionValueInput-" + op.targetBlockId + "-" + op.topologyBlockName + "-" + i}
+            {...op}
             plotfieldCommandId={plotfieldCommandId}
           />
         ))}
@@ -98,12 +82,11 @@ export default function PlotfieldInsideConditionBlock({
           }) as ConditionBlockItemTypes[]
         )?.map((op, i) => (
           <OptionVariationButton
-            key={op.targetBlockId + "-" + op.conditionType + "-" + i}
             {...op}
+            key={op.targetBlockId + "-" + op.topologyBlockName + "-" + i}
+            topologyBlockName={op.topologyBlockName || ""}
             plotfieldCommandId={plotfieldCommandId}
-            showedConditionBlockPlotTopologyBlockId={getCurrentlyOpenConditionBlockPlotId(
-              { plotfieldCommandId }
-            )}
+            showedConditionBlockPlotTopologyBlockId={getCurrentlyOpenConditionBlockPlotId({ plotfieldCommandId })}
             isFocusedBackground={isFocusedBackground}
           />
         ))}
@@ -141,10 +124,7 @@ export default function PlotfieldInsideConditionBlock({
         <PlotFieldMain
           showAllCommands={false}
           renderedAsSubPlotfield={true}
-          topologyBlockId={
-            getCurrentlyOpenConditionBlock({ plotfieldCommandId })
-              ?.targetBlockId || ""
-          }
+          topologyBlockId={getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.targetBlockId || ""}
         />
       </main>
     </section>
@@ -155,21 +135,19 @@ type OptionVariationButtonTypes = {
   showedConditionBlockPlotTopologyBlockId: string;
   plotfieldCommandId: string;
   isFocusedBackground: boolean;
+  topologyBlockName: string;
 } & ConditionBlockItemTypes;
 
 function OptionVariationButton({
   showedConditionBlockPlotTopologyBlockId,
-  conditionType,
   targetBlockId,
   conditionBlockId,
   plotfieldCommandId,
   isElse,
   isFocusedBackground,
+  topologyBlockName,
 }: OptionVariationButtonTypes) {
-  const {
-    updateCurrentlyOpenConditionBlock,
-    getCurrentlyOpenConditionBlockPlotId,
-  } = useConditionBlocks();
+  const { updateCurrentlyOpenConditionBlock, getCurrentlyOpenConditionBlockPlotId } = useConditionBlocks();
 
   return (
     <button
@@ -189,14 +167,11 @@ function OptionVariationButton({
       }}
       className={`${
         targetBlockId === showedConditionBlockPlotTopologyBlockId ||
-        getCurrentlyOpenConditionBlockPlotId({ plotfieldCommandId }) ===
-          conditionBlockId
+        getCurrentlyOpenConditionBlockPlotId({ plotfieldCommandId }) === conditionBlockId
           ? "bg-primary-darker text-text-light focus-within:outline-secondary"
           : "bg-secondary text-text-dark"
       } ${
-        isFocusedBackground &&
-        getCurrentlyOpenConditionBlockPlotId({ plotfieldCommandId }) ===
-          conditionBlockId
+        isFocusedBackground && getCurrentlyOpenConditionBlockPlotId({ plotfieldCommandId }) === conditionBlockId
           ? "border-dark-blue border-dashed border-[2px]"
           : ""
       } ${
@@ -205,7 +180,7 @@ function OptionVariationButton({
           : "focus-within:bg-primary-darker focus-within:text-text-dark"
       } min-w-[7rem] text-[1.5rem] outline-none rounded-md px-[1rem] py-[.5rem] shadow-sm transition-all hover:bg-primary-darker hover:text-text-light focus-within:text-text-light`}
     >
-      {isElse ? "else" : conditionType}
+      {isElse ? "else" : topologyBlockName}
     </button>
   );
 }
