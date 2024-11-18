@@ -25,13 +25,13 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
   lastIndex,
 }: DisplayTranslatedNonTranslatedAppearancePartTypes) {
   const [translatedAppearancePart, setTranslatedAppearancePart] = useState("");
-  const [translatedBackUpAppearancePart, setTranslatedBackUpAppearancePart] =
-    useState("");
+  const [translatedBackUpAppearancePart, setTranslatedBackUpAppearancePart] = useState("");
   const [backUpAppearancePart, setBackUpAppearancePart] = useState("");
   const [appearancePart, setAppearancePart] = useState("");
   const [appearancePartTypeToRus, setAppearancePartTypeToRus] = useState("");
   const [appearancePartId, setAppearancePartId] = useState("");
 
+  // TODO did I forget about temp type?
   useEffect(() => {
     if (translated) {
       setAppearancePartId(translated.appearancePartId);
@@ -45,7 +45,7 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
           : translated.type === "body"
           ? "тело"
           : translated.type === "dress"
-          ? "костюм"
+          ? "внешний вид"
           : translated.type === "hair"
           ? "волосы"
           : "кожа";
@@ -67,24 +67,17 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
     delay: 500,
   });
 
-  const updateCharacterTranslationTranslated =
-    useUpdateAppearancePartTranslation({
-      language: translateFromLanguage,
-      appearancePartId:
-        appearancePartId || nonTranslated?.appearancePartId || "",
-      characterId: translated?.characterId || nonTranslated?.characterId || "",
-    });
+  const updateCharacterTranslationTranslated = useUpdateAppearancePartTranslation({
+    language: translateFromLanguage,
+    appearancePartId: appearancePartId || nonTranslated?.appearancePartId || "",
+    characterId: translated?.characterId || nonTranslated?.characterId || "",
+  });
 
   useEffect(() => {
-    if (
-      translatedBackUpAppearancePart !== debouncedTranslatedName &&
-      debouncedTranslatedName?.trim().length
-    ) {
+    if (translatedBackUpAppearancePart !== debouncedTranslatedName && debouncedTranslatedName?.trim().length) {
       updateCharacterTranslationTranslated.mutate({
         appearancePartName: debouncedTranslatedName,
-        appearancePartType:
-          translated?.type ||
-          ("" as TranslationTextFieldNameAppearancePartsTypes),
+        appearancePartType: translated?.type || ("" as TranslationTextFieldNameAppearancePartsTypes),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,15 +95,10 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
   });
 
   useEffect(() => {
-    if (
-      backUpAppearancePart !== debouncedTranslatedName &&
-      debouncedName?.trim().length
-    ) {
+    if (backUpAppearancePart !== debouncedTranslatedName && debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
         appearancePartName: debouncedName,
-        appearancePartType:
-          translated?.type ||
-          ("" as TranslationTextFieldNameAppearancePartsTypes),
+        appearancePartType: translated?.type || ("" as TranslationTextFieldNameAppearancePartsTypes),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,20 +107,14 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
   return (
     <>
       {filteredAppearanceType ? (
-        filteredAppearanceType === translated?.type ||
-        ("" as TranslationTextFieldNameAppearancePartsTypes) ? (
+        filteredAppearanceType === translated?.type || ("" as TranslationTextFieldNameAppearancePartsTypes) ? (
           <div
             className={`${
               currentIndex === lastIndex ? "col-span-full" : ""
             } h-fit flex-col w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
           >
-            <div
-              className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
-            >
-              <form
-                className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-                onSubmit={(e) => e.preventDefault()}
-              >
+            <div className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}>
+              <form className="flex flex-col gap-[.5rem] p-[1rem] w-full" onSubmit={(e) => e.preventDefault()}>
                 <input
                   type="text"
                   value={translatedAppearancePart}
@@ -141,13 +123,8 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
                 />
               </form>
             </div>
-            <div
-              className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
-            >
-              <form
-                className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-                onSubmit={(e) => e.preventDefault()}
-              >
+            <div className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}>
+              <form className="flex flex-col gap-[.5rem] p-[1rem] w-full" onSubmit={(e) => e.preventDefault()}>
                 <input
                   type="text"
                   value={appearancePart}
@@ -165,13 +142,8 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
             currentIndex === lastIndex ? "col-span-full" : ""
           } h-fit flex-col w-full flex gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md`}
         >
-          <div
-            className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
-          >
-            <form
-              className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-              onSubmit={(e) => e.preventDefault()}
-            >
+          <div className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}>
+            <form className="flex flex-col gap-[.5rem] p-[1rem] w-full" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="text"
                 value={translatedAppearancePart}
@@ -180,13 +152,8 @@ export default function DisplayTranslatedNonTranslatedAppearancePart({
               />
             </form>
           </div>
-          <div
-            className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}
-          >
-            <form
-              className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-              onSubmit={(e) => e.preventDefault()}
-            >
+          <div className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary`}>
+            <form className="flex flex-col gap-[.5rem] p-[1rem] w-full" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="text"
                 value={appearancePart}

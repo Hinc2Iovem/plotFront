@@ -38,12 +38,13 @@ export default function ChoiceQuestionField({
   plotFieldCommandId,
   textStyle,
 }: ChoiceQuestionFieldTypes) {
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
   const [initialCharacterEmotionId] = useState(characterEmotionId);
 
-  const [showCreateChoiceOptionModal, setShowCreateChoiceOptionModal] =
-    useState(false);
+  const [showCreateChoiceOptionModal, setShowCreateChoiceOptionModal] = useState(false);
 
   const { data: translatedQuestion } = useGetCommandChoiceTranslation({
     commandId: plotFieldCommandId,
@@ -95,9 +96,7 @@ export default function ChoiceQuestionField({
 
   useEffect(() => {
     if (currentCharacter) {
-      const currentEmotion = currentCharacter.emotions.find(
-        (e) => e._id === characterEmotionId
-      );
+      const currentEmotion = currentCharacter.emotions.find((e) => e._id === characterEmotionId);
       setEmotionName(currentEmotion?.emotionName || "");
       setEmotionImg(currentEmotion?.imgUrl || "");
     }
@@ -117,8 +116,7 @@ export default function ChoiceQuestionField({
     if (debouncedValue?.trim().length) {
       updateChoiceTranslation.mutate({
         text: question,
-        textFieldName:
-          TranslationTextFieldName.ChoiceQuestion as TranslationTextFieldNameChoiceTypes,
+        textFieldName: TranslationTextFieldName.ChoiceQuestion as TranslationTextFieldNameChoiceTypes,
       });
 
       checkTextStyle({ debouncedValue, setCurrentTextStyle });
@@ -167,15 +165,11 @@ export default function ChoiceQuestionField({
             >
               {emotionName?.trim().length ? (
                 <div className="flex gap-[1rem] justify-between items-center">
-                  <h4 className="text-[1.5rem] text-text-light">
-                    {emotionName}
-                  </h4>
+                  <h4 className="text-[1.5rem] text-text-light">{emotionName}</h4>
                   <img
                     src={emotionImg}
                     alt="EmotionIcon"
-                    className={`${
-                      emotionImg ? "" : "hidden"
-                    } w-[3.5rem] rounded-md object-contain`}
+                    className={`${emotionImg ? "" : "hidden"} w-[3.5rem] rounded-md object-contain`}
                   />
                 </div>
               ) : (
@@ -199,6 +193,11 @@ export default function ChoiceQuestionField({
       <form className="flex-grow relative" onSubmit={(e) => e.preventDefault()}>
         <PlotfieldInput
           type="text"
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
           value={question}
           onContextMenu={(e) => {
             e.preventDefault();
@@ -288,8 +287,8 @@ function ChoiceQuestionCharacterField({
   setCharacterId,
 }: ChoiceQuestionCharacterFieldTypes) {
   const [initialCharacterId] = useState(characterId);
-  const [debouncedCharacter, setDebouncedCharacter] =
-    useState<DebouncedCheckCharacterTypes | null>(null);
+  const [debouncedCharacter, setDebouncedCharacter] = useState<DebouncedCheckCharacterTypes | null>(null);
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const debouncedValue = useDebounce({ value: characterName, delay: 700 });
 
@@ -318,6 +317,11 @@ function ChoiceQuestionCharacterField({
       className="w-full relative flex gap-[.5rem] bg-primary rounded-md"
     >
       <PlotfieldInput
+        focusedSecondTime={focusedSecondTime}
+        onBlur={() => {
+          setFocusedSecondTime(false);
+        }}
+        setFocusedSecondTime={setFocusedSecondTime}
         onClick={(e) => {
           e.stopPropagation();
           setShowAllCharacters(true);

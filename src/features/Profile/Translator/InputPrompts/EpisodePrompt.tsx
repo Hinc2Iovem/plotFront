@@ -24,6 +24,7 @@ export default function EpisodePrompt({
   const [episodeBackupValue, setEpisodeBackupValue] = useState("");
 
   const modalEpisodesRef = useRef<HTMLDivElement>(null);
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   useOutOfModal({
     modalRef: modalEpisodesRef,
@@ -36,11 +37,10 @@ export default function EpisodePrompt({
     delay: 500,
   });
 
-  const { data: episodesSearch, isLoading } =
-    useGetEpisodesTranslationsBySeasonId({
-      language: "russian",
-      seasonId,
-    });
+  const { data: episodesSearch, isLoading } = useGetEpisodesTranslationsBySeasonId({
+    language: "russian",
+    seasonId,
+  });
 
   const filteredEpisodes = useMemo(() => {
     if (episodesSearch) {
@@ -48,9 +48,7 @@ export default function EpisodePrompt({
         episode.translations.some(
           (translation) =>
             translation.textFieldName === "episodeName" &&
-            translation.text
-              .toLowerCase()
-              .includes((episodeCurrentValue || "").toLowerCase())
+            translation.text.toLowerCase().includes((episodeCurrentValue || "").toLowerCase())
         )
       );
     }
@@ -58,12 +56,7 @@ export default function EpisodePrompt({
   }, [episodesSearch, episodeCurrentValue]);
 
   useEffect(() => {
-    if (
-      !showEpisodes &&
-      !episodeCurrentValue &&
-      episodeBackupValue &&
-      setEpisodeCurrentValue
-    ) {
+    if (!showEpisodes && !episodeCurrentValue && episodeBackupValue && setEpisodeCurrentValue) {
       setEpisodeCurrentValue(episodeBackupValue);
     }
   }, [showEpisodes, episodeCurrentValue, episodeBackupValue]);
@@ -72,9 +65,7 @@ export default function EpisodePrompt({
     if (debouncedValue) {
       const matchedValue = episodesSearch?.find((cs) =>
         cs?.translations?.some(
-          (tct) =>
-            tct.textFieldName === "episodeName" &&
-            tct.text.toLowerCase() === debouncedValue.toLowerCase()
+          (tct) => tct.textFieldName === "episodeName" && tct.text.toLowerCase() === debouncedValue.toLowerCase()
         )
       );
       if (matchedValue) {
@@ -90,12 +81,14 @@ export default function EpisodePrompt({
   }, [debouncedValue, episodesSearch]);
 
   return (
-    <form
-      className="rounded-md shadow-md relative"
-      onSubmit={(e) => e.preventDefault()}
-    >
+    <form className="rounded-md shadow-md relative" onSubmit={(e) => e.preventDefault()}>
       <PlotfieldInput
         type="text"
+        focusedSecondTime={focusedSecondTime}
+        onBlur={() => {
+          setFocusedSecondTime(false);
+        }}
+        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Название Эпизода"
         onClick={(e) => {
           e.stopPropagation();
@@ -115,14 +108,9 @@ export default function EpisodePrompt({
         }}
       />
       {seasonId ? (
-        <AsideScrollable
-          ref={modalEpisodesRef}
-          className={`${showEpisodes ? "" : "hidden"} translate-y-[.5rem]`}
-        >
+        <AsideScrollable ref={modalEpisodesRef} className={`${showEpisodes ? "" : "hidden"} translate-y-[.5rem]`}>
           {isLoading ? (
-            <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">
-              Загрузка...
-            </div>
+            <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">Загрузка...</div>
           ) : filteredEpisodes && filteredEpisodes.length > 0 ? (
             filteredEpisodes.map((s) => (
               <AsideScrollableButton
@@ -151,10 +139,7 @@ export default function EpisodePrompt({
           )}
         </AsideScrollable>
       ) : (
-        <AsideScrollable
-          ref={modalEpisodesRef}
-          className={`${showEpisodes ? "" : "hidden"} translate-y-[.5rem]`}
-        >
+        <AsideScrollable ref={modalEpisodesRef} className={`${showEpisodes ? "" : "hidden"} translate-y-[.5rem]`}>
           <AsideScrollableButton
             type="button"
             onClick={() => {

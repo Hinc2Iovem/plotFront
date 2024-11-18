@@ -12,15 +12,14 @@ type CommandEffectFieldTypes = {
   command: string;
 };
 
-export default function CommandEffectField({
-  plotFieldCommandId,
-  command,
-}: CommandEffectFieldTypes) {
+export default function CommandEffectField({ plotFieldCommandId, command }: CommandEffectFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Effect");
   const [textValue, setTextValue] = useState("");
   const { data: commandEffect } = useGetCommandEffect({
     plotFieldCommandId,
   });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
@@ -49,10 +48,7 @@ export default function CommandEffectField({
   });
 
   useEffect(() => {
-    if (
-      commandEffect?.effectName !== debouncedValue &&
-      debouncedValue?.trim().length
-    ) {
+    if (commandEffect?.effectName !== debouncedValue && debouncedValue?.trim().length) {
       updateEffectText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,19 +57,17 @@ export default function CommandEffectField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
           value={textValue}
           type="text"

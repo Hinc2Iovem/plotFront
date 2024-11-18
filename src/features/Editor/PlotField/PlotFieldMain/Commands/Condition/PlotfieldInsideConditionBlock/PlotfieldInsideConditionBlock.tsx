@@ -72,6 +72,7 @@ export default function PlotfieldInsideConditionBlock({
             key={"optionValueInput-" + op.targetBlockId + "-" + op.topologyBlockName + "-" + i}
             {...op}
             plotfieldCommandId={plotfieldCommandId}
+            insidePlotfield={true}
           />
         ))}
       </form>

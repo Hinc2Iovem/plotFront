@@ -14,10 +14,7 @@ type CommandSuitFieldTypes = {
   command: string;
 };
 
-export default function CommandSuitField({
-  plotFieldCommandId,
-  command,
-}: CommandSuitFieldTypes) {
+export default function CommandSuitField({ plotFieldCommandId, command }: CommandSuitFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Suit");
   const [textValue, setTextValue] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState("");
@@ -30,6 +27,8 @@ export default function CommandSuitField({
   const { data: commandSuit } = useGetCommandSuit({
     plotFieldCommandId,
   });
+  const [focusedSecondTimeFirst, setFocusedSecondTimeFirst] = useState(false);
+  const [focusedSecondTimeSecond, setFocusedSecondTimeSecond] = useState(false);
 
   const [commandSuitId, setCommandSuitId] = useState("");
 
@@ -92,11 +91,7 @@ export default function CommandSuitField({
   return (
     <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
@@ -108,6 +103,8 @@ export default function CommandSuitField({
         className="w-full relative flex gap-[.5rem]"
       >
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTimeFirst}
+          setFocusedSecondTime={setFocusedSecondTimeFirst}
           onClick={(e) => {
             e.stopPropagation();
             setShowCharacterList(true);
@@ -123,9 +120,7 @@ export default function CommandSuitField({
         <img
           src={currentCharacterImg}
           alt="CharacterImg"
-          className={`${
-            currentCharacterImg?.trim().length ? "" : "hidden"
-          } w-[3rem] object-cover rounded-md self-end`}
+          className={`${currentCharacterImg?.trim().length ? "" : "hidden"} w-[3rem] object-cover rounded-md self-end`}
         />
         <PlotfieldCharacterPromptMain
           debouncedValue={characterDebouncedValue}
@@ -141,11 +136,10 @@ export default function CommandSuitField({
         />
       </form>
 
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTimeSecond}
+          setFocusedSecondTime={setFocusedSecondTimeSecond}
           value={textValue}
           type="text"
           placeholder="Костюм"

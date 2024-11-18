@@ -13,10 +13,7 @@ type CommandMoveFieldTypes = {
 
 const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
 
-export default function CommandMoveField({
-  plotFieldCommandId,
-  command,
-}: CommandMoveFieldTypes) {
+export default function CommandMoveField({ plotFieldCommandId, command }: CommandMoveFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Move");
   const [moveValue, setMoveValue] = useState<string>("");
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -26,6 +23,7 @@ export default function CommandMoveField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
@@ -64,19 +62,17 @@ export default function CommandMoveField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
           value={moveValue || ""}
           type="text"

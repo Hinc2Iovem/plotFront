@@ -38,7 +38,7 @@ export default function ConditionBlockVariationLanguage({
     showModal: showAllLangauges,
   });
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <PlotfieldButton
         onClick={(e) => {
           e.stopPropagation();
@@ -52,12 +52,14 @@ export default function ConditionBlockVariationLanguage({
 
       <AsideScrollable
         ref={languageModalRef}
-        className={`${showAllLangauges ? "" : "hidden"} translate-y-[.5rem] z-[10]`}
+        className={`${showAllLangauges ? "" : "hidden"} translate-y-[.5rem] z-[10] right-0 w-full min-w-fit`}
       >
         {ALL_LANGUAGES.map((l) => (
           <AsideScrollableButton
+            key={l}
             onClick={() => {
               setLanguage(l);
+
               setShowAllLanguages(false);
               updateConditionBlockVariationValue({
                 conditionBlockId,

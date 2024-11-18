@@ -10,9 +10,7 @@ import CommandWardrobeCreateCharacter from "./CommandWardrobeCreateCharacter";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 
 type CommandWardrobeCharacterTypes = {
-  setShowAppearancePartVariationModal: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setShowAppearancePartVariationModal: React.Dispatch<React.SetStateAction<boolean>>;
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setShowAppearancePartModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
@@ -33,13 +31,14 @@ export default function CommandWardrobeCharacter({
   const { storyId } = useParams();
   const [characterImg, setCharacterImg] = useState("");
   const [characterName, setCharacterName] = useState("");
-  const [suggestCreateCharacterModal, setSuggestCreateCharacterModal] =
-    useState(false);
+  const [suggestCreateCharacterModal, setSuggestCreateCharacterModal] = useState(false);
   const { data: character } = useGetCharacterById({ characterId });
   const { data: translatedCharacter } = useGetTranslationCharacterById({
     characterId,
     language: "russian",
   });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
   useEffect(() => {
     if (character) {
       setCharacterImg(character?.img ?? "");
@@ -68,16 +67,13 @@ export default function CommandWardrobeCharacter({
 
   const allMemoizedCharacterNames = useMemo(() => {
     return allCharacters?.map((c) =>
-      c.translations
-        ?.find((t) => t.textFieldName === "characterName")
-        ?.text.toLowerCase()
+      c.translations?.find((t) => t.textFieldName === "characterName")?.text.toLowerCase()
     );
   }, [allCharacters]);
 
-  const updateWardrobeCharacterId =
-    useUpdateWardrobeCurrentDressedAndCharacterId({
-      commandWardrobeId,
-    });
+  const updateWardrobeCharacterId = useUpdateWardrobeCurrentDressedAndCharacterId({
+    commandWardrobeId,
+  });
 
   useEffect(() => {
     if (characterId?.trim().length) {
@@ -94,9 +90,7 @@ export default function CommandWardrobeCharacter({
     if (allMemoizedCharacterNames?.includes(characterName.toLowerCase())) {
       // if character already exists
       const newCharacterId = allCharacters?.find((c) =>
-        c.translations?.find(
-          (t) => t.text.toLowerCase() === characterName.toLowerCase()
-        )
+        c.translations?.find((t) => t.text.toLowerCase() === characterName.toLowerCase())
       )?.characterId;
       updateWardrobeCharacterId.mutate({ characterId: newCharacterId });
     } else {
@@ -106,11 +100,13 @@ export default function CommandWardrobeCharacter({
 
   return (
     <>
-      <form
-        onSubmit={handleSubmit}
-        className="w-full relative flex gap-[.5rem]"
-      >
+      <form onSubmit={handleSubmit} className="w-full relative flex gap-[.5rem]">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
           onClick={(e) => {
             e.stopPropagation();
             setShowAppearancePartModal(false);

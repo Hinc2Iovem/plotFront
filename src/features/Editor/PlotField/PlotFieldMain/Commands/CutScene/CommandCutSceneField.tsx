@@ -12,10 +12,7 @@ type CommandCutSceneFieldTypes = {
   command: string;
 };
 
-export default function CommandCutSceneField({
-  plotFieldCommandId,
-  command,
-}: CommandCutSceneFieldTypes) {
+export default function CommandCutSceneField({ plotFieldCommandId, command }: CommandCutSceneFieldTypes) {
   const [nameValue] = useState<string>(command ?? "CutScene");
   const [textValue, setTextValue] = useState("");
   const { data: commandCutScene } = useGetCommandCutScene({
@@ -25,6 +22,7 @@ export default function CommandCutSceneField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
@@ -49,10 +47,7 @@ export default function CommandCutSceneField({
   });
 
   useEffect(() => {
-    if (
-      commandCutScene?.cutSceneName !== debouncedValue &&
-      debouncedValue?.trim().length
-    ) {
+    if (commandCutScene?.cutSceneName !== debouncedValue && debouncedValue?.trim().length) {
       updateCutSceneText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,19 +56,17 @@ export default function CommandCutSceneField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
           value={textValue}
           type="text"

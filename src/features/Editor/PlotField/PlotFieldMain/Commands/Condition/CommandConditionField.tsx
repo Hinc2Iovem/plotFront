@@ -87,7 +87,7 @@ export default function CommandConditionField({
           isElse: co.isElse,
           conditionBlockId: co._id,
           conditionBlockVariations: [],
-          logicalOperators: "",
+          logicalOperators: co.logicalOperator,
           orderOfExecution: co.orderOfExecution,
           targetBlockId: co.targetBlockId,
           topologyBlockName: "",
@@ -119,7 +119,7 @@ export default function CommandConditionField({
         <ButtonHoverPromptModal
           contentName="Создать Блок"
           positionByAbscissa="right"
-          className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-secondary z-[2]"
+          className="active:scale-[.99] relative bg-secondary z-[2]"
           asideClasses="text-[1.3rem] -translate-y-1/3 text-text-light"
           onClick={(e) => {
             e.stopPropagation();
@@ -197,7 +197,7 @@ function ConditionBlocksList({
           }) as ConditionBlockItemTypes[]
         ).length ? (
           <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(30rem,1fr))] gap-[1rem] w-full bg-primary rounded-md`}
+            className={`grid grid-cols-[repeat(auto-fill,minmax(40rem,1fr))] gap-[1rem] w-full bg-primary rounded-md`}
           >
             {(
               getAllConditionBlocksElseOrIfByPlotfieldCommandId({

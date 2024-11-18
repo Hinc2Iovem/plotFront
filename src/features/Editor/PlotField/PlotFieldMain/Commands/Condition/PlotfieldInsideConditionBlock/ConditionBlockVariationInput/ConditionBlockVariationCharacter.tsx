@@ -9,6 +9,7 @@ import ConditionSignField from "./ConditionSignField";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useUpdateConditionCharacter from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacter";
 import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
+import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
 
 type ConditionBlockVariationCharacterTypes = {
   plotfieldCommandId: string;
@@ -26,8 +27,8 @@ export default function ConditionBlockVariationCharacter({
   const [showCharacterPromptModal, setShowCharacterPromptModal] = useState(false);
   const { updateConditionBlockVariationValue } = useConditionBlocks();
 
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
   const [currentConditionName, setCurrentConditionName] = useState("");
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [characterId, setCharacterId] = useState(currentCharacterId || "");
 
@@ -38,14 +39,14 @@ export default function ConditionBlockVariationCharacter({
   const [debouncedCharacter, setDebouncedCharacter] = useState<DebouncedCheckCharacterTypes | null>(null);
 
   useEffect(() => {
-    if (currentCharacter) {
+    if (currentCharacter && characterImg !== currentCharacter.img) {
       setCharacterImg(currentCharacter?.img || "");
     }
   }, [currentCharacter, characterId]);
 
   useEffect(() => {
-    if (translatedCharacter) {
-      setCharacterImg((translatedCharacter?.translations || [])[0].text || "");
+    if (translatedCharacter && currentConditionName !== (translatedCharacter?.translations || [])[0]?.text) {
+      setCurrentConditionName((translatedCharacter?.translations || [])[0].text || "");
     }
   }, [translatedCharacter, characterId]);
 
@@ -90,11 +91,16 @@ export default function ConditionBlockVariationCharacter({
   });
 
   return (
-    <div className="w-full flex gap-[1rem] flex-col mt-[1.5rem]">
-      <div className="w-full flex gap-[1rem] flex-shrink flex-wrap">
-        <div className="w-full min-w-[10rem] relative">
+    <div className="w-full flex gap-[1rem] flex-col">
+      <div className="w-full flex gap-[.5rem] flex-wrap">
+        <div className="flex-grow min-w-[10rem] relative">
           <PlotfieldInput
             type="text"
+            focusedSecondTime={focusedSecondTime}
+            onBlur={() => {
+              setFocusedSecondTime(false);
+            }}
+            setFocusedSecondTime={setFocusedSecondTime}
             placeholder="Персонаж"
             onClick={(e) => {
               setShowCharacterPromptModal((prev) => !prev);
@@ -105,13 +111,12 @@ export default function ConditionBlockVariationCharacter({
               if (!showCharacterPromptModal) {
                 setShowCharacterPromptModal(true);
               }
-              setHighlightRedOnValueOnExisting(false);
               setCurrentConditionName(e.target.value);
             }}
-            className={`${highlightRedOnValueNonExisting ? " " : ""}`}
+            className={`border-[3px] border-double border-dark-mid-gray `}
           />
           {characterImg ? (
-            <img src={characterImg} alt="CharacterImg" className="w-[3rem] absolute right-0 rounded-md top-0" />
+            <img src={characterImg} alt="CharacterImg" className="w-[3rem] absolute right-[3px] rounded-md top-[3px]" />
           ) : null}
           <PlotfieldCharacterPromptMain
             characterValue={currentConditionName}
@@ -126,48 +131,16 @@ export default function ConditionBlockVariationCharacter({
             commandIfId=""
             isElse={false}
           />
-          {/* <AsideScrollable
-            ref={modalRef}
-            className={` ${
-              showCharacterPromptModal ? "" : "hidden"
-            } translate-y-[.5rem]`}
-          >
-            {(memoizedCharacters || [])?.map((mk, i) => (
-              <AsideScrollableButton
-                key={mk + "-" + i}
-                onClick={() => {
-                  setShowCharacterPromptModal(false);
-                  setCurrentConditionName(mk || "");
-                  updateConditionBlockName({
-                    conditionBlockId:
-                      getConditionBlockById({
-                        conditionBlockId,
-                        plotfieldCommandId,
-                      })?.conditionBlockId || "",
-                    conditionName: mk || "",
-                    plotfieldCommandId,
-                  });
-                }}
-              >
-                {mk}
-              </AsideScrollableButton>
-            ))}
-          </AsideScrollable> */}
-          {/* <CreateNewCharacterModal
-            setShowCreateNewValueModal={setShowCreateNewValueModal}
-            showCreateNewValueModal={showCreateNewValueModal}
-            conditionName={currentConditionName}
-            conditionBlockId={conditionBlockId}
-            setHighlightRedOnValueOnExisting={setHighlightRedOnValueOnExisting}
-          /> */}
         </div>
 
-        <ConditionSignField
-          conditionBlockId={conditionBlockId}
-          plotfieldCommandId={plotfieldCommandId}
-          conditionBlockVariationId={conditionBlockCharacterId}
-          type="character"
-        />
+        <div className="w-[7rem]">
+          <ConditionSignField
+            conditionBlockId={conditionBlockId}
+            plotfieldCommandId={plotfieldCommandId}
+            conditionBlockVariationId={conditionBlockCharacterId}
+            type="character"
+          />
+        </div>
 
         <ConditionValueField
           plotfieldCommandId={plotfieldCommandId}
@@ -180,78 +153,6 @@ export default function ConditionBlockVariationCharacter({
     </div>
   );
 }
-
-// type CreateNewCharacterModalTypes = {
-//   setShowCreateNewValueModal: React.Dispatch<React.SetStateAction<boolean>>;
-//   setHighlightRedOnValueOnExisting: React.Dispatch<
-//     React.SetStateAction<boolean>
-//   >;
-//   showCreateNewValueModal: boolean;
-//   conditionName: string;
-//   conditionBlockId: string;
-// };
-
-// function CreateNewCharacterModal({
-//   setHighlightRedOnValueOnExisting,
-//   setShowCreateNewValueModal,
-//   showCreateNewValueModal,
-//   conditionName,
-//   conditionBlockId,
-// }: CreateNewCharacterModalTypes) {
-//   const { storyId } = useParams();
-//   const focusOnBtnRef = useRef<HTMLButtonElement>(null);
-//   const createNewCharacterModalRef = useRef<HTMLDivElement>(null);
-
-//   const createNewCharacter = useCreateCharacterBlank({
-//     characterType: "minorcharacter",
-//     name: conditionName,
-//     storyId: storyId || "",
-//     language: "russian",
-//   });
-//   const updateConditionBlock = useUpdateConditionValue({
-//     conditionBlockId,
-//   });
-//   useEffect(() => {
-//     if (focusOnBtnRef) {
-//       focusOnBtnRef.current?.focus();
-//     }
-//   }, []);
-
-//   const handleCreatingNewCharacter = () => {
-//     const characterId = generateMongoObjectId();
-//     createNewCharacter.mutate({ characterId });
-
-//     updateConditionBlock.mutate({
-//       name: conditionName,
-//       blockValueId: characterId,
-//     });
-//     setShowCreateNewValueModal(false);
-//     setHighlightRedOnValueOnExisting(false);
-//   };
-
-//   useOutOfModal({
-//     modalRef: createNewCharacterModalRef,
-//     setShowModal: setShowCreateNewValueModal,
-//     showModal: showCreateNewValueModal,
-//   });
-
-//   return (
-//     <AsideInformativeOrSuggestion
-//       ref={createNewCharacterModalRef}
-//       className={`${showCreateNewValueModal ? "" : "hidden"} `}
-//     >
-//       <InformativeOrSuggestionText>
-//         Такого персонажа не существует, хотите создать?
-//       </InformativeOrSuggestionText>
-//       <InformativeOrSuggestionButton
-//         ref={focusOnBtnRef}
-//         onClick={handleCreatingNewCharacter}
-//       >
-//         Создать
-//       </InformativeOrSuggestionButton>
-//     </AsideInformativeOrSuggestion>
-//   );
-// }
 
 type ConditionValueFieldTypes = {
   plotfieldCommandId: string;
@@ -269,25 +170,37 @@ function ConditionValueField({
   setShowCharacterPromptModal,
 }: ConditionValueFieldTypes) {
   const { getConditionBlockVariationById, updateConditionBlockVariationValue } = useConditionBlocks();
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [currentConditionValue, setCurrentConditionValue] = useState(
     getConditionBlockVariationById({ conditionBlockId, plotfieldCommandId, conditionBlockVariationId })?.value || null
   );
+  const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const updateConditionBlock = useUpdateConditionCharacter({
     conditionBlockCharacterId: conditionBlockVariationId,
   });
 
   return (
-    <div className="min-w-[10rem] w-full">
+    <div className="min-w-[10rem] flex-grow relative">
       <PlotfieldInput
         type="text"
+        focusedSecondTime={focusedSecondTime}
+        onBlur={() => {
+          setFocusedSecondTime(false);
+          setCurrentlyActive(false);
+        }}
+        onClick={() => {
+          setCurrentlyActive(true);
+        }}
+        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Значение"
         value={currentConditionValue || ""}
         onChange={(e) => {
           if (showCharacterPromptModal) {
             setShowCharacterPromptModal(false);
           }
+          setCurrentlyActive(true);
           updateConditionBlock.mutate({ value: +e.target.value });
           setCurrentConditionValue(+e.target.value);
 
@@ -298,8 +211,9 @@ function ConditionValueField({
             conditionValue: +e.target.value,
           });
         }}
-        className={`text-[1.5rem]`}
+        className={`text-[1.5rem] border-[3px] border-double border-dark-mid-gray `}
       />
+      <ConditionBlockFieldName currentlyActive={currentlyActive} text="Персонаж" />
     </div>
   );
 }

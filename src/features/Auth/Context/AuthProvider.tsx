@@ -14,22 +14,18 @@ export const AuthContext = createContext({} as AuthContextTypes);
 type AuthProviderTypes = {
   children: React.ReactNode;
 };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let refreshTokenPromise: Promise<any> | null = null;
 // TODO will need to check if this actually works
 export default function AuthProvider({ children }: AuthProviderTypes) {
   const [token, setToken] = useState({ accessToken: "" });
 
   useLayoutEffect(() => {
-    const authInterceptor = axiosCustomized.interceptors.request.use(
-      (config) => {
-        config.headers.Authorization =
-          !config._retry && token.accessToken
-            ? `Bearer ${token.accessToken}`
-            : config.headers.Authorization;
-        return config;
-      }
-    );
+    const authInterceptor = axiosCustomized.interceptors.request.use((config) => {
+      config.headers.Authorization =
+        !config._retry && token.accessToken ? `Bearer ${token.accessToken}` : config.headers.Authorization;
+      return config;
+    });
 
     return () => {
       axiosCustomized.interceptors.request.eject(authInterceptor);
@@ -79,9 +75,5 @@ export default function AuthProvider({ children }: AuthProviderTypes) {
     };
   }, [token]);
 
-  return (
-    <AuthContext.Provider value={{ token, setToken }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ token, setToken }}>{children}</AuthContext.Provider>;
 }

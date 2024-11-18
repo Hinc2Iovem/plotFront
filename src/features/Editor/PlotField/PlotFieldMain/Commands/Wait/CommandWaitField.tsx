@@ -10,10 +10,7 @@ type CommandWaitFieldTypes = {
   command: string;
 };
 
-export default function CommandWaitField({
-  plotFieldCommandId,
-  command,
-}: CommandWaitFieldTypes) {
+export default function CommandWaitField({ plotFieldCommandId, command }: CommandWaitFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Wait");
   const [waitValue, setWaitValue] = useState("");
   const { data: commandWait } = useGetCommandWait({
@@ -22,6 +19,8 @@ export default function CommandWaitField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
   const [commandWaitId, setCommandWaitId] = useState("");
 
   useEffect(() => {
@@ -52,19 +51,17 @@ export default function CommandWaitField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
           value={waitValue || ""}
           type="number"
           placeholder="Ожидание"

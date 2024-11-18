@@ -26,6 +26,8 @@ export default function BackgroundNameAndImage({
   const [showFullSizeImg, setShowFullSizeImg] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
   useEffect(() => {
     if (isMounted && imagePreview) {
       updateBackgroundImg.mutate();
@@ -44,15 +46,17 @@ export default function BackgroundNameAndImage({
       >
         <div className="w-full flex gap-[.5rem]">
           <PlotfieldInput
-            value={backgroundName || ""}
             type="text"
+            value={backgroundName || ""}
+            focusedSecondTime={focusedSecondTime}
+            onBlur={() => {
+              setFocusedSecondTime(false);
+            }}
+            setFocusedSecondTime={setFocusedSecondTime}
             placeholder="Название заднего плана"
             onChange={(e) => setBackgroundName(e.target.value)}
           />
-          <div
-            onMouseOver={() => setShowFullSizeImg(true)}
-            onMouseLeave={() => setShowFullSizeImg(false)}
-          >
+          <div onMouseOver={() => setShowFullSizeImg(true)} onMouseLeave={() => setShowFullSizeImg(false)}>
             <PreviewImageSmallIcons
               imagePreview={imagePreview}
               imgClasses="cursor-pointer w-full h-full object-cover"
@@ -68,11 +72,7 @@ export default function BackgroundNameAndImage({
           showFullSizeImg && imagePreview ? "" : "hidden"
         } absolute w-[20rem] h-[10rem] z-[2] rounded-md border-[1px] border-secondary shadow-sm bg-secondary right-0 top-[5rem]`}
       >
-        <img
-          src={imagePreview as string}
-          alt={backgroundName}
-          className="w-full h-full object-cover rounded-md"
-        />
+        <img src={imagePreview as string} alt={backgroundName} className="w-full h-full object-cover rounded-md" />
       </aside>
     </>
   );

@@ -30,6 +30,7 @@ export default function ConditionBlockShowPlot({
             console.error("Choose TopologyBlock,firstly");
           }
         }}
+        className="hover:bg-primary"
         type="button"
       >
         Сценарий

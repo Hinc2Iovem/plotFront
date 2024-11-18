@@ -14,10 +14,7 @@ type CommandNameFieldTypes = {
   command: string;
 };
 
-export default function CommandNameField({
-  plotFieldCommandId,
-  command,
-}: CommandNameFieldTypes) {
+export default function CommandNameField({ plotFieldCommandId, command }: CommandNameFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Name");
   const [textValue, setTextValue] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState("");
@@ -30,6 +27,8 @@ export default function CommandNameField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
+  const [focusedSecondTimeFirst, setFocusedSecondTimeFirst] = useState(false);
+  const [focusedSecondTimeSecond, setFocusedSecondTimeSecond] = useState(false);
 
   const [commandNameId, setCommandNameId] = useState("");
 
@@ -85,10 +84,7 @@ export default function CommandNameField({
   }, [debouncedValue]);
 
   useEffect(() => {
-    if (
-      commandName?.characterId !== currentCharacterId &&
-      currentCharacterId?.trim().length
-    ) {
+    if (commandName?.characterId !== currentCharacterId && currentCharacterId?.trim().length) {
       updateNameText.mutate({
         characterId: currentCharacterId,
       });
@@ -103,11 +99,7 @@ export default function CommandNameField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
@@ -119,6 +111,8 @@ export default function CommandNameField({
         className="w-full relative flex gap-[.5rem]"
       >
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTimeFirst}
+          setFocusedSecondTime={setFocusedSecondTimeFirst}
           onClick={(e) => {
             e.stopPropagation();
             setShowCharacterList(true);
@@ -134,9 +128,7 @@ export default function CommandNameField({
         <img
           src={currentCharacterImg}
           alt="CharacterImg"
-          className={`${
-            currentCharacterImg?.trim().length ? "" : "hidden"
-          } w-[3rem] object-cover rounded-md self-end`}
+          className={`${currentCharacterImg?.trim().length ? "" : "hidden"} w-[3rem] object-cover rounded-md self-end`}
         />
         <PlotfieldCharacterPromptMain
           debouncedValue={characterDebouncedValue}
@@ -151,11 +143,10 @@ export default function CommandNameField({
           isElse={false}
         />
       </form>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTimeSecond}
+          setFocusedSecondTime={setFocusedSecondTimeSecond}
           value={textValue}
           type="text"
           placeholder="Настоящее имя"

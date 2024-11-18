@@ -1,12 +1,15 @@
-import plus from "../../../../../../assets/images/shared/plus.png";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import plus from "../../../../../../assets/images/shared/plus.png";
+import { AllPossibleConditionBlockVariations } from "../../../../../../const/CONDITION_BLOCK_VARIATIONS";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { StatusTypes } from "../../../../../../types/StoryData/Status/StatusTypes";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import useAddNewConditionBlockVariation from "../../../hooks/Condition/ConditionBlock/BlockVariations/useAddNewConditionBlockVariation";
 import useGetAllConditionBlockVariationsByConditionBlockId, {
   ConditionVariationResponseTypes,
 } from "../../../hooks/Condition/ConditionBlock/BlockVariations/useGetAllConditionBlockVariationsByConditionBlockId";
@@ -17,9 +20,7 @@ import ConditionBlockShowPlot from "./ConditionBlockShowPlot";
 import ConditionValueItem from "./ConditionValueItem";
 import useConditionBlocks, { ConditionBlockItemTypes, ConditionBlockVariationTypes } from "./Context/ConditionContext";
 import DisplayOrderOfIfsModal from "./DisplayOrderOfIfsModal";
-import { AllPossibleConditionBlockVariations } from "../../../../../../const/CONDITION_BLOCK_VARIATIONS";
-import useAddNewConditionBlockVariation from "../../../hooks/Condition/ConditionBlock/BlockVariations/useAddNewConditionBlockVariation";
-import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
+import useAddNewLogicalOperator from "../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useAddNewLogicalOperator";
 
 type ConditionBlockItemProps = {
   currentTopologyBlockId: string;
@@ -42,8 +43,13 @@ export default function ConditionBlockItem({
   logicalOperators,
 }: ConditionBlockItemProps) {
   const { episodeId } = useParams();
-  const { updateConditionBlockTargetBlockId, setConditionBlockVariations, addConditionBlockVariation } =
-    useConditionBlocks();
+  const {
+    updateConditionBlockTargetBlockId,
+    setConditionBlockVariations,
+    addConditionBlockVariation,
+    getAmountOfConditionBlockVariations,
+    addNewLogicalOperator,
+  } = useConditionBlocks();
   const modalRef = useRef<HTMLDivElement>(null);
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId: targetBlockId,
@@ -66,6 +72,8 @@ export default function ConditionBlockItem({
         variations.key.forEach((item) => {
           newVariations.push({
             conditionBlockVariationId: item._id,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
             type: "key",
             commandKeyId: item.commandKeyId,
           });
@@ -74,14 +82,19 @@ export default function ConditionBlockItem({
         variations.appearance.forEach((item) => {
           newVariations.push({
             conditionBlockVariationId: item._id,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
             type: "appearance",
             appearancePartId: item.appearancePartId,
+            currentlyDressed: item.currentlyDressed,
           });
         });
 
         variations.retry.forEach((item) => {
           newVariations.push({
             conditionBlockVariationId: item._id,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
             type: "retry",
             amountOfRetries: item.amountOfRetries,
             sign: item.sign,
@@ -91,6 +104,8 @@ export default function ConditionBlockItem({
         variations.character.forEach((item) => {
           newVariations.push({
             conditionBlockVariationId: item._id,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
             type: "character",
             characterId: item.characterId,
             value: item.value,
@@ -101,6 +116,8 @@ export default function ConditionBlockItem({
         variations.characteristic.forEach((item) => {
           newVariations.push({
             conditionBlockVariationId: item._id,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
             type: "characteristic",
             characteristicId: item.characteristicId,
             secondCharacteristicId: item.secondCharacteristicId,
@@ -112,6 +129,8 @@ export default function ConditionBlockItem({
         variations.language.forEach((item) => {
           newVariations.push({
             conditionBlockVariationId: item._id,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
             type: "language",
             currentLanguage: item.currentLanguage,
           });
@@ -120,6 +139,8 @@ export default function ConditionBlockItem({
         variations.status.forEach((item) => {
           newVariations.push({
             conditionBlockVariationId: item._id,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
             type: "status",
             characterId: item.characterId,
             status: item.status as StatusTypes,
@@ -129,12 +150,13 @@ export default function ConditionBlockItem({
         variations.random.forEach((item) => {
           newVariations.push({
             conditionBlockVariationId: item._id,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
             type: "random",
             isRandom: item.isRandom,
           });
         });
-
-        return newVariations;
+        return newVariations.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
       };
 
       setConditionBlockVariations({
@@ -166,7 +188,8 @@ export default function ConditionBlockItem({
     episodeId: episodeId || "",
   });
 
-  const useCreateConditionVariation = useAddNewConditionBlockVariation({ conditionBlockId });
+  const createConditionVariation = useAddNewConditionBlockVariation({ conditionBlockId });
+  const addLogicalOperator = useAddNewLogicalOperator({ conditionBlockId });
 
   useOutOfModal({
     setShowModal: setShowAllTopologyBlocks,
@@ -183,8 +206,8 @@ export default function ConditionBlockItem({
   return (
     <>
       {!isElse ? (
-        <div className={`p-[1rem] flex flex-col gap-[1rem]  w-full bg-secondary rounded-md shadow-md relative`}>
-          <div className="relative ">
+        <div className={`p-[1rem] flex flex-col gap-[1rem] w-full bg-secondary rounded-md shadow-md relative`}>
+          <div className="relative flex gap-[1rem]">
             <ButtonHoverPromptModal
               onClick={(e) => {
                 e.stopPropagation();
@@ -196,12 +219,12 @@ export default function ConditionBlockItem({
               asideClasses="text-text-light text-[1.3rem] translate-y-[-1rem]"
               variant="rectangle"
             >
-              <img src={plus} alt="+" className="w-full" />
+              <img src={plus} alt="+" className="w-full mr-[1rem]" />
             </ButtonHoverPromptModal>
 
             <AsideScrollable
               ref={conditionModalRef}
-              className={`${showCreateCondition ? "" : "hidden"} left-0 translate-y-[.5rem]`}
+              className={`${showCreateCondition ? "" : "hidden"} left-0 translate-y-[3.5rem]`}
             >
               {AllPossibleConditionBlockVariations.map((cbv) => (
                 <AsideScrollableButton
@@ -209,16 +232,26 @@ export default function ConditionBlockItem({
                   onClick={() => {
                     setShowCreateCondition(false);
                     const _id = generateMongoObjectId();
-                    useCreateConditionVariation.mutate({
+                    createConditionVariation.mutate({
                       _id,
                       type: cbv,
                     });
+
+                    const amount = getAmountOfConditionBlockVariations({ conditionBlockId, plotfieldCommandId });
+
+                    if (amount > 0) {
+                      addNewLogicalOperator({ conditionBlockId, logicalOperator: "&&", plotfieldCommandId });
+                      addLogicalOperator.mutate({ logicalOperator: "&&" });
+                    }
+
                     addConditionBlockVariation({
                       conditionBlockId,
                       plotfieldCommandId,
                       conditionBlockVariation: {
                         conditionBlockVariationId: _id,
                         type: cbv,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
                       },
                     });
                   }}
@@ -242,7 +275,7 @@ export default function ConditionBlockItem({
               topologyBlockName={topologyBlockName}
             />
           </div>
-          <div className="flex flex-col gap-[1rem]">
+          <div className="flex flex-col gap-[.5rem] bg-primary-darker p-[.5rem] rounded-md">
             <ConditionBlockShowPlot
               conditionBlockId={conditionBlockId}
               plotfieldCommandId={plotfieldCommandId}
@@ -316,6 +349,7 @@ export default function ConditionBlockItem({
                 e.stopPropagation();
                 setShowAllTopologyBlocks((prev) => !prev);
               }}
+              className="py-[1rem]"
               type="button"
             >
               {topologyBlockName ? `Ветка - ${topologyBlockName}` : "Текущая Ветка"}

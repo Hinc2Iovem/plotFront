@@ -26,9 +26,7 @@ type PlotfieldCharacterPromptMainTypes = {
   currentCharacterId?: string;
   setCharacterValue?: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
   setEmotionValue?: React.Dispatch<React.SetStateAction<EmotionTypes>>;
-  setDebouncedCharacter?: React.Dispatch<
-    React.SetStateAction<DebouncedCheckCharacterTypes | null>
-  >;
+  setDebouncedCharacter?: React.Dispatch<React.SetStateAction<DebouncedCheckCharacterTypes | null>>;
 
   commandIfId: string;
   isElse: boolean;
@@ -63,6 +61,7 @@ export default function PlotfieldCharacterPromptMain({
     updateCharacterPropertiesIf,
     updateEmotionPropertiesIf,
   } = usePlotfieldCommands();
+
   const { data: allTranslatedCharacters } = useGetTranslationCharacters({
     storyId: storyId || "",
     language: "russian",
@@ -75,16 +74,12 @@ export default function PlotfieldCharacterPromptMain({
   const combinedCharacters = useMemo(() => {
     if (allTranslatedCharacters && allCharacters) {
       return allCharacters.map((c) => {
-        const currentTranslatedCharacter = allTranslatedCharacters.find(
-          (tc) => tc.characterId === c._id
-        );
+        const currentTranslatedCharacter = allTranslatedCharacters.find((tc) => tc.characterId === c._id);
         return {
           characterImg: c?.img || "",
           characterId: c._id,
           characterName:
-            currentTranslatedCharacter?.translations?.find(
-              (tc) => tc.textFieldName === "characterName"
-            )?.text || "",
+            currentTranslatedCharacter?.translations?.find((tc) => tc.textFieldName === "characterName")?.text || "",
         };
       });
     } else {
@@ -96,9 +91,7 @@ export default function PlotfieldCharacterPromptMain({
     if (combinedCharacters) {
       if (characterValue?.trim().length) {
         return combinedCharacters.filter((cc) =>
-          cc?.characterName
-            ?.toLowerCase()
-            .includes(characterValue?.toLowerCase())
+          cc?.characterName?.toLowerCase().includes(characterValue?.toLowerCase())
         );
       } else {
         return combinedCharacters;
@@ -112,9 +105,7 @@ export default function PlotfieldCharacterPromptMain({
     if (debouncedValue && !showCharacterModal) {
       const tranlsatedCharacter = allTranslatedCharacters?.find((tc) =>
         tc.translations?.find(
-          (tct) =>
-            tct.textFieldName === "characterName" &&
-            tct.text?.toLowerCase() === characterValue?.toLowerCase()
+          (tct) => tct.textFieldName === "characterName" && tct.text?.toLowerCase() === characterValue?.toLowerCase()
         )
       );
       if (!tranlsatedCharacter) {
@@ -122,15 +113,9 @@ export default function PlotfieldCharacterPromptMain({
         return;
       }
 
-      const character = allCharacters?.find(
-        (c) => c._id === tranlsatedCharacter?.characterId
-      );
+      const character = allCharacters?.find((c) => c._id === tranlsatedCharacter?.characterId);
 
-      if (
-        setEmotionValue &&
-        currentCharacterId?.trim().length &&
-        currentCharacterId !== character?._id
-      ) {
+      if (setEmotionValue && currentCharacterId?.trim().length && currentCharacterId !== character?._id) {
         setEmotionValue({
           _id: null,
           emotionName: null,
@@ -159,9 +144,7 @@ export default function PlotfieldCharacterPromptMain({
         setCharacterValue({
           _id: character?._id || null,
           characterName:
-            tranlsatedCharacter?.translations?.find(
-              (t) => t.textFieldName === "characterName"
-            )?.text || null,
+            tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || null,
           imgUrl: character?.img || null,
         });
       }
@@ -171,9 +154,7 @@ export default function PlotfieldCharacterPromptMain({
       }
       if (setCharacterName) {
         setCharacterName(
-          tranlsatedCharacter?.translations?.find(
-            (t) => t.textFieldName === "characterName"
-          )?.text || ""
+          tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || ""
         );
       }
       if (setCharacterImg) {
@@ -184,9 +165,7 @@ export default function PlotfieldCharacterPromptMain({
         updateCharacterPropertiesIf({
           characterId: character?._id || "",
           characterName:
-            tranlsatedCharacter?.translations?.find(
-              (t) => t.textFieldName === "characterName"
-            )?.text || "",
+            tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || "",
           id: plotfieldCommandId || "",
           characterImg: character?.img || "",
           isElse,
@@ -195,9 +174,7 @@ export default function PlotfieldCharacterPromptMain({
         updateCharacterProperties({
           characterId: character?._id || "",
           characterName:
-            tranlsatedCharacter?.translations?.find(
-              (t) => t.textFieldName === "characterName"
-            )?.text || "",
+            tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || "",
           id: plotfieldCommandId || "",
           characterImg: character?.img || "",
         });
@@ -206,9 +183,7 @@ export default function PlotfieldCharacterPromptMain({
         setDebouncedCharacter({
           characterId: character?._id || "",
           characterName:
-            tranlsatedCharacter?.translations?.find(
-              (tct) => tct.textFieldName === "characterName"
-            )?.text || "",
+            tranlsatedCharacter?.translations?.find((tct) => tct.textFieldName === "characterName")?.text || "",
           characterImg: character?.img || "",
         });
       }

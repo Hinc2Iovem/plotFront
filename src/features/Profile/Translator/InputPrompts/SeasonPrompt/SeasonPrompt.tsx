@@ -31,6 +31,7 @@ export default function SeasonPrompt({
   const [seasonBackupValue, setSeasonBackupValue] = useState("");
   const modalSeasonsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const { data: seasonsSearch, isLoading } = useGetSeasonsByStoryId({
     language: "russian",
@@ -44,9 +45,7 @@ export default function SeasonPrompt({
       if (seasonValue) {
         return seasonsSearch.filter((ss) =>
           ss.translations.filter(
-            (sst) =>
-              sst.textFieldName === "seasonName" &&
-              sst.text.toLowerCase().includes(seasonValue.toLowerCase())
+            (sst) => sst.textFieldName === "seasonName" && sst.text.toLowerCase().includes(seasonValue.toLowerCase())
           )
         );
       } else {
@@ -67,9 +66,7 @@ export default function SeasonPrompt({
     if (debouncedValue) {
       const matchedValue = seasonsSearch?.find((cs) =>
         cs?.translations?.some(
-          (tct) =>
-            tct.textFieldName === "seasonName" &&
-            tct.text.toLowerCase() === debouncedValue.toLowerCase()
+          (tct) => tct.textFieldName === "seasonName" && tct.text.toLowerCase() === debouncedValue.toLowerCase()
         )
       );
       if (matchedValue) {
@@ -90,10 +87,7 @@ export default function SeasonPrompt({
       console.log("Заполните Поле");
       return;
     }
-    setSeasonId(
-      seasonsSearch?.find((cs) => cs.translations[0]?.text === seasonValue)
-        ?.seasonId || ""
-    );
+    setSeasonId(seasonsSearch?.find((cs) => cs.translations[0]?.text === seasonValue)?.seasonId || "");
     setShowSeasons(false);
     inputRef?.current?.blur();
   };
@@ -108,6 +102,11 @@ export default function SeasonPrompt({
     <form className={`rounded-md shadow-sm relative`} onSubmit={handleSubmit}>
       <PlotfieldInput
         type="text"
+        focusedSecondTime={focusedSecondTime}
+        onBlur={() => {
+          setFocusedSecondTime(false);
+        }}
+        setFocusedSecondTime={setFocusedSecondTime}
         ref={inputRef}
         placeholder="Название Сезона"
         onClick={(e) => {
@@ -128,14 +127,9 @@ export default function SeasonPrompt({
         }}
       />
       {storyId ? (
-        <AsideScrollable
-          ref={modalSeasonsRef}
-          className={`${showSeasons ? "" : "hidden"} translate-y-[.5rem]`}
-        >
+        <AsideScrollable ref={modalSeasonsRef} className={`${showSeasons ? "" : "hidden"} translate-y-[.5rem]`}>
           {isLoading ? (
-            <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">
-              Загрузка...
-            </div>
+            <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">Загрузка...</div>
           ) : filteredSeasons && filteredSeasons.length > 0 ? (
             filteredSeasons.map((s) => (
               <AsideScrollableButton
@@ -149,8 +143,7 @@ export default function SeasonPrompt({
                   setShowSeasons(false);
                 }}
                 className={`${
-                  seasonBackupValue?.toLowerCase() ===
-                  s.translations[0].text?.toLowerCase()
+                  seasonBackupValue?.toLowerCase() === s.translations[0].text?.toLowerCase()
                     ? "bg-primary text-text-light"
                     : ""
                 }`}
@@ -181,10 +174,7 @@ export default function SeasonPrompt({
           )}
         </AsideScrollable>
       ) : (
-        <AsideScrollable
-          ref={modalSeasonsRef}
-          className={`${showSeasons ? "" : "hidden"} translate-y-[.5rem]`}
-        >
+        <AsideScrollable ref={modalSeasonsRef} className={`${showSeasons ? "" : "hidden"} translate-y-[.5rem]`}>
           <AsideScrollableButton
             type="button"
             onClick={() => {

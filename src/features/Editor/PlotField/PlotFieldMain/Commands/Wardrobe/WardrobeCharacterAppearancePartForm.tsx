@@ -12,10 +12,7 @@ type WardrobeCharacterAppearancePartFormTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export type PossibleWardrobeAppearancePartVariationsTypes =
-  | "hair"
-  | "dress"
-  | "other";
+export type PossibleWardrobeAppearancePartVariationsTypes = "hair" | "dress" | "temp";
 
 export default function WardrobeCharacterAppearancePartForm({
   commandWardrobeId,
@@ -27,20 +24,16 @@ export default function WardrobeCharacterAppearancePartForm({
   const [appearancePartId, setAppearancePartId] = useState("");
   const [appearancePartName, setAppearancePartName] = useState("");
   const [appearancePartVariationType, setAppearancePartVariationType] =
-    useState<PossibleWardrobeAppearancePartVariationsTypes>(
-      "" as PossibleWardrobeAppearancePartVariationsTypes
-    );
+    useState<PossibleWardrobeAppearancePartVariationsTypes>("" as PossibleWardrobeAppearancePartVariationsTypes);
   const theme = localStorage.getItem("theme");
-  const [
-    showAppearancePartVariationModal,
-    setShowAppearancePartVariationModal,
-  ] = useState(false);
+  const [showAppearancePartVariationModal, setShowAppearancePartVariationModal] = useState(false);
   const [showAppearancePartModal, setShowAppearancePartModal] = useState(false);
 
   const createAppearancePartBlock = useCreateWardrobeAppearanceTypeBlock({
     appearancePartId,
     commandWardrobeId,
   });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   useEffect(() => {
     if (appearancePartId?.trim().length) {
@@ -61,18 +54,13 @@ export default function WardrobeCharacterAppearancePartForm({
   });
 
   return (
-    <div
-      onSubmit={(e) => e.preventDefault()}
-      className="sm:w-[77%] flex-grow w-full flex flex-col gap-[1rem] relative"
-    >
+    <div onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full flex flex-col gap-[1rem] relative">
       <CommandWardrobeCharacter
         characterId={characterId}
         commandWardrobeId={commandWardrobeId}
         setCharacterId={setCharacterId}
         setShowAppearancePartModal={setShowAppearancePartModal}
-        setShowAppearancePartVariationModal={
-          setShowAppearancePartVariationModal
-        }
+        setShowAppearancePartVariationModal={setShowAppearancePartVariationModal}
         setShowCharacterModal={setShowCharacterModal}
         showCharacterModal={showCharacterModal}
       />
@@ -80,9 +68,7 @@ export default function WardrobeCharacterAppearancePartForm({
         <CommandWardrobeChoosingAppearanceType
           setAppearancePartVariationType={setAppearancePartVariationType}
           setShowAppearancePartModal={setShowAppearancePartModal}
-          setShowAppearancePartVariationModal={
-            setShowAppearancePartVariationModal
-          }
+          setShowAppearancePartVariationModal={setShowAppearancePartVariationModal}
           setShowCharacterModal={setShowCharacterModal}
           showAppearancePartVariationModal={showAppearancePartVariationModal}
         />
@@ -93,6 +79,11 @@ export default function WardrobeCharacterAppearancePartForm({
           className="w-full relative"
         >
           <PlotfieldInput
+            focusedSecondTime={focusedSecondTime}
+            onBlur={() => {
+              setFocusedSecondTime(false);
+            }}
+            setFocusedSecondTime={setFocusedSecondTime}
             onClick={(e) => {
               e.stopPropagation();
               setShowCharacterModal(false);

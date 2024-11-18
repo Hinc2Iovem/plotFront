@@ -33,6 +33,7 @@ export default function KeyBindsCharacterModalByEpisode({
   const modalRef = useRef<HTMLDivElement>(null);
 
   const [characterBackupValue, setCharacterBackupValue] = useState("");
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const { data: characters } = useGetAllCharactersByStoryId({
     storyId: storyId || "",
@@ -45,12 +46,8 @@ export default function KeyBindsCharacterModalByEpisode({
   const debouncedValue = useDebounce({ value: characterName, delay: 700 });
 
   useEffect(() => {
-    const savedByStoryValue = localStorage.getItem(
-      `story-${storyId}-c-${index}`
-    );
-    const savedByEpisode = localStorage.getItem(
-      `episode-${episodeId}-c-${index}`
-    );
+    const savedByStoryValue = localStorage.getItem(`story-${storyId}-c-${index}`);
+    const savedByEpisode = localStorage.getItem(`episode-${episodeId}-c-${index}`);
     if (savedByEpisode) {
       setCharacterId(savedByEpisode.split("-")[0]);
       setCharacterName(savedByEpisode.split("-")[1]);
@@ -66,13 +63,9 @@ export default function KeyBindsCharacterModalByEpisode({
   const memoizedCharacters = useMemo(() => {
     if (characters && translatedCharacters) {
       return characters?.map((c) => {
-        const currentTranslatedCharacter = translatedCharacters.find(
-          (tc) => tc.characterId === c._id
-        );
+        const currentTranslatedCharacter = translatedCharacters.find((tc) => tc.characterId === c._id);
         const characterName =
-          currentTranslatedCharacter?.translations?.find(
-            (tct) => tct.textFieldName === "characterName"
-          )?.text || "";
+          currentTranslatedCharacter?.translations?.find((tct) => tct.textFieldName === "characterName")?.text || "";
 
         return {
           characterId: c._id,
@@ -87,9 +80,7 @@ export default function KeyBindsCharacterModalByEpisode({
 
   const filteredMemoization = useMemo(() => {
     if (characterName?.trim().length) {
-      return memoizedCharacters.filter((mc) =>
-        mc.characterName.toLowerCase().includes(characterName.toLowerCase())
-      );
+      return memoizedCharacters.filter((mc) => mc.characterName.toLowerCase().includes(characterName.toLowerCase()));
     }
     return memoizedCharacters;
   }, [memoizedCharacters, characterName]);
@@ -97,14 +88,9 @@ export default function KeyBindsCharacterModalByEpisode({
   useEffect(() => {
     if (!characterId && debouncedValue?.trim().length) {
       const characterId =
-        translatedCharacters?.find(
-          (cs) => (cs?.translations || [])[0]?.text === debouncedValue
-        )?.characterId || "";
+        translatedCharacters?.find((cs) => (cs?.translations || [])[0]?.text === debouncedValue)?.characterId || "";
       setCharacterId(characterId);
-      localStorage.setItem(
-        `episode-${episodeId}-c-${index}`,
-        `${characterId}-${characterName}`
-      );
+      localStorage.setItem(`episode-${episodeId}-c-${index}`, `${characterId}-${characterName}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue, translatedCharacters]);
@@ -119,17 +105,12 @@ export default function KeyBindsCharacterModalByEpisode({
     if (debouncedValue?.trim().length) {
       const matchedCharacter = translatedCharacters?.find((cs) =>
         cs?.translations?.some(
-          (tct) =>
-            tct.textFieldName === "characterName" &&
-            tct.text.toLowerCase() === debouncedValue.toLowerCase()
+          (tct) => tct.textFieldName === "characterName" && tct.text.toLowerCase() === debouncedValue.toLowerCase()
         )
       );
 
       if (matchedCharacter) {
-        localStorage.setItem(
-          `episode-${episodeId}-c-${index}`,
-          `${characterId}-${characterName}`
-        );
+        localStorage.setItem(`episode-${episodeId}-c-${index}`, `${characterId}-${characterName}`);
         setCharacterId(matchedCharacter.characterId);
       } else {
         localStorage.removeItem(`episode-${episodeId}-c-${index}`);
@@ -154,6 +135,11 @@ export default function KeyBindsCharacterModalByEpisode({
       className="relative w-[20rem]"
     >
       <PlotfieldInput
+        focusedSecondTime={focusedSecondTime}
+        onBlur={() => {
+          setFocusedSecondTime(false);
+        }}
+        setFocusedSecondTime={setFocusedSecondTime}
         onChange={(e) => {
           setShowModal(true);
           setCharacterName(e.target.value);
@@ -168,10 +154,7 @@ export default function KeyBindsCharacterModalByEpisode({
           setCharacterName("");
         }}
       />
-      <AsideScrollable
-        ref={modalRef}
-        className={`${showModal ? "" : "hidden"} translate-y-[.5rem]`}
-      >
+      <AsideScrollable ref={modalRef} className={`${showModal ? "" : "hidden"} translate-y-[.5rem]`}>
         {filteredMemoization.length ? (
           filteredMemoization?.map((mc) => (
             <AsideScrollableButton
@@ -182,10 +165,7 @@ export default function KeyBindsCharacterModalByEpisode({
                 setShowModal(false);
                 setCharacterId(mc.characterId);
                 setCharacterName(mc.characterName);
-                localStorage.setItem(
-                  `episode-${episodeId}-c-${index}`,
-                  `${mc.characterId}-${mc.characterName}`
-                );
+                localStorage.setItem(`episode-${episodeId}-c-${index}`, `${mc.characterId}-${mc.characterName}`);
               }}
             >
               {mc.characterName}
@@ -199,9 +179,7 @@ export default function KeyBindsCharacterModalByEpisode({
             </AsideScrollableButton>
           ))
         ) : (
-          <AsideScrollableButton onClick={() => setShowModal(false)}>
-            Пусто
-          </AsideScrollableButton>
+          <AsideScrollableButton onClick={() => setShowModal(false)}>Пусто</AsideScrollableButton>
         )}
       </AsideScrollable>
     </form>

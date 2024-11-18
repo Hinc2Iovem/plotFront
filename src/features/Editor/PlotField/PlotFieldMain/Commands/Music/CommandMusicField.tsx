@@ -18,10 +18,7 @@ type CommandMusicFieldTypes = {
   command: string;
 };
 
-export default function CommandMusicField({
-  plotFieldCommandId,
-  command,
-}: CommandMusicFieldTypes) {
+export default function CommandMusicField({ plotFieldCommandId, command }: CommandMusicFieldTypes) {
   const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Music");
   const [musicName, setMusicName] = useState<string>("");
@@ -32,6 +29,8 @@ export default function CommandMusicField({
     plotFieldCommandId,
   });
 
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
   const { data: allMusic } = useGetAllMusicByStoryId({
     storyId: storyId ?? "",
   });
@@ -39,10 +38,7 @@ export default function CommandMusicField({
   const allMusicFilteredMemoized = useMemo(() => {
     const res = [...(allMusic || [])];
     if (musicName) {
-      const filtered =
-        res?.filter((a) =>
-          a.musicName.toLowerCase().includes(musicName.toLowerCase())
-        ) || [];
+      const filtered = res?.filter((a) => a.musicName.toLowerCase().includes(musicName.toLowerCase())) || [];
       return filtered.map((f) => f.musicName.toLowerCase());
     } else {
       return res.map((r) => r.musicName.toLowerCase());
@@ -110,19 +106,18 @@ export default function CommandMusicField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <div
-        className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}
-      >
+      <div className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}>
         <form onSubmit={handleNewMusicSubmit} className="w-full">
           <PlotfieldInput
+            focusedSecondTime={focusedSecondTime}
+            onBlur={() => {
+              setFocusedSecondTime(false);
+            }}
+            setFocusedSecondTime={setFocusedSecondTime}
             onClick={(e) => {
               e.stopPropagation();
               setShowMusicDropDown((prev) => !prev);
@@ -138,9 +133,7 @@ export default function CommandMusicField({
 
         <AsideScrollable
           ref={modalRef}
-          className={`${
-            showMusicDropDown ? "" : "hidden"
-          } translate-y-[3.5rem] ${
+          className={`${showMusicDropDown ? "" : "hidden"} translate-y-[3.5rem] ${
             !allMusicFilteredMemoized.length && musicName ? "hidden" : ""
           }`}
         >
@@ -155,9 +148,7 @@ export default function CommandMusicField({
                       setShowMusicDropDown(false);
                     }}
                     className={`${
-                      musicName === mm
-                        ? "bg-primary-darker text-text-light"
-                        : "bg-secondary text-text-dark"
+                      musicName === mm ? "bg-primary-darker text-text-light" : "bg-secondary text-text-dark"
                     }`}
                   >
                     {mm}

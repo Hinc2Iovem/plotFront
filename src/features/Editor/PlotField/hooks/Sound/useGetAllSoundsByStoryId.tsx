@@ -6,14 +6,13 @@ type GetSoundByIdTypes = {
   storyId: string;
 };
 
-export default function useGetAllSoundByStoryId({
-  storyId,
-}: GetSoundByIdTypes) {
+export const fetchAllSound = async ({ storyId }: GetSoundByIdTypes) => {
+  return await axiosCustomized.get<SoundTypes[]>(`/stories/${storyId}/sounds`).then((r) => r.data);
+};
+
+export default function useGetAllSoundByStoryId({ storyId }: GetSoundByIdTypes) {
   return useQuery({
     queryKey: ["story", storyId, "sound"],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<SoundTypes[]>(`/stories/${storyId}/sounds`)
-        .then((r) => r.data),
+    queryFn: () => fetchAllSound({ storyId }),
   });
 }

@@ -14,11 +14,11 @@ import InformativeOrSuggestionText from "../../../../../../../shared/Aside/Aside
 import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import useUpdateConditionKey from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionKey";
 import useGetKeyById from "../../../../../hooks/Key/useGetKeyById";
+import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
 
 type ConditionBlockVariationKeyTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
-  conditionBlockKeyId: string;
   keyId?: string;
   conditionBlockVariationId: string;
 };
@@ -33,38 +33,28 @@ export default function ConditionBlockVariationKey({
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
   const [commandKeyId, setCommandKeyId] = useState(keyId || "");
-  const [debouncedKeyValue, setDebouncedKeyValue] = useState<DebouncedCheckKeyTypes | null>(null);
 
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
+  const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const [currentConditionName, setCurrentConditionName] = useState("");
+  const [backUpConditionName, setBackUpConditionName] = useState("");
 
   const { data: commandKey } = useGetKeyById({ keyId: commandKeyId });
-
-  const updateConditionBlock = useUpdateConditionKey({
-    conditionBlockKeyId: conditionBlockVariationId || "",
-  });
 
   useEffect(() => {
     if (commandKey) {
       setCurrentConditionName(commandKey.text);
+      setBackUpConditionName(commandKey.text);
     }
   }, [commandKey]);
 
   useEffect(() => {
-    if (commandKeyId && currentConditionName) {
-      updateConditionBlockVariationValue({
-        conditionBlockId,
-        plotfieldCommandId,
-        conditionBlockVariationId,
-        commandKeyId,
-      });
-
-      updateConditionBlock.mutate({
-        keyId: commandKeyId,
-      });
+    if (keyId?.trim().length) {
+      setCommandKeyId(keyId);
     }
-  }, [commandKeyId]);
+  }, [keyId]);
 
   const debouncedValue = useDebounce({
     delay: 700,
@@ -72,51 +62,53 @@ export default function ConditionBlockVariationKey({
   });
 
   useEffect(() => {
-    if (debouncedKeyValue && !showKeyPromptModal) {
-      updateConditionBlockVariationValue({
-        conditionBlockId,
-        plotfieldCommandId,
-        conditionBlockVariationId,
-        commandKeyId,
-      });
-
-      setCurrentConditionName(debouncedKeyValue.keyName);
-      setCommandKeyId(debouncedKeyValue.keyId);
-
-      updateConditionBlock.mutate({
-        keyId: debouncedKeyValue.keyId,
-      });
+    // when user deleted some part of the input for no reason and then closed propmt modal, this will restore value to the initial state
+    if (backUpConditionName && !showKeyPromptModal) {
+      if (backUpConditionName !== currentConditionName) {
+        setCurrentConditionName(backUpConditionName);
+      }
     }
-  }, [debouncedKeyValue]);
+  }, [backUpConditionName, showKeyPromptModal]);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <PlotfieldInput
         type="text"
+        focusedSecondTime={focusedSecondTime}
+        onBlur={() => {
+          setFocusedSecondTime(false);
+          setCurrentlyActive(false);
+        }}
+        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Ключ"
         onClick={(e) => {
-          setShowKeyPromptModal((prev) => !prev);
           e.stopPropagation();
+          setShowKeyPromptModal((prev) => !prev);
+          setCurrentlyActive(true);
         }}
         value={currentConditionName}
         onChange={(e) => {
           if (!showKeyPromptModal) {
             setShowKeyPromptModal(true);
           }
+          setCurrentlyActive(true);
           setHighlightRedOnValueOnExisting(false);
           setCurrentConditionName(e.target.value);
         }}
-        className={`${highlightRedOnValueNonExisting ? "" : ""}`}
+        className={`${highlightRedOnValueNonExisting ? "" : ""} border-[3px] border-double border-dark-mid-gray`}
       />
 
       <KeyPromptsModal
         currentKeyName={currentConditionName}
         setCurrentKeyName={setCurrentConditionName}
+        setBackUpConditionName={setBackUpConditionName}
         setShowKeyPromptModal={setShowKeyPromptModal}
         showKeyPromptModal={showKeyPromptModal}
         debouncedKey={debouncedValue}
-        setDebouncedKeyValue={setDebouncedKeyValue}
         setCommandKeyId={setCommandKeyId}
+        conditionBlockVariationId={conditionBlockVariationId}
+        conditionBlockId={conditionBlockId}
+        plotfieldCommandId={plotfieldCommandId}
       />
 
       <CreateNewValueModal
@@ -126,18 +118,11 @@ export default function ConditionBlockVariationKey({
         setShowCreateNewValueModal={setShowCreateNewValueModal}
         showCreateNewValueModal={showCreateNewValueModal}
       />
+
+      <ConditionBlockFieldName currentlyActive={currentlyActive} text="Ключ" />
     </div>
   );
 }
-// updateConditionBlockName({
-//   conditionBlockId:
-//     getConditionBlockById({
-//       plotfieldCommandId,
-//       conditionBlockId,
-//     })?.conditionBlockId || "",
-//   conditionName: mk,
-//   plotfieldCommandId,
-// });
 
 export type DebouncedCheckKeyTypes = {
   keyId: string;
@@ -148,22 +133,33 @@ type KeyPromptsModalTypes = {
   showKeyPromptModal: boolean;
   setShowKeyPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentKeyName: React.Dispatch<React.SetStateAction<string>>;
+  setBackUpConditionName: React.Dispatch<React.SetStateAction<string>>;
   currentKeyName: string;
   debouncedKey: string;
-  setDebouncedKeyValue: React.Dispatch<React.SetStateAction<DebouncedCheckKeyTypes | null>>;
+  conditionBlockVariationId: string;
+  conditionBlockId: string;
+  plotfieldCommandId: string;
   setCommandKeyId: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export function KeyPromptsModal({
   showKeyPromptModal,
   setCurrentKeyName,
+  setBackUpConditionName,
   currentKeyName,
   setShowKeyPromptModal,
-  setDebouncedKeyValue,
   setCommandKeyId,
   debouncedKey,
+  conditionBlockVariationId,
+  conditionBlockId,
+  plotfieldCommandId,
 }: KeyPromptsModalTypes) {
   const { storyId } = useParams();
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
+
+  const updateConditionBlock = useUpdateConditionKey({
+    conditionBlockKeyId: conditionBlockVariationId || "",
+  });
   const { data: keys } = useGetAllKeysByStoryId({ storyId: storyId || "" });
 
   const memoizedKeys = useMemo(() => {
@@ -178,16 +174,31 @@ export function KeyPromptsModal({
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (debouncedKey?.trim().length) {
+    // handle scenarios when user didn't clicked on the button and decided to just write key himself
+    if (debouncedKey?.trim().length && !showKeyPromptModal) {
       const existingKey = memoizedKeys?.find((k) => k.text?.toLowerCase() === currentKeyName?.toLowerCase());
       if (existingKey) {
-        setDebouncedKeyValue({
-          keyId: existingKey._id,
-          keyName: existingKey.text,
-        });
+        handleButtonClick({ keyId: existingKey._id, text: existingKey.text });
       }
     }
-  }, [debouncedKey]);
+  }, [debouncedKey, showKeyPromptModal]);
+
+  const handleButtonClick = ({ keyId, text }: { keyId: string; text: string }) => {
+    updateConditionBlockVariationValue({
+      commandKeyId: keyId,
+      conditionBlockId,
+      plotfieldCommandId,
+      conditionBlockVariationId,
+    });
+
+    setCurrentKeyName(text);
+    setBackUpConditionName(text);
+    setCommandKeyId(keyId);
+
+    updateConditionBlock.mutate({
+      keyId: keyId,
+    });
+  };
 
   useOutOfModal({
     modalRef,
@@ -203,8 +214,7 @@ export function KeyPromptsModal({
             key={mk._id}
             onClick={() => {
               setShowKeyPromptModal(false);
-              setCurrentKeyName(mk.text);
-              setCommandKeyId(mk._id);
+              handleButtonClick({ keyId: mk._id, text: mk.text });
             }}
           >
             {mk.text}

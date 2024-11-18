@@ -2,34 +2,24 @@ import { useEffect, useRef, useState } from "react";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
-const APPEARANCE_TYPES = [
-  "Украшение",
-  "Волосы",
-  "Костюм",
-  "Тело",
-  "Татуировка",
-  "Кожа",
-];
+const APPEARANCE_TYPES = ["Украшение", "Волосы", "Внешний вид", "Тело", "Татуировка", "Кожа"];
 
 type AppearanceTypesDropDownTypes = {
-  setAppearanceType: React.Dispatch<
-    React.SetStateAction<TranslationTextFieldNameAppearancePartsTypes>
-  >;
+  setAppearanceType: React.Dispatch<React.SetStateAction<TranslationTextFieldNameAppearancePartsTypes>>;
 };
 
-export default function AppearanceTypeDropDown({
-  setAppearanceType,
-}: AppearanceTypesDropDownTypes) {
+export default function AppearanceTypeDropDown({ setAppearanceType }: AppearanceTypesDropDownTypes) {
   const [valueToEng, setValueToEng] = useState("");
   const [showModal, setShowModal] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // TODO did I forget about temp type?
   useEffect(() => {
     if (valueToEng === "Украшение") {
       setAppearanceType("accessory");
     } else if (valueToEng === "Волосы") {
       setAppearanceType("hair");
-    } else if (valueToEng === "Костюм") {
+    } else if (valueToEng === "Внешний вид") {
       setAppearanceType("dress");
     } else if (valueToEng === "Тело") {
       setAppearanceType("body");
@@ -39,10 +29,7 @@ export default function AppearanceTypeDropDown({
       setAppearanceType("skin");
     }
 
-    if (!valueToEng)
-      setAppearanceType(
-        valueToEng as TranslationTextFieldNameAppearancePartsTypes
-      );
+    if (!valueToEng) setAppearanceType(valueToEng as TranslationTextFieldNameAppearancePartsTypes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueToEng]);
 
@@ -79,9 +66,7 @@ export default function AppearanceTypeDropDown({
               setShowModal(false);
             }}
             className={`${
-              ct === valueToEng
-                ? "bg-primary-darker text-text-dark"
-                : " text-gray-600 bg-secondary"
+              ct === valueToEng ? "bg-primary-darker text-text-dark" : " text-gray-600 bg-secondary"
             } text-[1.4rem] outline-gray-300 text-start hover:bg-primary-darker hover:text-text-dark rounded-md px-[1rem] py-[.5rem] hover:shadow-md`}
           >
             {ct}

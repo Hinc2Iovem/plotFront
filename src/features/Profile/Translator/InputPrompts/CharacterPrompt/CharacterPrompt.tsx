@@ -31,6 +31,7 @@ export default function CharacterPrompt({
   const [characterValue, setCharacterValue] = useState("");
   const [characterBackupValue, setCharacterBackupValue] = useState("");
   const theme = localStorage.getItem("theme");
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   useOutOfModal({
     modalRef: modalCharactersRef,
@@ -40,20 +41,17 @@ export default function CharacterPrompt({
 
   const debouncedValue = useDebounce({ value: characterValue, delay: 500 });
 
-  const { data: charactersSearch, isLoading } =
-    useGetCharacterTranslationByTextFieldNameAndSearch({
-      debouncedValue,
-      language: "russian",
-      storyId: storyId || "",
-      showCharacters,
-    });
+  const { data: charactersSearch, isLoading } = useGetCharacterTranslationByTextFieldNameAndSearch({
+    debouncedValue,
+    language: "russian",
+    storyId: storyId || "",
+    showCharacters,
+  });
 
   useEffect(() => {
     if (!characterId && debouncedValue?.trim().length) {
       setCharacterId(
-        charactersSearch?.find(
-          (cs) => (cs?.translations || [])[0]?.text === debouncedValue
-        )?.characterId || ""
+        charactersSearch?.find((cs) => (cs?.translations || [])[0]?.text === debouncedValue)?.characterId || ""
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,10 +64,7 @@ export default function CharacterPrompt({
   }, [showCharacters, characterValue, characterBackupValue]);
 
   return (
-    <form
-      className="bg-secondary rounded-md shadow-md relative"
-      onSubmit={(e) => e.preventDefault()}
-    >
+    <form className="bg-secondary rounded-md shadow-md relative" onSubmit={(e) => e.preventDefault()}>
       {typeof storyId === "string" && storyId.length === 0 ? (
         <>
           <input
@@ -108,6 +103,11 @@ export default function CharacterPrompt({
         <>
           <PlotfieldInput
             type="text"
+            focusedSecondTime={focusedSecondTime}
+            onBlur={() => {
+              setFocusedSecondTime(false);
+            }}
+            setFocusedSecondTime={setFocusedSecondTime}
             placeholder="Имя Персонажа"
             onClick={(e) => {
               e.stopPropagation();
@@ -123,14 +123,9 @@ export default function CharacterPrompt({
               setCharacterValue(e.target.value);
             }}
           />
-          <AsideScrollable
-            ref={modalCharactersRef}
-            className={`${showCharacters ? "" : "hidden"} translate-y-[.5rem]`}
-          >
+          <AsideScrollable ref={modalCharactersRef} className={`${showCharacters ? "" : "hidden"} translate-y-[.5rem]`}>
             {isLoading ? (
-              <div className="text-[1.4rem] text-text-light text-center py-[.5rem]">
-                Загрузка...
-              </div>
+              <div className="text-[1.4rem] text-text-light text-center py-[.5rem]">Загрузка...</div>
             ) : charactersSearch && charactersSearch.length > 0 ? (
               charactersSearch.map((s) => (
                 <button

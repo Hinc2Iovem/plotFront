@@ -5,22 +5,14 @@ import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 
-const PossibleWardrobeAppearancePartVariations = [
-  "Волосы",
-  "Внешний вид",
-  "Остальное",
-];
+const PossibleWardrobeAppearancePartVariations = ["Волосы", "Внешний вид", "Остальное"];
 
 type CommandWardrobeChoosingAppearanceTypeTypes = {
   showAppearancePartVariationModal: boolean;
-  setShowAppearancePartVariationModal: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setShowAppearancePartVariationModal: React.Dispatch<React.SetStateAction<boolean>>;
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
   setShowAppearancePartModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setAppearancePartVariationType: React.Dispatch<
-    React.SetStateAction<PossibleWardrobeAppearancePartVariationsTypes>
-  >;
+  setAppearancePartVariationType: React.Dispatch<React.SetStateAction<PossibleWardrobeAppearancePartVariationsTypes>>;
 };
 
 export default function CommandWardrobeChoosingAppearanceType({
@@ -32,10 +24,7 @@ export default function CommandWardrobeChoosingAppearanceType({
 }: CommandWardrobeChoosingAppearanceTypeTypes) {
   const appearancePartVariationTypeRef = useRef<HTMLDivElement>(null);
 
-  const [
-    transmittingAppearancePartVariableEngToRus,
-    setTransmittingAppearancePartVariableEngToRus,
-  ] = useState("");
+  const [transmittingAppearancePartVariableEngToRus, setTransmittingAppearancePartVariableEngToRus] = useState("");
 
   useOutOfModal({
     showModal: showAppearancePartVariationModal,
@@ -58,9 +47,7 @@ export default function CommandWardrobeChoosingAppearanceType({
 
       <AsideScrollable
         ref={appearancePartVariationTypeRef}
-        className={`${
-          showAppearancePartVariationModal ? "" : "hidden"
-        } translate-y-[.5rem]`}
+        className={`${showAppearancePartVariationModal ? "" : "hidden"} translate-y-[.5rem]`}
       >
         {PossibleWardrobeAppearancePartVariations.map((p) => (
           <AsideScrollableButton
@@ -75,14 +62,12 @@ export default function CommandWardrobeChoosingAppearanceType({
                 setAppearancePartVariationType("dress");
               } else {
                 setTransmittingAppearancePartVariableEngToRus("Остальное");
-                setAppearancePartVariationType("other");
+                setAppearancePartVariationType("temp");
               }
               setShowAppearancePartVariationModal(false);
             }}
             className={`${
-              transmittingAppearancePartVariableEngToRus === p
-                ? "bg-primary text-text-light"
-                : ""
+              transmittingAppearancePartVariableEngToRus === p ? "bg-primary text-text-light" : ""
             } text-start`}
           >
             {p}

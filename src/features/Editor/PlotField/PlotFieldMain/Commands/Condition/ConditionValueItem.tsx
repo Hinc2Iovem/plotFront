@@ -12,24 +12,29 @@ import { ConditionBlockInputFieldItem } from "./PlotfieldInsideConditionBlock/Co
 type ConditionValueItemTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
+  logicalOperators: string;
 } & ConditionBlockItemTypes;
 
 export default function ConditionValueItem({
   plotfieldCommandId,
   conditionBlockId,
   conditionBlockVariations,
+  logicalOperators,
 }: ConditionValueItemTypes) {
   return (
     <form
-      className="w-full flex-grow flex flex-col gap-[1.5rem] bg-secondary rounded-md h-fit"
+      className="w-full flex-grow flex flex-col gap-[1rem] bg-secondary rounded-md h-fit"
       onSubmit={(e) => e.preventDefault()}
     >
-      {conditionBlockVariations.map((cbv) => (
+      {conditionBlockVariations.map((cbv, i) => (
         <ConditionBlockInputFieldItem
           key={cbv.conditionBlockVariationId}
           {...cbv}
           plotfieldCommandId={plotfieldCommandId}
           conditionBlockId={conditionBlockId}
+          logicalOperators={logicalOperators}
+          insidePlotfield={false}
+          index={i}
         />
       ))}
     </form>
@@ -71,6 +76,7 @@ export function PlotfieldConditionSingsPrompt({
         } else if (type === "retry") {
           updateValueRetry.mutate({ sign: signName });
         }
+
         updateConditionBlockVariationSign({
           conditionBlockId,
           sign: signName,

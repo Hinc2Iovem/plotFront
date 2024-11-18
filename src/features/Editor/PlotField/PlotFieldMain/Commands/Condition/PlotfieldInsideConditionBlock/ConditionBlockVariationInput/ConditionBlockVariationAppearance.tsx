@@ -14,12 +14,15 @@ import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScroll
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionAppearance from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionAppearance";
+import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
+import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
 
 type ConditionBlockVariationAppearanceTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
   currentAppearancePartId: string;
   conditionBlockVariationId: string;
+  currentlyDressed: boolean;
 };
 
 export default function ConditionBlockVariationAppearance({
@@ -27,6 +30,7 @@ export default function ConditionBlockVariationAppearance({
   conditionBlockId,
   currentAppearancePartId,
   conditionBlockVariationId,
+  currentlyDressed,
 }: ConditionBlockVariationAppearanceTypes) {
   const [showAppearancePartPromptModal, setShowAppearancePartPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
@@ -34,10 +38,13 @@ export default function ConditionBlockVariationAppearance({
   const [appearancePartId, setAppearancePartId] = useState(currentAppearancePartId || "");
   const [debouncedAppearancePartValue, setDebouncedAppearancePartValue] =
     useState<DebouncedCheckAppearancePartTypes | null>(null);
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const { updateConditionBlockVariationValue } = useConditionBlocks();
 
   const [currentConditionName, setCurrentConditionName] = useState("");
+  const [isDressed, setIsDressed] = useState(currentlyDressed);
+  const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const { data: appearancePart } = useGetTranslationAppearancePart({ appearancePartId, language: "russian" });
 
@@ -90,42 +97,72 @@ export default function ConditionBlockVariationAppearance({
   }, [debouncedAppearancePartValue]);
 
   return (
-    <div className="relative">
-      <PlotfieldInput
-        type="text"
-        placeholder="Часть внешности"
-        onClick={(e) => {
-          setShowAppearancePartPromptModal((prev) => !prev);
-          e.stopPropagation();
-        }}
-        value={currentConditionName}
-        onChange={(e) => {
-          if (!showAppearancePartPromptModal) {
-            setShowAppearancePartPromptModal(true);
-          }
-          setHighlightRedOnValueNonExisting(false);
-          setCurrentConditionName(e.target.value);
-        }}
-        className={`${highlightRedOnValueNonExisting ? "" : ""}`}
-      />
+    <div className="relative w-full flex gap-[.5rem]">
+      <div className="flex-grow relative">
+        <PlotfieldInput
+          type="text"
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+            setCurrentlyActive(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
+          placeholder="Часть внешности"
+          onClick={(e) => {
+            e.stopPropagation();
+            setCurrentlyActive(true);
+            setShowAppearancePartPromptModal((prev) => !prev);
+          }}
+          value={currentConditionName}
+          onChange={(e) => {
+            if (!showAppearancePartPromptModal) {
+              setShowAppearancePartPromptModal(true);
+            }
+            setCurrentlyActive(true);
+            setHighlightRedOnValueNonExisting(false);
+            setCurrentConditionName(e.target.value);
+          }}
+          className={`${highlightRedOnValueNonExisting ? "" : ""} border-[3px] border-double border-dark-mid-gray`}
+        />
 
-      <AppearancePartPromptsModal
-        currentAppearancePartName={currentConditionName}
-        setCurrentAppearancePartName={setCurrentConditionName}
-        setShowAppearancePartPromptModal={setShowAppearancePartPromptModal}
-        showAppearancePartPromptModal={showAppearancePartPromptModal}
-        debouncedAppearancePart={debouncedValue}
-        setDebouncedAppearancePartValue={setDebouncedAppearancePartValue}
-        setAppearancePartId={setAppearancePartId}
-      />
+        <AppearancePartPromptsModal
+          currentAppearancePartName={currentConditionName}
+          setCurrentAppearancePartName={setCurrentConditionName}
+          setShowAppearancePartPromptModal={setShowAppearancePartPromptModal}
+          showAppearancePartPromptModal={showAppearancePartPromptModal}
+          debouncedAppearancePart={debouncedValue}
+          setDebouncedAppearancePartValue={setDebouncedAppearancePartValue}
+          setAppearancePartId={setAppearancePartId}
+        />
 
-      <CreateNewValueModal
-        conditionName={currentConditionName}
-        conditionBlockAppearanceId={conditionBlockVariationId}
-        setHighlightRedOnValueNonExisting={setHighlightRedOnValueNonExisting}
-        setShowCreateNewValueModal={setShowCreateNewValueModal}
-        showCreateNewValueModal={showCreateNewValueModal}
-      />
+        <CreateNewValueModal
+          conditionName={currentConditionName}
+          conditionBlockAppearanceId={conditionBlockVariationId}
+          setHighlightRedOnValueNonExisting={setHighlightRedOnValueNonExisting}
+          setShowCreateNewValueModal={setShowCreateNewValueModal}
+          showCreateNewValueModal={showCreateNewValueModal}
+        />
+        <ConditionBlockFieldName currentlyActive={currentlyActive} text="Одежда" />
+      </div>
+
+      <PlotfieldButton
+        disabled={updateConditionBlock.isPending}
+        onClick={() => {
+          updateConditionBlock.mutate({ currentlyDressed: !isDressed });
+          setIsDressed((prev) => !prev);
+          updateConditionBlockVariationValue({
+            conditionBlockId,
+            conditionBlockVariationId,
+            plotfieldCommandId,
+            currentlyDressed,
+          });
+        }}
+        className={`${
+          isDressed ? "bg-green-600 hover:bg-green-500" : "bg-primary hover:bg-primary-darker"
+        } disabled:cursor-not-allowed w-fit`}
+      >
+        {isDressed ? "Надето" : "Надеть"}
+      </PlotfieldButton>
     </div>
   );
 }

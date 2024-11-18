@@ -1,11 +1,11 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { StatusTypes } from "../../../../../../../types/StoryData/Status/StatusTypes";
 import {
   ConditionSignTypes,
   ConditionValueVariationType,
 } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import { devtools } from "zustand/middleware";
-import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { StatusTypes } from "../../../../../../../types/StoryData/Status/StatusTypes";
 import { removeElementAtIndex } from "../../../../../../../helpers/removeElementAtIndex";
 
 export type ConditionBlockVariationTypes = {
@@ -24,9 +24,18 @@ export type ConditionBlockVariationTypes = {
   value?: number;
   status?: StatusTypes;
   isRandom?: boolean;
+  currentlyDressed?: boolean;
+
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type LogicalOperatorTypes = "&&" | "||";
+
+export type AllConditionValueVariationByLogicalOperatorIndexTypes = {
+  type: ConditionValueVariationType;
+  conditionBlockVariationId: string;
+};
 
 export type ConditionBlockItemTypes = {
   conditionBlockId: string;
@@ -110,6 +119,7 @@ type CommandConditionStoreTypes = {
     secondCharacteristicId?: string;
 
     amountOfRetries?: number;
+    currentlyDressed?: boolean;
     currentLanguage?: CurrentlyAvailableLanguagesTypes;
     sign?: ConditionSignTypes;
     status?: StatusTypes;
@@ -129,10 +139,12 @@ type CommandConditionStoreTypes = {
     conditionBlockVariationId,
     conditionBlockId,
     plotfieldCommandId,
+    index,
   }: {
     conditionBlockVariationId: string;
     conditionBlockId: string;
     plotfieldCommandId: string;
+    index?: number;
   }) => void;
 
   updateLogicalOperator: ({
@@ -164,6 +176,22 @@ type CommandConditionStoreTypes = {
     conditionBlockId: string;
     plotfieldCommandId: string;
   }) => void;
+  getAmountOfConditionBlockVariations: ({
+    plotfieldCommandId,
+    conditionBlockId,
+  }: {
+    plotfieldCommandId: string;
+    conditionBlockId: string;
+  }) => number;
+  getAllConditionValueVariationByLogicalOperatorIndex: ({
+    index,
+    conditionBlockId,
+    plotfieldCommandId,
+  }: {
+    plotfieldCommandId: string;
+    conditionBlockId: string;
+    index: number;
+  }) => AllConditionValueVariationByLogicalOperatorIndexTypes[];
 
   updateConditionOrderOfExecution: ({
     conditionBlockId,
@@ -260,6 +288,14 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
           return 0;
         }
       },
+      getAmountOfConditionBlockVariations: ({ plotfieldCommandId, conditionBlockId }) => {
+        const currentCondition = get()
+          .conditions.find((c) => c.plotfieldCommandId === plotfieldCommandId)
+          ?.conditionBlocks.find((cb) => cb.conditionBlockId === conditionBlockId);
+        return currentCondition && currentCondition?.conditionBlockVariations.length > 0
+          ? currentCondition?.conditionBlockVariations.length
+          : 0;
+      },
       getAmountOfOnlyIfConditionBlocks: ({ plotfieldCommandId }) => {
         const currentCondition = get()
           .conditions.find((c) => c.plotfieldCommandId === plotfieldCommandId)
@@ -280,6 +316,26 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
             }
           });
         return allUsedOrders;
+      },
+      getAllConditionValueVariationByLogicalOperatorIndex: ({ plotfieldCommandId, index, conditionBlockId }) => {
+        const allConditionBlockVariationIds = [] as AllConditionValueVariationByLogicalOperatorIndexTypes[];
+        const currentConditionBlockVariations = get()
+          .conditions.find((c) => c.plotfieldCommandId === plotfieldCommandId)
+          ?.conditionBlocks.find((cb) => cb.conditionBlockId === conditionBlockId)?.conditionBlockVariations;
+
+        console.log("currentConditionBlockVariations: ", currentConditionBlockVariations);
+
+        currentConditionBlockVariations?.map((cbv, i) => {
+          if (i > index) {
+            console.log("removingInsideI: ", i);
+            console.log("removingInsideIndex: ", index);
+            allConditionBlockVariationIds.push({
+              conditionBlockVariationId: cbv.conditionBlockVariationId,
+              type: cbv.type,
+            });
+          }
+        });
+        return allConditionBlockVariationIds;
       },
       getIndexOfConditionBlockById: ({ plotfieldCommandId, conditionBlockId }) => {
         const currentConditionBlocIndex = get()
@@ -427,6 +483,7 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
         secondCharacteristicId,
         sign,
         status,
+        currentlyDressed,
       }) =>
         set((state) => ({
           conditions: state.conditions.map((c) =>
@@ -441,17 +498,30 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
                             cov.conditionBlockVariationId === conditionBlockVariationId
                               ? {
                                   ...cov,
-                                  value: conditionValue,
-                                  amountOfRetries,
-                                  appearancePartId,
-                                  characterId,
-                                  characteristicId,
-                                  commandKeyId,
-                                  conditionBlockVariationId,
-                                  currentLanguage,
-                                  secondCharacteristicId,
-                                  sign,
-                                  status,
+                                  value: typeof conditionValue === "number" ? conditionValue : cov.value,
+                                  amountOfRetries:
+                                    typeof amountOfRetries === "number" ? amountOfRetries : cov.amountOfRetries,
+                                  appearancePartId: appearancePartId?.trim().length
+                                    ? appearancePartId
+                                    : cov.appearancePartId,
+                                  characterId: characterId?.trim().length ? characterId : cov.characterId,
+                                  characteristicId: characteristicId?.trim().length
+                                    ? characteristicId
+                                    : cov.characteristicId,
+                                  commandKeyId: commandKeyId?.trim().length ? commandKeyId : cov.commandKeyId,
+                                  conditionBlockVariationId: conditionBlockVariationId?.trim().length
+                                    ? conditionBlockVariationId
+                                    : cov.conditionBlockVariationId,
+                                  currentLanguage: currentLanguage?.trim().length
+                                    ? currentLanguage
+                                    : cov.currentLanguage,
+                                  secondCharacteristicId: secondCharacteristicId?.trim().length
+                                    ? secondCharacteristicId
+                                    : cov.secondCharacteristicId,
+                                  sign: sign?.trim().length ? sign : cov.sign,
+                                  status: status?.trim().length ? status : cov.status,
+                                  currentlyDressed:
+                                    typeof currentlyDressed === "boolean" ? currentlyDressed : cov.currentlyDressed,
                                 }
                               : cov
                           ),
@@ -633,7 +703,10 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
                         conditionBlockId: co.conditionBlockId,
                         orderOfExecution: co.orderOfExecution || null,
                         targetBlockId: co.targetBlockId || "",
-                        topologyBlockName: "",
+                        topologyBlockName: co.topologyBlockName?.trim().length
+                          ? co.topologyBlockName
+                          : c.conditionBlocks.find((cb) => cb.conditionBlockId === co.conditionBlockId)
+                              ?.topologyBlockName || "",
                         isElse: co.isElse || false,
                         conditionBlockVariations: co.conditionBlockVariations || [],
                         logicalOperators: co.logicalOperators || "",
@@ -705,7 +778,7 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
           const splittedLogicalOperators = existingLogicalOperators?.split(",");
 
           if (typeof index === "number" && index >= 0 && index <= (splittedLogicalOperators.length || 0) - 1) {
-            const newLogicalOperatorsArray = removeElementAtIndex({ array: splittedLogicalOperators, index });
+            const newLogicalOperatorsArray = splittedLogicalOperators.splice(0, index);
 
             const newLogicalOperators = newLogicalOperatorsArray.join(",");
 
@@ -721,10 +794,28 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
                   : c
               ),
             }));
+
+            set((state) => ({
+              conditions: state.conditions.map((c) =>
+                c.plotfieldCommandId === plotfieldCommandId
+                  ? {
+                      ...c,
+                      conditionBlocks: c.conditionBlocks.map((co) =>
+                        co.conditionBlockId === conditionBlockId
+                          ? {
+                              ...co,
+                              conditionBlockVariations: co.conditionBlockVariations.filter((_cov, i) => i <= index),
+                            }
+                          : co
+                      ),
+                    }
+                  : c
+              ),
+            }));
           }
         }
       },
-      removeConditionBlockVariation: ({ conditionBlockId, conditionBlockVariationId, plotfieldCommandId }) =>
+      removeConditionBlockVariation: ({ conditionBlockId, conditionBlockVariationId, plotfieldCommandId, index }) =>
         set((state) => ({
           conditions: state.conditions.map((c) =>
             c.plotfieldCommandId === plotfieldCommandId
@@ -734,6 +825,12 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
                     co.conditionBlockId === conditionBlockId
                       ? {
                           ...co,
+                          logicalOperators:
+                            typeof index === "number" &&
+                            index >= 0 &&
+                            index < (co.logicalOperators.split(",")?.length || 0)
+                              ? removeElementAtIndex({ array: co.logicalOperators.split(",") || [], index }).join(",")
+                              : co.logicalOperators,
                           conditionBlockVariations: co.conditionBlockVariations.filter(
                             (cov) => cov.conditionBlockVariationId !== conditionBlockVariationId
                           ),

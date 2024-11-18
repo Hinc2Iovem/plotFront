@@ -19,9 +19,7 @@ type ChoiceVariationTypeBlockTypes = {
   choiceVariationTypes: ChoiceVariationsTypes;
   setExitBlockId: React.Dispatch<React.SetStateAction<string>>;
   setTimeLimit: React.Dispatch<React.SetStateAction<number>>;
-  setChoiceVariationTypes: React.Dispatch<
-    React.SetStateAction<ChoiceVariationsTypes>
-  >;
+  setChoiceVariationTypes: React.Dispatch<React.SetStateAction<ChoiceVariationsTypes>>;
   timeLimitDefaultOptionId: string;
   amountOfOptions: number;
   insidePlotfield?: boolean;
@@ -41,13 +39,9 @@ export default function ChoiceVariationTypeBlock({
 }: ChoiceVariationTypeBlockTypes) {
   const choiceVariationRef = useRef<HTMLDivElement>(null);
   const theme = localStorage.getItem("theme");
-  const [showChoiceVariationTypesModal, setShowChoiceVariationTypesModal] =
-    useState(false);
+  const [showChoiceVariationTypesModal, setShowChoiceVariationTypesModal] = useState(false);
   const [showChoiceMultipleModal, setShowChoiceMultipleModal] = useState(false);
-  const [
-    showChoiceDefaultTimeLimitBlockModal,
-    setShowChoiceDefaultTimeLimitBlockModal,
-  ] = useState(false);
+  const [showChoiceDefaultTimeLimitBlockModal, setShowChoiceDefaultTimeLimitBlockModal] = useState(false);
 
   const updateChoice = useUpdateChoice({ choiceId });
 
@@ -103,23 +97,16 @@ export default function ChoiceVariationTypeBlock({
 
       <form
         className={`${
-          choiceVariationTypes === "common" ||
-          !choiceVariationTypes?.trim().length
-            ? "hidden"
-            : ""
+          choiceVariationTypes === "common" || !choiceVariationTypes?.trim().length ? "hidden" : ""
         } flex-grow shadow-md bg-primary rounded-md relative`}
         onSubmit={(e) => e.preventDefault()}
       >
         <ChoiceTimeLimitBlock
           choiceId={choiceId}
           choiceVariationTypes={choiceVariationTypes}
-          setShowChoiceDefaultTimeLimitBlockModal={
-            setShowChoiceDefaultTimeLimitBlockModal
-          }
+          setShowChoiceDefaultTimeLimitBlockModal={setShowChoiceDefaultTimeLimitBlockModal}
           setShowChoiceVariationTypesModal={setShowChoiceVariationTypesModal}
-          showChoiceDefaultTimeLimitBlockModal={
-            showChoiceDefaultTimeLimitBlockModal
-          }
+          showChoiceDefaultTimeLimitBlockModal={showChoiceDefaultTimeLimitBlockModal}
           insidePlotfield={insidePlotfield}
           setTimeLimit={setTimeLimit}
           timeLimit={timeLimit}
@@ -142,13 +129,9 @@ export default function ChoiceVariationTypeBlock({
 
 type ChoiceTimeLimitBlockTypes = {
   choiceId: string;
-  setShowChoiceDefaultTimeLimitBlockModal: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setShowChoiceDefaultTimeLimitBlockModal: React.Dispatch<React.SetStateAction<boolean>>;
   showChoiceDefaultTimeLimitBlockModal: boolean;
-  setShowChoiceVariationTypesModal: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setShowChoiceVariationTypesModal: React.Dispatch<React.SetStateAction<boolean>>;
   choiceVariationTypes: ChoiceVariationsTypes;
   timeLimit: number;
   setTimeLimit: React.Dispatch<React.SetStateAction<number>>;
@@ -170,6 +153,7 @@ function ChoiceTimeLimitBlock({
   insidePlotfield,
 }: ChoiceTimeLimitBlockTypes) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const updateChoice = useUpdateChoice({ choiceId });
 
@@ -177,9 +161,7 @@ function ChoiceTimeLimitBlock({
     choiceOptionId: timeLimitDefaultOptionId,
   });
 
-  const [currentChoiceOptionOrder, setCurrentChoiceOptionOrder] = useState<
-    number | undefined
-  >();
+  const [currentChoiceOptionOrder, setCurrentChoiceOptionOrder] = useState<number | undefined>();
 
   useEffect(() => {
     if (currentChoiceOption) {
@@ -203,13 +185,14 @@ function ChoiceTimeLimitBlock({
     showModal: showChoiceDefaultTimeLimitBlockModal,
   });
   return (
-    <div
-      className={`flex ${
-        choiceVariationTypes === "timelimit" ? "" : "hidden"
-      } gap-[.5rem] w-full flex-wrap`}
-    >
+    <div className={`flex ${choiceVariationTypes === "timelimit" ? "" : "hidden"} gap-[.5rem] w-full flex-wrap`}>
       <PlotfieldInput
         type="text"
+        focusedSecondTime={focusedSecondTime}
+        onBlur={() => {
+          setFocusedSecondTime(false);
+        }}
+        setFocusedSecondTime={setFocusedSecondTime}
         className="flex-grow"
         value={timeLimit || ""}
         onChange={(e) => setTimeLimit(+e.target.value)}
@@ -226,9 +209,7 @@ function ChoiceTimeLimitBlock({
             }}
             className="w-[calc(100%-5.5rem)]"
           >
-            {typeof currentChoiceOptionOrder === "number"
-              ? currentChoiceOptionOrder
-              : "Дефолтный Выбор"}
+            {typeof currentChoiceOptionOrder === "number" ? currentChoiceOptionOrder : "Дефолтный Выбор"}
           </PlotfieldButton>
           <aside
             ref={modalRef}
@@ -236,8 +217,7 @@ function ChoiceTimeLimitBlock({
               showChoiceDefaultTimeLimitBlockModal ? "" : "hidden"
             } translate-y-[3.8rem] absolute z-10 flex flex-col gap-[1rem] bg-primary  rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
           >
-            {(currentChoiceOptionOrder && amountOfOptions > 1) ||
-            (!currentChoiceOptionOrder && amountOfOptions > 0) ? (
+            {(currentChoiceOptionOrder && amountOfOptions > 1) || (!currentChoiceOptionOrder && amountOfOptions > 0) ? (
               [...Array.from({ length: amountOfOptions })]?.map((_, i) => (
                 <button
                   key={i}
@@ -280,9 +260,7 @@ type ChoiceMultipleBlockTypes = {
   exitBlockId: string;
   setShowChoiceMultipleModal: React.Dispatch<React.SetStateAction<boolean>>;
   showChoiceMultipleModal: boolean;
-  setShowChoiceVariationTypesModal: React.Dispatch<
-    React.SetStateAction<boolean>
-  >;
+  setShowChoiceVariationTypesModal: React.Dispatch<React.SetStateAction<boolean>>;
   choiceVariationTypes: ChoiceVariationsTypes;
   setExitBlockId: React.Dispatch<React.SetStateAction<string>>;
 };
@@ -336,9 +314,7 @@ function ChoiceMultipleBlock({
           theme === "light" ? "outline-gray-300" : "outline-gray-600"
         }`}
       >
-        {currentTopologyBlockName?.trim().length
-          ? currentTopologyBlockName
-          : "Повторная Ветка"}
+        {currentTopologyBlockName?.trim().length ? currentTopologyBlockName : "Повторная Ветка"}
       </button>
       <aside
         ref={choiceVariationMultipleRef}
@@ -346,14 +322,11 @@ function ChoiceMultipleBlock({
           showChoiceMultipleModal ? "" : "hidden"
         } translate-y-[.5rem] absolute z-[100] flex flex-col gap-[1rem] bg-primary-darker rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
       >
-        {(exitBlockId && (allTopologyBlocks?.length || 0) > 1) ||
-        (!exitBlockId && allTopologyBlocks?.length) ? (
+        {(exitBlockId && (allTopologyBlocks?.length || 0) > 1) || (!exitBlockId && allTopologyBlocks?.length) ? (
           allTopologyBlocks?.map((atb) => (
             <button
               key={atb._id}
-              className={`${
-                atb._id === exitBlockId ? "hidden" : ""
-              } text-start ${
+              className={`${atb._id === exitBlockId ? "hidden" : ""} text-start ${
                 theme === "light" ? "outline-gray-300" : "outline-gray-600"
               } whitespace-nowrap text-[1.3rem] rounded-md hover:scale-[1.01] shadow-md bg-secondary hover:bg-primary-darker hover:text-text-light text-text-dark focus-within:text-text-light focus-within:bg-primary-darker px-[1rem] py-[.5rem]`}
               onClick={() => {

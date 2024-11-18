@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
 import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
@@ -56,17 +56,14 @@ export default function FormEmotion({
   //   delay: 700,
   //   value: emotionValue?.emotionName || "",
   // });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const emotionsRef = useRef<HTMLDivElement>(null);
 
   const allEmotions = useMemo(() => {
     const res = [...emotions];
     if (emotionValue?.emotionName) {
-      return res.filter((r) =>
-        r.emotionName
-          .toLowerCase()
-          .includes(emotionValue?.emotionName?.toLowerCase() || "")
-      );
+      return res.filter((r) => r.emotionName.toLowerCase().includes(emotionValue?.emotionName?.toLowerCase() || ""));
     } else {
       return res;
     }
@@ -84,20 +81,12 @@ export default function FormEmotion({
       return;
     }
     if (
-      allEmotions.map((e) =>
-        e.emotionName
-          ?.toLowerCase()
-          .includes(emotionValue?.emotionName?.toLowerCase() || "")
-      ) ||
-      (em &&
-        allEmotions.map((e) =>
-          e.emotionName?.toLowerCase().includes(em?.toLowerCase())
-        ))
+      allEmotions.map((e) => e.emotionName?.toLowerCase().includes(emotionValue?.emotionName?.toLowerCase() || "")) ||
+      (em && allEmotions.map((e) => e.emotionName?.toLowerCase().includes(em?.toLowerCase())))
     ) {
       const currentEmotion = emotions.find(
         (e) =>
-          e.emotionName.toLowerCase() ===
-            emotionValue?.emotionName?.toLowerCase() ||
+          e.emotionName.toLowerCase() === emotionValue?.emotionName?.toLowerCase() ||
           (em && e.emotionName.toLowerCase() === em.toLowerCase())
       );
 
@@ -167,13 +156,15 @@ export default function FormEmotion({
 
   return (
     <>
-      <form
-        onSubmit={handleEmotionFormSubmit}
-        className={`${showAllEmotions ? "z-[10]" : ""} w-full`}
-      >
+      <form onSubmit={handleEmotionFormSubmit} className={`${showAllEmotions ? "z-[10]" : ""} w-full`}>
         <div className="w-full relative">
           <PlotfieldInput
             type="text"
+            focusedSecondTime={focusedSecondTime}
+            onBlur={() => {
+              setFocusedSecondTime(false);
+            }}
+            setFocusedSecondTime={setFocusedSecondTime}
             value={emotionValue?.emotionName || ""}
             placeholder="Эмоция"
             onClick={(e) => {
@@ -211,10 +202,7 @@ export default function FormEmotion({
             />
           ) : null}
 
-          <AsideScrollable
-            ref={emotionsRef}
-            className={`${showAllEmotions ? "" : "hidden"} translate-y-[.5rem]`}
-          >
+          <AsideScrollable ref={emotionsRef} className={`${showAllEmotions ? "" : "hidden"} translate-y-[.5rem]`}>
             <ul className="flex flex-col gap-[1rem] p-[.2rem]">
               {allEmotions.length ? (
                 allEmotions.map((em, i) => {
@@ -239,14 +227,9 @@ export default function FormEmotion({
                     </li>
                   );
                 })
-              ) : !allEmotions.length &&
-                emotionValue?.emotionName?.trim().length ? (
+              ) : !allEmotions.length && emotionValue?.emotionName?.trim().length ? (
                 <li>
-                  <AsideScrollableButton
-                    onClick={() => setShowAllEmotions(false)}
-                  >
-                    Пусто
-                  </AsideScrollableButton>
+                  <AsideScrollableButton onClick={() => setShowAllEmotions(false)}>Пусто</AsideScrollableButton>
                 </li>
               ) : null}
             </ul>

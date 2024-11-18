@@ -20,5 +20,6 @@ export default function useGetTranslationAppearancePart({
           `/appearanceParts/${appearancePartId}/translations?currentLanguage=${language}`
         )
         .then((r) => r.data),
+    enabled: !!appearancePartId?.trim().length,
   });
 }

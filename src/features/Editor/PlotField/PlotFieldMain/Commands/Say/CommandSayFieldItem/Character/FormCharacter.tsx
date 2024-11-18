@@ -8,10 +8,7 @@ import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useUpdateNameOrEmotion from "../../../../../hooks/Say/useUpdateNameOrEmotion";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
-import {
-  CharacterValueTypes,
-  EmotionTypes,
-} from "./CommandSayCharacterFieldItem";
+import { CharacterValueTypes, EmotionTypes } from "./CommandSayCharacterFieldItem";
 import CommandSayCreateCharacterFieldModal from "./ModalCreateCharacter/CommandSayCreateCharacterFieldModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { useQueryClient } from "@tanstack/react-query";
@@ -51,9 +48,7 @@ export default function FormCharacter({
 }: FormCharacterTypes) {
   const charactersRef = useRef<HTMLDivElement>(null);
   const { storyId } = useParams();
-  const [previousCharacterId, setPreviousCharacterId] = useState(
-    characterValue?._id || ""
-  );
+  const [previousCharacterId, setPreviousCharacterId] = useState(characterValue?._id || "");
   const queryClient = useQueryClient();
 
   const {
@@ -75,6 +70,7 @@ export default function FormCharacter({
 
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     plotFieldCommandId,
@@ -88,9 +84,7 @@ export default function FormCharacter({
 
   const allNames = useMemo(() => {
     if (translatedCharacters) {
-      const names = translatedCharacters.map((tc) =>
-        (tc.translations || [])[0].text.toLowerCase()
-      );
+      const names = translatedCharacters.map((tc) => (tc.translations || [])[0].text.toLowerCase());
       return names;
     }
     return [];
@@ -110,8 +104,7 @@ export default function FormCharacter({
         if (
           tc.translations?.find(
             (tct) =>
-              tct.text?.toLowerCase() ===
-                (characterValue?.characterName || "")?.toLowerCase() ||
+              tct.text?.toLowerCase() === (characterValue?.characterName || "")?.toLowerCase() ||
               (nf && tct.text.toLowerCase() === nf.toLowerCase())
           )
         ) {
@@ -200,20 +193,20 @@ export default function FormCharacter({
 
   return (
     <>
-      <form
-        onSubmit={handleNameFormSubmit}
-        className={`${showCharacters ? "z-[10]" : ""} w-full relative`}
-      >
+      <form onSubmit={handleNameFormSubmit} className={`${showCharacters ? "z-[10]" : ""} w-full relative`}>
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
           onClick={(e) => {
             e.stopPropagation();
             setShowCharacters(true);
             setShowAllEmotions(false);
           }}
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
+          className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}
           value={characterValue?.characterName || ""}
           onChange={(e) => {
             setShowCharacters(true);

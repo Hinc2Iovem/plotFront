@@ -6,15 +6,14 @@ type GetCommandKeyTypes = {
   storyId: string;
 };
 
-export default function useGetAllKeysByStoryId({
-  storyId,
-}: GetCommandKeyTypes) {
+export const fetchAllKeys = async ({ storyId }: GetCommandKeyTypes) => {
+  return await axiosCustomized.get<KeyTypes[]>(`/plotFieldCommands/stories/${storyId}/keys`).then((r) => r.data);
+};
+
+export default function useGetAllKeysByStoryId({ storyId }: GetCommandKeyTypes) {
   return useQuery({
     queryKey: ["stories", storyId, "key"],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<KeyTypes[]>(`/plotFieldCommands/stories/${storyId}/keys`)
-        .then((r) => r.data),
+    queryFn: () => fetchAllKeys({ storyId }),
     enabled: !!storyId,
   });
 }

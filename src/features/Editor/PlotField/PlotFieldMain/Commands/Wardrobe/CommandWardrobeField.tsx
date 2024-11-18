@@ -30,12 +30,12 @@ export default function CommandWardrobeField({
   const [commandWardrobeId, setCommandWardrobeId] = useState("");
   const [characterId, setCharacterId] = useState("");
   const [isCurrentlyDressed, setIsCurrentlyDressed] = useState<boolean>(false);
-  const [showAllAppearancePartBlocks, setShowAllAppearancePartBlocks] =
-    useState(false);
+  const [showAllAppearancePartBlocks, setShowAllAppearancePartBlocks] = useState(false);
   const theme = localStorage.getItem("theme");
   const { data: commandWardrobe } = useGetCommandWardrobe({
     plotFieldCommandId,
   });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
@@ -47,8 +47,7 @@ export default function CommandWardrobeField({
     commandId: plotFieldCommandId || "",
   });
 
-  const { data: allAppearancePartBlocks } =
-    useGetAllWardrobeAppearancePartBlocks({ commandWardrobeId });
+  const { data: allAppearancePartBlocks } = useGetAllWardrobeAppearancePartBlocks({ commandWardrobeId });
 
   useEffect(() => {
     if (commandWardrobe) {
@@ -84,10 +83,9 @@ export default function CommandWardrobeField({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
 
-  const updateWardrobeIsCurrentlyDressed =
-    useUpdateWardrobeCurrentDressedAndCharacterId({
-      commandWardrobeId,
-    });
+  const updateWardrobeIsCurrentlyDressed = useUpdateWardrobeCurrentDressedAndCharacterId({
+    commandWardrobeId,
+  });
 
   useOutOfModal({
     modalRef: appearancePartsRef,
@@ -98,19 +96,17 @@ export default function CommandWardrobeField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full flex gap-[1rem]"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full flex gap-[1rem]">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
           value={wardrobeTitle}
           type="text"
           placeholder="Название гардероба"
@@ -137,9 +133,7 @@ export default function CommandWardrobeField({
                     ? "bg-secondary text-black"
                     : "hover:bg-green-400 hover:text-text-light bg-secondary text-text-light focus-within:bg-green-400 focus-within:text-text-light"
                 }`
-          } px-[1rem] whitespace-nowrap ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          }`}
+          } px-[1rem] whitespace-nowrap ${theme === "light" ? "outline-gray-300" : "outline-gray-600"}`}
         >
           {isCurrentlyDressed ? "Надето" : "Не надето"}
         </button>

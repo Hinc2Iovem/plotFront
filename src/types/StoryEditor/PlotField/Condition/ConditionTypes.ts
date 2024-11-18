@@ -10,7 +10,7 @@ export type ConditionSignTypes = ">" | "<" | "=" | ">=" | "<=";
 
 export type LogicalOperatorTypes = "&&" | "||";
 
-export const AllConditionSigns: ConditionSignTypes[] = ["<", "<=", "=", ">", ">="];
+export const AllConditionSigns: ConditionSignTypes[] = [">=", ">", "=", "<", "<="];
 
 export type ConditionValueVariationType =
   | "key"
@@ -28,16 +28,22 @@ export type ConditionBlockTypes = {
   targetBlockId: string;
   isElse: boolean;
   orderOfExecution: number;
+
+  logicalOperator: string;
 };
 
 export type ConditionKeyTypes = {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
   conditionBlockId: string;
   commandKeyId: string;
 };
 
 export type ConditionAppearanceTypes = {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
   conditionBlockId: string;
   currentlyDressed: boolean;
   appearancePartId: string;
@@ -45,6 +51,8 @@ export type ConditionAppearanceTypes = {
 
 export type ConditionRetryTypes = {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
   conditionBlockId: string;
   amountOfRetries: number;
   sign: ConditionSignTypes;
@@ -52,6 +60,8 @@ export type ConditionRetryTypes = {
 
 export type ConditionCharacterTypes = {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
   characterId: string;
   value: number;
   sign: ConditionSignTypes;
@@ -59,6 +69,8 @@ export type ConditionCharacterTypes = {
 
 export type ConditionCharacteristicTypes = {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
   characteristicId: string;
   secondCharacteristicId?: string;
   value?: number;
@@ -67,16 +79,22 @@ export type ConditionCharacteristicTypes = {
 
 export type ConditionLanguageTypes = {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
   currentLanguage: CurrentlyAvailableLanguagesTypes;
 };
 
 export type ConditionStatusTypes = {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
   characterId: string;
   status: string;
 };
 
 export type ConditionRandomTypes = {
   _id: string;
+  createdAt: string;
+  updatedAt: string;
   isRandom: boolean;
 };

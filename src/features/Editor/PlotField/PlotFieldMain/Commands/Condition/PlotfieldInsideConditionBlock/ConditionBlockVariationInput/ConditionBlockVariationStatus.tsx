@@ -32,6 +32,8 @@ export default function ConditionBlockVariationStatus({
   const [status, setStatus] = useState(typeof currentStatus === "string" ? currentStatus : "");
   const [showAllLangauges, setShowAllStatuses] = useState(false);
 
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
   const { updateConditionBlockVariationValue } = useConditionBlocks();
 
   const statusModalRef = useRef<HTMLDivElement>(null);
@@ -57,7 +59,7 @@ export default function ConditionBlockVariationStatus({
 
   useEffect(() => {
     if (translatedCharacter) {
-      setCharacterImg((translatedCharacter?.translations || [])[0].text || "");
+      setCurrentConditionName((translatedCharacter?.translations || [])[0].text || "");
     }
   }, [translatedCharacter, characterId]);
 
@@ -102,39 +104,53 @@ export default function ConditionBlockVariationStatus({
     setShowModal: setShowAllStatuses,
     showModal: showAllLangauges,
   });
+
   return (
-    <div className="relative flex gap-[1rem]">
-      <PlotfieldInput
-        type="text"
-        placeholder="Персонаж"
-        onClick={(e) => {
-          setShowCharacterPromptModal((prev) => !prev);
-          e.stopPropagation();
-        }}
-        value={currentConditionName}
-        onChange={(e) => {
-          if (!showCharacterPromptModal) {
-            setShowCharacterPromptModal(true);
-          }
-          setCurrentConditionName(e.target.value);
-        }}
-      />
-      {characterImg ? (
-        <img src={characterImg} alt="CharacterImg" className="w-[3rem] absolute right-0 rounded-md top-0" />
-      ) : null}
-      <PlotfieldCharacterPromptMain
-        characterValue={currentConditionName}
-        setCharacterId={setCharacterId}
-        setCharacterName={setCurrentConditionName}
-        setShowCharacterModal={setShowCharacterPromptModal}
-        showCharacterModal={showCharacterPromptModal}
-        translateAsideValue="translate-y-[.5rem]"
-        debouncedValue={debouncedConditionName}
-        setCharacterImg={setCharacterImg}
-        setDebouncedCharacter={setDebouncedCharacter}
-        commandIfId=""
-        isElse={false}
-      />
+    <div className="relative flex gap-[.5rem] w-full">
+      <div className="relative w-full">
+        <PlotfieldInput
+          type="text"
+          focusedSecondTime={focusedSecondTime}
+          onBlur={() => {
+            setFocusedSecondTime(false);
+          }}
+          setFocusedSecondTime={setFocusedSecondTime}
+          placeholder="Персонаж"
+          className="border-[3px] border-double border-dark-mid-gray"
+          onClick={(e) => {
+            setShowCharacterPromptModal((prev) => !prev);
+            e.stopPropagation();
+          }}
+          value={currentConditionName}
+          onChange={(e) => {
+            if (!showCharacterPromptModal) {
+              setShowCharacterPromptModal(true);
+            }
+            setCurrentConditionName(e.target.value);
+          }}
+        />
+        {characterImg?.trim().length ? (
+          <img
+            src={characterImg}
+            alt="CharacterImg"
+            className="w-[3rem] absolute right-[5px] rounded-md top-[0px] translate-y-[3px]"
+          />
+        ) : null}
+        <PlotfieldCharacterPromptMain
+          characterValue={currentConditionName}
+          setCharacterId={setCharacterId}
+          setCharacterName={setCurrentConditionName}
+          setShowCharacterModal={setShowCharacterPromptModal}
+          showCharacterModal={showCharacterPromptModal}
+          translateAsideValue="translate-y-[.5rem]"
+          debouncedValue={debouncedConditionName}
+          setCharacterImg={setCharacterImg}
+          setDebouncedCharacter={setDebouncedCharacter}
+          commandIfId=""
+          isElse={false}
+        />
+      </div>
+
       <div className="relative w-fit">
         <PlotfieldButton
           onClick={(e) => {
@@ -142,7 +158,7 @@ export default function ConditionBlockVariationStatus({
             setShowAllStatuses((prev) => !prev);
           }}
           type="button"
-          className={`bg-primary-darker hover:bg-primary transition-colors text-text-light w-full`}
+          className={`bg-primary-darker h-full hover:bg-primary transition-colors text-text-light w-full`}
         >
           {status?.trim().length ? status : "Статус"}
         </PlotfieldButton>
@@ -153,6 +169,7 @@ export default function ConditionBlockVariationStatus({
         >
           {AllPossibleStatuses.map((l) => (
             <AsideScrollableButton
+              key={l}
               onClick={() => {
                 setStatus(l);
                 setShowAllStatuses(false);

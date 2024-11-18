@@ -9,6 +9,8 @@ import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import useConditionBlocks from "../../Context/ConditionContext";
 import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetching/Translation/useGetTranslationCharacteristic";
 import useUpdateConditionCharacteristic from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
+import ConditionSignField from "./ConditionSignField";
+import { isNumeric } from "../../../../../../../../utils/regExpIsNumeric";
 
 type ConditionBlockVariationCharacteristicTypes = {
   plotfieldCommandId: string;
@@ -29,18 +31,19 @@ export default function ConditionBlockVariationCharacteristic({
 }: ConditionBlockVariationCharacteristicTypes) {
   const [showFirstCharacteristicPromptModal, setShowFirstCharacteristicPromptModal] = useState(false);
   const [showSecondCharacteristicPromptModal, setShowSecondCharacteristicPromptModal] = useState(false);
+  const [hideModal, setHideModal] = useState<"first" | "second" | null>(null);
 
   useEffect(() => {
-    if (showFirstCharacteristicPromptModal) {
+    if (hideModal === "second") {
       setShowSecondCharacteristicPromptModal(false);
-    } else if (showSecondCharacteristicPromptModal) {
+    } else if (hideModal === "first") {
       setShowFirstCharacteristicPromptModal(false);
     }
-  }, [showFirstCharacteristicPromptModal, showSecondCharacteristicPromptModal]);
+  }, [hideModal]);
 
   return (
-    <div className="flex flex-col gap-[1rem] mt-[1.5rem]">
-      <div className="w-full flex gap-[1rem] flex-shrink flex-wrap">
+    <div className="flex flex-col gap-[1rem] w-full">
+      <div className="w-full flex gap-[.5rem] flex-shrink flex-wrap">
         <CharacteristicInputField
           key={"characteristic-1"}
           conditionBlockId={conditionBlockId}
@@ -50,7 +53,16 @@ export default function ConditionBlockVariationCharacteristic({
           fieldType="conditionName"
           conditionBlockVariationId={conditionBlockVariationId}
           currentCharacteristicId={firstCharacteristicId}
+          setHideModal={setHideModal}
         />
+        <div className="h-full">
+          <ConditionSignField
+            conditionBlockId={conditionBlockId}
+            conditionBlockVariationId={conditionBlockVariationId}
+            plotfieldCommandId={plotfieldCommandId}
+            type="characteristic"
+          />
+        </div>
         <CharacteristicInputField
           key={"characteristic-2"}
           conditionBlockId={conditionBlockId}
@@ -61,6 +73,7 @@ export default function ConditionBlockVariationCharacteristic({
           conditionBlockVariationId={conditionBlockVariationId}
           currentCharacteristicId={secondCharacteristicId}
           value={value}
+          setHideModal={setHideModal}
         />
       </div>
     </div>
@@ -69,6 +82,7 @@ export default function ConditionBlockVariationCharacteristic({
 
 type CharacteristicInputFieldTypes = {
   setShowCharacteristicPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setHideModal: React.Dispatch<React.SetStateAction<"first" | "second" | null>>;
   showCharacteristicPromptModal: boolean;
   plotfieldCommandId: string;
   conditionBlockId: string;
@@ -80,6 +94,7 @@ type CharacteristicInputFieldTypes = {
 
 function CharacteristicInputField({
   setShowCharacteristicPromptModal,
+  setHideModal,
   showCharacteristicPromptModal,
   plotfieldCommandId,
   conditionBlockId,
@@ -88,11 +103,10 @@ function CharacteristicInputField({
   currentCharacteristicId,
   value,
 }: CharacteristicInputFieldTypes) {
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
-
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
-
   const [currentConditionName, setCurrentConditionName] = useState<string | number>(value ? value : "");
+  const [backUpConditionName, setBackUpConditionName] = useState<string | number>(value ? value : "");
 
   const [characteristicId, setCharacteristicId] = useState(currentCharacteristicId);
 
@@ -101,21 +115,18 @@ function CharacteristicInputField({
     language: "russian",
   });
 
-  useEffect(() => {
-    if (translatedCharacteristic) {
-      setCurrentConditionName((translatedCharacteristic.translations || [])[0]?.text);
-    }
-  }, [translatedCharacteristic, characteristicId]);
-
-  const [debouncedCharacteristic, setDebouncedCharacteristic] = useState<DebouncedCheckCharacteristicTypes | null>(
-    null
-  );
-
-  // const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
 
   const updateConditionBlock = useUpdateConditionCharacteristic({
     conditionBlockCharacteristicId: conditionBlockVariationId,
   });
+
+  useEffect(() => {
+    if (translatedCharacteristic) {
+      setCurrentConditionName((translatedCharacteristic.translations || [])[0]?.text);
+      setBackUpConditionName((translatedCharacteristic.translations || [])[0]?.text);
+    }
+  }, [translatedCharacteristic, characteristicId]);
 
   const debouncedConditionName = useDebounce({
     delay: 700,
@@ -123,70 +134,70 @@ function CharacteristicInputField({
   });
 
   useEffect(() => {
-    if (characteristicId && currentConditionName) {
+    // updates value for the second characteristic when it's a number
+    if (isNumeric(currentConditionName.toString()) && fieldType === "conditionValue") {
       updateConditionBlockVariationValue({
         conditionBlockId,
         plotfieldCommandId,
         conditionBlockVariationId,
-        characteristicId,
+        conditionValue: Number(currentConditionName),
       });
 
       updateConditionBlock.mutate({
-        characteristicId: fieldType === "conditionName" ? characteristicId : null,
-        secondCharacteristicId: fieldType === "conditionValue" ? characteristicId : null,
-        value: typeof currentConditionName === "number" ? currentConditionName : null,
+        value: Number(currentConditionName),
       });
     }
-  }, [characteristicId, currentConditionName]);
-
-  useEffect(() => {
-    if (debouncedCharacteristic && !showCharacteristicPromptModal) {
-      updateConditionBlockVariationValue({
-        conditionBlockId,
-        plotfieldCommandId,
-        conditionBlockVariationId,
-        characteristicId,
-      });
-
-      setCharacteristicId(debouncedCharacteristic.characteristicId);
-      setCurrentConditionName(debouncedCharacteristic.characteristicName);
-
-      updateConditionBlock.mutate({
-        characteristicId: fieldType === "conditionName" ? characteristicId : null,
-        secondCharacteristicId: fieldType === "conditionValue" ? characteristicId : null,
-        value: typeof currentConditionName === "number" ? currentConditionName : null,
-      });
-    }
-  }, [debouncedCharacteristic, showCharacteristicPromptModal]);
+  }, [currentConditionName, fieldType]);
 
   return (
-    <div className="w-full min-w-[10rem] relative">
+    <div className="w-[40%] flex-grow min-w-[10rem] relative">
       <PlotfieldInput
         type="text"
+        focusedSecondTime={focusedSecondTime}
+        onBlur={() => {
+          setFocusedSecondTime(false);
+        }}
+        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Характеристика"
         onClick={(e) => {
           e.stopPropagation();
           setShowCharacteristicPromptModal((prev) => !prev);
+          if (fieldType === "conditionName") {
+            setHideModal("second");
+          } else {
+            setHideModal("first");
+          }
         }}
         value={currentConditionName}
         onChange={(e) => {
           if (!showCharacteristicPromptModal) {
             setShowCharacteristicPromptModal(true);
+            if (fieldType === "conditionName") {
+              setHideModal("second");
+            } else {
+              setHideModal("first");
+            }
           }
           setHighlightRedOnValueOnExisting(false);
           setCurrentConditionName(e.target.value);
         }}
-        className={`${highlightRedOnValueNonExisting ? " " : ""}`}
+        className={`${highlightRedOnValueNonExisting ? " " : ""} border-[3px] border-double border-dark-mid-gray`}
       />
 
       <CharacteristicsPromptModal
-        currentCharacteristic={typeof currentConditionName === "string" ? currentConditionName : ""}
+        currentCharacteristic={currentConditionName}
         setCharacteristicId={setCharacteristicId}
+        setBackUpCharacteristic={setBackUpConditionName}
         setCurrentCharacteristic={setCurrentConditionName}
         setShowCharacteristicPromptModal={setShowCharacteristicPromptModal}
         showCharacteristicPromptModal={showCharacteristicPromptModal}
-        setDebouncedCharacteristic={setDebouncedCharacteristic}
         debouncedCharacteristic={debouncedConditionName}
+        conditionBlockId={conditionBlockId}
+        conditionBlockVariationId={conditionBlockVariationId}
+        plotfieldCommandId={plotfieldCommandId}
+        fieldType={fieldType}
+        backUpCharacteristic={typeof backUpConditionName === "string" ? backUpConditionName : ""}
+        characteristicId={characteristicId}
       />
 
       {/* <CreateNewCharacteristicModal
@@ -208,23 +219,38 @@ export type DebouncedCheckCharacteristicTypes = {
 type CharacteristicsPromptModalTypes = {
   setShowCharacteristicPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentCharacteristic: React.Dispatch<React.SetStateAction<string | number>>;
+  setBackUpCharacteristic: React.Dispatch<React.SetStateAction<string | number>>;
   setCharacteristicId: React.Dispatch<React.SetStateAction<string>>;
-  setDebouncedCharacteristic: React.Dispatch<React.SetStateAction<DebouncedCheckCharacteristicTypes | null>>;
   showCharacteristicPromptModal: boolean;
-  currentCharacteristic: string;
+  currentCharacteristic: string | number;
   debouncedCharacteristic: string;
+  plotfieldCommandId: string;
+  conditionBlockId: string;
+  characteristicId: string;
+  backUpCharacteristic: string;
+  conditionBlockVariationId: string;
+  fieldType: "conditionName" | "conditionValue";
 };
 
 export function CharacteristicsPromptModal({
+  setShowCharacteristicPromptModal,
   setCurrentCharacteristic,
+  setBackUpCharacteristic,
   setCharacteristicId,
   currentCharacteristic,
-  setShowCharacteristicPromptModal,
   showCharacteristicPromptModal,
-  setDebouncedCharacteristic,
   debouncedCharacteristic,
+  plotfieldCommandId,
+  conditionBlockId,
+  conditionBlockVariationId,
+  fieldType,
+  backUpCharacteristic,
+  characteristicId,
 }: CharacteristicsPromptModalTypes) {
   const { storyId } = useParams();
+
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
+
   const modalRef = useRef<HTMLDivElement>(null);
 
   const { data: characteristics } = useGetAllCharacteristicsByStoryId({
@@ -232,8 +258,37 @@ export function CharacteristicsPromptModal({
     language: "russian",
   });
 
+  const updateConditionBlock = useUpdateConditionCharacteristic({
+    conditionBlockCharacteristicId: conditionBlockVariationId,
+  });
+
+  const handleSubmit = ({
+    characteristicId,
+    currentCharacteristic,
+  }: {
+    currentCharacteristic: string;
+    characteristicId: string;
+  }) => {
+    setShowCharacteristicPromptModal(false);
+    setCurrentCharacteristic(currentCharacteristic);
+    setBackUpCharacteristic(currentCharacteristic);
+    setCharacteristicId(characteristicId);
+
+    updateConditionBlockVariationValue({
+      conditionBlockId,
+      plotfieldCommandId,
+      conditionBlockVariationId,
+      characteristicId,
+    });
+
+    updateConditionBlock.mutate({
+      characteristicId: fieldType === "conditionName" ? characteristicId : null,
+      secondCharacteristicId: fieldType === "conditionValue" ? characteristicId : null,
+    });
+  };
+
   const memoizedCharacteristics = useMemo(() => {
-    if (!characteristics) return [];
+    if (!characteristics || typeof currentCharacteristic === "number") return [];
     if (currentCharacteristic?.trim().length) {
       return characteristics.filter((c) =>
         c.translations.filter(
@@ -247,39 +302,55 @@ export function CharacteristicsPromptModal({
     }
   }, [currentCharacteristic, characteristics]);
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowCharacteristicPromptModal,
-    showModal: showCharacteristicPromptModal,
-  });
-
   useEffect(() => {
-    if (debouncedCharacteristic?.trim().length) {
+    if (debouncedCharacteristic?.trim().length && typeof currentCharacteristic === "string") {
       const existingCharacteristic = memoizedCharacteristics.find((mc) =>
         mc.translations.find((mct) => mct.text?.toLowerCase() === currentCharacteristic?.toLowerCase())
       );
 
       if (existingCharacteristic) {
-        setDebouncedCharacteristic({
+        updateConditionBlockVariationValue({
+          conditionBlockId,
+          plotfieldCommandId,
+          conditionBlockVariationId,
           characteristicId: existingCharacteristic.characteristicId,
-          characteristicName: (existingCharacteristic.translations || [])[0]?.text || "",
+        });
+
+        setBackUpCharacteristic((existingCharacteristic.translations || [])[0]?.text);
+        setCurrentCharacteristic((existingCharacteristic.translations || [])[0]?.text);
+
+        updateConditionBlock.mutate({
+          characteristicId: fieldType === "conditionName" ? existingCharacteristic.characteristicId : null,
+          secondCharacteristicId: fieldType === "conditionValue" ? existingCharacteristic.characteristicId : null,
         });
       } else {
         console.log("Such characteristic doesn't exist");
+        if (
+          !showCharacteristicPromptModal &&
+          characteristicId?.trim().length &&
+          backUpCharacteristic?.trim().length &&
+          !isNumeric(currentCharacteristic)
+        ) {
+          setCurrentCharacteristic(backUpCharacteristic);
+        }
         return;
       }
     }
-  }, [debouncedCharacteristic]);
+  }, [debouncedCharacteristic, showCharacteristicPromptModal]);
+
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowCharacteristicPromptModal,
+    showModal: showCharacteristicPromptModal,
+  });
   return (
     <AsideScrollable ref={modalRef} className={`${showCharacteristicPromptModal ? "" : "hidden"} translate-y-[.5rem]`}>
       {(memoizedCharacteristics || [])?.map((mk) => (
         <AsideScrollableButton
           key={mk.characteristicId}
-          onClick={() => {
-            setShowCharacteristicPromptModal(false);
-            setCurrentCharacteristic(mk.translations[0]?.text);
-            setCharacteristicId(mk.characteristicId);
-          }}
+          onClick={() =>
+            handleSubmit({ currentCharacteristic: mk.translations[0]?.text, characteristicId: mk.characteristicId })
+          }
         >
           {mk.translations[0]?.text}
         </AsideScrollableButton>

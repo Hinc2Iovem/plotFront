@@ -3,21 +3,26 @@ import { axiosCustomized } from "../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationAppearancePartTypes } from "../../../../types/Additional/TranslationTypes";
 
+type AppearancePartTypes = {
+  storyId: string;
+  language?: CurrentlyAvailableLanguagesTypes;
+};
+
+export const fetchAllTranslationAppearanceParts = async ({ storyId, language }: AppearancePartTypes) => {
+  return await axiosCustomized
+    .get<TranslationAppearancePartTypes[]>(
+      `/appearanceParts/stories/${storyId}/translations?currentLanguage=${language}`
+    )
+    .then((r) => r.data);
+};
+
 export default function useGetTranslationAppearancePartsByStoryId({
   storyId,
   language = "russian",
-}: {
-  storyId: string;
-  language?: CurrentlyAvailableLanguagesTypes;
-}) {
+}: AppearancePartTypes) {
   return useQuery({
     queryKey: ["translation", language, "story", storyId, "appearancePart"],
-    queryFn: async () =>
-      await axiosCustomized
-        .get<TranslationAppearancePartTypes[]>(
-          `/appearanceParts/stories/${storyId}/translations?currentLanguage=${language}`
-        )
-        .then((r) => r.data),
+    queryFn: () => fetchAllTranslationAppearanceParts({ storyId, language }),
     enabled: !!storyId && !!language,
   });
 }

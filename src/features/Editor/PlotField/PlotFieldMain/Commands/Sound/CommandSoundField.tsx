@@ -18,10 +18,7 @@ type CommandSoundFieldTypes = {
   command: string;
 };
 
-export default function CommandSoundField({
-  plotFieldCommandId,
-  command,
-}: CommandSoundFieldTypes) {
+export default function CommandSoundField({ plotFieldCommandId, command }: CommandSoundFieldTypes) {
   const { storyId } = useParams();
   const [showSoundDropDown, setShowSoundDropDown] = useState(false);
   const [showCreateSoundModal, setShowCreateSoundModal] = useState(false);
@@ -33,15 +30,13 @@ export default function CommandSoundField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
+  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const allSoundFilteredMemoized = useMemo(() => {
     const res = [...(allSound || [])];
     if (soundName) {
-      const filtered =
-        res?.filter((a) =>
-          a.soundName?.toLowerCase().includes(soundName?.toLowerCase())
-        ) || [];
+      const filtered = res?.filter((a) => a.soundName?.toLowerCase().includes(soundName?.toLowerCase())) || [];
       return filtered.map((f) => f.soundName?.toLowerCase());
     } else {
       return res.map((r) => r.soundName?.toLowerCase());
@@ -108,19 +103,18 @@ export default function CommandSoundField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <div
-        className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}
-      >
+      <div className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}>
         <form onSubmit={handleNewSoundSubmit} className="w-full">
           <PlotfieldInput
+            focusedSecondTime={focusedSecondTime}
+            onBlur={() => {
+              setFocusedSecondTime(false);
+            }}
+            setFocusedSecondTime={setFocusedSecondTime}
             onClick={(e) => {
               e.stopPropagation();
               setShowSoundDropDown((prev) => !prev);
@@ -152,9 +146,7 @@ export default function CommandSoundField({
                       setShowSoundDropDown(false);
                     }}
                     className={`${
-                      soundName === mm
-                        ? "bg-primary-darker text-text-dark"
-                        : "bg-secondary text-gray-600"
+                      soundName === mm ? "bg-primary-darker text-text-dark" : "bg-secondary text-gray-600"
                     } `}
                   >
                     {mm}

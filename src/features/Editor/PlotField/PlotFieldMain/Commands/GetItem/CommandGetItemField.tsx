@@ -31,6 +31,8 @@ export default function CommandGetItemField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
+  const [focusedSecondTimeFirst, setFocusedSecondTimeFirst] = useState(false);
+  const [focusedSecondTimeSecond, setFocusedSecondTimeSecond] = useState(false);
 
   const { data: getItem } = useGetSingleGetItemTranslation({
     plotFieldCommandId,
@@ -44,12 +46,7 @@ export default function CommandGetItemField({
   });
 
   useEffect(() => {
-    if (
-      getItem &&
-      (!itemDescription.trim().length ||
-        !itemName.trim().length ||
-        !buttonText.trim().length)
-    ) {
+    if (getItem && (!itemDescription.trim().length || !itemName.trim().length || !buttonText.trim().length)) {
       (getItem.translations || [])?.map((tgi) => {
         if (tgi.textFieldName === "itemDescription") {
           setItemDescription(tgi.text);
@@ -76,42 +73,30 @@ export default function CommandGetItemField({
   });
 
   useEffect(() => {
-    if (
-      debouncedItemNameValue !== itemNameInitial &&
-      debouncedItemNameValue?.trim().length
-    ) {
+    if (debouncedItemNameValue !== itemNameInitial && debouncedItemNameValue?.trim().length) {
       updateGetItemTranslationTexts.mutate({
         text: debouncedItemNameValue,
-        textFieldName:
-          TranslationTextFieldName.ItemName as TranslationTextFieldNameGetItemTypes,
+        textFieldName: TranslationTextFieldName.ItemName as TranslationTextFieldNameGetItemTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedItemNameValue]);
 
   useEffect(() => {
-    if (
-      debouncedItemDescriptionValue !== itemDescriptionInitial &&
-      debouncedItemDescriptionValue?.trim().length
-    ) {
+    if (debouncedItemDescriptionValue !== itemDescriptionInitial && debouncedItemDescriptionValue?.trim().length) {
       updateGetItemTranslationTexts.mutate({
         text: debouncedItemDescriptionValue,
-        textFieldName:
-          TranslationTextFieldName.ItemDescription as TranslationTextFieldNameGetItemTypes,
+        textFieldName: TranslationTextFieldName.ItemDescription as TranslationTextFieldNameGetItemTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedItemDescriptionValue]);
 
   useEffect(() => {
-    if (
-      debouncedButtonTextValue !== buttonTextInitial &&
-      debouncedButtonTextValue?.trim().length
-    ) {
+    if (debouncedButtonTextValue !== buttonTextInitial && debouncedButtonTextValue?.trim().length) {
       updateGetItemTranslationTexts.mutate({
         text: debouncedButtonTextValue,
-        textFieldName:
-          TranslationTextFieldName.ButtonText as TranslationTextFieldNameGetItemTypes,
+        textFieldName: TranslationTextFieldName.ButtonText as TranslationTextFieldNameGetItemTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,19 +105,14 @@ export default function CommandGetItemField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full flex flex-col gap-[1rem]"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full flex flex-col gap-[1rem]">
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTimeFirst}
+          setFocusedSecondTime={setFocusedSecondTimeFirst}
           value={itemName}
           type="text"
           placeholder="Название"
@@ -144,6 +124,8 @@ export default function CommandGetItemField({
           onChange={(e) => setItemDescription(e.target.value)}
         />
         <PlotfieldInput
+          focusedSecondTime={focusedSecondTimeSecond}
+          setFocusedSecondTime={setFocusedSecondTimeSecond}
           value={buttonText}
           type="text"
           placeholder="Текст Кнопки"
