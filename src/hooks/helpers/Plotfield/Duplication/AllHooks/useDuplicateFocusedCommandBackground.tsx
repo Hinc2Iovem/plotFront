@@ -27,30 +27,21 @@ export default function useDuplicateFocusedCommandBackground({
   useEffect(() => {
     const pressedKeys = new Set<string>();
     const handleKeyDown = (event: KeyboardEvent) => {
-      pressedKeys.add(event.key.toLowerCase());
+      pressedKeys.add(event.key?.toLowerCase());
 
-      if (
-        pressedKeys.has("control") &&
-        (pressedKeys.has("v") || pressedKeys.has("м"))
-      ) {
+      if (pressedKeys.has("control") && (pressedKeys.has("v") || pressedKeys.has("м"))) {
         event.preventDefault();
 
-        const currentFocusedTopologyBlockId =
-          sessionStorage.getItem(`focusedTopologyBlock`);
-        const currentFocusedPlotfieldCommand = sessionStorage
-          .getItem(`focusedCommand`)
-          ?.split("-");
+        const currentFocusedTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`);
+        const currentFocusedPlotfieldCommand = sessionStorage.getItem(`focusedCommand`)?.split("-");
 
         if ((currentFocusedPlotfieldCommand || [])[0] !== "background") {
           console.log("Not an background");
           return;
         }
 
-        const currentFocusedPlotfieldCommandId =
-          (currentFocusedPlotfieldCommand || [])[1];
-        if (
-          currentFocusedTopologyBlockId === currentFocusedPlotfieldCommandId
-        ) {
+        const currentFocusedPlotfieldCommandId = (currentFocusedPlotfieldCommand || [])[1];
+        if (currentFocusedTopologyBlockId === currentFocusedPlotfieldCommandId) {
           console.log("Can not copy topologyBlock, try to copy a command");
           return;
         }
@@ -60,10 +51,7 @@ export default function useDuplicateFocusedCommandBackground({
           topologyBlockId: currentFocusedTopologyBlockId || topologyBlockId,
         });
 
-        const focusedCommandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedCommandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = focusedCommandIf?.includes("none")
           ? null
@@ -75,9 +63,7 @@ export default function useDuplicateFocusedCommandBackground({
         let isElse = false;
 
         if (typeof deepLevelCommandIf === "number") {
-          const currentFocusedCommandIf = (focusedCommandIf || [])[
-            deepLevelCommandIf
-          ];
+          const currentFocusedCommandIf = (focusedCommandIf || [])[deepLevelCommandIf];
           commandIfId = currentFocusedCommandIf?.split("-")[3];
           isElse = currentFocusedCommandIf?.split("-")[0] === "else";
         }
@@ -136,8 +122,7 @@ export default function useDuplicateFocusedCommandBackground({
               typeof currentCommand?.commandOrder === "number"
                 ? currentCommand.commandOrder + 1
                 : getCurrentAmountOfCommands({
-                    topologyBlockId:
-                      currentFocusedTopologyBlockId || topologyBlockId,
+                    topologyBlockId: currentFocusedTopologyBlockId || topologyBlockId,
                   }),
           });
         }
@@ -145,7 +130,7 @@ export default function useDuplicateFocusedCommandBackground({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

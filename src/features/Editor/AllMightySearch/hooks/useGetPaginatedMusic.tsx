@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
 import { MusicTypes } from "../../../../types/StoryData/Music/MusicTypes";
 
@@ -32,8 +32,20 @@ export const fetchAllMightyPaginatedMusic = async ({
 };
 
 export default function useGetPaginatedMusic({ storyId, limit, page }: GetPaginatedMusicTypes) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["all-mighty-search", "story", storyId, "music", "paginated", "page", page, "limit", limit],
     queryFn: () => fetchAllMightyPaginatedMusic({ limit, page, storyId }),
+    enabled: !!page && !!storyId,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage?.next?.page;
+      return nextPage > 0 ? nextPage : undefined;
+    },
+    getPreviousPageParam: (firstPage) => {
+      const prevPage = firstPage?.prev?.page;
+      return prevPage > 0 ? prevPage : undefined;
+    },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }

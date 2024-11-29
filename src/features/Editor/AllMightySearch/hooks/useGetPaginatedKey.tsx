@@ -27,7 +27,7 @@ export const fetchAllMightyPaginatedKey = async ({
   storyId,
 }: GetPaginatedKeyTypes): Promise<AllMightySearchKeyResultTypes> => {
   return await axiosCustomized
-    .get(`/plotFieldCommands/keys/stories/paginated/allMightySearch?storyId=${storyId}&page=${page}&limit=${limit}`)
+    .get(`/keys/stories/paginated/allMightySearch?storyId=${storyId}&page=${page}&limit=${limit}`)
     .then((r) => r.data);
 };
 
@@ -35,6 +35,7 @@ export default function useGetPaginatedKey({ storyId, limit, page }: GetPaginate
   return useInfiniteQuery({
     queryKey: ["all-mighty-search", "story", storyId, "key", "paginated", "page", page, "limit", limit],
     queryFn: async () => await fetchAllMightyPaginatedKey({ limit, page, storyId }),
+    enabled: !!page && !!storyId,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       const nextPage = lastPage?.next?.page;
@@ -45,5 +46,6 @@ export default function useGetPaginatedKey({ storyId, limit, page }: GetPaginate
       return prevPage > 0 ? prevPage : undefined;
     },
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }

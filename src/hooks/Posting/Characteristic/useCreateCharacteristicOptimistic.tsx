@@ -4,12 +4,13 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURR
 
 type CreateCharacteristicTypes = {
   storyId: string;
-  characteristicName: string;
+  characteristicName?: string;
   language: CurrentlyAvailableLanguagesTypes;
 };
 
 type CreateCharacteristicTypesOnMutation = {
   characteristicId: string;
+  characteristicNameBody?: string;
 };
 
 export default function useCreateCharacteristicOptimistic({
@@ -19,17 +20,12 @@ export default function useCreateCharacteristicOptimistic({
 }: CreateCharacteristicTypes) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      characteristicId,
-    }: CreateCharacteristicTypesOnMutation) =>
-      await axiosCustomized.post(
-        `/characteristics/stories/${storyId}/optimistic/translations`,
-        {
-          text: characteristicName,
-          currentLanguage: language,
-          characteristicId,
-        }
-      ),
+    mutationFn: async ({ characteristicId, characteristicNameBody }: CreateCharacteristicTypesOnMutation) =>
+      await axiosCustomized.post(`/characteristics/stories/${storyId}/optimistic/translations`, {
+        text: characteristicNameBody?.trim().length ? characteristicNameBody : characteristicName,
+        currentLanguage: language,
+        characteristicId,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["translation", language, "story", storyId, "characteristic"],

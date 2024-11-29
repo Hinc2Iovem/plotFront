@@ -1,21 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../api/axios";
-import { AchievementTypes } from "../../../../../types/StoryEditor/PlotField/Achievement/AchievementTypes";
+import { TranslationAchievementTypes } from "../../../../../types/Additional/TranslationTypes";
 
 type GetCommandAchievementTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandAchievement({
+export default function useGetTranslationAchievementViaPlotfieldCommandId({
   plotFieldCommandId,
 }: GetCommandAchievementTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "achievement"],
     queryFn: async () =>
       await axiosCustomized
-        .get<AchievementTypes>(
-          `/stories/plotFieldCommands/${plotFieldCommandId}/achievements`
-        )
+        .get<TranslationAchievementTypes>(`/plotFieldCommands/${plotFieldCommandId}/commandAchievements`)
         .then((r) => r.data),
     enabled: !!plotFieldCommandId,
   });

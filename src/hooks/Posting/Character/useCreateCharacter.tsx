@@ -1,11 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
-import {
-  CharacterTypes,
-  SearchCharacterVariationTypes,
-} from "../../../features/Character/CharacterListPage";
+import { SearchCharacterVariationTypes } from "../../../features/Character/CharacterListPage";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { CharacterGetTypes } from "../../../types/StoryData/Character/CharacterTypes";
+import { CharacterGetTypes, CharacterTypes } from "../../../types/StoryData/Character/CharacterTypes";
 
 type CreateCharacterTypes = {
   searchCharacterType?: SearchCharacterVariationTypes;
@@ -17,6 +14,11 @@ type CreateCharacterTypes = {
   characterType: CharacterTypes;
   language?: CurrentlyAvailableLanguagesTypes;
   debouncedValue: string;
+};
+
+type CreateCharacterBodyTypes = {
+  characterId?: string;
+  img?: string;
 };
 
 export default function useCreateCharacter({
@@ -34,7 +36,7 @@ export default function useCreateCharacter({
 
   return useMutation({
     mutationKey: ["story", storyId, "new", "character", name],
-    mutationFn: async () =>
+    mutationFn: async ({ characterId, img }: CreateCharacterBodyTypes) =>
       await axiosCustomized
         .post<CharacterGetTypes>(`/characters/stories/${storyId}`, {
           name,
@@ -43,19 +45,13 @@ export default function useCreateCharacter({
           description,
           nameTag,
           type: characterType.toLowerCase(),
+          characterId,
+          img,
         })
         .then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          "translation",
-          language,
-          "character",
-          "type",
-          "story",
-          storyId,
-          "search",
-        ],
+        queryKey: ["translation", language, "character", "type", "story", storyId, "search"],
         exact: true,
         type: "active",
       });

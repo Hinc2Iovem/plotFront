@@ -10,13 +10,7 @@ type PreviewImage = {
   children?: React.ReactNode;
 };
 
-export default function PreviewImage({
-  setPreview,
-  imagePreview,
-  divClasses,
-  imgClasses,
-  children,
-}: PreviewImage) {
+export default function PreviewImage({ setPreview, imagePreview, divClasses, imgClasses, children }: PreviewImage) {
   const onDrop = useCallback(
     (acceptedFiles: Array<File>) => {
       const file = new FileReader();
@@ -36,12 +30,10 @@ export default function PreviewImage({
   return (
     <>
       {!imagePreview ? (
-        <div
-          {...getRootProps()}
-          className={`cursor-pointer ${divClasses ? divClasses : ""}`}
-        >
+        <div {...getRootProps()} className={`cursor-pointer ${divClasses ? divClasses : ""}`}>
           <input type="file" name="Image" id="image" {...getInputProps()} />
           <img
+            draggable={false}
             src={imagePreview ? (imagePreview as string) : plus}
             alt="addImage"
             className={`${
@@ -53,8 +45,10 @@ export default function PreviewImage({
           {children ? children : ""}
         </div>
       ) : (
-        <div className={`cursor-pointer ${divClasses ? divClasses : ""}`}>
+        <div {...getRootProps()} className={`cursor-pointer ${divClasses ? divClasses : ""}`}>
+          <input type="file" name="Image" id="image" {...getInputProps()} />
           <img
+            draggable={false}
             src={imagePreview ? (imagePreview as string) : plus}
             alt="addImage"
             className={`${

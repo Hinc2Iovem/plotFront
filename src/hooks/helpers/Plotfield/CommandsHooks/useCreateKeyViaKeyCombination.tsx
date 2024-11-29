@@ -1,28 +1,25 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import useCreateKey from "../../../../features/Editor/PlotField/hooks/Key/useCreateKey";
 import useCreateBlankCommand from "../../../../features/Editor/PlotField/hooks/useCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
 import usePlotfieldCommands from "../../../../features/Editor/PlotField/Context/PlotFieldContext";
 import useCreateBlankCommandInsideIf from "../../../../features/Editor/PlotField/hooks/If/useCreateBlankCommandInsideIf";
+import useCreateCommandKey from "../../../../features/Editor/PlotField/hooks/Key/useCreateCommandKey";
 
 type CreateKeyViaKeyCombinationTypes = {
   topologyBlockId: string;
 };
 
-export default function useCreateKeyViaKeyCombination({
-  topologyBlockId,
-}: CreateKeyViaKeyCombinationTypes) {
+export default function useCreateKeyViaKeyCombination({ topologyBlockId }: CreateKeyViaKeyCombinationTypes) {
   const { storyId, episodeId } = useParams();
   const createPlotfield = useCreateBlankCommand({
     topologyBlockId,
     episodeId: episodeId || "",
   });
-  const createKey = useCreateKey({ storyId: storyId || "" });
+  const createKey = useCreateCommandKey({ storyId: storyId || "" });
 
-  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
-    usePlotfieldCommands();
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
 
   const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -36,23 +33,17 @@ export default function useCreateKeyViaKeyCombination({
         // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key.toLowerCase());
+      pressedKeys.add(event.key?.toLowerCase());
 
       if (
         pressedKeys.has("shift") &&
-        ((pressedKeys.has("k") && pressedKeys.has("e")) ||
-          (pressedKeys.has("л") && pressedKeys.has("у")))
+        ((pressedKeys.has("k") && pressedKeys.has("e")) || (pressedKeys.has("л") && pressedKeys.has("у")))
       ) {
         const _id = generateMongoObjectId();
         createKey.mutate({ plotfieldCommandId: _id });
 
-        const currentTopologyBlockId = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
-        const commandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const commandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = commandIf?.includes("none")
           ? null
@@ -69,9 +60,7 @@ export default function useCreateKeyViaKeyCombination({
           commandIfId = currentCommandIf?.split("-")[3];
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         let commandOrder;
         if ((focusedCommand || [])[1] !== plotfieldCommandId) {
           commandOrder =
@@ -110,7 +99,7 @@ export default function useCreateKeyViaKeyCombination({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

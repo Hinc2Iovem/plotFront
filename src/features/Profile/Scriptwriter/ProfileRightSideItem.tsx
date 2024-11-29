@@ -44,9 +44,7 @@ export default function ProfileRightSideItem({
   showScriptwriters,
 }: ProfileRightSideItemTypes) {
   const { roles } = useGetDecodedJWTValues();
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
-  );
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const uploadImgMutation = useUpdateImg({
     id: storyId,
     path: "/stories",
@@ -57,7 +55,7 @@ export default function ProfileRightSideItem({
 
   useEffect(() => {
     if (isMounted && imagePreview) {
-      uploadImgMutation.mutate();
+      uploadImgMutation.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);
@@ -83,17 +81,11 @@ export default function ProfileRightSideItem({
     >
       <div
         className={`relative border-[3px] w-full max-h-[23rem] rounded-md rounded-b-none h-full ${
-          theme === "light"
-            ? "bg-secondary border-secondary"
-            : "bg-primary border-primary"
+          theme === "light" ? "bg-secondary border-secondary" : "bg-primary border-primary"
         } `}
       >
         {imgUrl ? (
-          <img
-            src={imgUrl}
-            alt="StoryBg"
-            className="w-full h-full object-cover absolute rounded-md"
-          />
+          <img src={imgUrl} alt="StoryBg" className="w-full h-full object-cover absolute rounded-md" />
         ) : (
           <PreviewImage
             imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-secondary"
@@ -103,19 +95,12 @@ export default function ProfileRightSideItem({
         )}
         <div
           className={`${
-            (storyStatus && storiesType === "all") ||
-            storiesType === "allAssigned"
-              ? ""
-              : "hidden"
+            (storyStatus && storiesType === "all") || storiesType === "allAssigned" ? "" : "hidden"
           } absolute top-[.5rem] right-[.5rem] bg-secondary rounded-md shadow-md p-[.5rem]`}
         >
           <p className={`text-[1.5rem] self-end text-text-light`}>
             Статус:{" "}
-            <span
-              className={`text-[1.4rem] ${
-                storyStatus === "doing" ? "text-orange-400" : "text-green-400"
-              }`}
-            >
+            <span className={`text-[1.4rem] ${storyStatus === "doing" ? "text-orange-400" : "text-green-400"}`}>
               {storyStatus === "doing" ? "В процессе" : "Завершена"}
             </span>
           </p>
@@ -137,9 +122,7 @@ export default function ProfileRightSideItem({
       <Link
         to={`/stories/${storyId}`}
         className={`text-[1.5rem] hover:text-text-light text-text-dark transition-all ${
-          theme === "light"
-            ? "bg-secondary border-secondary"
-            : "bg-primary border-primary"
+          theme === "light" ? "bg-secondary border-secondary" : "bg-primary border-primary"
         } w-full p-[1rem] rounded-b-md`}
       >
         {title.length > 25 ? title.substring(0, 25) + "..." : title}

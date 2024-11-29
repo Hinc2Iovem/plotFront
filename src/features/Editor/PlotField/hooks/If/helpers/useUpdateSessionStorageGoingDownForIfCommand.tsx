@@ -29,7 +29,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
     const pressedKeys = new Set();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
+      const key = event.key?.toLowerCase();
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
 
@@ -104,7 +104,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

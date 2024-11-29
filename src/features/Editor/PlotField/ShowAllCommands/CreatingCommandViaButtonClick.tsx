@@ -7,8 +7,10 @@ import {
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
+import useTopologyBlocks from "../../Flowchart/Context/TopologyBlockContext";
+import { makeTopologyBlockName } from "../../Flowchart/utils/makeTopologyBlockName";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
-import useCreateAchievement from "../hooks/Achievement/useCreateAchievement";
+import useCreateCommandAchievement from "../hooks/Achievement/useCreateCommandAchievement";
 import useCreateAmbient from "../hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../hooks/Background/useCreateBackground";
 import useCreateCall from "../hooks/Call/useCreateCall";
@@ -19,20 +21,18 @@ import useCreateCutScene from "../hooks/CutScene/useCreateCutScene";
 import useCreateEffect from "../hooks/Effect/useCreateEffect";
 import useCreateGetItem from "../hooks/GetItem/useCreateGetItem";
 import useCreateCommandIf from "../hooks/If/useCreateCommandIf";
-import useCreateKey from "../hooks/Key/useCreateKey";
+import useCreateCommandKey from "../hooks/Key/useCreateCommandKey";
 import useCreateMove from "../hooks/Move/useCreateMove";
-import useCreateMusic from "../hooks/Music/useCreateMusic";
+import useCreateCommandMusic from "../hooks/Music/useCreateCommandMusic";
 import useCreateName from "../hooks/Name/useCreateName";
 import useCreateSayCommandBlank from "../hooks/Say/useCreateSayCommandBlank";
-import useCreateSound from "../hooks/Sound/useCreateSound";
+import useCreateCommandSound from "../hooks/Sound/useCreateCommandSound";
 import useCreateSuit from "../hooks/Suit/useCreateSuit";
 import useUpdateTopologyBlockAmountOfCommands from "../hooks/TopologyBlock/useUpdateTopologyBlockAmountOfCommands";
 import useCreateBlankCommand from "../hooks/useCreateBlankCommand";
 import useUpdateCommandName from "../hooks/useUpdateCommandName";
 import useCreateWait from "../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
-import useTopologyBlocks from "../../Flowchart/Context/TopologyBlockContext";
-import { makeTopologyBlockName } from "../../Flowchart/utils/makeTopologyBlockName";
 import useConditionBlocks from "../PlotFieldMain/Commands/Condition/Context/ConditionContext";
 
 type CreatingCommandViaButtonClickTypes = {
@@ -105,10 +105,9 @@ export default function CreatingCommandViaButtonClick({
     topologyBlockId,
   });
 
-  const createCommandAchievement = useCreateAchievement({
-    plotFieldCommandId: newPlotFieldCommand.data?._id || "",
+  const createCommandAchievement = useCreateCommandAchievement({
+    language: "russian",
     storyId: storyId ?? "",
-    topologyBlockId,
   });
 
   const createCommandAmbient = useCreateAmbient({
@@ -141,20 +140,20 @@ export default function CreatingCommandViaButtonClick({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
     topologyBlockId,
   });
-  const createKey = useCreateKey({
+  const createKey = useCreateCommandKey({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
     storyId: storyId ?? "",
   });
   const createMove = useCreateMove({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
   });
-  const createMusic = useCreateMusic({
+  const createMusic = useCreateCommandMusic({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
   });
   const createName = useCreateName({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
   });
-  const createSound = useCreateSound({
+  const createSound = useCreateCommandSound({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
   });
   const createSuit = useCreateSuit({
@@ -191,7 +190,9 @@ export default function CreatingCommandViaButtonClick({
     } else if (!submittedByCharacter) {
       const allCommands: AllPossiblePlotFieldComamndsTypes = value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
       if (allCommands === "achievement") {
-        createCommandAchievement.mutate({});
+        createCommandAchievement.mutate({
+          plotfieldCommandId: newPlotFieldCommand.data?._id || "",
+        });
       } else if (allCommands === "ambient") {
         createCommandAmbient.mutate({});
       } else if (allCommands === "background") {

@@ -1,26 +1,19 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
+import { useParams } from "react-router-dom";
+import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import PlotfieldButton from "../../../shared/Buttons/PlotfieldButton";
 import {
   AllPossibleAllMightySearchCategoriesRusTypes,
   AllPossibleAllMightySearchCategoriesTypes,
 } from "../AllMightySearch";
-import { useParams } from "react-router-dom";
-import { fetchAllKeys } from "../../PlotField/hooks/Key/useGetAllKeysByStoryId";
-import { fetchAllSound } from "../../PlotField/hooks/Sound/useGetAllSoundsByStoryId";
-import { fetchAllMusic } from "../../PlotField/hooks/Music/useGetAllMusicByStoryId";
-import { fetchAllTranslationAchievements } from "../../PlotField/hooks/Achievement/useGetAllTranslationAchievementByStoryId";
-import { fetchAllTranslationCharacteristics } from "../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
-import { fetchAllTranslationAppearanceParts } from "../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
-import { getTranslationCharactersByType } from "../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByType";
-import { useRef } from "react";
 import { fetchAllMightyPaginatedKey } from "../hooks/useGetPaginatedKey";
-import { fetchAllMightyPaginatedTranslationCharacter } from "../hooks/useGetPaginatedTranslationCharacter";
-import { fetchAllMightyPaginatedTranslationAppearancePart } from "../hooks/useGetPaginatedTranslationAppearancePart";
-import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
-import { fetchAllMightyPaginatedTranslationCharacteristic } from "../hooks/useGetPaginatedTranslationCharacteristic";
-import { fetchAllMightyPaginatedTranslationAchievement } from "../hooks/useGetPaginatedTranslationAchievement";
 import { fetchAllMightyPaginatedMusic } from "../hooks/useGetPaginatedMusic";
 import { fetchAllMightyPaginatedSounds } from "../hooks/useGetPaginatedSounds";
+import { fetchAllMightyPaginatedTranslationAchievement } from "../hooks/useGetPaginatedTranslationAchievement";
+import { fetchAllMightyPaginatedTranslationAppearancePart } from "../hooks/useGetPaginatedTranslationAppearancePart";
+import { fetchAllMightyPaginatedTranslationCharacter } from "../hooks/useGetPaginatedTranslationCharacter";
+import { fetchAllMightyPaginatedTranslationCharacteristic } from "../hooks/useGetPaginatedTranslationCharacteristic";
 
 const AllMightySearchCategories: {
   [key in AllPossibleAllMightySearchCategoriesTypes]: AllPossibleAllMightySearchCategoriesRusTypes;
@@ -102,12 +95,12 @@ function AllMightySearchSidebarCategoryButton({
         queryFn: () => fetchAllMightyPaginatedKey({ limit: 10, page: 1, storyId: storyId || "" }),
         initialPageParam: 1,
       });
-      queryClient.prefetchQuery({
-        queryKey: ["stories", storyId, "key"],
-        queryFn: () => fetchAllKeys({ storyId: storyId || "" }),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["stories", storyId, "key"],
+      //   queryFn: () => fetchAllKeys({ storyId: storyId || "" }),
+      // });
     } else if (valueEng === "character") {
-      queryClient.prefetchQuery({
+      queryClient.prefetchInfiniteQuery({
         queryKey: [
           "all-mighty-search",
           "story",
@@ -128,19 +121,20 @@ function AllMightySearchSidebarCategoryButton({
             storyId: storyId || "",
             language: "russian",
           }),
+        initialPageParam: 1,
       });
-      queryClient.prefetchQuery({
-        queryKey: ["translation", "russian", "character", "type", "all", "story", storyId, "search", ""],
-        queryFn: () =>
-          getTranslationCharactersByType({
-            storyId: storyId || "",
-            language: "russian",
-            characterType: "all",
-            debouncedValue: "",
-          }),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["translation", "russian", "character", "type", "all", "story", storyId, "search", ""],
+      //   queryFn: () =>
+      //     getTranslationCharactersByType({
+      //       storyId: storyId || "",
+      //       language: "russian",
+      //       characterType: "all",
+      //       debouncedValue: "",
+      //     }),
+      // });
     } else if (valueEng === "appearance") {
-      queryClient.prefetchQuery({
+      queryClient.prefetchInfiniteQuery({
         queryKey: [
           "all-mighty-search",
           "story",
@@ -167,13 +161,14 @@ function AllMightySearchSidebarCategoryButton({
             characterId: "",
             type: "" as TranslationTextFieldNameAppearancePartsTypes,
           }),
+        initialPageParam: 1,
       });
-      queryClient.prefetchQuery({
-        queryKey: ["translation", "russian", "story", storyId, "appearancePart"],
-        queryFn: () => fetchAllTranslationAppearanceParts({ storyId: storyId || "", language: "russian" }),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["translation", "russian", "story", storyId, "appearancePart"],
+      //   queryFn: () => fetchAllTranslationAppearanceParts({ storyId: storyId || "", language: "russian" }),
+      // });
     } else if (valueEng === "characteristic") {
-      queryClient.prefetchQuery({
+      queryClient.prefetchInfiniteQuery({
         queryKey: [
           "all-mighty-search",
           "story",
@@ -194,13 +189,14 @@ function AllMightySearchSidebarCategoryButton({
             storyId: storyId || "",
             language: "russian",
           }),
+        initialPageParam: 1,
       });
-      queryClient.prefetchQuery({
-        queryKey: ["translation", "russian", "story", storyId, "characteristic"],
-        queryFn: () => fetchAllTranslationCharacteristics({ storyId: storyId || "", language: "russian" }),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["translation", "russian", "story", storyId, "characteristic"],
+      //   queryFn: () => fetchAllTranslationCharacteristics({ storyId: storyId || "", language: "russian" }),
+      // });
     } else if (valueEng === "achievement") {
-      queryClient.prefetchQuery({
+      queryClient.prefetchInfiniteQuery({
         queryKey: [
           "all-mighty-search",
           "story",
@@ -221,13 +217,14 @@ function AllMightySearchSidebarCategoryButton({
             storyId: storyId || "",
             language: "russian",
           }),
+        initialPageParam: 1,
       });
-      queryClient.prefetchQuery({
-        queryKey: ["story", storyId, "translation", "russian", "achievements"],
-        queryFn: () => fetchAllTranslationAchievements({ storyId: storyId || "", language: "russian" }),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["story", storyId, "translation", "russian", "achievements"],
+      //   queryFn: () => fetchAllTranslationAchievements({ storyId: storyId || "", language: "russian" }),
+      // });
     } else if (valueEng === "music") {
-      queryClient.prefetchQuery({
+      queryClient.prefetchInfiniteQuery({
         queryKey: ["all-mighty-search", "story", storyId, "music", "paginated", "page", 1, "limit", 10],
         queryFn: () =>
           fetchAllMightyPaginatedMusic({
@@ -235,13 +232,14 @@ function AllMightySearchSidebarCategoryButton({
             page: 1,
             storyId: storyId || "",
           }),
+        initialPageParam: 1,
       });
-      queryClient.prefetchQuery({
-        queryKey: ["stories", storyId, "music"],
-        queryFn: () => fetchAllMusic({ storyId: storyId || "" }),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["stories", storyId, "music"],
+      //   queryFn: () => fetchAllMusic({ storyId: storyId || "" }),
+      // });
     } else if (valueEng === "sound") {
-      queryClient.prefetchQuery({
+      queryClient.prefetchInfiniteQuery({
         queryKey: ["all-mighty-search", "story", storyId, "sound", "paginated", "page", 1, "limit", 10],
         queryFn: () =>
           fetchAllMightyPaginatedSounds({
@@ -249,11 +247,12 @@ function AllMightySearchSidebarCategoryButton({
             page: 1,
             storyId: storyId || "",
           }),
+        initialPageParam: 1,
       });
-      queryClient.prefetchQuery({
-        queryKey: ["story", storyId, "sound"],
-        queryFn: () => fetchAllSound({ storyId: storyId || "" }),
-      });
+      // queryClient.prefetchQuery({
+      //   queryKey: ["story", storyId, "sound"],
+      //   queryFn: () => fetchAllSound({ storyId: storyId || "" }),
+      // });
     } else {
       console.log("Lol how");
       return;

@@ -9,8 +9,7 @@ type GetCommandKeyTypes = {
 export default function useGetKeyById({ keyId }: GetCommandKeyTypes) {
   return useQuery({
     queryKey: ["key", keyId],
-    queryFn: async () =>
-      await axiosCustomized.get<KeyTypes>(`/plotFieldCommands/keys/${keyId}/single`).then((r) => r.data),
+    queryFn: async () => await axiosCustomized.get<KeyTypes>(`/keys/${keyId}`).then((r) => r.data),
     enabled: !!keyId,
   });
 }

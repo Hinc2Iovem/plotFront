@@ -24,9 +24,7 @@ export default function useCheckIsCurrentFieldFocused({
         );
 
         if (setIsFocusedIf) {
-          const currentCommand = sessionStorage
-            .getItem("focusedCommand")
-            ?.split("-");
+          const currentCommand = sessionStorage.getItem("focusedCommand")?.split("-");
           if ((currentCommand || [])[0] === "if") {
             setIsFocusedIf((currentCommand || [])[2] === "if" ? true : false);
           } else if ((currentCommand || [])[0] === "condition") {
@@ -46,15 +44,12 @@ export default function useCheckIsCurrentFieldFocused({
   useEffect(() => {
     const pressedKeys = new Set();
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
+      const key = event.key?.toLowerCase();
 
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
 
-      if (
-        (pressedKeys.has("shift") && key === "arrowdown") ||
-        (key === "arrowup" && pressedKeys.has("control"))
-      ) {
+      if ((pressedKeys.has("shift") && key === "arrowdown") || (key === "arrowup" && pressedKeys.has("control"))) {
         setIsCommandFocused(
           checkIsCurrentFieldFocused({
             itemId: plotFieldCommandId,
@@ -64,7 +59,7 @@ export default function useCheckIsCurrentFieldFocused({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -78,9 +73,7 @@ export default function useCheckIsCurrentFieldFocused({
 
   useEffect(() => {
     const handleLateUpdates = () => {
-      const currentFocusedCommand = sessionStorage
-        .getItem("focusedCommand")
-        ?.split("-");
+      const currentFocusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
       if ((currentFocusedCommand || [])[1] === plotFieldCommandId) {
         setIsCommandFocused(true);
       } else {

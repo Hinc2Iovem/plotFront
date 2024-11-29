@@ -6,14 +6,10 @@ type GetCommandKeyTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandKey({
-  plotFieldCommandId,
-}: GetCommandKeyTypes) {
+export default function useGetKeyByPlotfiledCommandId({ plotFieldCommandId }: GetCommandKeyTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "key"],
     queryFn: async () =>
-      await axiosCustomized
-        .get<KeyTypes>(`/plotFieldCommands/${plotFieldCommandId}/keys`)
-        .then((r) => r.data),
+      await axiosCustomized.get<KeyTypes>(`/plotFieldCommands/${plotFieldCommandId}/keys`).then((r) => r.data),
   });
 }

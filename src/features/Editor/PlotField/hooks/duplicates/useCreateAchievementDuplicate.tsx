@@ -33,13 +33,8 @@ export default function useCreateAchievementDuplicate({
   topologyBlockId,
   episodeId,
 }: CreateAchievementDuplicateTypes) {
-  const {
-    addCommand,
-    updateCommandInfo,
-    addCommandIf,
-    updateCommandIfInfo,
-    removeCommandIfItem,
-  } = usePlotfieldCommands();
+  const { addCommand, updateCommandInfo, addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
+    usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
 
@@ -51,20 +46,15 @@ export default function useCreateAchievementDuplicate({
       isElse,
       topologyBlockId: bodyTopologyBlockId,
     }: CreateAchievementDuplicateOnMutation) => {
-      const currentTopologyBlockId = bodyTopologyBlockId?.trim().length
-        ? bodyTopologyBlockId
-        : topologyBlockId;
+      const currentTopologyBlockId = bodyTopologyBlockId?.trim().length ? bodyTopologyBlockId : topologyBlockId;
       await axiosCustomized
-        .post(
-          `/stories/achievements/topologyBlocks/${currentTopologyBlockId}/copy`,
-          {
-            storyId,
-            commandOrder,
-            plotfieldCommandId,
-            commandIfId,
-            isElse,
-          }
-        )
+        .post(`/plotFieldCommands/commandAchievements/topologyBlocks/${currentTopologyBlockId}/copy`, {
+          storyId,
+          commandOrder,
+          plotfieldCommandId,
+          commandIfId,
+          isElse,
+        })
         .then((r) => r.data);
     },
     onMutate: async (newCommand: CreateAchievementDuplicateOnMutation) => {
@@ -73,8 +63,7 @@ export default function useCreateAchievementDuplicate({
         characterId: newCommand.characterId || "",
         characterName: newCommand.characterName || "",
         commandIfId: newCommand.commandIfId || "",
-        commandName:
-          newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
+        commandName: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
         commandOrder: newCommand.commandOrder,
         emotionName: newCommand.emotionName || "",
         episodeId: episodeId,
@@ -82,9 +71,7 @@ export default function useCreateAchievementDuplicate({
         plotfieldCommandId: newCommand.plotfieldCommandId,
         queryClient,
         sayType: newCommand.sayType || ("" as CommandSayVariationTypes),
-        topologyBlockId: newCommand.topologyBlockId?.trim().length
-          ? newCommand.topologyBlockId
-          : topologyBlockId,
+        topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         setNewCommand,
         updateCommandInfo,
         addCommandIf,
@@ -97,9 +84,7 @@ export default function useCreateAchievementDuplicate({
         commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,
         queryClient,
-        topologyBlockId: newCommand.topologyBlockId?.trim().length
-          ? newCommand.topologyBlockId
-          : topologyBlockId,
+        topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         updateCommandInfo,
         isElse: newCommand.isElse || false,
         message: err.message,

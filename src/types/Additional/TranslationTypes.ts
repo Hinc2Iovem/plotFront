@@ -43,13 +43,12 @@ type AchievementTranslationsTypes = {
 
 export type TranslationAchievementTypes = {
   _id: string;
-  commandId: string;
   storyId: string;
-  topologyBlockId: string;
+  achievementId: string;
   language: CurrentlyAvailableLanguagesTypes;
   translations?: AchievementTranslationsTypes[];
-  updatedAt: string;
-  createdAt: string;
+  updatedAt: Date;
+  createdAt: Date;
 };
 
 type GetItemTranslationsTypes = {
@@ -143,11 +142,11 @@ export type TranslationAppearancePartTypes = {
   type: TranslationTextFieldNameAppearancePartsTypes;
   language: CurrentlyAvailableLanguagesTypes;
   translations: AppearancePartTranslationsTypes[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
-type TranslationCharacterObjectTypes = {
+export type TranslationCharacterObjectTypes = {
   text: string;
   _id: string;
   amountOfWords: number;
@@ -245,8 +244,8 @@ export type TranslationCharacterCharacteristicTypes = {
   characteristicId: string;
   language: CurrentlyAvailableLanguagesTypes;
   translations: CharacteristicsTranslationsTypes[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type RecentTranslationTypes = {

@@ -11,9 +11,7 @@ type CreateNotifyViaKeyCombinationTypes = {
   topologyBlockId: string;
 };
 
-export default function useCreateNotifyViaKeyCombination({
-  topologyBlockId,
-}: CreateNotifyViaKeyCombinationTypes) {
+export default function useCreateNotifyViaKeyCombination({ topologyBlockId }: CreateNotifyViaKeyCombinationTypes) {
   const { episodeId } = useParams();
   const createPlotfield = useCreateBlankCommand({
     topologyBlockId,
@@ -21,8 +19,7 @@ export default function useCreateNotifyViaKeyCombination({
   });
   const createNotify = useCreateSayCommandBlank({ topologyBlockId });
 
-  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
-    usePlotfieldCommands();
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
 
   const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -36,23 +33,17 @@ export default function useCreateNotifyViaKeyCombination({
         // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key.toLowerCase());
+      pressedKeys.add(event.key?.toLowerCase());
 
       if (
         pressedKeys.has("shift") &&
-        ((pressedKeys.has("n") && pressedKeys.has("o")) ||
-          (pressedKeys.has("т") && pressedKeys.has("щ")))
+        ((pressedKeys.has("n") && pressedKeys.has("o")) || (pressedKeys.has("т") && pressedKeys.has("щ")))
       ) {
         const _id = generateMongoObjectId();
         createNotify.mutate({ plotfieldCommandId: _id, type: "notify" });
 
-        const currentTopologyBlockId = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
-        const commandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const commandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = commandIf?.includes("none")
           ? null
@@ -70,9 +61,7 @@ export default function useCreateNotifyViaKeyCombination({
           commandIfId = currentCommandIf?.split("-")[3];
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         let commandOrder;
         if ((focusedCommand || [])[1] !== plotfieldCommandId) {
           commandOrder =
@@ -113,7 +102,7 @@ export default function useCreateNotifyViaKeyCombination({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

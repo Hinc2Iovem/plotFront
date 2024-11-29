@@ -22,91 +22,61 @@ export default function useHandleNavigationThroughBlocksInsideCondition({
     const pressedKeys = new Set();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
+      const key = event.key?.toLowerCase();
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
 
-      if (
-        (key === "arrowdown" && !pressedKeys.has("shift")) ||
-        (key === "arrowup" && !pressedKeys.has("control"))
-      ) {
-        const focusedCommandCondition = sessionStorage
-          .getItem("focusedCommandCondition")
-          ?.split("?")
-          .filter(Boolean);
+      if ((key === "arrowdown" && !pressedKeys.has("shift")) || (key === "arrowup" && !pressedKeys.has("control"))) {
+        const focusedCommandCondition = sessionStorage.getItem("focusedCommandCondition")?.split("?").filter(Boolean);
 
-        const focusedConditionBlocks = sessionStorage
-          .getItem("focusedConditionBlock")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedConditionBlocks = sessionStorage.getItem("focusedConditionBlock")?.split("?").filter(Boolean);
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
 
         const focusedCommandPlotfieldId = (focusedCommand || [])[1];
 
-        const deepLevelCommandCondition = focusedCommandCondition?.includes(
-          "none"
-        )
+        const deepLevelCommandCondition = focusedCommandCondition?.includes("none")
           ? null
           : (focusedCommandCondition?.length || 0) > 0
           ? (focusedCommandCondition?.length || 0) - 1
           : null;
 
-        const deepLevelConditionBlocks = focusedConditionBlocks?.includes(
-          "none"
-        )
+        const deepLevelConditionBlocks = focusedConditionBlocks?.includes("none")
           ? null
           : (focusedConditionBlocks?.length || 0) > 0
           ? (focusedConditionBlocks?.length || 0) - 1
           : null;
 
         if (typeof deepLevelCommandCondition === "number") {
-          const currentFocusedCommandCondition = (focusedCommandCondition ||
-            [])[deepLevelCommandCondition]?.split("-");
-          const currentFocusedCommandConditionPlotfieldId =
-            currentFocusedCommandCondition[1];
-          const currentFocusedCommandConditionId =
-            currentFocusedCommandCondition[3];
+          const currentFocusedCommandCondition = (focusedCommandCondition || [])[deepLevelCommandCondition]?.split("-");
+          const currentFocusedCommandConditionPlotfieldId = currentFocusedCommandCondition[1];
+          const currentFocusedCommandConditionId = currentFocusedCommandCondition[3];
 
-          if (
-            currentFocusedCommandConditionPlotfieldId !== plotfieldCommandId
-          ) {
+          if (currentFocusedCommandConditionPlotfieldId !== plotfieldCommandId) {
             console.log("Not for you");
             return;
           }
 
-          if (
-            focusedCommandPlotfieldId !==
-            currentFocusedCommandConditionPlotfieldId
-          ) {
-            console.log(
-              "It means another function with the same was triggered"
-            );
+          if (focusedCommandPlotfieldId !== currentFocusedCommandConditionPlotfieldId) {
+            console.log("It means another function with the same was triggered");
             return;
           }
 
           if (
             focusedCommandCondition?.includes("none") &&
-            focusedCommandPlotfieldId !==
-              currentFocusedCommandConditionPlotfieldId
+            focusedCommandPlotfieldId !== currentFocusedCommandConditionPlotfieldId
           ) {
             console.log("You are not at the top level of condition command");
             return;
           }
 
           if (typeof deepLevelConditionBlocks === "number") {
-            const currentFocusedConditionBlock = (focusedConditionBlocks || [])[
-              deepLevelConditionBlocks
-            ]?.split("-");
-            const currentFocusedConditionBlockId =
-              currentFocusedConditionBlock[1];
+            const currentFocusedConditionBlock = (focusedConditionBlocks || [])[deepLevelConditionBlocks]?.split("-");
+            const currentFocusedConditionBlockId = currentFocusedConditionBlock[1];
 
             const indexOfCurrentBlock = getIndexOfConditionBlockById({
               conditionBlockId: currentFocusedConditionBlockId?.trim(),
-              plotfieldCommandId:
-                currentFocusedCommandConditionPlotfieldId?.trim(),
+              plotfieldCommandId: currentFocusedCommandConditionPlotfieldId?.trim(),
             });
             const currentAmountOfBlocks = getAmountOfConditionBlocks({
               plotfieldCommandId: currentFocusedCommandConditionPlotfieldId,
@@ -131,10 +101,7 @@ export default function useHandleNavigationThroughBlocksInsideCondition({
                 deepLevelConditionBlocks,
                 currentFocusedCommandConditionId,
               });
-            } else if (
-              indexOfCurrentBlock === currentAmountOfBlocks - 1 &&
-              key === "arrowup"
-            ) {
+            } else if (indexOfCurrentBlock === currentAmountOfBlocks - 1 && key === "arrowup") {
               fromLastToFirstBlock({
                 currentFocusedCommandConditionPlotfieldId,
                 currentFocusedConditionBlockId,
@@ -160,7 +127,7 @@ export default function useHandleNavigationThroughBlocksInsideCondition({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

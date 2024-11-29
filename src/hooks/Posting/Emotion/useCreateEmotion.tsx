@@ -4,24 +4,26 @@ import { CharacterGetTypes } from "../../../types/StoryData/Character/CharacterT
 
 type CreateEmotionTypes = {
   characterId: string;
-  emotionName: string;
+  emotionName?: string;
 };
 
-export default function useCreateEmotion({
-  characterId,
-  emotionName,
-}: CreateEmotionTypes) {
+type CreateEmotionBodyTypes = {
+  emotionBodyName?: string;
+  imgUrl?: string;
+  emotionId: string;
+};
+
+export default function useCreateEmotion({ characterId, emotionName }: CreateEmotionTypes) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["new", "emotion", emotionName],
-    mutationFn: async () =>
+    mutationFn: async ({ emotionBodyName, emotionId, imgUrl }: CreateEmotionBodyTypes) =>
       await axiosCustomized
-        .post<CharacterGetTypes>(
-          `/characterEmotions/characters/${characterId}`,
-          {
-            emotionName,
-          }
-        )
+        .post<CharacterGetTypes>(`/characterEmotions/characters/${characterId}`, {
+          emotionName: emotionBodyName?.trim().length ? emotionBodyName : emotionName,
+          emotionId,
+          imgUrl,
+        })
         .then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({

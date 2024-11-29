@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
 import useCreateNewKeyAsValue from "../../../PlotField/hooks/Key/useCreateNewKeyAsValue";
@@ -8,12 +8,25 @@ import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
 
 type NewKeyFormTypes = {
   setNewElement: React.Dispatch<React.SetStateAction<NewElementTypes>>;
+  showCreatingNewElement: boolean;
   setShowCreatingNewElement: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function NewKeyForm({ setNewElement, setShowCreatingNewElement }: NewKeyFormTypes) {
+export default function NewKeyForm({
+  setNewElement,
+  setShowCreatingNewElement,
+  showCreatingNewElement,
+}: NewKeyFormTypes) {
   const { storyId } = useParams();
   const [value, setValue] = useState("");
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current && showCreatingNewElement) {
+      inputRef.current.focus();
+    }
+  }, [inputRef, showCreatingNewElement]);
 
   const createNewKey = useCreateNewKeyAsValue({ storyId: storyId || "" });
 
@@ -28,7 +41,6 @@ export default function NewKeyForm({ setNewElement, setShowCreatingNewElement }:
       _id: keyId,
       text: value,
       storyId: storyId || "",
-      plotFieldCommandId: "",
     });
 
     setShowCreatingNewElement(false);
@@ -40,6 +52,7 @@ export default function NewKeyForm({ setNewElement, setShowCreatingNewElement }:
     <form onSubmit={handleSubmit} className="flex flex-col gap-[1rem]">
       <PlotfieldInput
         value={value}
+        ref={inputRef}
         onChange={(e) => setValue(e.target.value)}
         className="border-[.1rem]"
         placeholder="Ключ"

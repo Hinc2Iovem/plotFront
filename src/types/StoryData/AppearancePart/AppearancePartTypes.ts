@@ -11,3 +11,12 @@ export type CreateAppearancePartTypes = {
   name: string;
   type: TranslationTextFieldNameAppearancePartsTypes;
 };
+
+export type AppearancePartVariationRusTypes =
+  | "украшение"
+  | "татуировка"
+  | "тело"
+  | "внешний вид"
+  | "волосы"
+  | "остальное"
+  | "кожа";

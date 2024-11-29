@@ -11,9 +11,7 @@ type CreateNameViaKeyCombinationTypes = {
   topologyBlockId: string;
 };
 
-export default function useCreateNameViaKeyCombination({
-  topologyBlockId,
-}: CreateNameViaKeyCombinationTypes) {
+export default function useCreateNameViaKeyCombination({ topologyBlockId }: CreateNameViaKeyCombinationTypes) {
   const { episodeId } = useParams();
   const createPlotfield = useCreateBlankCommand({
     topologyBlockId,
@@ -21,8 +19,7 @@ export default function useCreateNameViaKeyCombination({
   });
   const createName = useCreateName({});
 
-  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
-    usePlotfieldCommands();
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
 
   const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -36,23 +33,17 @@ export default function useCreateNameViaKeyCombination({
         // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key.toLowerCase());
+      pressedKeys.add(event.key?.toLowerCase());
 
       if (
         pressedKeys.has("shift") &&
-        ((pressedKeys.has("n") && pressedKeys.has("a")) ||
-          (pressedKeys.has("т") && pressedKeys.has("ф")))
+        ((pressedKeys.has("n") && pressedKeys.has("a")) || (pressedKeys.has("т") && pressedKeys.has("ф")))
       ) {
         const _id = generateMongoObjectId();
         createName.mutate({ plotfieldCommandId: _id });
 
-        const currentTopologyBlockId = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
-        const commandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const commandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = commandIf?.includes("none")
           ? null
@@ -69,9 +60,7 @@ export default function useCreateNameViaKeyCombination({
           commandIfId = currentCommandIf?.split("-")[3];
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         let commandOrder;
         if ((focusedCommand || [])[1] !== plotfieldCommandId) {
           commandOrder =
@@ -110,7 +99,7 @@ export default function useCreateNameViaKeyCombination({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

@@ -9,6 +9,7 @@ type GetTranslationCharactersByTypeTypes = {
   language: CurrentlyAvailableLanguagesTypes;
   characterType?: SearchCharacterVariationTypes;
   debouncedValue?: string;
+  enabled?: boolean;
 };
 
 export const getTranslationCharactersByType = async ({
@@ -29,19 +30,10 @@ export default function useGetTranslationCharactersByType({
   language = "russian",
   characterType,
   debouncedValue,
+  enabled = !!storyId,
 }: GetTranslationCharactersByTypeTypes) {
   return useQuery({
-    queryKey: [
-      "translation",
-      language,
-      "character",
-      "type",
-      characterType,
-      "story",
-      storyId,
-      "search",
-      debouncedValue,
-    ],
+    queryKey: ["translation", language, "character", "type", characterType, "story", storyId, "search", debouncedValue],
     queryFn: async () =>
       getTranslationCharactersByType({
         language,
@@ -49,6 +41,6 @@ export default function useGetTranslationCharactersByType({
         characterType,
         debouncedValue,
       }),
-    enabled: !!storyId,
+    enabled: enabled,
   });
 }

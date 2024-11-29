@@ -5,6 +5,7 @@ import { TranslationCharacterCharacteristicTypes } from "../../../../types/Addit
 
 type CharacteristicTypes = {
   storyId: string;
+  enabled?: boolean;
   language: CurrentlyAvailableLanguagesTypes;
 };
 
@@ -16,10 +17,14 @@ export const fetchAllTranslationCharacteristics = async ({ language, storyId }: 
     .then((r) => r.data);
 };
 
-export default function useGetAllCharacteristicsByStoryId({ storyId, language = "russian" }: CharacteristicTypes) {
+export default function useGetAllCharacteristicsByStoryId({
+  storyId,
+  language = "russian",
+  enabled = !!storyId && !!language,
+}: CharacteristicTypes) {
   return useQuery({
     queryKey: ["translation", language, "story", storyId, "characteristic"],
     queryFn: () => fetchAllTranslationCharacteristics({ language, storyId }),
-    enabled: !!storyId && !!language,
+    enabled,
   });
 }

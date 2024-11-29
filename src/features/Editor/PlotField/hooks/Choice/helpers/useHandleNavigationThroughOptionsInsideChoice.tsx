@@ -22,27 +22,16 @@ export default function useHandleNavigationThroughOptionsInsideChoice({
     const pressedKeys = new Set();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
+      const key = event.key?.toLowerCase();
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
 
-      if (
-        (key === "arrowdown" && !pressedKeys.has("shift")) ||
-        (key === "arrowup" && !pressedKeys.has("control"))
-      ) {
-        const focusedCommandChoice = sessionStorage
-          .getItem("focusedCommandChoice")
-          ?.split("?")
-          .filter(Boolean);
+      if ((key === "arrowdown" && !pressedKeys.has("shift")) || (key === "arrowup" && !pressedKeys.has("control"))) {
+        const focusedCommandChoice = sessionStorage.getItem("focusedCommandChoice")?.split("?").filter(Boolean);
 
-        const focusedChoiceOptions = sessionStorage
-          .getItem("focusedChoiceOption")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedChoiceOptions = sessionStorage.getItem("focusedChoiceOption")?.split("?").filter(Boolean);
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
 
         const focusedCommandPlotfieldId = (focusedCommand || [])[1];
 
@@ -59,11 +48,8 @@ export default function useHandleNavigationThroughOptionsInsideChoice({
           : null;
 
         if (typeof deepLevelCommandChoice === "number") {
-          const currentFocusedCommandChoice = (focusedCommandChoice || [])[
-            deepLevelCommandChoice
-          ]?.split("-");
-          const currentFocusedCommandChoicePlotfieldId =
-            currentFocusedCommandChoice[0];
+          const currentFocusedCommandChoice = (focusedCommandChoice || [])[deepLevelCommandChoice]?.split("-");
+          const currentFocusedCommandChoicePlotfieldId = currentFocusedCommandChoice[0];
           const currentFocusedCommandChoiceId = currentFocusedCommandChoice[2];
 
           if (currentFocusedCommandChoicePlotfieldId !== plotfieldCommandId) {
@@ -71,12 +57,8 @@ export default function useHandleNavigationThroughOptionsInsideChoice({
             return;
           }
 
-          if (
-            focusedCommandPlotfieldId !== currentFocusedCommandChoicePlotfieldId
-          ) {
-            console.log(
-              "It means another function with the same was triggered"
-            );
+          if (focusedCommandPlotfieldId !== currentFocusedCommandChoicePlotfieldId) {
+            console.log("It means another function with the same was triggered");
             return;
           }
 
@@ -89,16 +71,13 @@ export default function useHandleNavigationThroughOptionsInsideChoice({
           }
 
           if (typeof deepLevelChoiceOptions === "number") {
-            const currentFocusedChoiceOption = (focusedChoiceOptions || [])[
-              deepLevelChoiceOptions
-            ]?.split("-");
+            const currentFocusedChoiceOption = (focusedChoiceOptions || [])[deepLevelChoiceOptions]?.split("-");
 
             const currentFocusedChoiceOptionId = currentFocusedChoiceOption[1];
 
             const indexOfCurrentOption = getIndexOfChoiceOptionById({
               choiceOptionId: currentFocusedChoiceOptionId?.trim(),
-              plotfieldCommandId:
-                currentFocusedCommandChoicePlotfieldId?.trim(),
+              plotfieldCommandId: currentFocusedCommandChoicePlotfieldId?.trim(),
             });
 
             const currentAmountOfOptions = getAmountOfChoiceOptions({
@@ -123,10 +102,7 @@ export default function useHandleNavigationThroughOptionsInsideChoice({
                 updateCurrentlyOpenChoiceOption,
                 deepLevelChoiceOptions,
               });
-            } else if (
-              indexOfCurrentOption === currentAmountOfOptions - 1 &&
-              key === "arrowup"
-            ) {
+            } else if (indexOfCurrentOption === currentAmountOfOptions - 1 && key === "arrowup") {
               fromLastToFirstOption({
                 currentFocusedCommandChoicePlotfieldId,
                 currentFocusedChoiceOptionId,
@@ -150,7 +126,7 @@ export default function useHandleNavigationThroughOptionsInsideChoice({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

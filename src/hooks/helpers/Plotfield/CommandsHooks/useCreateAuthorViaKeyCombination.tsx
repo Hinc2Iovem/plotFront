@@ -11,9 +11,7 @@ type CreateAuthorViaKeyCombinationTypes = {
   topologyBlockId: string;
 };
 
-export default function useCreateAuthorViaKeyCombination({
-  topologyBlockId,
-}: CreateAuthorViaKeyCombinationTypes) {
+export default function useCreateAuthorViaKeyCombination({ topologyBlockId }: CreateAuthorViaKeyCombinationTypes) {
   const { episodeId } = useParams();
   const createPlotfield = useCreateBlankCommand({
     topologyBlockId,
@@ -21,8 +19,7 @@ export default function useCreateAuthorViaKeyCombination({
   });
   const createAuthor = useCreateSayCommandBlank({ topologyBlockId });
 
-  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
-    usePlotfieldCommands();
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
 
   const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -36,23 +33,17 @@ export default function useCreateAuthorViaKeyCombination({
         // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key.toLowerCase());
+      pressedKeys.add(event.key?.toLowerCase());
 
       if (
         pressedKeys.has("shift") &&
-        ((pressedKeys.has("a") && pressedKeys.has("u")) ||
-          (pressedKeys.has("ф") && pressedKeys.has("г")))
+        ((pressedKeys.has("a") && pressedKeys.has("u")) || (pressedKeys.has("ф") && pressedKeys.has("г")))
       ) {
         const _id = generateMongoObjectId();
         createAuthor.mutate({ plotfieldCommandId: _id, type: "author" });
 
-        const currentTopologyBlockId = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
-        const commandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const commandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = commandIf?.includes("none")
           ? null
@@ -69,9 +60,7 @@ export default function useCreateAuthorViaKeyCombination({
           commandIfId = currentCommandIf?.split("-")[3];
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         let commandOrder;
         if ((focusedCommand || [])[1] !== plotfieldCommandId) {
           commandOrder =
@@ -112,7 +101,7 @@ export default function useCreateAuthorViaKeyCombination({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

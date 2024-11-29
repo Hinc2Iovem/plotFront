@@ -46,15 +46,10 @@ export default function useCreateCertainCharacterViaKeyCombination({
         // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key.toLowerCase());
+      pressedKeys.add(event.key?.toLowerCase());
 
-      if (
-        (pressedKeys.has("c") || pressedKeys.has("с")) &&
-        Object.keys(allPossibleNumbers).includes(event.key)
-      ) {
-        const numberPressed = Object.entries(allPossibleNumbers).find(
-          (key) => key[0] === event.key
-        )?.[1];
+      if ((pressedKeys.has("c") || pressedKeys.has("с")) && Object.keys(allPossibleNumbers).includes(event.key)) {
+        const numberPressed = Object.entries(allPossibleNumbers).find((key) => key[0] === event.key)?.[1];
 
         const keyByStory = `story-${storyId}-c-${numberPressed}`;
         const keyByEpisode = `episode-${episodeId}-c-${numberPressed}`;
@@ -68,13 +63,8 @@ export default function useCreateCertainCharacterViaKeyCombination({
           return;
         }
 
-        const currentTopologyBlockId = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
-        const commandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const commandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = commandIf?.includes("none")
           ? null
@@ -91,9 +81,7 @@ export default function useCreateCertainCharacterViaKeyCombination({
           commandIfId = currentCommandIf?.split("-")[3];
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         let commandOrder;
 
         if (commandIfId?.trim().length) {
@@ -153,7 +141,7 @@ export default function useCreateCertainCharacterViaKeyCombination({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

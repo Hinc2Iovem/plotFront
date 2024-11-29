@@ -26,32 +26,23 @@ export default function useUpdateSessionStorageGoingUpForIfCommand({
     const pressedKeys = new Set();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
+      const key = event.key?.toLowerCase();
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
       if (key === "arrowup" && pressedKeys.has("control")) {
         event.preventDefault();
-        const currentFocusedCommandIf =
-          sessionStorage.getItem("focusedCommandIf");
+        const currentFocusedCommandIf = sessionStorage.getItem("focusedCommandIf");
 
         if (currentFocusedCommandIf === "none") {
           console.log("You are already at the top level");
           return;
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
 
-        const focusedCommandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedCommandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
-        const focusedCommandInsideType = sessionStorage
-          .getItem("focusedCommandInsideType")
-          ?.split("?")
-          .filter(Boolean);
+        const focusedCommandInsideType = sessionStorage.getItem("focusedCommandInsideType")?.split("?").filter(Boolean);
 
         const focusedCommandPlotfieldId = (focusedCommand || [])[1];
 
@@ -62,74 +53,49 @@ export default function useUpdateSessionStorageGoingUpForIfCommand({
           : null;
 
         const deepLevelCommandInsideType =
-          (focusedCommandInsideType?.length || 0) > 1
-            ? (focusedCommandInsideType?.length || 0) - 1
-            : 1;
+          (focusedCommandInsideType?.length || 0) > 1 ? (focusedCommandInsideType?.length || 0) - 1 : 1;
 
         if (typeof deepLevelCommandIf === "number") {
-          const currentFocusedCommandIfId = (focusedCommandIf || [])[
-            deepLevelCommandIf
-          ];
-          const currentFocusedCommandIfPlotfieldCommandId =
-            currentFocusedCommandIfId?.split("-")[1];
+          const currentFocusedCommandIfId = (focusedCommandIf || [])[deepLevelCommandIf];
+          const currentFocusedCommandIfPlotfieldCommandId = currentFocusedCommandIfId?.split("-")[1];
 
-          if (
-            plotfieldCommandId !== currentFocusedCommandIfPlotfieldCommandId
-          ) {
+          if (plotfieldCommandId !== currentFocusedCommandIfPlotfieldCommandId) {
             console.log("Not for you");
             return;
           }
 
           // going completely out of if
-          if (
-            focusedCommandPlotfieldId ===
-            currentFocusedCommandIfPlotfieldCommandId
-          ) {
-            const newFocusedCommandIfArray = (focusedCommandIf || []).slice(
-              0,
-              -1
-            );
+          if (focusedCommandPlotfieldId === currentFocusedCommandIfPlotfieldCommandId) {
+            const newFocusedCommandIfArray = (focusedCommandIf || []).slice(0, -1);
 
             if (deepLevelCommandIf === 0) {
               sessionStorage.setItem("focusedCommandIf", "none");
             } else {
-              sessionStorage.setItem(
-                "focusedCommandIf",
-                `${newFocusedCommandIfArray?.join("?")}?`
-              );
+              sessionStorage.setItem("focusedCommandIf", `${newFocusedCommandIfArray?.join("?")}?`);
             }
 
-            const currentFocusedCommandInsideType = (focusedCommandInsideType ||
-              [])[deepLevelCommandInsideType]?.split("-");
+            const currentFocusedCommandInsideType = (focusedCommandInsideType || [])[deepLevelCommandInsideType]?.split(
+              "-"
+            );
             const isIfOrElse = currentFocusedCommandInsideType[1];
 
-            sessionStorage.setItem(
-              "focusedCommand",
-              `if-${currentFocusedCommandIfPlotfieldCommandId}-${isIfOrElse}`
-            );
+            sessionStorage.setItem("focusedCommand", `if-${currentFocusedCommandIfPlotfieldCommandId}-${isIfOrElse}`);
 
-            const newFocusedCommandInsideType = (
-              focusedCommandInsideType || []
-            )?.slice(0, -1);
+            const newFocusedCommandInsideType = (focusedCommandInsideType || [])?.slice(0, -1);
 
-            sessionStorage.setItem(
-              "focusedCommandInsideType",
-              `${newFocusedCommandInsideType?.join("?")}?`
-            );
+            sessionStorage.setItem("focusedCommandInsideType", `${newFocusedCommandInsideType?.join("?")}?`);
 
             setIsBackgroundFocused(false);
             event.stopImmediatePropagation();
             return;
           } else {
             // going to the top level
-            const currentFocusedCommandInsideType = (focusedCommandInsideType ||
-              [])[deepLevelCommandInsideType]?.split("-");
+            const currentFocusedCommandInsideType = (focusedCommandInsideType || [])[deepLevelCommandInsideType]?.split(
+              "-"
+            );
             const isIfOrElse = currentFocusedCommandInsideType[1];
 
-            sessionStorage.setItem(
-              "focusedCommand",
-              `if-${currentFocusedCommandIfPlotfieldCommandId}-${isIfOrElse}`
-            );
+            sessionStorage.setItem("focusedCommand", `if-${currentFocusedCommandIfPlotfieldCommandId}-${isIfOrElse}`);
 
             setIsBackgroundFocused(true);
             return;
@@ -142,7 +108,7 @@ export default function useUpdateSessionStorageGoingUpForIfCommand({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

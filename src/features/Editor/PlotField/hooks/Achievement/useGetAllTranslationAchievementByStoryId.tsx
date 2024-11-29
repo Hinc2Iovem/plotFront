@@ -5,6 +5,7 @@ import { TranslationAchievementTypes } from "../../../../../types/Additional/Tra
 
 type GetAllAchievementsTypes = {
   storyId: string;
+  enabled?: boolean;
   language: CurrentlyAvailableLanguagesTypes;
 };
 
@@ -14,10 +15,14 @@ export const fetchAllTranslationAchievements = async ({ language, storyId }: Get
     .then((r) => r.data);
 };
 
-export default function useGetAllTranslationAchievementByStoryId({ storyId, language }: GetAllAchievementsTypes) {
+export default function useGetAllTranslationAchievementByStoryId({
+  storyId,
+  language,
+  enabled = !!storyId,
+}: GetAllAchievementsTypes) {
   return useQuery({
     queryKey: ["story", storyId, "translation", language, "achievements"],
     queryFn: () => fetchAllTranslationAchievements({ language, storyId }),
-    enabled: !!storyId,
+    enabled,
   });
 }

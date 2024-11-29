@@ -9,9 +9,7 @@ type OptionRelationshipBlockTypes = {
   choiceOptionId: string;
 };
 
-export default function OptionRelationshipBlock({
-  choiceOptionId,
-}: OptionRelationshipBlockTypes) {
+export default function OptionRelationshipBlock({ choiceOptionId }: OptionRelationshipBlockTypes) {
   const { data: optionRelationship } = useGetRelationshipOption({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
@@ -49,9 +47,7 @@ export default function OptionRelationshipBlock({
 
   const [showAllCharacters, setShowAllCharacters] = useState(false);
 
-  const [amountOfPoints, setAmountOfPoints] = useState(
-    optionRelationship?.amountOfPoints || ""
-  );
+  const [amountOfPoints, setAmountOfPoints] = useState(optionRelationship?.amountOfPoints || "");
 
   useEffect(() => {
     if (optionRelationship) {
@@ -107,9 +103,7 @@ export default function OptionRelationshipBlock({
         <img
           src={characterImg}
           alt="CharacterImg"
-          className={`${
-            characterImg?.trim().length ? "" : "hidden"
-          } w-[3rem] absolute object-cover rounded-md right-0`}
+          className={`${characterImg?.trim().length ? "" : "hidden"} w-[3rem] absolute object-cover rounded-md right-0`}
         />
         <PlotfieldCharacterPromptMain
           characterValue={characterName}
@@ -125,7 +119,7 @@ export default function OptionRelationshipBlock({
       </form>
       <input
         type="text"
-        placeholder="Очки характеристики"
+        placeholder="Очки отношений"
         className={`flex-grow text-[1.3rem] px-[1rem] py-[.5rem] text-text-light ${
           theme === "light" ? "outline-gray-300" : "outline-gray-600"
         } rounded-md shadow-md`}

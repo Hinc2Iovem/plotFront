@@ -19,9 +19,7 @@ export default function CharacterItemMainHero({
   img,
 }: CharacterItemMainHeroTypes) {
   const { storyId } = useParams();
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    img ? img : null
-  );
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(img ? img : null);
   const theme = localStorage.getItem("theme");
   const uploadImgMutation = useUpdateImg({
     id: characterId,
@@ -33,7 +31,7 @@ export default function CharacterItemMainHero({
 
   useEffect(() => {
     if (isMounted && imagePreview) {
-      uploadImgMutation.mutate();
+      uploadImgMutation.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);
@@ -48,18 +46,10 @@ export default function CharacterItemMainHero({
         <>
           {img ? (
             <div className="w-full h-full rounded-t-md relative shadow-sm">
-              <img
-                src={img}
-                alt="StoryBackground"
-                className="object-cover w-full h-full cursor-pointer rounded-t-md"
-              />
+              <img src={img} alt="StoryBackground" className="object-cover w-full h-full cursor-pointer rounded-t-md" />
             </div>
           ) : (
-            <div
-              className={`w-full h-full ${
-                theme === "light" ? "bg-secondary-darker" : "bg-secondary"
-              } `}
-            >
+            <div className={`w-full h-full ${theme === "light" ? "bg-secondary-darker" : "bg-secondary"} `}>
               <PreviewImage
                 imgClasses="w-full h-full  object-cover rounded-md"
                 divClasses=" relative top-1/2"
@@ -73,29 +63,20 @@ export default function CharacterItemMainHero({
               theme === "light" ? "bg-secondary-darker" : "bg-secondary"
             } text-text-light p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600`}
           >
-            {characterName.length > 30
-              ? characterName.substring(0, 30) + "..."
-              : characterName}
+            {characterName.length > 30 ? characterName.substring(0, 30) + "..." : characterName}
           </div>
         </>
       ) : (
         <div className="flex flex-col gap-[1rem] p-[1rem] justify-between h-full">
           <div className="gap-[1rem] flex flex-col">
             <div>
-              <h3 className="text-[2rem] break-words text-text-light">
-                Имя: {characterName}
-              </h3>
-              <p className="text-[1.6rem] break-words text-text-light opacity-80">
-                НеймТаг: {"SMH"}
-              </p>
+              <h3 className="text-[2rem] break-words text-text-light">Имя: {characterName}</h3>
+              <p className="text-[1.6rem] break-words text-text-light opacity-80">НеймТаг: {"SMH"}</p>
             </div>
           </div>
 
           <div className="flex gap-[1rem] flex-wrap">
-            <Link
-              className="ml-auto"
-              to={`/stories/${storyId}/wardrobes/characters/${characterId}`}
-            >
+            <Link className="ml-auto" to={`/stories/${storyId}/wardrobes/characters/${characterId}`}>
               <button
                 className={` ${
                   theme === "light" ? "bg-secondary" : "bg-primary-darker"

@@ -8,9 +8,7 @@ import PreviewImage from "../shared/utilities/PreviewImage";
 export default function StoryItem({ _id, imgUrl }: StoryTypes) {
   // const { data } = useGetTranslationStory({ id: _id, language: "russian" });
 
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
-  );
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
 
   const uploadImgMutation = useUpdateImg({
     id: _id,
@@ -20,7 +18,7 @@ export default function StoryItem({ _id, imgUrl }: StoryTypes) {
 
   useEffect(() => {
     if (imagePreview) {
-      uploadImgMutation.mutate();
+      uploadImgMutation.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview]);

@@ -11,9 +11,7 @@ type CreateCutSceneViaKeyCombinationTypes = {
   topologyBlockId: string;
 };
 
-export default function useCreateCutSceneViaKeyCombination({
-  topologyBlockId,
-}: CreateCutSceneViaKeyCombinationTypes) {
+export default function useCreateCutSceneViaKeyCombination({ topologyBlockId }: CreateCutSceneViaKeyCombinationTypes) {
   const { episodeId } = useParams();
   const createPlotfield = useCreateBlankCommand({
     topologyBlockId,
@@ -21,8 +19,7 @@ export default function useCreateCutSceneViaKeyCombination({
   });
   const createCutScene = useCreateCutScene({});
 
-  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
-    usePlotfieldCommands();
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
 
   const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -35,23 +32,17 @@ export default function useCreateCutSceneViaKeyCombination({
         // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key.toLowerCase());
+      pressedKeys.add(event.key?.toLowerCase());
 
       if (
         pressedKeys.has("shift") &&
-        ((pressedKeys.has("c") && pressedKeys.has("u")) ||
-          (pressedKeys.has("с") && pressedKeys.has("г")))
+        ((pressedKeys.has("c") && pressedKeys.has("u")) || (pressedKeys.has("с") && pressedKeys.has("г")))
       ) {
         const _id = generateMongoObjectId();
         createCutScene.mutate({ plotfieldCommandId: _id });
 
-        const currentTopologyBlockId = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
-        const commandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const commandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = commandIf?.includes("none")
           ? null
@@ -68,9 +59,7 @@ export default function useCreateCutSceneViaKeyCombination({
           commandIfId = currentCommandIf?.split("-")[3];
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         let commandOrder;
         if ((focusedCommand || [])[1] !== plotfieldCommandId) {
           commandOrder =
@@ -109,7 +98,7 @@ export default function useCreateCutSceneViaKeyCombination({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

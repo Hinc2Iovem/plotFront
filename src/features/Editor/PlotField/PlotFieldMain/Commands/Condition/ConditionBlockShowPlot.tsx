@@ -6,6 +6,7 @@ type ConditionBlockShowPlotTypes = {
   targetBlockId: string;
   plotfieldCommandId: string;
   conditionBlockId: string;
+  isElse: boolean;
 };
 
 export default function ConditionBlockShowPlot({
@@ -13,6 +14,7 @@ export default function ConditionBlockShowPlot({
   targetBlockId,
   plotfieldCommandId,
   conditionBlockId,
+  isElse,
 }: ConditionBlockShowPlotTypes) {
   const { updateCurrentlyOpenConditionBlock } = useConditionBlocks();
   return (
@@ -30,7 +32,7 @@ export default function ConditionBlockShowPlot({
             console.error("Choose TopologyBlock,firstly");
           }
         }}
-        className="hover:bg-primary"
+        className={`hover:bg-primary ${isElse ? "py-[1rem]" : ""}`}
         type="button"
       >
         Сценарий

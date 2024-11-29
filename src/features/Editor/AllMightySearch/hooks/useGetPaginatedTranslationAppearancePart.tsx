@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
@@ -49,7 +49,7 @@ export default function useGetPaginatedTranslationAppearancePart({
   characterId,
   type,
 }: GetPaginatedTranslationAppearancePartTypes) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: [
       "all-mighty-search",
       "story",
@@ -69,5 +69,16 @@ export default function useGetPaginatedTranslationAppearancePart({
     ],
     queryFn: () =>
       fetchAllMightyPaginatedTranslationAppearancePart({ limit, page, storyId, language, characterId, type }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage?.next?.page;
+      return nextPage > 0 ? nextPage : undefined;
+    },
+    getPreviousPageParam: (firstPage) => {
+      const prevPage = firstPage?.prev?.page;
+      return prevPage > 0 ? prevPage : undefined;
+    },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }

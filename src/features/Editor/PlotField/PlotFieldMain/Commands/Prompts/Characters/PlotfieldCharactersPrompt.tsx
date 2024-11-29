@@ -1,4 +1,5 @@
 import usePlotfieldCommands from "../../../../Context/PlotFieldContext";
+import { DebouncedCheckCharacterTypes } from "../../Choice/ChoiceQuestionField";
 import {
   CharacterValueTypes,
   EmotionTypes,
@@ -14,6 +15,8 @@ type EmotionCharacterNameTypes = {
   characterName: string;
   characterImg?: string;
   plotfieldCommandId?: string;
+
+  setDebouncedCharacter?: React.Dispatch<React.SetStateAction<DebouncedCheckCharacterTypes | null>>;
 
   commandIfId: string;
   isElse: boolean;
@@ -33,6 +36,8 @@ export default function PlotfieldCharactersPrompt({
   commandIfId,
   isElse,
 
+  setDebouncedCharacter,
+
   setShowCharacterModal,
   setCharacterName,
   setCharacterImg,
@@ -42,8 +47,7 @@ export default function PlotfieldCharactersPrompt({
   setCharacterValue,
 }: EmotionCharacterNameTypes) {
   const theme = localStorage.getItem("theme");
-  const { updateCharacterProperties, updateCharacterPropertiesIf } =
-    usePlotfieldCommands();
+  const { updateCharacterProperties, updateCharacterPropertiesIf } = usePlotfieldCommands();
   return (
     <>
       {characterImg ? (
@@ -54,6 +58,15 @@ export default function PlotfieldCharactersPrompt({
             if (currentCharacterId !== characterId && setEmotionValue) {
               setEmotionValue({ _id: null, emotionName: null, imgUrl: null });
             }
+
+            if (setDebouncedCharacter) {
+              setDebouncedCharacter({
+                characterId,
+                characterName,
+                characterImg,
+              });
+            }
+
             if (setCharacterValue) {
               setCharacterValue({
                 _id: characterId,
@@ -98,15 +111,9 @@ export default function PlotfieldCharactersPrompt({
           } focus-within:bg-primary-darker focus-within:text-text-light flex-wrap rounded-md flex px-[1rem] py-[.5rem] items-center justify-between hover:bg-primary-darker hover:text-text-light text-text-dark transition-all `}
         >
           <p className="text-[1.3rem] rounded-md">
-            {characterName.length > 20
-              ? characterName.substring(0, 20) + "..."
-              : characterName}
+            {characterName.length > 20 ? characterName.substring(0, 20) + "..." : characterName}
           </p>
-          <img
-            src={characterImg || ""}
-            alt="CharacterImg"
-            className="w-[3rem] rounded-md"
-          />
+          <img src={characterImg || ""} alt="CharacterImg" className="w-[3rem] rounded-md" />
         </button>
       ) : (
         <button
@@ -121,6 +128,14 @@ export default function PlotfieldCharactersPrompt({
                 _id: characterId,
                 characterName: characterName,
                 imgUrl: null,
+              });
+            }
+
+            if (setDebouncedCharacter) {
+              setDebouncedCharacter({
+                characterId,
+                characterName,
+                characterImg: "",
               });
             }
             if (plotfieldCommandId) {
@@ -159,9 +174,7 @@ export default function PlotfieldCharactersPrompt({
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
           } text-start text-[1.3rem] focus-within:bg-primary-darker focus-within:text-text-light rounded-md px-[1rem] py-[1rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all `}
         >
-          {characterName.length > 20
-            ? characterName.substring(0, 20) + "..."
-            : characterName}
+          {characterName.length > 20 ? characterName.substring(0, 20) + "..." : characterName}
         </button>
       )}
     </>

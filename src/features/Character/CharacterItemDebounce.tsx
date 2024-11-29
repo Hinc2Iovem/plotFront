@@ -7,10 +7,7 @@ import { TranslationCharacterTypes } from "../../types/Additional/TranslationTyp
 import PreviewImage from "../shared/utilities/PreviewImage";
 import CharacterItemMainHero from "./CharacterMainHero";
 
-export default function CharacterItemDebounce({
-  characterId,
-  translations,
-}: TranslationCharacterTypes) {
+export default function CharacterItemDebounce({ characterId, translations }: TranslationCharacterTypes) {
   const { data: character } = useGetCharacterById({ characterId });
 
   const [isFrontSide, setIsFrontSide] = useState(true);
@@ -104,9 +101,7 @@ function CharacterItemMinor({
   characterUnknownName,
 }: CharacterItemMinorTypes) {
   const { storyId } = useParams();
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
-  );
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const theme = localStorage.getItem("theme");
   const uploadImgMutation = useUpdateImg({
     id: characterId,
@@ -118,7 +113,7 @@ function CharacterItemMinor({
 
   useEffect(() => {
     if (isMounted && imagePreview) {
-      uploadImgMutation.mutate();
+      uploadImgMutation.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);
@@ -140,11 +135,7 @@ function CharacterItemMinor({
               />
             </div>
           ) : (
-            <div
-              className={`w-full h-full ${
-                theme === "light" ? "bg-secondary-darker" : "bg-secondary"
-              }`}
-            >
+            <div className={`w-full h-full ${theme === "light" ? "bg-secondary-darker" : "bg-secondary"}`}>
               <PreviewImage
                 imgClasses="object-cover rounded-md"
                 divClasses="top-1/2 relative"
@@ -158,35 +149,24 @@ function CharacterItemMinor({
               theme === "light" ? "bg-secondary-darker" : "bg-secondary"
             } p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 text-text-light rounded-t-md shadow-gray-600`}
           >
-            {characterName.length > 30
-              ? characterName.substring(0, 30) + "..."
-              : characterName}
+            {characterName.length > 30 ? characterName.substring(0, 30) + "..." : characterName}
           </div>
         </>
       ) : (
         <div className="flex flex-col gap-[1rem] p-[1rem] justify-between h-full">
           <div className="gap-[1rem] flex flex-col">
             <div>
-              <h3 className="text-[2rem] break-words text-text-light">
-                Имя: {characterName}
-              </h3>
+              <h3 className="text-[2rem] break-words text-text-light">Имя: {characterName}</h3>
               <p className="text-[1.6rem] break-words text-text-light opacity-80">
                 Имя(Незнакомец) : {characterUnknownName}
               </p>
-              <p className="text-[1.6rem] break-words text-text-light opacity-80">
-                НеймТаг {nameTag}
-              </p>
+              <p className="text-[1.6rem] break-words text-text-light opacity-80">НеймТаг {nameTag}</p>
             </div>
-            <p className="text-[1.3rem] break-words text-text-light opacity-80">
-              Описание: {characterDescription}
-            </p>
+            <p className="text-[1.3rem] break-words text-text-light opacity-80">Описание: {characterDescription}</p>
           </div>
 
           <div className="flex gap-[1rem] flex-wrap">
-            <Link
-              className="ml-auto"
-              to={`/stories/${storyId}/wardrobes/characters/${characterId}`}
-            >
+            <Link className="ml-auto" to={`/stories/${storyId}/wardrobes/characters/${characterId}`}>
               <button
                 className={`${
                   theme === "light" ? "bg-secondary" : "bg-primary-darker"
@@ -209,15 +189,8 @@ type CharacterItemEmptyTypes = {
   img?: string;
 };
 
-function CharacterItemEmpty({
-  isFrontSide,
-  characterId,
-  img,
-  characterName,
-}: CharacterItemEmptyTypes) {
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
-  );
+function CharacterItemEmpty({ isFrontSide, characterId, img, characterName }: CharacterItemEmptyTypes) {
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const theme = localStorage.getItem("theme");
   const uploadImgMutation = useUpdateImg({
     id: characterId,
@@ -229,7 +202,7 @@ function CharacterItemEmpty({
 
   useEffect(() => {
     if (isMounted && imagePreview) {
-      uploadImgMutation.mutate();
+      uploadImgMutation.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);
@@ -244,18 +217,10 @@ function CharacterItemEmpty({
         <>
           {img ? (
             <div className="w-full h-full rounded-t-md relative shadow-sm">
-              <img
-                src={img}
-                alt="StoryBackground"
-                className="object-cover w-full h-full cursor-pointer rounded-t-md"
-              />
+              <img src={img} alt="StoryBackground" className="object-cover w-full h-full cursor-pointer rounded-t-md" />
             </div>
           ) : (
-            <div
-              className={`w-full h-full ${
-                theme === "light" ? "bg-secondary-darker" : "bg-secondary"
-              }`}
-            >
+            <div className={`w-full h-full ${theme === "light" ? "bg-secondary-darker" : "bg-secondary"}`}>
               <PreviewImage
                 imgClasses="object-cover rounded-md"
                 divClasses="top-1/2 relative"
@@ -269,15 +234,11 @@ function CharacterItemEmpty({
               theme === "light" ? "bg-secondary-darker" : "bg-secondary"
             } p-[1rem] text-[1.5rem] text-text-light shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600`}
           >
-            {characterName.length > 30
-              ? characterName.substring(0, 30) + "..."
-              : characterName}
+            {characterName.length > 30 ? characterName.substring(0, 30) + "..." : characterName}
           </div>
         </>
       ) : (
-        <div
-          className={`text-text-light flex flex-col gap-[1rem] p-[1rem] h-full`}
-        >
+        <div className={`text-text-light flex flex-col gap-[1rem] p-[1rem] h-full`}>
           <h3 className="text-[2rem] break-words">{characterName}</h3>
         </div>
       )}

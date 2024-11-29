@@ -14,11 +14,7 @@ type CommandAchievementFieldTypes = {
   topologyBlockId: string;
 };
 
-export default function CommandAchievementField({
-  plotFieldCommandId,
-  topologyBlockId,
-  command,
-}: CommandAchievementFieldTypes) {
+export default function CommandAchievementField({ plotFieldCommandId, command }: CommandAchievementFieldTypes) {
   const { storyId } = useParams();
   const [nameValue] = useState(command ?? "achievement");
   const [initialTextValue, setInitialTextValue] = useState("");
@@ -45,10 +41,9 @@ export default function CommandAchievementField({
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateAchievementText = useUpdateAchievementText({
-    commandId: plotFieldCommandId,
+    achievementId: translatedAchievement?.achievementId || "",
     achievementName: debouncedValue,
     storyId: storyId || "",
-    topologyBlockId,
     language: "russian",
   });
 

@@ -5,6 +5,7 @@ import { TranslationAppearancePartTypes } from "../../../../types/Additional/Tra
 
 type AppearancePartTypes = {
   storyId: string;
+  enabled?: boolean;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
@@ -19,10 +20,11 @@ export const fetchAllTranslationAppearanceParts = async ({ storyId, language }: 
 export default function useGetTranslationAppearancePartsByStoryId({
   storyId,
   language = "russian",
+  enabled = !!storyId && !!language,
 }: AppearancePartTypes) {
   return useQuery({
     queryKey: ["translation", language, "story", storyId, "appearancePart"],
     queryFn: () => fetchAllTranslationAppearanceParts({ storyId, language }),
-    enabled: !!storyId && !!language,
+    enabled,
   });
 }

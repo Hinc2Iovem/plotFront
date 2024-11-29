@@ -8,14 +8,8 @@ type CreateKeyTypes = {
 export default function useCreateNewKeyAsValue({ storyId }: CreateKeyTypes) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      keyName,
-      keyId,
-    }: {
-      keyName: string;
-      keyId: string;
-    }) =>
-      await axiosCustomized.post(`/plotFieldCommands/stories/${storyId}/keys`, {
+    mutationFn: async ({ keyName, keyId }: { keyName: string; keyId: string }) =>
+      await axiosCustomized.post(`/keys/stories/${storyId}`, {
         keyName,
         keyId,
       }),

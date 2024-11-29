@@ -32,29 +32,20 @@ export default function useHandleNavigationThroughCommands() {
     getCurrentlyOpenConditionBlock,
   } = useConditionBlocks();
 
-  const {
-    getFirstChoiceOptionWithTopologyBlockId,
-    updateCurrentlyOpenChoiceOption,
-  } = useChoiceOptions();
+  const { getFirstChoiceOptionWithTopologyBlockId, updateCurrentlyOpenChoiceOption } = useChoiceOptions();
 
   useEffect(() => {
     const pressedKeys = new Set();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
+      const key = event.key?.toLowerCase();
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
 
-      if (
-        (key === "arrowup" || key === "arrowdown") &&
-        !pressedKeys.has("control") &&
-        !pressedKeys.has("shift")
-      ) {
+      if ((key === "arrowup" || key === "arrowdown") && !pressedKeys.has("control") && !pressedKeys.has("shift")) {
         event.preventDefault();
 
-        const currentTopologyBlock = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
+        const currentTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
         const currentCommand = sessionStorage.getItem("focusedCommand");
         const currentCommandName = currentCommand?.split("-")[0];
         const currentCommandId = currentCommand?.split("-")[1];
@@ -78,15 +69,9 @@ export default function useHandleNavigationThroughCommands() {
 
           updateFocuseReset({ value: false });
         } else {
-          const focusedCommandIf = sessionStorage
-            .getItem("focusedCommandIf")
-            ?.split("?")
-            .filter(Boolean);
+          const focusedCommandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
-          const focusedCommandCondition = sessionStorage
-            .getItem("focusedCommandCondition")
-            ?.split("?")
-            .filter(Boolean);
+          const focusedCommandCondition = sessionStorage.getItem("focusedCommandCondition")?.split("?").filter(Boolean);
 
           const deepLevelCommandIf = focusedCommandIf?.includes("none")
             ? null
@@ -94,36 +79,25 @@ export default function useHandleNavigationThroughCommands() {
             ? (focusedCommandIf?.length || 0) - 1
             : null;
 
-          const deepLevelCommandCondition = focusedCommandCondition?.includes(
-            "none"
-          )
+          const deepLevelCommandCondition = focusedCommandCondition?.includes("none")
             ? null
             : (focusedCommandCondition?.length || 0) > 0
             ? (focusedCommandCondition?.length || 0) - 1
             : null;
 
           const currentNestedCommandIf =
-            typeof deepLevelCommandIf === "number"
-              ? (focusedCommandIf || [])[deepLevelCommandIf]?.split("-")
-              : null;
-          const currentNestedCommandIfPlotfieldCommnadId =
-            currentNestedCommandIf ? currentNestedCommandIf[1] : null;
+            typeof deepLevelCommandIf === "number" ? (focusedCommandIf || [])[deepLevelCommandIf]?.split("-") : null;
+          const currentNestedCommandIfPlotfieldCommnadId = currentNestedCommandIf ? currentNestedCommandIf[1] : null;
           const currentNestedCommandCondition =
             typeof deepLevelCommandCondition === "number"
-              ? (focusedCommandCondition || [])[
-                  deepLevelCommandCondition
-                ]?.split("-")
+              ? (focusedCommandCondition || [])[deepLevelCommandCondition]?.split("-")
               : null;
-          const currentNestedCommandConditionPlotfieldCommnadId =
-            currentNestedCommandCondition
-              ? currentNestedCommandCondition[1]
-              : null;
+          const currentNestedCommandConditionPlotfieldCommnadId = currentNestedCommandCondition
+            ? currentNestedCommandCondition[1]
+            : null;
 
           // When focused on the if command(inside), preventing moving from if to else and vice versa
-          if (
-            currentCommandName === "if" &&
-            currentNestedCommandIfPlotfieldCommnadId === currentCommandId
-          ) {
+          if (currentCommandName === "if" && currentNestedCommandIfPlotfieldCommnadId === currentCommandId) {
             preventMovingInsideIfElseCommands({
               currentCommandId,
               deepLevelCommandIf,
@@ -147,12 +121,8 @@ export default function useHandleNavigationThroughCommands() {
 
           // Navigation back and forth
           if (
-            (currentCommandName === "if" &&
-              isCommandIf === "if" &&
-              key === "arrowdown") ||
-            (currentCommandName === "if" &&
-              isCommandIf === "else" &&
-              key === "arrowup")
+            (currentCommandName === "if" && isCommandIf === "if" && key === "arrowdown") ||
+            (currentCommandName === "if" && isCommandIf === "else" && key === "arrowup")
           ) {
             navigateBackAndForthInsideIfCommand({
               currentCommandId,
@@ -165,14 +135,9 @@ export default function useHandleNavigationThroughCommands() {
           }
 
           if (
-            currentCommandId !==
-              currentNestedCommandConditionPlotfieldCommnadId &&
-            ((currentCommandName === "condition" &&
-              isCommandIf === "if" &&
-              key === "arrowdown") ||
-              (currentCommandName === "condition" &&
-                isCommandIf === "else" &&
-                key === "arrowup"))
+            currentCommandId !== currentNestedCommandConditionPlotfieldCommnadId &&
+            ((currentCommandName === "condition" && isCommandIf === "if" && key === "arrowdown") ||
+              (currentCommandName === "condition" && isCommandIf === "else" && key === "arrowup"))
           ) {
             navigateBackAndForthInsideConditionCommand({
               currentCommandId,
@@ -187,9 +152,7 @@ export default function useHandleNavigationThroughCommands() {
           let newCommand;
 
           if (typeof deepLevelCommandIf === "number") {
-            const currentFocusedCommandIf = (focusedCommandIf || [])[
-              deepLevelCommandIf
-            ]?.split("-");
+            const currentFocusedCommandIf = (focusedCommandIf || [])[deepLevelCommandIf]?.split("-");
 
             const isInsideIfCommandIf = currentFocusedCommandIf[0];
 
@@ -366,7 +329,7 @@ export default function useHandleNavigationThroughCommands() {
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

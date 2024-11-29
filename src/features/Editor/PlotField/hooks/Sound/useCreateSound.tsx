@@ -1,23 +1,28 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../api/axios";
 
 type CreateSoundTypes = {
-  plotFieldCommandId?: string;
+  storyId: string;
 };
 
-export default function useCreateSound({
-  plotFieldCommandId,
-}: CreateSoundTypes) {
+type CreateSoundBodyTypes = {
+  soundId: string;
+  soundName: string;
+};
+
+export default function useCreateSound({ storyId }: CreateSoundTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      plotfieldCommandId,
-    }: {
-      plotfieldCommandId?: string;
-    }) => {
-      const commandId = plotFieldCommandId?.trim().length
-        ? plotFieldCommandId
-        : plotfieldCommandId;
-      await axiosCustomized.post(`/plotFieldCommands/${commandId}/sounds`);
+    mutationFn: async ({ soundId, soundName }: CreateSoundBodyTypes) => {
+      await axiosCustomized.post(`/stories/${storyId}/sounds/${soundId}`, {
+        soundName,
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["story", storyId, "sound"],
+        exact: true,
+      });
     },
   });
 }

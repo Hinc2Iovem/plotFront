@@ -4,30 +4,25 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additiona
 import { TranslationTextFieldName } from "../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 
 type UpdateAchievementTextTypes = {
-  commandId: string;
-  topologyBlockId: string;
+  achievementId: string;
   achievementName: string;
   storyId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useUpdateAchievementText({
-  commandId,
-  topologyBlockId,
+  achievementId,
   storyId,
   achievementName,
   language = "russian",
 }: UpdateAchievementTextTypes) {
   return useMutation({
     mutationFn: async () =>
-      await axiosCustomized.patch(
-        `/achievements/${commandId}/topologyBlocks/${topologyBlockId}/translations`,
-        {
-          currentLanguage: language,
-          text: achievementName,
-          storyId,
-          textFieldName: TranslationTextFieldName.AchievementName,
-        }
-      ),
+      await axiosCustomized.patch(`/achievements/${achievementId}/translations`, {
+        currentLanguage: language,
+        text: achievementName,
+        storyId,
+        textFieldName: TranslationTextFieldName.AchievementName,
+      }),
   });
 }

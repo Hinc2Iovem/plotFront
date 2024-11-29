@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import useCreateMusic from "../../../../features/Editor/PlotField/hooks/Music/useCreateMusic";
+import useCreateCommandMusic from "../../../../features/Editor/PlotField/hooks/Music/useCreateCommandMusic";
 import useCreateBlankCommand from "../../../../features/Editor/PlotField/hooks/useCreateBlankCommand";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import { preventCreatingCommandsWhenFocus } from "../preventCreatingCommandsWhenFocus";
@@ -11,18 +11,15 @@ type CreateMusicViaKeyCombinationTypes = {
   topologyBlockId: string;
 };
 
-export default function useCreateMusicViaKeyCombination({
-  topologyBlockId,
-}: CreateMusicViaKeyCombinationTypes) {
+export default function useCreateMusicViaKeyCombination({ topologyBlockId }: CreateMusicViaKeyCombinationTypes) {
   const { episodeId } = useParams();
   const createPlotfield = useCreateBlankCommand({
     topologyBlockId,
     episodeId: episodeId || "",
   });
-  const createMusic = useCreateMusic({});
+  const createMusic = useCreateCommandMusic({});
 
-  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } =
-    usePlotfieldCommands();
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
 
   const createPlotfieldInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -36,23 +33,17 @@ export default function useCreateMusicViaKeyCombination({
         // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key.toLowerCase());
+      pressedKeys.add(event.key?.toLowerCase());
 
       if (
         pressedKeys.has("shift") &&
-        ((pressedKeys.has("m") && pressedKeys.has("u")) ||
-          (pressedKeys.has("ь") && pressedKeys.has("г")))
+        ((pressedKeys.has("m") && pressedKeys.has("u")) || (pressedKeys.has("ь") && pressedKeys.has("г")))
       ) {
         const _id = generateMongoObjectId();
         createMusic.mutate({ plotfieldCommandId: _id });
 
-        const currentTopologyBlockId = sessionStorage.getItem(
-          "focusedTopologyBlock"
-        );
-        const commandIf = sessionStorage
-          .getItem("focusedCommandIf")
-          ?.split("?")
-          .filter(Boolean);
+        const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const commandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
 
         const deepLevelCommandIf = commandIf?.includes("none")
           ? null
@@ -69,9 +60,7 @@ export default function useCreateMusicViaKeyCombination({
           commandIfId = currentCommandIf?.split("-")[3];
         }
 
-        const focusedCommand = sessionStorage
-          .getItem("focusedCommand")
-          ?.split("-");
+        const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
         let commandOrder;
         if ((focusedCommand || [])[1] !== plotfieldCommandId) {
           commandOrder =
@@ -110,7 +99,7 @@ export default function useCreateMusicViaKeyCombination({
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key.toLowerCase());
+      pressedKeys.delete(event.key?.toLowerCase());
     };
 
     window.addEventListener("keydown", handleKeyDown);

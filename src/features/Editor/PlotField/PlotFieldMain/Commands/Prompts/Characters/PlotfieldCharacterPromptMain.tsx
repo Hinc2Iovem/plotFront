@@ -210,6 +210,7 @@ export default function PlotfieldCharacterPromptMain({
             setCharacterName={setCharacterName}
             setCharacterId={setCharacterId}
             setCharacterImg={setCharacterImg}
+            setDebouncedCharacter={setDebouncedCharacter}
             setShowCharacterModal={setShowCharacterModal}
             setNewlyCreated={setNewlyCreated}
             plotfieldCommandId={plotfieldCommandId}

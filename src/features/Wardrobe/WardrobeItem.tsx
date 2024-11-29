@@ -4,18 +4,13 @@ import { TranslationAppearancePartTypes } from "../../types/Additional/Translati
 import PreviewImage from "../shared/utilities/PreviewImage";
 import useGetAppearancePartById from "../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
 
-export default function WardrobeItem({
-  appearancePartId,
-  translations,
-}: TranslationAppearancePartTypes) {
+export default function WardrobeItem({ appearancePartId, translations }: TranslationAppearancePartTypes) {
   const { data: appearancePart } = useGetAppearancePartById({
     appearancePartId,
   });
   const theme = localStorage.getItem("theme");
   const [text] = useState(translations[0]?.text || "");
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
-  );
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
 
   const updateImg = useUpdateImg({
     id: appearancePartId,
@@ -27,7 +22,7 @@ export default function WardrobeItem({
 
   useEffect(() => {
     if (isMounted && imagePreview) {
-      updateImg.mutate();
+      updateImg.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);
@@ -42,11 +37,7 @@ export default function WardrobeItem({
         theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
       } bg-secondary`}
     >
-      <div
-        className={`${
-          theme === "light" ? "border-[3px]  border-white" : ""
-        } relative w-full h-[20rem]`}
-      >
+      <div className={`${theme === "light" ? "border-[3px]  border-white" : ""} relative w-full h-[20rem]`}>
         {appearancePart?.img ? (
           <img
             src={appearancePart?.img}
@@ -66,9 +57,7 @@ export default function WardrobeItem({
           theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
         }`}
       >
-        <p className="text-[1.5rem] hover:text-text-light text-text-dark cursor-default transition-all">
-          {text}
-        </p>
+        <p className="text-[1.5rem] hover:text-text-light text-text-dark cursor-default transition-all">{text}</p>
       </div>
     </article>
   );

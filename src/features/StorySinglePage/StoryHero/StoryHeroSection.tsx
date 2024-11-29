@@ -91,7 +91,7 @@ export default function StoryHeroSection() {
 
   useEffect(() => {
     if (storyImg) {
-      updateImg.mutate();
+      updateImg.mutate({});
     }
   }, [storyImg]);
 
@@ -252,11 +252,7 @@ const KeyBindsBlock = () => {
   };
 
   const handlePrefetches = () => {
-    Promise.all([
-      prefetchTranslatedCharacters(),
-      prefetchCharacters(),
-      prefetchSeasons(),
-    ]);
+    Promise.all([prefetchTranslatedCharacters(), prefetchCharacters(), prefetchSeasons()]);
   };
 
   return (

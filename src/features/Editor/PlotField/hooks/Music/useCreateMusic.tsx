@@ -1,23 +1,28 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../api/axios";
 
 type CreateMusicTypes = {
-  plotFieldCommandId?: string;
+  storyId: string;
 };
 
-export default function useCreateMusic({
-  plotFieldCommandId,
-}: CreateMusicTypes) {
+type CreateMusicBodyTypes = {
+  musicId: string;
+  musicName: string;
+};
+
+export default function useCreateMusic({ storyId }: CreateMusicTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      plotfieldCommandId,
-    }: {
-      plotfieldCommandId?: string;
-    }) => {
-      const commandId = plotFieldCommandId?.trim().length
-        ? plotFieldCommandId
-        : plotfieldCommandId;
-      await axiosCustomized.post(`/plotFieldCommands/${commandId}/music`);
+    mutationFn: async ({ musicId, musicName }: CreateMusicBodyTypes) => {
+      await axiosCustomized.post(`/stories/${storyId}/music/${musicId}`, {
+        musicName,
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["stories", storyId, "music"],
+        exact: true,
+      });
     },
   });
 }

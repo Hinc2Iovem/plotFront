@@ -4,8 +4,7 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/C
 import { TranslationTextFieldNameAchievementTypes } from "../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
 type UpdateAchievementTranslationTypes = {
-  commandId: string;
-  topologyBlockId: string;
+  achievementId: string;
   storyId: string;
   language: CurrentlyAvailableLanguagesTypes;
 };
@@ -16,24 +15,17 @@ type UpdateAchievementTranslationOnMutationTypes = {
 };
 
 export default function useUpdateAchievementTranslation({
-  topologyBlockId,
-  commandId,
+  achievementId,
   language,
   storyId,
 }: UpdateAchievementTranslationTypes) {
   return useMutation({
-    mutationFn: async ({
-      text,
-      textFieldName,
-    }: UpdateAchievementTranslationOnMutationTypes) =>
-      await axiosCustomized.patch(
-        `/achievements/${commandId}/topologyBlocks/${topologyBlockId}/translations`,
-        {
-          currentLanguage: language,
-          text,
-          textFieldName,
-          storyId,
-        }
-      ),
+    mutationFn: async ({ text, textFieldName }: UpdateAchievementTranslationOnMutationTypes) =>
+      await axiosCustomized.patch(`/achievements/${achievementId}/translations`, {
+        currentLanguage: language,
+        text,
+        textFieldName,
+        storyId,
+      }),
   });
 }

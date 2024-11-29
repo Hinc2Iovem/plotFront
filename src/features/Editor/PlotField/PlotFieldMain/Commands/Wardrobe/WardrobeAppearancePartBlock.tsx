@@ -5,13 +5,9 @@ import { CommandWardrobeAppearanceTypeBlockTypes } from "../../../../../../types
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 import PreviewImageSmallIcons from "../../../../../shared/utilities/PreviewImageSmallIcons";
 
-export default function WardrobeAppearancePartBlock({
-  appearancePartId,
-}: CommandWardrobeAppearanceTypeBlockTypes) {
+export default function WardrobeAppearancePartBlock({ appearancePartId }: CommandWardrobeAppearanceTypeBlockTypes) {
   const [showFullName, setShowFullName] = useState(false);
-  const [appearancePartImg, setAppearancePartImg] = useState<
-    string | null | ArrayBuffer
-  >("");
+  const [appearancePartImg, setAppearancePartImg] = useState<string | null | ArrayBuffer>("");
 
   const [appearancePartName, setAppearancePartName] = useState("");
   const { data: appearancePartTranslated } = useGetTranslationAppearancePart({
@@ -23,9 +19,7 @@ export default function WardrobeAppearancePartBlock({
 
   useEffect(() => {
     if (appearancePartTranslated) {
-      setAppearancePartName(
-        appearancePartTranslated.translations[0]?.text || ""
-      );
+      setAppearancePartName(appearancePartTranslated.translations[0]?.text || "");
     }
   }, [appearancePartTranslated]);
 
@@ -47,7 +41,7 @@ export default function WardrobeAppearancePartBlock({
 
   useEffect(() => {
     if (isMounted && imagePreview) {
-      updateAppearancePartImg.mutate();
+      updateAppearancePartImg.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);
@@ -85,9 +79,7 @@ export default function WardrobeAppearancePartBlock({
         }}
         className="text-[1.4rem] whitespace-nowrap px-[1rem] text-text-light"
       >
-        {appearancePartName?.trim().length > 13
-          ? appearancePartName.substring(0, 13) + "..."
-          : appearancePartName}
+        {appearancePartName?.trim().length > 13 ? appearancePartName.substring(0, 13) + "..." : appearancePartName}
       </h4>
       <aside
         onMouseOut={() => {

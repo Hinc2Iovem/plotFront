@@ -30,7 +30,7 @@ export default function BackgroundNameAndImage({
 
   useEffect(() => {
     if (isMounted && imagePreview) {
-      updateBackgroundImg.mutate();
+      updateBackgroundImg.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);

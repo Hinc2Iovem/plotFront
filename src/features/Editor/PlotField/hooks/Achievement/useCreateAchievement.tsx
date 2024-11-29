@@ -1,33 +1,31 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../api/axios";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
 type CreateAchievementTypes = {
   storyId: string;
-  plotFieldCommandId?: string;
-  topologyBlockId: string;
+  text?: string;
+  achievementId?: string;
+  language: CurrentlyAvailableLanguagesTypes;
 };
 
-export default function useCreateAchievement({
-  topologyBlockId,
-  plotFieldCommandId,
-  storyId,
-}: CreateAchievementTypes) {
-  return useMutation({
-    mutationFn: async ({
-      plotfieldCommandId,
-    }: {
-      plotfieldCommandId?: string;
-    }) => {
-      const commandId = plotFieldCommandId?.trim().length
-        ? plotFieldCommandId
-        : plotfieldCommandId;
+export default function useCreateAchievement({ text, storyId, language, achievementId }: CreateAchievementTypes) {
+  const queryClient = useQueryClient();
 
-      await axiosCustomized.post(
-        `/achievements/${commandId}/topologyBlocks/${topologyBlockId}/translations`,
-        {
-          storyId,
-        }
-      );
+  return useMutation({
+    mutationFn: async ({ bodyAchievementId }: { bodyAchievementId?: string }) => {
+      const currentAchievementId = bodyAchievementId?.trim().length ? bodyAchievementId : achievementId;
+      await axiosCustomized.post(`/achievements/${currentAchievementId}/translations`, {
+        storyId,
+        currentLanguage: language,
+        text,
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["story", storyId, "translation", language, "achievements"],
+        exact: true,
+      });
     },
   });
 }

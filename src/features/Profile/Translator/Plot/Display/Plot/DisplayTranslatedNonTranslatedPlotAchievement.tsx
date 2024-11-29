@@ -4,8 +4,8 @@ import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationTextFieldNameAchievementTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { CombinedTranslatedAndNonTranslatedAchievementTypes } from "../../Filters/FiltersEverythingPlotAchievement";
-import "../../../../../Editor/Flowchart/FlowchartStyles.css";
 import useUpdateAchievementTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateAchievementTranslation";
+import "../../../../../Editor/Flowchart/FlowchartStyles.css";
 
 type DisplayTranslatedNonTranslatedPlotAchievementTypes = {
   languageToTranslate: CurrentlyAvailableLanguagesTypes;
@@ -24,8 +24,7 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
 }: DisplayTranslatedNonTranslatedPlotAchievementTypes) {
   const [itemId, setItemId] = useState("");
 
-  const [translatedItemNameInitial, setTranslatedItemNameInitial] =
-    useState("");
+  const [translatedItemNameInitial, setTranslatedItemNameInitial] = useState("");
   const [translatedItemName, setTranslatedItemName] = useState("");
 
   const [itemNameInitial, setItemNameInitial] = useState("");
@@ -33,7 +32,7 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
 
   useEffect(() => {
     if (translated) {
-      setItemId(translated.commandId);
+      setItemId(translated.achievementId);
       translated.translations?.map((t) => {
         if (t.textFieldName === "achievementName") {
           setTranslatedItemNameInitial(t.text);
@@ -64,21 +63,15 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
 
   const updateCharacterTranslationTranslated = useUpdateAchievementTranslation({
     language: translateFromLanguage,
-    commandId: itemId || nonTranslated?.commandId || "",
-    topologyBlockId:
-      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
+    achievementId: itemId || nonTranslated?.achievementId || "",
     storyId: translated?.storyId || nonTranslated?.storyId || "",
   });
 
   useEffect(() => {
-    if (
-      translatedItemNameInitial !== debouncedNameTranslated &&
-      debouncedNameTranslated?.trim().length
-    ) {
+    if (translatedItemNameInitial !== debouncedNameTranslated && debouncedNameTranslated?.trim().length) {
       updateCharacterTranslationTranslated.mutate({
         text: debouncedNameTranslated,
-        textFieldName:
-          TranslationTextFieldName.AchievementName as TranslationTextFieldNameAchievementTypes,
+        textFieldName: TranslationTextFieldName.AchievementName as TranslationTextFieldNameAchievementTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,9 +84,7 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
 
   const updateCharacterTranslation = useUpdateAchievementTranslation({
     language: languageToTranslate,
-    commandId: itemId || nonTranslated?.commandId || "",
-    topologyBlockId:
-      translated?.topologyBlockId || nonTranslated?.topologyBlockId || "",
+    achievementId: itemId || nonTranslated?.achievementId || "",
     storyId: translated?.storyId || nonTranslated?.storyId || "",
   });
 
@@ -101,8 +92,7 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
     if (itemNameInitial !== debouncedName && debouncedName?.trim().length) {
       updateCharacterTranslation.mutate({
         text: debouncedName,
-        textFieldName:
-          TranslationTextFieldName.AchievementName as TranslationTextFieldNameAchievementTypes,
+        textFieldName: TranslationTextFieldName.AchievementName as TranslationTextFieldNameAchievementTypes,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,10 +107,7 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
       <div
         className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary overflow-auto | containerScroll`}
       >
-        <form
-          className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-          onSubmit={(e) => e.preventDefault()}
-        >
+        <form className="flex flex-col gap-[.5rem] p-[1rem] w-full" onSubmit={(e) => e.preventDefault()}>
           <input
             type="text"
             value={translatedItemName}
@@ -132,10 +119,7 @@ export default function DisplayTranslatedNonTranslatedPlotAchievement({
       <div
         className={`h-full w-full rounded-md shadow-md shadow-gray-400 bg-secondary overflow-auto | containerScroll`}
       >
-        <form
-          className="flex flex-col gap-[.5rem] p-[1rem] w-full"
-          onSubmit={(e) => e.preventDefault()}
-        >
+        <form className="flex flex-col gap-[.5rem] p-[1rem] w-full" onSubmit={(e) => e.preventDefault()}>
           <input
             type="text"
             value={itemName}

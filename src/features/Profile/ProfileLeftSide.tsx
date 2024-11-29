@@ -30,9 +30,7 @@ export default function ProfileLeftSide({
   const currentTheme = localStorage.getItem("theme");
   const { data: staff } = useGetStaffMember({ staffId: staffId ?? "" });
 
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
-  );
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
 
   const updateImg = useUpdateImg({
     id: staffId ?? "",
@@ -44,7 +42,7 @@ export default function ProfileLeftSide({
 
   useEffect(() => {
     if (isMounted && imagePreview) {
-      updateImg.mutate();
+      updateImg.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);
@@ -61,17 +59,11 @@ export default function ProfileLeftSide({
     >
       <div
         className={`w-[20rem] flex-grow h-[20rem] relative ${
-          currentTheme === "light"
-            ? "bg-secondary border-secondary"
-            : "bg-primary border-primary"
+          currentTheme === "light" ? "bg-secondary border-secondary" : "bg-primary border-primary"
         } rounded-md shadow-sm border-[3px]`}
       >
         {staff?.imgUrl ? (
-          <img
-            src={staff.imgUrl}
-            alt="AvatarImg"
-            className="w-full h-full object-cover rounded-md"
-          />
+          <img src={staff.imgUrl} alt="AvatarImg" className="w-full h-full object-cover rounded-md" />
         ) : (
           <PreviewImage
             imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[3px] border-white"
@@ -94,10 +86,8 @@ export default function ProfileLeftSide({
             <RenderStaffRoles key={r} role={r} />
           ))}
         </div>
-        {staff?.roles.includes("scriptwriter" || "headscriptwriter") ? (
-          <AmountOfFinishedEpisodesModal
-            amountOfFinishedEpisodes={staff?.amountOfFinishedEpisodes || 0}
-          />
+        {staff?.roles.includes("scriptwriter") || staff?.roles.includes("headscriptwriter") ? (
+          <AmountOfFinishedEpisodesModal amountOfFinishedEpisodes={staff?.amountOfFinishedEpisodes || 0} />
         ) : null}
       </div>
 

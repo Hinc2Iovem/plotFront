@@ -3,3 +3,8 @@ export type MusicTypes = {
   storyId: string;
   musicName: string;
 };
+
+export type CommandMusicTypes = {
+  _id: string;
+  musicId: string;
+};

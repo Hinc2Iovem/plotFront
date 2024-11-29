@@ -51,7 +51,9 @@ export default function AllMightySearch({ setShowAllMightySearch, showAllMightyS
             showKeyBinds={showKeyBinds}
           />
 
-          {showKeyBinds ? null : <AllMightySearchMain currentCategory={currentCategory} />}
+          {showKeyBinds ? null : (
+            <AllMightySearchMain setCurrentCategory={setCurrentCategory} currentCategory={currentCategory} />
+          )}
         </section>
       ) : null}
     </>

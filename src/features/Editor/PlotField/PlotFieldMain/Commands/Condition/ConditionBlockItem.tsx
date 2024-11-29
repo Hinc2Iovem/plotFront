@@ -281,6 +281,7 @@ export default function ConditionBlockItem({
               plotfieldCommandId={plotfieldCommandId}
               setShowConditionBlockPlot={setShowConditionBlockPlot}
               targetBlockId={targetBlockId}
+              isElse={isElse}
             />
             <DisplayOrderOfIfsModal
               conditionBlockId={conditionBlockId}
@@ -342,6 +343,7 @@ export default function ConditionBlockItem({
             plotfieldCommandId={plotfieldCommandId}
             setShowConditionBlockPlot={setShowConditionBlockPlot}
             targetBlockId={targetBlockId}
+            isElse={isElse}
           />
           <div className="relative self-end flex-grow">
             <PlotfieldButton

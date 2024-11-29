@@ -158,7 +158,7 @@ export default function ConditionBlockVariationAppearance({
           });
         }}
         className={`${
-          isDressed ? "bg-green-600 hover:bg-green-500" : "bg-primary hover:bg-primary-darker"
+          isDressed ? "bg-green-600 hover:bg-green-500" : "bg-primary-darker hover:bg-primary"
         } disabled:cursor-not-allowed w-fit`}
       >
         {isDressed ? "Надето" : "Надеть"}
@@ -294,7 +294,7 @@ function CreateNewValueModal({
     setShowCreateNewValueModal(false);
     setHighlightRedOnValueNonExisting(false);
     const appearanceId = generateMongoObjectId();
-    createNewAppearance.mutate({ appearancePartId: appearanceId });
+    createNewAppearance.mutate({ appearancePartId: appearanceId, currentLanguage: "russian" });
     updateConditionBlock.mutate({
       appearancePartId: appearanceId,
     });

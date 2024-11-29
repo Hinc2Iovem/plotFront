@@ -18,15 +18,10 @@ const getAllTranslations = async ({
   id,
   language = "russian",
 }: GetAllTranslationsTypes): Promise<TranslationStoryTypes[]> => {
-  return await axiosCustomized
-    .get(`/translations/stories/${id}?currentLanguage=${language}`)
-    .then((r) => r.data);
+  return await axiosCustomized.get(`/translations/stories/${id}?currentLanguage=${language}`).then((r) => r.data);
 };
 
-export default function StoryDebounced({
-  _id,
-  storyId,
-}: TranslationStoryTypes) {
+export default function StoryDebounced({ _id, storyId }: TranslationStoryTypes) {
   const story = useGetSingleStory({ storyId });
   const storyTextFieldNamesTranslations = useQuery({
     queryKey: ["translation", "stories", storyId],
@@ -50,9 +45,7 @@ export default function StoryDebounced({
     }
   }, [storyTextFieldNamesTranslations.data]);
 
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(
-    null
-  );
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
 
   const uploadImgMutation = useUpdateImg({
     id: _id,
@@ -62,7 +55,7 @@ export default function StoryDebounced({
 
   useEffect(() => {
     if (imagePreview) {
-      uploadImgMutation.mutate();
+      uploadImgMutation.mutate({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview]);

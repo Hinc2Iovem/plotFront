@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import useGetCommandKey from "../../../hooks/Key/useGetCommandKey";
+import useGetKeyByPlotfieldCommandId from "../../../hooks/Key/useGetKeyByPlotfieldCommandId";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import useUpdateKeyText from "../../../hooks/Key/useUpdateKeyText";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
@@ -15,7 +15,7 @@ type CommandKeyFieldTypes = {
 export default function CommandKeyField({ plotFieldCommandId, command }: CommandKeyFieldTypes) {
   const [nameValue] = useState<string>(command ?? "Key");
   const [textValue, setTextValue] = useState("");
-  const { data: commandKey } = useGetCommandKey({
+  const { data: commandKey } = useGetKeyByPlotfieldCommandId({
     plotFieldCommandId,
   });
   const isCommandFocused = useCheckIsCurrentFieldFocused({
@@ -42,7 +42,7 @@ export default function CommandKeyField({ plotFieldCommandId, command }: Command
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateKeyText = useUpdateKeyText({
-    commandKeyId,
+    keyId: commandKeyId,
     text: debouncedValue,
   });
 

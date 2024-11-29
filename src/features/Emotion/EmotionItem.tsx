@@ -4,11 +4,7 @@ import PreviewImage from "../shared/utilities/PreviewImage";
 import { EmotionsTypes } from "../../types/StoryData/Character/CharacterTypes";
 import SyncLoad from "../shared/Loaders/SyncLoader";
 
-export default function EmotionItem({
-  emotionName,
-  imgUrl,
-  _id,
-}: EmotionsTypes) {
+export default function EmotionItem({ emotionName, imgUrl, _id }: EmotionsTypes) {
   const [imgPreview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const theme = localStorage.getItem("theme");
@@ -20,7 +16,7 @@ export default function EmotionItem({
 
   useEffect(() => {
     if (isMounted && imgPreview) {
-      updateImg();
+      updateImg({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imgPreview, isMounted]);
@@ -35,11 +31,7 @@ export default function EmotionItem({
         theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
       } bg-secondary relative`}
     >
-      <div
-        className={`${
-          theme === "light" ? "border-[3px] border-white rounded-sm" : ""
-        } relative w-full h-[20rem]`}
-      >
+      <div className={`${theme === "light" ? "border-[3px] border-white rounded-sm" : ""} relative w-full h-[20rem]`}>
         {imgUrl ? (
           <img
             src={imgUrl}
@@ -64,11 +56,7 @@ export default function EmotionItem({
         </p>
       </div>
       {isPending && (
-        <SyncLoad
-          conditionToLoading={!isPending}
-          conditionToStart={isPending}
-          className="top-[1rem] right-[1rem] "
-        />
+        <SyncLoad conditionToLoading={!isPending} conditionToStart={isPending} className="top-[1rem] right-[1rem] " />
       )}
     </article>
   );

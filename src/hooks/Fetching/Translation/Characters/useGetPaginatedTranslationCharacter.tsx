@@ -46,7 +46,7 @@ export default function useGetPaginatedTranslationCharacter({
     queryFn: async () =>
       await axiosCustomized
         .get<PaginatedCharacterTypes>(
-          `/characters/paginated/translations?currentLanguage=${language}&page=${page}&limit=${limit}&storyId=${storyId}&characterType=${characterType}`
+          `/characters/paginated/list/translations?currentLanguage=${language}&page=${page}&limit=${limit}&storyId=${storyId}&characterType=${characterType}`
         )
         .then((r) => r.data),
     enabled: !!language && !!page && !!limit && !!storyId,

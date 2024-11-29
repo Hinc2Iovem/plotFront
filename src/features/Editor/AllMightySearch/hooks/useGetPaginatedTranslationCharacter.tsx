@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationCharacterTypes } from "../../../../types/Additional/TranslationTypes";
@@ -31,7 +31,7 @@ export const fetchAllMightyPaginatedTranslationCharacter = async ({
 }: GetPaginatedTranslationCharacterTypes): Promise<AllMightySearchCharacterResultTypes> => {
   return await axiosCustomized
     .get(
-      `/characters/stories/translation/paginated/allMightySearch?storyId=${storyId}&page=${page}&limit=${limit}&currentLanguage=${language}`
+      `/characters/stories/translation/paginated/allMightySearch?storyId=${storyId}&page=${page}&limit=${limit}&language=${language}`
     )
     .then((r) => r.data);
 };
@@ -42,7 +42,7 @@ export default function useGetPaginatedTranslationCharacter({
   page,
   language,
 }: GetPaginatedTranslationCharacterTypes) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: [
       "all-mighty-search",
       "story",
@@ -57,5 +57,16 @@ export default function useGetPaginatedTranslationCharacter({
       limit,
     ],
     queryFn: () => fetchAllMightyPaginatedTranslationCharacter({ limit, page, storyId, language }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const nextPage = lastPage?.next?.page;
+      return nextPage > 0 ? nextPage : undefined;
+    },
+    getPreviousPageParam: (firstPage) => {
+      const prevPage = firstPage?.prev?.page;
+      return prevPage > 0 ? prevPage : undefined;
+    },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 }
