@@ -8,13 +8,17 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
 import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandSuitFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
-export default function CommandSuitField({ plotFieldCommandId, command }: CommandSuitFieldTypes) {
+export default function CommandSuitField({ plotFieldCommandId, command, topologyBlockId }: CommandSuitFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Suit");
   const [textValue, setTextValue] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState("");
@@ -69,6 +73,23 @@ export default function CommandSuitField({ plotFieldCommandId, command }: Comman
     }
   }, [commandSuit]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "suit",
+          id: plotFieldCommandId,
+          text: textValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateSuitText = useUpdateSuitText({
@@ -79,6 +100,15 @@ export default function CommandSuitField({ plotFieldCommandId, command }: Comman
 
   useEffect(() => {
     if (debouncedValue?.trim().length || currentCharacterImg?.trim().length) {
+      if (storyId) {
+        updateValue({
+          storyId,
+          commandName: "suit",
+          id: plotFieldCommandId,
+          type: "command",
+          value: `${currentCharacterName} ${debouncedValue}`,
+        });
+      }
       updateSuitText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

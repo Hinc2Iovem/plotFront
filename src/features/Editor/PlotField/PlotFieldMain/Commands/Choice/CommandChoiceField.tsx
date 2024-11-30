@@ -4,13 +4,13 @@ import { ChoiceVariationsTypes } from "../../../../../../types/StoryEditor/PlotF
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useCheckIfShowingPlotfieldInsideChoiceOnMount from "../../../hooks/Choice/helpers/useCheckIfShowingPlotfieldInsideChoiceOnMount";
 import useGoingDownInsideChoiceOption from "../../../hooks/Choice/helpers/useGoingDownInsideChoiceOption";
+import useGoingUpFromChoiceOptions from "../../../hooks/Choice/helpers/useGoingUpFromChoiceOption";
+import useHandleNavigationThroughOptionsInsideChoice from "../../../hooks/Choice/helpers/useHandleNavigationThroughOptionsInsideChoice";
 import useGetCommandChoice from "../../../hooks/Choice/useGetCommandChoice";
 import useUpdateChoiceIsAuthor from "../../../hooks/Choice/useUpdateChoiceIsAuthor";
 import ChoiceQuestionField from "./ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./ChoiceVariationTypeBlock";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
-import useHandleNavigationThroughOptionsInsideChoice from "../../../hooks/Choice/helpers/useHandleNavigationThroughOptionsInsideChoice";
-import useGoingUpFromChoiceOptions from "../../../hooks/Choice/helpers/useGoingUpFromChoiceOption";
 
 type CommandChoiceFieldTypes = {
   plotFieldCommandId: string;

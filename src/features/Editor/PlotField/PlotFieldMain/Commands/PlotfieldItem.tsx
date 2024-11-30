@@ -125,27 +125,27 @@ export default function PlotfieldItem({
       ) : command === "achievement" ? (
         <CommandAchievementField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "ambient" ? (
-        <CommandAmbientField command={command} plotFieldCommandId={_id} />
+        <CommandAmbientField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "cutscene" ? (
-        <CommandCutSceneField command={command} plotFieldCommandId={_id} />
+        <CommandCutSceneField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "effect" ? (
-        <CommandEffectField command={command} plotFieldCommandId={_id} />
+        <CommandEffectField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "key" ? (
-        <CommandKeyField command={command} plotFieldCommandId={_id} />
+        <CommandKeyField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "move" ? (
-        <CommandMoveField command={command} plotFieldCommandId={_id} />
+        <CommandMoveField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "music" ? (
-        <CommandMusicField command={command} plotFieldCommandId={_id} />
+        <CommandMusicField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "sound" ? (
-        <CommandSoundField command={command} plotFieldCommandId={_id} />
+        <CommandSoundField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "suit" ? (
-        <CommandSuitField command={command} plotFieldCommandId={_id} />
+        <CommandSuitField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "wait" ? (
-        <CommandWaitField command={command} plotFieldCommandId={_id} />
+        <CommandWaitField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "name" ? (
-        <CommandNameField command={command} plotFieldCommandId={_id} />
+        <CommandNameField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "background" ? (
-        <CommandBackgroundField command={command} plotFieldCommandId={_id} />
+        <CommandBackgroundField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "getitem" ? (
         <CommandGetItemField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
       ) : command === "if" ? (
@@ -159,7 +159,7 @@ export default function PlotfieldItem({
       ) : command === "condition" ? (
         <CommandConditionField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
       ) : command === "comment" ? (
-        <CommandCommentField command={command} plotFieldCommandId={_id} />
+        <CommandCommentField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : null}
       <span className="w-[3rem] bg-red-500 text-center text-text-light rounded-md text-[1.5rem]">{commandOrder}</span>
     </li>

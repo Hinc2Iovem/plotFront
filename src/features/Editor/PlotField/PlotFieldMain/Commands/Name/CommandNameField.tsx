@@ -1,25 +1,35 @@
 import { useEffect, useState } from "react";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
+import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useGetCommandName from "../../../hooks/Name/useGetCommandName";
 import useUpdateNameText from "../../../hooks/Name/useUpdateNameText";
-import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useSearch from "../../Search/SearchContext";
+import PlotfieldUnknownCharacterPromptMain, {
+  UnknownCharacterValueTypes,
+} from "../Prompts/Characters/PlotfieldUnknownCharacterPromptMain";
+import { useParams } from "react-router-dom";
 
 type CommandNameFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
-export default function CommandNameField({ plotFieldCommandId, command }: CommandNameFieldTypes) {
+export default function CommandNameField({ plotFieldCommandId, command, topologyBlockId }: CommandNameFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Name");
-  const [textValue, setTextValue] = useState("");
-  const [currentCharacterId, setCurrentCharacterId] = useState("");
-  const [currentCharacterImg, setCurrentCharacterImg] = useState("");
-  const [currentCharacterName, setCurrentCharacterName] = useState("");
+
+  const [characterValue, setCharacterValue] = useState<UnknownCharacterValueTypes>({
+    characterUnknownName: "",
+    characterName: "",
+    characterImg: "",
+    characterId: "",
+  });
+
   const [showCharacterList, setShowCharacterList] = useState(false);
   const { data: commandName } = useGetCommandName({
     plotFieldCommandId,
@@ -28,7 +38,6 @@ export default function CommandNameField({ plotFieldCommandId, command }: Comman
     plotFieldCommandId,
   });
   const [focusedSecondTimeFirst, setFocusedSecondTimeFirst] = useState(false);
-  const [focusedSecondTimeSecond, setFocusedSecondTimeSecond] = useState(false);
 
   const [commandNameId, setCommandNameId] = useState("");
 
@@ -41,35 +50,52 @@ export default function CommandNameField({ plotFieldCommandId, command }: Comman
   });
 
   useEffect(() => {
-    if (character) {
-      setCurrentCharacterImg(character?.img as string);
+    if (character && character.img) {
+      setCharacterValue((prev) => ({
+        ...prev,
+        characterImg: character.img || "",
+      }));
     }
   }, [character]);
 
   useEffect(() => {
     if (translatedCharacter) {
       translatedCharacter.translations?.map((tc) => {
-        if (tc.textFieldName === "characterName") {
-          setCurrentCharacterName(tc.text ?? "");
-        }
+        setCharacterValue((prev) => ({
+          ...prev,
+          characterName: tc.textFieldName === "characterName" ? tc.text : prev.characterName,
+          characterUnknownName: tc.textFieldName === "characterUnknownName" ? tc.text : prev.characterUnknownName,
+        }));
       });
     }
   }, [translatedCharacter]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "name",
+          id: plotFieldCommandId,
+          text: `${characterValue.characterUnknownName} ${characterValue.characterName}`,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   useEffect(() => {
     if (commandName) {
       setCommandNameId(commandName._id);
-      setCurrentCharacterId(commandName?.characterId ?? "");
+      setCharacterValue((prev) => ({
+        ...prev,
+        characterId: commandName.characterId,
+      }));
     }
   }, [commandName]);
-
-  useEffect(() => {
-    if (commandName?.name) {
-      setTextValue(commandName.name);
-    }
-  }, [commandName]);
-
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateNameText = useUpdateNameText({
     nameId: commandNameId,
@@ -77,28 +103,34 @@ export default function CommandNameField({ plotFieldCommandId, command }: Comman
   });
 
   useEffect(() => {
-    if (commandName?.name !== debouncedValue && debouncedValue?.trim().length) {
-      updateNameText.mutate({ newName: debouncedValue });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
-
-  useEffect(() => {
-    if (commandName?.characterId !== currentCharacterId && currentCharacterId?.trim().length) {
+    if (commandName?.characterId !== characterValue.characterId && characterValue.characterId?.trim().length) {
       updateNameText.mutate({
-        characterId: currentCharacterId,
+        characterId: characterValue.characterId,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCharacterId]);
+  }, [characterValue]);
 
   const characterDebouncedValue = useDebounce({
-    value: currentCharacterName,
+    value: characterValue.characterUnknownName,
     delay: 500,
   });
+
+  useEffect(() => {
+    if (characterDebouncedValue && characterValue.characterUnknownName !== characterDebouncedValue && storyId) {
+      updateValue({
+        storyId,
+        commandName: "name",
+        id: plotFieldCommandId,
+        type: "command",
+        value: `${characterValue.characterUnknownName} ${characterValue.characterName}`,
+      });
+    }
+  }, [characterDebouncedValue, storyId]);
+
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
+      <div className="sm:w-[20%] min-w-[10rem] relative md:flex-grow-0 flex-grow">
         <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
@@ -108,50 +140,56 @@ export default function CommandNameField({ plotFieldCommandId, command }: Comman
           e.preventDefault();
           setShowCharacterList(false);
         }}
-        className="w-full relative flex gap-[.5rem]"
+        className="flex gap-[.5rem] flex-grow flex-wrap min-w-[42rem] sm:flex-row flex-col"
       >
-        <PlotfieldInput
-          focusedSecondTime={focusedSecondTimeFirst}
-          setFocusedSecondTime={setFocusedSecondTimeFirst}
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowCharacterList(true);
-          }}
-          value={currentCharacterName}
-          onChange={(e) => {
-            setShowCharacterList(true);
-            setCurrentCharacterName(e.target.value);
-          }}
-          placeholder="Имя Персонажа"
-        />
+        <div className="flex-grow min-w-[20rem] sm:w-[calc(50%-2rem)] relative flex gap-[.5rem]">
+          <PlotfieldInput
+            focusedSecondTime={focusedSecondTimeFirst}
+            setFocusedSecondTime={setFocusedSecondTimeFirst}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowCharacterList(true);
+            }}
+            value={characterValue.characterUnknownName}
+            onChange={(e) => {
+              setShowCharacterList(true);
+              setCharacterValue((prev) => ({
+                ...prev,
+                characterUnknownName: e.target.value,
+              }));
+            }}
+            className="pr-[3.5rem]"
+            placeholder="Неизвестное Имя"
+          />
 
-        <img
-          src={currentCharacterImg}
-          alt="CharacterImg"
-          className={`${currentCharacterImg?.trim().length ? "" : "hidden"} w-[3rem] object-cover rounded-md self-end`}
-        />
-        <PlotfieldCharacterPromptMain
-          debouncedValue={characterDebouncedValue}
-          characterValue={currentCharacterName}
-          translateAsideValue="translate-y-[3.5rem]"
-          setCharacterId={setCurrentCharacterId}
-          setCharacterName={setCurrentCharacterName}
-          setShowCharacterModal={setShowCharacterList}
-          showCharacterModal={showCharacterList}
-          setCharacterImg={setCurrentCharacterImg}
-          commandIfId=""
-          isElse={false}
-        />
-      </form>
-      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
-        <PlotfieldInput
-          focusedSecondTime={focusedSecondTimeSecond}
-          setFocusedSecondTime={setFocusedSecondTimeSecond}
-          value={textValue}
-          type="text"
-          placeholder="Настоящее имя"
-          onChange={(e) => setTextValue(e.target.value)}
-        />
+          <img
+            src={characterValue.characterImg}
+            alt="CharacterImg"
+            className={`${
+              characterValue.characterImg?.trim().length ? "" : "hidden"
+            } w-[3rem] object-cover rounded-md absolute right-0 top-[1px]`}
+          />
+
+          <PlotfieldUnknownCharacterPromptMain
+            setShowCharacterModal={setShowCharacterList}
+            showCharacterModal={showCharacterList}
+            translateAsideValue="translate-y-[3rem]"
+            debouncedValue={characterDebouncedValue}
+            setCharacterValue={setCharacterValue}
+          />
+        </div>
+        <div className="flex-grow min-w-[20rem] sm:w-[calc(50%-2rem)] flex gap-[.5rem] relative">
+          <p className="text-[1.5rem] w-full bg-secondary text-text-light rounded-md shadow-sm px-[1rem] pr-[3.5rem] py-[.5rem] focus-within:shadow-inner transition-shadow">
+            {characterValue.characterName.trim().length ? characterValue.characterName : "Настоящее имя"}
+          </p>
+          <img
+            src={characterValue.characterImg}
+            alt="CharacterImg"
+            className={`${
+              characterValue.characterImg?.trim().length ? "" : "hidden"
+            } w-[3rem] object-cover rounded-md absolute right-0 top-[1px]`}
+          />
+        </div>
       </form>
     </div>
   );

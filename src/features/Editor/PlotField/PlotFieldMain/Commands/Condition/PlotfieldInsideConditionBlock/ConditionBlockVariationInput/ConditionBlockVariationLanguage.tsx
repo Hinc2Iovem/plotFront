@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ALL_LANGUAGES,
   CurrentlyAvailableLanguagesTypes,
@@ -9,12 +9,15 @@ import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionLanguage from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionLanguage";
+import useSearch from "../../../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type ConditionBlockVariationLanguageTypes = {
   currentLanguage: CurrentlyAvailableLanguagesTypes | null;
   conditionBlockId: string;
   conditionBlockVariationId: string;
   plotfieldCommandId: string;
+  topologyBlockId: string;
 };
 
 export default function ConditionBlockVariationLanguage({
@@ -22,7 +25,9 @@ export default function ConditionBlockVariationLanguage({
   conditionBlockId,
   conditionBlockVariationId,
   plotfieldCommandId,
+  topologyBlockId,
 }: ConditionBlockVariationLanguageTypes) {
+  const { storyId } = useParams();
   const [language, setLanguage] = useState(typeof currentLanguage === "string" ? currentLanguage : "");
   const [showAllLangauges, setShowAllLanguages] = useState(false);
 
@@ -31,6 +36,35 @@ export default function ConditionBlockVariationLanguage({
   const languageModalRef = useRef<HTMLDivElement>(null);
 
   const updateConditionLanguage = useUpdateConditionLanguage({ conditionBlockLanguageId: conditionBlockVariationId });
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: "Condition - Language",
+          id: conditionBlockVariationId,
+          text: `${language}`,
+          topologyBlockId,
+          type: "conditionVariation",
+        },
+      });
+    }
+  }, [storyId]);
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "Condition - Language",
+        id: conditionBlockVariationId,
+        value: `${language}`,
+        type: "conditionVariation",
+      });
+    }
+  }, [language, storyId]);
 
   useOutOfModal({
     modalRef: languageModalRef,

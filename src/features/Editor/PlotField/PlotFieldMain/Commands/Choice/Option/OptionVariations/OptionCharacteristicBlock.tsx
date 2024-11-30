@@ -3,14 +3,17 @@ import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetch
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetCharacteristicOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetCharacteristicOption";
 import PlotfieldCharacteristicPromptMain from "../../../Prompts/Characteristics/PlotfieldCharacteristicPromptMain";
+import useSearch from "../../../../Search/SearchContext";
+import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
+import { useParams } from "react-router-dom";
 
 type OptionCharacteristicBlockTypes = {
   choiceOptionId: string;
+  debouncedValue: string;
 };
 
-export default function OptionCharacteristicBlock({
-  choiceOptionId,
-}: OptionCharacteristicBlockTypes) {
+export default function OptionCharacteristicBlock({ choiceOptionId, debouncedValue }: OptionCharacteristicBlockTypes) {
+  const { storyId } = useParams();
   const { data: optionCharacteristic } = useGetCharacteristicOption({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
@@ -40,9 +43,7 @@ export default function OptionCharacteristicBlock({
     }
   }, [translatedCharacteristic]);
 
-  const [amountOfPoints, setAmountOfPoints] = useState(
-    optionCharacteristic?.amountOfPoints || ""
-  );
+  const [amountOfPoints, setAmountOfPoints] = useState(optionCharacteristic?.amountOfPoints || "");
 
   useEffect(() => {
     if (optionCharacteristic) {
@@ -69,6 +70,22 @@ export default function OptionCharacteristicBlock({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characteristicId]);
+
+  const { updateValue } = useSearch();
+
+  const debouncedCharacteristic = useDebounce({ value: characteristicName, delay: 600 });
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: `Choice - Characteristic`,
+        id: choiceOptionId,
+        value: `${debouncedValue} ${debouncedCharacteristic} ${amountOfPoints}`,
+        type: "choiceOption",
+      });
+    }
+  }, [amountOfPoints, debouncedCharacteristic, storyId, debouncedValue]);
 
   return (
     <div className="self-end sm:w-fit w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap">

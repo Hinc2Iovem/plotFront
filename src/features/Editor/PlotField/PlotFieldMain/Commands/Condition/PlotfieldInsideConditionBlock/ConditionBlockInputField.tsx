@@ -23,12 +23,14 @@ import ConditionBlockVariationStatus from "./ConditionBlockVariationInput/Condit
 type ConditionBlockInputFieldTypes = {
   plotfieldCommandId: string;
   logicalOperators: string;
+  topologyBlockId: string;
   insidePlotfield?: boolean;
 } & ConditionBlockItemTypes;
 
 export default function ConditionBlockInputField({
   plotfieldCommandId,
   conditionBlockId,
+  topologyBlockId,
   conditionBlockVariations,
   logicalOperators,
   insidePlotfield = false,
@@ -49,6 +51,7 @@ export default function ConditionBlockInputField({
           plotfieldCommandId={plotfieldCommandId}
           logicalOperators={logicalOperators}
           insidePlotfield={insidePlotfield}
+          topologyBlockId={topologyBlockId}
           index={i}
         />
       ))}
@@ -67,6 +70,7 @@ type ConditionBlockInputFieldItemTypes = {
   index: number;
   logicalOperators: string;
   insidePlotfield: boolean;
+  topologyBlockId: string;
 } & ConditionBlockVariationTypes;
 
 const AllLogicalOperators = ["&&", "||"];
@@ -90,6 +94,7 @@ export function ConditionBlockInputFieldItem({
   index,
   currentlyDressed,
   insidePlotfield,
+  topologyBlockId,
 }: ConditionBlockInputFieldItemTypes) {
   const { getAllConditionValueVariationByLogicalOperatorIndex } = useConditionBlocks();
   const [allConditionBlockVariations, setAllConditionBlockVariations] = useState<
@@ -113,6 +118,7 @@ export function ConditionBlockInputFieldItem({
       {type === "key" ? (
         <ConditionBlockVariationKey
           plotfieldCommandId={plotfieldCommandId}
+          topologyBlockId={topologyBlockId}
           conditionBlockId={conditionBlockId}
           keyId={commandKeyId || ""}
           conditionBlockVariationId={conditionBlockVariationId}
@@ -121,6 +127,7 @@ export function ConditionBlockInputFieldItem({
         <ConditionBlockVariationCharacter
           conditionBlockId={conditionBlockId}
           plotfieldCommandId={plotfieldCommandId}
+          topologyBlockId={topologyBlockId}
           conditionBlockCharacterId={conditionBlockVariationId}
           currentCharacterId={characterId || ""}
         />
@@ -128,6 +135,7 @@ export function ConditionBlockInputFieldItem({
         <ConditionBlockVariationCharacteristic
           conditionBlockId={conditionBlockId}
           plotfieldCommandId={plotfieldCommandId}
+          topologyBlockId={topologyBlockId}
           conditionBlockVariationId={conditionBlockVariationId}
           firstCharacteristicId={characteristicId || ""}
           secondCharacteristicId={secondCharacteristicId || ""}
@@ -137,6 +145,7 @@ export function ConditionBlockInputFieldItem({
         <ConditionBlockVariationAppearance
           conditionBlockId={conditionBlockId}
           plotfieldCommandId={plotfieldCommandId}
+          topologyBlockId={topologyBlockId}
           conditionBlockVariationId={conditionBlockVariationId}
           currentAppearancePartId={appearancePartId || ""}
           currentlyDressed={currentlyDressed || false}
@@ -149,6 +158,7 @@ export function ConditionBlockInputFieldItem({
           conditionBlockVariationId={conditionBlockVariationId}
           currentRentryAmount={amountOfRetries || null}
           plotfieldCommandId={plotfieldCommandId}
+          topologyBlockId={topologyBlockId}
           currentSign={sign}
         />
       ) : type === "language" ? (
@@ -156,6 +166,7 @@ export function ConditionBlockInputFieldItem({
           conditionBlockId={conditionBlockId}
           conditionBlockVariationId={conditionBlockVariationId}
           plotfieldCommandId={plotfieldCommandId}
+          topologyBlockId={topologyBlockId}
           currentLanguage={currentLanguage || null}
         />
       ) : type === "status" ? (
@@ -163,6 +174,7 @@ export function ConditionBlockInputFieldItem({
           conditionBlockId={conditionBlockId}
           conditionBlockVariationId={conditionBlockVariationId}
           plotfieldCommandId={plotfieldCommandId}
+          topologyBlockId={topologyBlockId}
           currentStatus={status || null}
           currentCharacterId={characterId || null}
         />

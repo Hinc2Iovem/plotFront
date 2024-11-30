@@ -151,7 +151,7 @@ export function ContentCharacterCard({
     <div
       className={`flex-grow min-w-[25rem] overflow-hidden md:max-w-[35rem] rounded-md shadow-sm bg-primary-darker ${
         !showBackSide ? "hover:bg-primary flex" : "p-[1rem] pb-[0rem] flex flex-col"
-      } transition-colors h-[25rem] min-h-fit relative`}
+      } transition-colors h-[35rem] min-h-fit relative`}
     >
       {!showBackSide ? (
         <>
@@ -159,13 +159,13 @@ export function ContentCharacterCard({
             <img
               src={currentCharacterImg}
               alt={currentCharacterName}
-              className="w-full h-[15rem] absolute object-contain left-1/2 -translate-x-1/2 translate-y-[4rem]"
+              className="w-full h-[25rem] absolute object-contain left-1/2 -translate-x-1/2 translate-y-[4rem]"
             />
           ) : (
             <PreviewImage
               imagePreview={imagePreview}
               setPreview={setImagePreview}
-              imgClasses="w-full h-[15rem] object-contain translate-y-[4rem]"
+              imgClasses="w-full h-[25rem] object-contain translate-y-[4rem]"
             />
           )}
           <p

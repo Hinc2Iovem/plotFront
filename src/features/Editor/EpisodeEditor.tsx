@@ -38,8 +38,12 @@ export default function EpisodeEditor() {
         sessionStorage.setItem("focusedCommandCondition", `none`);
         sessionStorage.setItem("focusedCommandChoice", `none`);
         sessionStorage.setItem("focusedConditionBlock", `none`);
-        sessionStorage.setItem("focusedChoiceOption", `none`);
+        sessionStorage.setItem("focusedChoiceOption", "none");
         sessionStorage.setItem("focusedCommandInsideType", `default?`);
+        // for search
+        sessionStorage.setItem("altArrowLeft", "");
+        sessionStorage.setItem("altArrowRight", "");
+        sessionStorage.setItem("altCurrent", "");
         updateFocuseReset({ value: false });
       }
 
@@ -65,6 +69,10 @@ export default function EpisodeEditor() {
       sessionStorage.setItem("focusedConditionBlock", "none");
       sessionStorage.setItem("focusedChoiceOption", "none");
       sessionStorage.setItem("focusedCommandInsideType", "default?");
+      // for search
+      sessionStorage.setItem("altArrowLeft", "");
+      sessionStorage.setItem("altArrowRight", "");
+      sessionStorage.setItem("altCurrent", "");
     }
   }, [firstTopologyBlock, localTopologyBlockId]);
 

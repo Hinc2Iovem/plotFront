@@ -16,6 +16,8 @@ import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import TextSettingsModal from "../../../../components/TextSettingsModal";
 import { TextStyleTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import { checkTextStyle } from "../../../utils/checkTextStyleTextSide";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type ChoiceQuestionFieldTypes = {
   characterId: string;
@@ -38,6 +40,7 @@ export default function ChoiceQuestionField({
   plotFieldCommandId,
   textStyle,
 }: ChoiceQuestionFieldTypes) {
+  const { storyId } = useParams();
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -130,6 +133,35 @@ export default function ChoiceQuestionField({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emotionId]);
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: "Choice",
+          id: plotFieldCommandId,
+          text: isAuthor ? question : `${characterName} ${question}`,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "Choice",
+        id: plotFieldCommandId,
+        value: isAuthor ? debouncedValue : `${characterName} ${debouncedValue}`,
+        type: "command",
+      });
+    }
+  }, [characterName, debouncedValue, storyId]);
 
   return (
     <div className="w-full flex-grow flex gap-[1rem] bg-primary rounded-md shadow-md p-[.5rem] flex-wrap items-center">

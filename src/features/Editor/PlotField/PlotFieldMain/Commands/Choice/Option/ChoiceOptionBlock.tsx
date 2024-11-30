@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../hooks/utilities/useDebounce";
+import useDeleteChoiceOption from "../../../../hooks/Choice/ChoiceOption/useDeleteChoiceOption";
 import useGetChoiceOptionById from "../../../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
 import useUpdateChoiceOptionTranslationText from "../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
 import useChoiceOptions, { ChoiceOptionItemTypes } from "../Context/ChoiceContext";
@@ -10,9 +13,7 @@ import OptionSelectTopologyBlock from "./OptionSelectTopologyBlock";
 import OptionCharacteristicBlock from "./OptionVariations/OptionCharacteristicBlock";
 import OptionPremiumBlock from "./OptionVariations/OptionPremiumBlock";
 import OptionRelationshipBlock from "./OptionVariations/OptionRelationshipBlock";
-import useDeleteChoiceOption from "../../../../hooks/Choice/ChoiceOption/useDeleteChoiceOption";
-import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import useSearch from "../../../Search/SearchContext";
 
 type ChoiceOptionBlockTypes = {
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
@@ -38,7 +39,7 @@ export default function ChoiceOptionBlock({
   isFocusedBackground,
   setShowOptionPlot,
 }: ChoiceOptionBlockTypes) {
-  const { episodeId } = useParams();
+  const { episodeId, storyId } = useParams();
 
   const {
     updateChoiceOptionText,
@@ -106,6 +107,23 @@ export default function ChoiceOptionBlock({
     language: "russian",
   });
 
+  const { addItem } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId: storyId || "",
+        item: {
+          commandName: `Choice - ${optionType}`,
+          id: choiceOptionId,
+          text: getChoiceOptionText({ choiceId, choiceOptionId }),
+          topologyBlockId: currentTopologyBlockId,
+          type: "choiceOption",
+        },
+      });
+    }
+  }, [storyId]);
+
   useEffect(() => {
     if ((optionText || "") !== debouncedValue && debouncedValue?.trim().length) {
       updateOptionTextTranslation.mutate();
@@ -148,11 +166,11 @@ export default function ChoiceOptionBlock({
 
         <div className="p-[.2rem] flex flex-col gap-[1rem]">
           {optionType === "premium" ? (
-            <OptionPremiumBlock choiceOptionId={choiceOptionId} />
+            <OptionPremiumBlock choiceOptionId={choiceOptionId} debouncedValue={debouncedValue} />
           ) : optionType === "characteristic" ? (
-            <OptionCharacteristicBlock choiceOptionId={choiceOptionId} />
+            <OptionCharacteristicBlock choiceOptionId={choiceOptionId} debouncedValue={debouncedValue} />
           ) : optionType === "relationship" ? (
-            <OptionRelationshipBlock choiceOptionId={choiceOptionId} />
+            <OptionRelationshipBlock choiceOptionId={choiceOptionId} debouncedValue={debouncedValue} />
           ) : null}
           <div className="flex justify-between w-full">
             <div className={`${showAllSexualOrientationBlocks ? "" : "overflow-hidden"} w-[calc(50%+.5rem)] self-end`}>

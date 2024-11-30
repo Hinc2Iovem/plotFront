@@ -15,12 +15,14 @@ import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScroll
 import useUpdateConditionKey from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionKey";
 import useGetKeyById from "../../../../../hooks/Key/useGetKeyById";
 import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
+import useSearch from "../../../../Search/SearchContext";
 
 type ConditionBlockVariationKeyTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
   keyId?: string;
   conditionBlockVariationId: string;
+  topologyBlockId: string;
 };
 
 export default function ConditionBlockVariationKey({
@@ -28,7 +30,9 @@ export default function ConditionBlockVariationKey({
   conditionBlockId,
   conditionBlockVariationId,
   keyId,
+  topologyBlockId,
 }: ConditionBlockVariationKeyTypes) {
+  const { storyId } = useParams();
   const [showKeyPromptModal, setShowKeyPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
@@ -56,15 +60,53 @@ export default function ConditionBlockVariationKey({
     }
   }, [keyId]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: "Condition - Key",
+          id: conditionBlockVariationId,
+          text: currentConditionName,
+          topologyBlockId,
+          type: "conditionVariation",
+        },
+      });
+    }
+  }, [storyId]);
+
   const debouncedValue = useDebounce({
     delay: 700,
     value: currentConditionName,
   });
 
   useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "Condition - Key",
+        id: conditionBlockVariationId,
+        type: "conditionVariation",
+        value: debouncedValue,
+      });
+    }
+  }, [debouncedValue]);
+
+  useEffect(() => {
     // when user deleted some part of the input for no reason and then closed propmt modal, this will restore value to the initial state
     if (backUpConditionName && !showKeyPromptModal) {
       if (backUpConditionName !== currentConditionName) {
+        if (storyId) {
+          updateValue({
+            storyId,
+            commandName: "Condition - Key",
+            id: conditionBlockVariationId,
+            type: "conditionVariation",
+            value: backUpConditionName,
+          });
+        }
         setCurrentConditionName(backUpConditionName);
       }
     }

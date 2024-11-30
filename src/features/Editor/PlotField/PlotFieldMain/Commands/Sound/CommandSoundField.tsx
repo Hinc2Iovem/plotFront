@@ -12,13 +12,16 @@ import useGetSoundById from "../../../hooks/Sound/useGetSoundById";
 import useUpdateSoundText from "../../../hooks/Sound/useUpdateSoundText";
 import "../Prompts/promptStyles.css";
 import CreateSoundField from "./CreateSoundField";
+import useSearch from "../../Search/SearchContext";
+import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 
 type CommandSoundFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
-export default function CommandSoundField({ plotFieldCommandId, command }: CommandSoundFieldTypes) {
+export default function CommandSoundField({ plotFieldCommandId, command, topologyBlockId }: CommandSoundFieldTypes) {
   const { storyId } = useParams();
   const [showSoundDropDown, setShowSoundDropDown] = useState(false);
   const [showCreateSoundModal, setShowCreateSoundModal] = useState(false);
@@ -31,6 +34,8 @@ export default function CommandSoundField({ plotFieldCommandId, command }: Comma
     plotFieldCommandId,
   });
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+
+  const debouncedValue = useDebounce({ value: soundName, delay: 600 });
 
   const modalRef = useRef<HTMLDivElement>(null);
   const allSoundFilteredMemoized = useMemo(() => {
@@ -67,9 +72,26 @@ export default function CommandSoundField({ plotFieldCommandId, command }: Comma
     }
   }, [sound]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "sound",
+          id: plotFieldCommandId,
+          text: soundName,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   const updateSoundText = useUpdateSoundText({
     storyId: storyId ?? "",
-    commandSoundId,
+    soundId: commandSound?.soundId || "",
   });
 
   const handleNewSoundSubmit = (e: React.FormEvent, mm?: string) => {
@@ -93,7 +115,11 @@ export default function CommandSoundField({ plotFieldCommandId, command }: Comma
     setShowSoundDropDown(false);
   };
 
-  console.log(allSound);
+  useEffect(() => {
+    if (debouncedValue?.trim().length && debouncedValue !== soundName && storyId) {
+      updateValue({ storyId, commandName: "sound", id: plotFieldCommandId, type: "command", value: debouncedValue });
+    }
+  }, [debouncedValue, soundName, storyId]);
 
   useOutOfModal({
     setShowModal: setShowSoundDropDown,

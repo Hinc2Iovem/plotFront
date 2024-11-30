@@ -10,11 +10,14 @@ import useGetCharacterById from "../../../../../../../../hooks/Fetching/Characte
 import useUpdateConditionCharacter from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacter";
 import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
+import useSearch from "../../../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type ConditionBlockVariationCharacterTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
   currentCharacterId: string;
+  topologyBlockId: string;
   conditionBlockCharacterId: string;
 };
 
@@ -22,12 +25,22 @@ export default function ConditionBlockVariationCharacter({
   plotfieldCommandId,
   conditionBlockId,
   currentCharacterId,
+  topologyBlockId,
   conditionBlockCharacterId,
 }: ConditionBlockVariationCharacterTypes) {
+  const { storyId } = useParams();
   const [showCharacterPromptModal, setShowCharacterPromptModal] = useState(false);
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const { getConditionBlockVariationById, updateConditionBlockVariationValue } = useConditionBlocks();
 
   const [currentConditionName, setCurrentConditionName] = useState("");
+  const [currentConditionValue, setCurrentConditionValue] = useState(
+    getConditionBlockVariationById({
+      conditionBlockId,
+      plotfieldCommandId,
+      conditionBlockVariationId: conditionBlockCharacterId,
+    })?.value || null
+  );
+
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [characterId, setCharacterId] = useState(currentCharacterId || "");
@@ -62,6 +75,35 @@ export default function ConditionBlockVariationCharacter({
     delay: 700,
     value: currentConditionName,
   });
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: "Condition - Character",
+          id: conditionBlockCharacterId,
+          text: `${debouncedConditionName} ${currentConditionValue}`,
+          topologyBlockId,
+          type: "conditionVariation",
+        },
+      });
+    }
+  }, [storyId]);
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "Condition - Character",
+        id: conditionBlockCharacterId,
+        value: `${debouncedConditionName} ${currentConditionValue}`,
+        type: "conditionVariation",
+      });
+    }
+  }, [debouncedConditionName, storyId, currentConditionValue]);
 
   useEffect(() => {
     if (debouncedCharacter) {
@@ -148,6 +190,8 @@ export default function ConditionBlockVariationCharacter({
           setShowCharacterPromptModal={setShowCharacterPromptModal}
           showCharacterPromptModal={showCharacterPromptModal}
           conditionBlockVariationId={conditionBlockCharacterId}
+          setCurrentConditionValue={setCurrentConditionValue}
+          currentConditionValue={currentConditionValue}
         />
       </div>
     </div>
@@ -157,6 +201,8 @@ export default function ConditionBlockVariationCharacter({
 type ConditionValueFieldTypes = {
   plotfieldCommandId: string;
   setShowCharacterPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentConditionValue: React.Dispatch<React.SetStateAction<number | null>>;
+  currentConditionValue: number | null;
   showCharacterPromptModal: boolean;
   conditionBlockId: string;
   conditionBlockVariationId: string;
@@ -167,14 +213,13 @@ function ConditionValueField({
   showCharacterPromptModal,
   conditionBlockId,
   conditionBlockVariationId,
+  currentConditionValue,
+  setCurrentConditionValue,
   setShowCharacterPromptModal,
 }: ConditionValueFieldTypes) {
-  const { getConditionBlockVariationById, updateConditionBlockVariationValue } = useConditionBlocks();
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
-  const [currentConditionValue, setCurrentConditionValue] = useState(
-    getConditionBlockVariationById({ conditionBlockId, plotfieldCommandId, conditionBlockVariationId })?.value || null
-  );
   const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const updateConditionBlock = useUpdateConditionCharacter({

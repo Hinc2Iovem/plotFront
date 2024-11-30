@@ -9,6 +9,7 @@ import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideSc
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import useAddNewLogicalOperator from "../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useAddNewLogicalOperator";
 import useAddNewConditionBlockVariation from "../../../hooks/Condition/ConditionBlock/BlockVariations/useAddNewConditionBlockVariation";
 import useGetAllConditionBlockVariationsByConditionBlockId, {
   ConditionVariationResponseTypes,
@@ -20,7 +21,6 @@ import ConditionBlockShowPlot from "./ConditionBlockShowPlot";
 import ConditionValueItem from "./ConditionValueItem";
 import useConditionBlocks, { ConditionBlockItemTypes, ConditionBlockVariationTypes } from "./Context/ConditionContext";
 import DisplayOrderOfIfsModal from "./DisplayOrderOfIfsModal";
-import useAddNewLogicalOperator from "../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useAddNewLogicalOperator";
 
 type ConditionBlockItemProps = {
   currentTopologyBlockId: string;
@@ -265,6 +265,7 @@ export default function ConditionBlockItem({
           <div className="flex flex-col gap-[1rem] ">
             <ConditionValueItem
               key={conditionBlockId}
+              topologyBlockId={currentTopologyBlockId}
               conditionBlockId={conditionBlockId}
               plotfieldCommandId={plotfieldCommandId}
               conditionBlockVariations={conditionBlockVariations}

@@ -11,6 +11,7 @@ import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetch
 import useUpdateConditionCharacteristic from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
 import ConditionSignField from "./ConditionSignField";
 import { isNumeric } from "../../../../../../../../utils/regExpIsNumeric";
+import useSearch from "../../../../Search/SearchContext";
 
 type ConditionBlockVariationCharacteristicTypes = {
   plotfieldCommandId: string;
@@ -18,6 +19,7 @@ type ConditionBlockVariationCharacteristicTypes = {
   value: number | null;
   conditionBlockVariationId: string;
   firstCharacteristicId: string;
+  topologyBlockId: string;
   secondCharacteristicId: string;
 };
 
@@ -26,6 +28,7 @@ export default function ConditionBlockVariationCharacteristic({
   conditionBlockId,
   value,
   conditionBlockVariationId,
+  topologyBlockId,
   secondCharacteristicId,
   firstCharacteristicId,
 }: ConditionBlockVariationCharacteristicTypes) {
@@ -54,6 +57,7 @@ export default function ConditionBlockVariationCharacteristic({
           conditionBlockVariationId={conditionBlockVariationId}
           currentCharacteristicId={firstCharacteristicId}
           setHideModal={setHideModal}
+          topologyBlockId={topologyBlockId}
         />
         <div className="h-full">
           <ConditionSignField
@@ -74,6 +78,7 @@ export default function ConditionBlockVariationCharacteristic({
           currentCharacteristicId={secondCharacteristicId}
           value={value}
           setHideModal={setHideModal}
+          topologyBlockId={topologyBlockId}
         />
       </div>
     </div>
@@ -88,6 +93,7 @@ type CharacteristicInputFieldTypes = {
   conditionBlockId: string;
   conditionBlockVariationId: string;
   currentCharacteristicId: string;
+  topologyBlockId: string;
   value?: number | null;
   fieldType: "conditionName" | "conditionValue";
 };
@@ -102,7 +108,9 @@ function CharacteristicInputField({
   conditionBlockVariationId,
   currentCharacteristicId,
   value,
+  topologyBlockId,
 }: CharacteristicInputFieldTypes) {
+  const { storyId } = useParams();
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
   const [currentConditionName, setCurrentConditionName] = useState<string | number>(value ? value : "");
@@ -148,6 +156,35 @@ function CharacteristicInputField({
       });
     }
   }, [currentConditionName, fieldType]);
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: "Condition - Characteristic",
+          id: conditionBlockVariationId,
+          text: debouncedConditionName,
+          topologyBlockId,
+          type: "conditionVariation",
+        },
+      });
+    }
+  }, [storyId]);
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "Condition - Characteristic",
+        id: conditionBlockVariationId,
+        value: debouncedConditionName,
+        type: "conditionVariation",
+      });
+    }
+  }, [debouncedConditionName, storyId]);
 
   return (
     <div className="w-[40%] flex-grow min-w-[10rem] relative">

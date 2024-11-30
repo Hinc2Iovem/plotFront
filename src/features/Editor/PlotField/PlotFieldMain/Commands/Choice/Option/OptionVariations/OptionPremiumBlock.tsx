@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetPremiumOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetPremiumOption";
+import useSearch from "../../../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type OptionPremiumBlockTypes = {
   choiceOptionId: string;
+  debouncedValue: string;
 };
 
-export default function OptionPremiumBlock({
-  choiceOptionId,
-}: OptionPremiumBlockTypes) {
+export default function OptionPremiumBlock({ choiceOptionId, debouncedValue }: OptionPremiumBlockTypes) {
+  const { storyId } = useParams();
   const { data: optionPremium } = useGetPremiumOption({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
-  const [priceAmethysts, setPriceAmethysts] = useState(
-    optionPremium?.priceAmethysts || ""
-  );
+  const [priceAmethysts, setPriceAmethysts] = useState(optionPremium?.priceAmethysts || "");
   const theme = localStorage.getItem("theme");
+
   useEffect(() => {
     if (optionPremium) {
       setPriceAmethysts(optionPremium.priceAmethysts);
@@ -32,6 +33,20 @@ export default function OptionPremiumBlock({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceAmethysts]);
+
+  const { updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: `Choice - Premium`,
+        id: choiceOptionId,
+        value: `${debouncedValue} ${priceAmethysts}`,
+        type: "choiceOption",
+      });
+    }
+  }, [priceAmethysts, debouncedValue, storyId]);
 
   return (
     <div className="self-end flex-grow w-full px-[.5rem]">

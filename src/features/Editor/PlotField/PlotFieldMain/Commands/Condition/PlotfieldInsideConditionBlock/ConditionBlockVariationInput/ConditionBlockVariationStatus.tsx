@@ -13,11 +13,14 @@ import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import { DebouncedCheckCharacterTypes } from "../../../Choice/ChoiceQuestionField";
+import useSearch from "../../../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type ConditionBlockVariationStatusTypes = {
   conditionBlockId: string;
   conditionBlockVariationId: string;
   plotfieldCommandId: string;
+  topologyBlockId: string;
   currentCharacterId: string | null;
   currentStatus: StatusTypes | null;
 };
@@ -28,7 +31,9 @@ export default function ConditionBlockVariationStatus({
   conditionBlockVariationId,
   plotfieldCommandId,
   currentCharacterId,
+  topologyBlockId,
 }: ConditionBlockVariationStatusTypes) {
+  const { storyId } = useParams();
   const [status, setStatus] = useState(typeof currentStatus === "string" ? currentStatus : "");
   const [showAllLangauges, setShowAllStatuses] = useState(false);
 
@@ -92,6 +97,35 @@ export default function ConditionBlockVariationStatus({
       console.error("Such character doesn't exist");
     }
   }, [debouncedCharacter]);
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: "Condition - Status",
+          id: conditionBlockVariationId,
+          text: `${currentConditionName} ${status}`,
+          topologyBlockId,
+          type: "conditionVariation",
+        },
+      });
+    }
+  }, [storyId]);
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "Condition - Status",
+        id: conditionBlockVariationId,
+        value: `${debouncedConditionName} ${status}`,
+        type: "conditionVariation",
+      });
+    }
+  }, [status, storyId, debouncedConditionName]);
 
   useOutOfModal({
     modalRef,

@@ -1,26 +1,25 @@
 import { useEffect, useRef, useState } from "react";
+import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useFocuseOnCurrentFocusedFieldChange from "../../../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
+import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import {
   CommandSayVariationTypes,
   CommandSideTypes,
 } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
 import PlotfieldTextarea from "../../../../../../../shared/Textareas/PlotfieldTextarea";
+import TextSettingsModal from "../../../../../../components/TextSettingsModal";
+import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useGetTranslationSay from "../../../../../hooks/Say/useGetTranslationSay";
 import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
 import useUpdateCommandSayType from "../../../../../hooks/Say/useUpdateCommandSayType";
-import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import TextSettingsModal from "../../../../../../components/TextSettingsModal";
 import useUpdateSayTextSide from "../../../../../hooks/Say/useUpdateSayTextSide";
 import useUpdateSayTextStyle from "../../../../../hooks/Say/useUpdateSayTextStyle";
-import {
-  checkTextSide,
-  checkTextStyle,
-} from "../../../../../utils/checkTextStyleTextSide";
-import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
+import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
+import useSearch from "../../../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandSayFieldItemTypes = {
   nameValue: string;
@@ -45,12 +44,14 @@ export default function CommandSayFieldItem({
   commandIfId,
   isElse,
 }: CommandSayFieldItemTypes) {
+  const { storyId } = useParams();
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
   const [currentTextSide, setCurrentTextSide] = useState(textSide);
   const [showTextSettingsModal, setShowTextSettingsModal] = useState(false);
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
+
   const currentInput = useRef<HTMLTextAreaElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
@@ -67,8 +68,34 @@ export default function CommandSayFieldItem({
   useEffect(() => {
     if (nameValue) {
       setSayVariationType(nameValue);
+      if (storyId) {
+        updateValue({
+          storyId,
+          id: plotFieldCommandId,
+          type: "command",
+          value: debouncedValue,
+          commandName: nameValue,
+        });
+      }
     }
-  }, [nameValue]);
+  }, [nameValue, storyId]);
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue,
+          id: plotFieldCommandId,
+          text: textValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
 
   useEffect(() => {
     if (commandSayText && !textValue.trim().length) {
@@ -92,6 +119,15 @@ export default function CommandSayFieldItem({
 
   useEffect(() => {
     if (debouncedValue?.trim().length) {
+      if (storyId) {
+        updateValue({
+          storyId,
+          id: plotFieldCommandId,
+          type: "command",
+          value: debouncedValue,
+          commandName: sayVariationType,
+        });
+      }
       updateCommandSayText.mutate();
       checkTextStyle({ debouncedValue, setCurrentTextStyle });
       checkTextSide({
@@ -144,9 +180,7 @@ export default function CommandSayFieldItem({
               e.currentTarget.blur();
             }
           }}
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          } capitalize text-start`}
+          className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"} capitalize text-start`}
         >
           {sayVariationType}
         </PlotfieldButton>
@@ -162,9 +196,7 @@ export default function CommandSayFieldItem({
                 key={pv}
                 onClick={() => {
                   setSayVariationType(pv);
-                  updateCommandSayNameValue.mutate(
-                    pv as CommandSayVariationTypes
-                  );
+                  updateCommandSayNameValue.mutate(pv as CommandSayVariationTypes);
                   setShowUpdateNameModal(false);
                 }}
                 className={`${pv === nameValue ? "hidden" : ""} capitalize`}

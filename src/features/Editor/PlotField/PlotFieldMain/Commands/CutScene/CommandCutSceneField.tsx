@@ -6,13 +6,21 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandCutSceneFieldTypes = {
   plotFieldCommandId: string;
   command: string;
+  topologyBlockId: string;
 };
 
-export default function CommandCutSceneField({ plotFieldCommandId, command }: CommandCutSceneFieldTypes) {
+export default function CommandCutSceneField({
+  plotFieldCommandId,
+  command,
+  topologyBlockId,
+}: CommandCutSceneFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "CutScene");
   const [textValue, setTextValue] = useState("");
   const { data: commandCutScene } = useGetCommandCutScene({
@@ -26,6 +34,23 @@ export default function CommandCutSceneField({ plotFieldCommandId, command }: Co
 
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "cutScene",
+          id: plotFieldCommandId,
+          text: textValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
 
   useEffect(() => {
     if (commandCutScene) {
@@ -48,6 +73,15 @@ export default function CommandCutSceneField({ plotFieldCommandId, command }: Co
 
   useEffect(() => {
     if (commandCutScene?.cutSceneName !== debouncedValue && debouncedValue?.trim().length) {
+      if (storyId) {
+        updateValue({
+          storyId,
+          commandName: "cutScene",
+          id: plotFieldCommandId,
+          type: "command",
+          value: debouncedValue,
+        });
+      }
       updateCutSceneText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

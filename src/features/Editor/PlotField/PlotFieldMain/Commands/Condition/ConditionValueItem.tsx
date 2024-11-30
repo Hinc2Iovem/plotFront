@@ -13,6 +13,7 @@ type ConditionValueItemTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
   logicalOperators: string;
+  topologyBlockId: string;
 } & ConditionBlockItemTypes;
 
 export default function ConditionValueItem({
@@ -20,6 +21,7 @@ export default function ConditionValueItem({
   conditionBlockId,
   conditionBlockVariations,
   logicalOperators,
+  topologyBlockId,
 }: ConditionValueItemTypes) {
   return (
     <form
@@ -30,6 +32,7 @@ export default function ConditionValueItem({
         <ConditionBlockInputFieldItem
           key={cbv.conditionBlockVariationId}
           {...cbv}
+          topologyBlockId={topologyBlockId}
           plotfieldCommandId={plotfieldCommandId}
           conditionBlockId={conditionBlockId}
           logicalOperators={logicalOperators}

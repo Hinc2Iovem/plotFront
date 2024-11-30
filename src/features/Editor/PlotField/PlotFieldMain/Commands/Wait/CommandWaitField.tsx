@@ -4,13 +4,17 @@ import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useGetCommandWait from "../../../hooks/Wait/useGetCommandWait";
 import useUpdateWaitText from "../../../hooks/Wait/useUpdateWaitText";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandWaitFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
-export default function CommandWaitField({ plotFieldCommandId, command }: CommandWaitFieldTypes) {
+export default function CommandWaitField({ plotFieldCommandId, command, topologyBlockId }: CommandWaitFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Wait");
   const [waitValue, setWaitValue] = useState("");
   const { data: commandWait } = useGetCommandWait({
@@ -35,12 +39,32 @@ export default function CommandWaitField({ plotFieldCommandId, command }: Comman
     }
   }, [commandWait]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "wait",
+          id: plotFieldCommandId,
+          text: waitValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   const updateWaitText = useUpdateWaitText({
     waitValue: Number(waitValue),
   });
 
   useEffect(() => {
     if (waitValue) {
+      if (storyId) {
+        updateValue({ storyId, commandName: "wait", id: plotFieldCommandId, type: "command", value: waitValue });
+      }
       updateWaitText.mutate({
         waitId: commandWaitId || commandWait?._id || "",
       });

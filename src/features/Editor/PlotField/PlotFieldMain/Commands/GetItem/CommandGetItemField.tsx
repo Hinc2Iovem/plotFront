@@ -8,6 +8,8 @@ import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import PlotfieldTextarea from "../../../../../shared/Textareas/PlotfieldTextarea";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useGetSingleGetItemTranslation from "../../../hooks/GetItem/useGetSingleGetItemTranslation";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandGetItemFieldTypes = {
   plotFieldCommandId: string;
@@ -20,6 +22,7 @@ export default function CommandGetItemField({
   plotFieldCommandId,
   command,
 }: CommandGetItemFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "GetItem");
   const [itemNameInitial, setItemNameInitial] = useState("");
   const [itemDescriptionInitial, setItemDescriptionInitial] = useState("");
@@ -62,6 +65,23 @@ export default function CommandGetItemField({
     }
   }, [getItem]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "getItem",
+          id: plotFieldCommandId,
+          text: `${itemName} ${itemDescription} ${buttonText}`,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   const debouncedItemNameValue = useDebounce({ value: itemName, delay: 500 });
   const debouncedItemDescriptionValue = useDebounce({
     value: itemDescription,
@@ -101,6 +121,18 @@ export default function CommandGetItemField({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedButtonTextValue]);
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: nameValue || "getItem",
+        id: plotFieldCommandId,
+        value: `${debouncedItemNameValue} ${debouncedItemDescriptionValue} ${debouncedButtonTextValue}`,
+        type: "command",
+      });
+    }
+  }, [debouncedButtonTextValue, debouncedItemDescriptionValue, debouncedItemNameValue]);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">

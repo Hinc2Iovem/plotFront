@@ -5,16 +5,21 @@ import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldTextarea from "../../../../../shared/Textareas/PlotfieldTextarea";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandCommentFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
 export default function CommandCommentField({
   plotFieldCommandId,
+  topologyBlockId,
   command,
 }: CommandCommentFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Comment");
 
   const { data: commandComment } = useGetCommandComment({
@@ -42,12 +47,34 @@ export default function CommandCommentField({
     comment: debouncedValue,
   });
 
+  const { addItem, updateValue } = useSearch();
+
   useEffect(() => {
-    if (
-      commandComment?.comment !== debouncedValue &&
-      debouncedValue?.trim().length &&
-      commandCommentId
-    ) {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "comment",
+          id: plotFieldCommandId,
+          text: debouncedValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
+  useEffect(() => {
+    if (commandComment?.comment !== debouncedValue && debouncedValue?.trim().length && commandCommentId) {
+      if (storyId) {
+        updateValue({
+          storyId,
+          commandName: "comment",
+          id: plotFieldCommandId,
+          type: "command",
+          value: debouncedValue,
+        });
+      }
       updateCommentText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,11 +83,7 @@ export default function CommandCommentField({
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
@@ -71,11 +94,7 @@ export default function CommandCommentField({
         }}
         className="min-w-[10rem] flex-grow relative"
       >
-        <PlotfieldTextarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Коммент"
-        />
+        <PlotfieldTextarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Коммент" />
       </form>
     </div>
   );

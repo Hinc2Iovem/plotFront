@@ -13,6 +13,8 @@ import useGetAllWardrobeAppearancePartBlocks from "../../../hooks/Wardrobe/Wardr
 import "../Prompts/promptStyles.css";
 import WardrobeAppearancePartBlock from "./WardrobeAppearancePartBlock";
 import WardrobeCharacterAppearancePartForm from "./WardrobeCharacterAppearancePartForm";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandWardrobeFieldTypes = {
   plotFieldCommandId: string;
@@ -25,6 +27,7 @@ export default function CommandWardrobeField({
   command,
   topologyBlockId,
 }: CommandWardrobeFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Wardrobe");
   const [wardrobeTitle, setWardrobeTitle] = useState("");
   const [commandWardrobeId, setCommandWardrobeId] = useState("");
@@ -35,6 +38,9 @@ export default function CommandWardrobeField({
   const { data: commandWardrobe } = useGetCommandWardrobe({
     plotFieldCommandId,
   });
+
+  const [allAppearanceNames, setAllAppearanceNames] = useState([""]);
+
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const isCommandFocused = useCheckIsCurrentFieldFocused({
@@ -67,6 +73,23 @@ export default function CommandWardrobeField({
     }
   }, [translatedWardrobe]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "wardrobe",
+          id: plotFieldCommandId,
+          text: `${wardrobeTitle}`,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   const updateWardrobeTranslatedTitle = useUpdateWardrobeTranslationText({
     commandId: plotFieldCommandId,
     title: wardrobeTitle,
@@ -92,6 +115,18 @@ export default function CommandWardrobeField({
     showModal: showAllAppearancePartBlocks,
     setShowModal: setShowAllAppearancePartBlocks,
   });
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "wardrobe",
+        id: plotFieldCommandId,
+        type: "command",
+        value: `${wardrobeTitle} ${allAppearanceNames.map((an) => `${an}`).join(" ")}`,
+      });
+    }
+  }, [allAppearanceNames, storyId, wardrobeTitle]);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
@@ -169,7 +204,7 @@ export default function CommandWardrobeField({
         </button>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-[1rem] w-full h-[13rem] overflow-y-auto p-[.5rem] | containerScroll">
           {allAppearancePartBlocks?.map((a) => (
-            <WardrobeAppearancePartBlock key={a._id} {...a} />
+            <WardrobeAppearancePartBlock key={a._id} {...a} setAllAppearanceNames={setAllAppearanceNames} />
           ))}
         </div>
       </div>

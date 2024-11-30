@@ -7,6 +7,7 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import useGetTranslationAchievementEnabled from "../../../hooks/Achievement/useGetTranslationAchievementEnabled";
 import useUpdateAchievementText from "../../../hooks/Achievement/useUpdateAchievementText";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
+import useSearch from "../../Search/SearchContext";
 
 type CommandAchievementFieldTypes = {
   plotFieldCommandId: string;
@@ -14,7 +15,11 @@ type CommandAchievementFieldTypes = {
   topologyBlockId: string;
 };
 
-export default function CommandAchievementField({ plotFieldCommandId, command }: CommandAchievementFieldTypes) {
+export default function CommandAchievementField({
+  plotFieldCommandId,
+  command,
+  topologyBlockId,
+}: CommandAchievementFieldTypes) {
   const { storyId } = useParams();
   const [nameValue] = useState(command ?? "achievement");
   const [initialTextValue, setInitialTextValue] = useState("");
@@ -30,6 +35,23 @@ export default function CommandAchievementField({ plotFieldCommandId, command }:
   const { data: translatedAchievement } = useGetTranslationAchievementEnabled({
     commandId: plotFieldCommandId,
   });
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "achievement",
+          id: plotFieldCommandId,
+          text: textValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
 
   useEffect(() => {
     if (translatedAchievement && !textValue.trim().length) {
@@ -49,6 +71,15 @@ export default function CommandAchievementField({ plotFieldCommandId, command }:
 
   useEffect(() => {
     if (initialTextValue !== debouncedValue && debouncedValue?.trim().length) {
+      if (storyId) {
+        updateValue({
+          storyId,
+          commandName: "achievement",
+          id: plotFieldCommandId,
+          type: "command",
+          value: debouncedValue,
+        });
+      }
       updateAchievementText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

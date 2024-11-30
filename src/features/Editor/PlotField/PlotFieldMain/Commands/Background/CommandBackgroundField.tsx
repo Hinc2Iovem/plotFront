@@ -7,9 +7,12 @@ import BackgroundNameAndImage from "./BackgroundNameAndImage";
 import BackgroundPointOfMovement from "./BackgroundPointOfMovement";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandBackgroundFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
@@ -17,10 +20,13 @@ const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
 
 export default function CommandBackgroundField({
   plotFieldCommandId,
+  topologyBlockId,
   command,
 }: CommandBackgroundFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Background");
   const [backgroundName, setBackgroundName] = useState<string>("");
+  const [currentMusicName, setCurrentMusicName] = useState("");
   const [pointOfMovement, setPointOfMovement] = useState("");
   const { data: commandBackground } = useGetCommandBackground({
     plotFieldCommandId,
@@ -55,11 +61,25 @@ export default function CommandBackgroundField({
     backgroundId: commandBackgroundId,
   });
 
+  const { addItem, updateValue } = useSearch();
+
   useEffect(() => {
-    if (
-      commandBackground?.backgroundName !== debouncedNameValue &&
-      debouncedNameValue?.trim().length
-    ) {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "background",
+          id: plotFieldCommandId,
+          text: `${debouncedNameValue} ${currentMusicName} ${pointOfMovement}`,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
+  useEffect(() => {
+    if (commandBackground?.backgroundName !== debouncedNameValue && debouncedNameValue?.trim().length) {
       updateBackgroundText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,14 +97,22 @@ export default function CommandBackgroundField({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pointOfMovement]);
 
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "background",
+        id: plotFieldCommandId,
+        type: "command",
+        value: `${debouncedNameValue} ${currentMusicName} ${pointOfMovement}`,
+      });
+    }
+  }, [currentMusicName, debouncedNameValue, storyId, pointOfMovement]);
+
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
@@ -98,6 +126,7 @@ export default function CommandBackgroundField({
       <BackgroundMusicForm
         backgroundId={commandBackgroundId}
         musicId={commandBackground?.musicId ?? ""}
+        setCurrentMusicName={setCurrentMusicName}
       />
       <BackgroundPointOfMovement
         showNotificationModal={showNotificationModal}

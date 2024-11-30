@@ -10,16 +10,15 @@ import useGetTranslationSayEnabled from "../../../../../hooks/Say/useGetTranslat
 import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
 import useUpdateSayTextSide from "../../../../../hooks/Say/useUpdateSayTextSide";
 import useUpdateSayTextStyle from "../../../../../hooks/Say/useUpdateSayTextStyle";
-import {
-  checkTextSide,
-  checkTextStyle,
-} from "../../../../../utils/checkTextStyleTextSide";
+import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
 import FormCharacter from "./FormCharacter";
 import FormEmotion from "./FormEmotion";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
+import useSearch from "../../../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandSayCharacterFieldItemTypes = {
   plotFieldCommandSayId: string;
@@ -66,6 +65,7 @@ export default function CommandSayCharacterFieldItem({
   commandIfId,
   isElse,
 }: CommandSayCharacterFieldItemTypes) {
+  const { storyId } = useParams();
   const {
     updateCharacterProperties,
     updateEmotionProperties,
@@ -105,8 +105,7 @@ export default function CommandSayCharacterFieldItem({
   const currentInput = useRef<HTMLTextAreaElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
-  const [showCreateCharacterModal, setShowCreateCharacterModal] =
-    useState(false);
+  const [showCreateCharacterModal, setShowCreateCharacterModal] = useState(false);
   const [showCreateEmotionModal, setShowCreateEmotionModal] = useState(false);
 
   const [textValue, setTextValue] = useState("");
@@ -118,13 +117,26 @@ export default function CommandSayCharacterFieldItem({
   });
   const [allEmotions, setAllEmotions] = useState<EmotionsTypes[]>([]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: "character",
+          id: plotFieldCommandId,
+          text: `${characterValue.characterName} ${emotionValue.emotionName} ${debouncedValue}`,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   useEffect(() => {
     if (translatedSayText && !textValue.trim().length) {
-      setTextValue(
-        (translatedSayText.translations || []).find(
-          (ts) => ts.textFieldName === "sayText"
-        )?.text || ""
-      );
+      setTextValue((translatedSayText.translations || []).find((ts) => ts.textFieldName === "sayText")?.text || "");
     }
   }, [translatedSayText]);
 
@@ -162,9 +174,7 @@ export default function CommandSayCharacterFieldItem({
         imgUrl: currentCharacter?.img || characterImg || "",
       }));
 
-      const currentEmotion = currentCharacter.emotions.find(
-        (e) => e._id === emotionValue._id
-      );
+      const currentEmotion = currentCharacter.emotions.find((e) => e._id === emotionValue._id);
 
       setAllEmotions(currentCharacter?.emotions);
 
@@ -174,8 +184,6 @@ export default function CommandSayCharacterFieldItem({
           emotionName: currentEmotion?.emotionName || null,
           imgUrl: currentEmotion?.imgUrl || null,
         });
-
-        console.log("currentEmotion: ", currentEmotion);
 
         if (commandIfId?.trim().length) {
           updateEmotionPropertiesIf({
@@ -193,6 +201,16 @@ export default function CommandSayCharacterFieldItem({
             id: plotFieldCommandId,
           });
         }
+      }
+
+      if (storyId) {
+        updateValue({
+          storyId,
+          commandName: "character",
+          id: plotFieldCommandId,
+          type: "command",
+          value: `${characterValue.characterName} ${emotionValue.emotionName} ${debouncedValue}`,
+        });
       }
     }
   }, [currentCharacter]);
@@ -213,6 +231,15 @@ export default function CommandSayCharacterFieldItem({
 
   useEffect(() => {
     if (debouncedValue?.trim().length) {
+      if (storyId) {
+        updateValue({
+          storyId,
+          commandName: "character",
+          id: plotFieldCommandId,
+          type: "command",
+          value: `${characterValue.characterName} ${emotionValue.emotionName} ${debouncedValue}`,
+        });
+      }
       updateCommandSayText.mutate();
       checkTextStyle({ debouncedValue, setCurrentTextStyle });
       checkTextSide({
@@ -304,9 +331,7 @@ export default function CommandSayCharacterFieldItem({
               : currentTextStyle === "italic"
               ? "italic"
               : ""
-          } ${
-            currentTextSide === "right" ? "text-right" : "text-left"
-          } h-full min-h-[7.5rem]`}
+          } ${currentTextSide === "right" ? "text-right" : "text-left"} h-full min-h-[7.5rem]`}
           onChange={(e) => setTextValue(e.target.value)}
         />
 

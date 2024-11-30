@@ -7,6 +7,7 @@ import {
 import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 import usePlotfieldCommandPossiblyBeingUndo from "../Context/CommandsPossiblyBeingUndo/PlotfieldCommandsPossiblyBeingUndo";
+import useSearch from "../PlotFieldMain/Search/SearchContext";
 
 type NewCommandTypes = {
   _id: string;
@@ -24,12 +25,11 @@ export default function useCreateBlankCommand({
   topologyBlockId: string;
   episodeId: string;
 }) {
-  const {
-    addCommand,
-    updateCommandInfo,
-    getCurrentAmountOfCommands,
-    getCommandByPlotfieldCommandId,
-  } = usePlotfieldCommands();
+  const { addCommand, updateCommandInfo, getCurrentAmountOfCommands, getCommandByPlotfieldCommandId } =
+    usePlotfieldCommands();
+
+  const { addItem } = useSearch();
+
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const currentTopologyBlock = sessionStorage.getItem(`focusedTopologyBlock`);
   const currentCommand = sessionStorage.getItem(`focusedCommand`)?.split("-");
@@ -41,9 +41,7 @@ export default function useCreateBlankCommand({
   } else {
     valueOrNull = getCommandByPlotfieldCommandId({
       plotfieldCommandId: currentCommandId,
-      topologyBlockId: currentTopologyBlock?.trim().length
-        ? currentTopologyBlock
-        : topologyBlockId,
+      topologyBlockId: currentTopologyBlock?.trim().length ? currentTopologyBlock : topologyBlockId,
     })?.commandOrder;
   }
 
@@ -51,49 +49,52 @@ export default function useCreateBlankCommand({
   return useMutation({
     mutationKey: ["new", "plotfield", "topologyBlock", topologyBlockId],
     mutationFn: async (commandOrder) => {
-      const currentTopologyBlockId = commandOrder?.topologyBlockId?.trim()
-        .length
+      const currentTopologyBlockId = commandOrder?.topologyBlockId?.trim().length
         ? commandOrder.topologyBlockId
         : topologyBlockId;
       return await axiosCustomized
-        .post<PlotFieldTypes>(
-          `/plotField/topologyBlocks/${currentTopologyBlockId}`,
-          {
-            commandOrder:
-              typeof valueOrNull === "number"
-                ? valueOrNull + 1
-                : getCurrentAmountOfCommands({
-                    topologyBlockId: currentTopologyBlockId,
-                  }) === 1
-                ? 0
-                : getCurrentAmountOfCommands({
-                    topologyBlockId: currentTopologyBlockId,
-                  }) - 1,
-            _id: commandOrder._id,
-            commandName: commandOrder.commandName,
-          }
-        )
+        .post<PlotFieldTypes>(`/plotField/topologyBlocks/${currentTopologyBlockId}`, {
+          commandOrder:
+            typeof valueOrNull === "number"
+              ? valueOrNull + 1
+              : getCurrentAmountOfCommands({
+                  topologyBlockId: currentTopologyBlockId,
+                }) === 1
+              ? 0
+              : getCurrentAmountOfCommands({
+                  topologyBlockId: currentTopologyBlockId,
+                }) - 1,
+          _id: commandOrder._id,
+          commandName: commandOrder.commandName,
+        })
         .then((r) => r.data);
     },
     onMutate: async (newCommand: NewCommandTypes) => {
       const currentTopologyBlockId = newCommand?.topologyBlockId?.trim().length
         ? newCommand.topologyBlockId
         : topologyBlockId;
+
+      addItem({
+        item: {
+          commandName:
+            newCommand.commandName === "say" ? newCommand.sayType || "author" : newCommand.commandName || "command",
+          type: "command",
+          id: newCommand._id,
+          text: "",
+          topologyBlockId: currentTopologyBlockId,
+        },
+      });
+
       await queryClient.cancelQueries({
         queryKey: ["plotfield", "topologyBlock", currentTopologyBlockId],
       });
 
-      const prevCommands = queryClient.getQueryData([
-        "plotfield",
-        "topologyBlock",
-        currentTopologyBlockId,
-      ]);
+      const prevCommands = queryClient.getQueryData(["plotfield", "topologyBlock", currentTopologyBlockId]);
 
       addCommand({
         newCommand: {
           _id: newCommand._id,
-          command:
-            (newCommand.commandName as AllPossiblePlotFieldComamndsTypes) || "",
+          command: (newCommand.commandName as AllPossiblePlotFieldComamndsTypes) || "",
           commandOrder:
             typeof valueOrNull === "number"
               ? valueOrNull + 1
@@ -113,8 +114,7 @@ export default function useCreateBlankCommand({
         topologyBlockId: currentTopologyBlockId,
         newCommand: {
           _id: newCommand._id,
-          command:
-            newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
+          command: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
           commandOrder:
             typeof valueOrNull === "number"
               ? valueOrNull + 1
@@ -150,10 +150,7 @@ export default function useCreateBlankCommand({
         addOrMinus: "minus",
         topologyBlockId: currentTopologyBlockId,
       });
-      queryClient.setQueryData(
-        ["plotfield", "topologyBlock", currentTopologyBlockId],
-        context?.prevCommands
-      );
+      queryClient.setQueryData(["plotfield", "topologyBlock", currentTopologyBlockId], context?.prevCommands);
     },
   });
 }

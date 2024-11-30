@@ -6,13 +6,21 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandAmbientFieldTypes = {
   plotFieldCommandId: string;
   command: string;
+  topologyBlockId: string;
 };
 
-export default function CommandAmbientField({ plotFieldCommandId, command }: CommandAmbientFieldTypes) {
+export default function CommandAmbientField({
+  plotFieldCommandId,
+  command,
+  topologyBlockId,
+}: CommandAmbientFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Ambient");
   const [textValue, setTextValue] = useState("");
   const { data: commandAmbient } = useGetCommandAmbient({
@@ -39,6 +47,23 @@ export default function CommandAmbientField({ plotFieldCommandId, command }: Com
     }
   }, [commandAmbient]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "ambient",
+          id: plotFieldCommandId,
+          text: textValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateAmbientText = useUpdateAmbientText({
@@ -48,6 +73,15 @@ export default function CommandAmbientField({ plotFieldCommandId, command }: Com
 
   useEffect(() => {
     if (commandAmbient?.ambientName !== debouncedValue && debouncedValue?.trim().length) {
+      if (storyId) {
+        updateValue({
+          storyId,
+          commandName: "ambient",
+          id: plotFieldCommandId,
+          type: "command",
+          value: debouncedValue,
+        });
+      }
       updateAmbientText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

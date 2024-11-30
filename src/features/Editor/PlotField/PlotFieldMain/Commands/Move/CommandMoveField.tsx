@@ -5,15 +5,19 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandMoveFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
 const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
 
-export default function CommandMoveField({ plotFieldCommandId, command }: CommandMoveFieldTypes) {
+export default function CommandMoveField({ plotFieldCommandId, command, topologyBlockId }: CommandMoveFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Move");
   const [moveValue, setMoveValue] = useState<string>("");
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -47,8 +51,28 @@ export default function CommandMoveField({ plotFieldCommandId, command }: Comman
     moveId: commandMoveId,
   });
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "move",
+          id: plotFieldCommandId,
+          text: moveValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   useEffect(() => {
     if (moveValue.trim().length) {
+      if (storyId) {
+        updateValue({ storyId, commandName: "move", id: plotFieldCommandId, type: "command", value: moveValue });
+      }
       if (regexCheckDecimalNumberBetweenZeroAndOne.test(moveValue)) {
         setShowNotificationModal(false);
         updateMoveText.mutate();

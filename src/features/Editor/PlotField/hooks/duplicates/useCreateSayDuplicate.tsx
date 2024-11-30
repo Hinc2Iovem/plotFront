@@ -4,6 +4,7 @@ import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotF
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import usePlotfieldCommands from "../../Context/PlotFieldContext";
 import usePlotfieldCommandPossiblyBeingUndo from "../../Context/CommandsPossiblyBeingUndo/PlotfieldCommandsPossiblyBeingUndo";
+import useSearch from "../../PlotFieldMain/Search/SearchContext";
 
 type CreateSayDuplicateTypes = {
   topologyBlockId: string;
@@ -30,19 +31,12 @@ type CreateSayDuplicateOnMutation = {
   emotionImg?: string;
 };
 
-export default function useCreateSayDuplicate({
-  topologyBlockId,
-  episodeId,
-}: CreateSayDuplicateTypes) {
-  const {
-    addCommand,
-    updateCommandInfo,
-    addCommandIf,
-    updateCommandIfInfo,
-    removeCommandIfItem,
-  } = usePlotfieldCommands();
+export default function useCreateSayDuplicate({ topologyBlockId, episodeId }: CreateSayDuplicateTypes) {
+  const { addCommand, updateCommandInfo, addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
+    usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
+  const { addItem, deleteValue } = useSearch();
 
   return useMutation({
     mutationFn: async (newCommand: CreateSayDuplicateOnMutation) => {
@@ -57,9 +51,7 @@ export default function useCreateSayDuplicate({
         isElse,
         topologyBlockId: bodyTopologyBlockId,
       } = newCommand;
-      const currentTopologyBlockId = bodyTopologyBlockId?.trim().length
-        ? bodyTopologyBlockId
-        : topologyBlockId;
+      const currentTopologyBlockId = bodyTopologyBlockId?.trim().length ? bodyTopologyBlockId : topologyBlockId;
       const response = await axiosCustomized.post(
         `/plotFieldCommands/say/topologyBlocks/${currentTopologyBlockId}/copy`,
         {
@@ -79,38 +71,28 @@ export default function useCreateSayDuplicate({
       const currentTopologyBlockId = newCommand.topologyBlockId?.trim().length
         ? newCommand.topologyBlockId
         : topologyBlockId;
+
+      addItem({
+        item: {
+          commandName: newCommand.sayType || "author",
+          id: newCommand.plotfieldCommandId,
+          text: newCommand.sayType === "character" ? `${newCommand.characterName} ${newCommand.emotionName}` : "",
+          topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
+          type: "command",
+        },
+      });
       if (newCommand.commandIfId?.trim().length) {
         let prevCommands;
         if (newCommand.isElse) {
           await queryClient.cancelQueries({
-            queryKey: [
-              "plotfield",
-              "commandIf",
-              newCommand.commandIfId,
-              "insideElse",
-            ],
+            queryKey: ["plotfield", "commandIf", newCommand.commandIfId, "insideElse"],
           });
-          prevCommands = queryClient.getQueryData([
-            "plotfield",
-            "commandIf",
-            newCommand.commandIfId,
-            "insideElse",
-          ]);
+          prevCommands = queryClient.getQueryData(["plotfield", "commandIf", newCommand.commandIfId, "insideElse"]);
         } else {
           await queryClient.cancelQueries({
-            queryKey: [
-              "plotfield",
-              "commandIf",
-              newCommand.commandIfId,
-              "insideElse",
-            ],
+            queryKey: ["plotfield", "commandIf", newCommand.commandIfId, "insideElse"],
           });
-          prevCommands = queryClient.getQueryData([
-            "plotfield",
-            "commandIf",
-            newCommand.commandIfId,
-            "insideIf",
-          ]);
+          prevCommands = queryClient.getQueryData(["plotfield", "commandIf", newCommand.commandIfId, "insideIf"]);
         }
 
         addCommandIf({
@@ -119,9 +101,7 @@ export default function useCreateSayDuplicate({
           newCommand: {
             commandOrder: newCommand.commandOrder,
             _id: newCommand.plotfieldCommandId,
-            command:
-              newCommand.commandName ||
-              ("" as AllPossiblePlotFieldComamndsTypes),
+            command: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
             isElse: newCommand.isElse || false,
             topologyBlockId: currentTopologyBlockId,
             commandIfId: newCommand.commandIfId || "",
@@ -145,9 +125,7 @@ export default function useCreateSayDuplicate({
           topologyBlockId: currentTopologyBlockId,
           newCommand: {
             _id: newCommand.plotfieldCommandId,
-            command:
-              newCommand.commandName ||
-              ("" as AllPossiblePlotFieldComamndsTypes),
+            command: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
             commandOrder: newCommand.commandOrder,
             topologyBlockId: currentTopologyBlockId,
             undoType: "copied",
@@ -176,18 +154,12 @@ export default function useCreateSayDuplicate({
           queryKey: ["plotfield", "topologyBlock", currentTopologyBlockId],
         });
 
-        const prevCommands = queryClient.getQueryData([
-          "plotfield",
-          "topologyBlock",
-          currentTopologyBlockId,
-        ]);
+        const prevCommands = queryClient.getQueryData(["plotfield", "topologyBlock", currentTopologyBlockId]);
 
         addCommand({
           newCommand: {
             _id: newCommand.plotfieldCommandId,
-            command:
-              (newCommand.commandName as AllPossiblePlotFieldComamndsTypes) ||
-              "",
+            command: (newCommand.commandName as AllPossiblePlotFieldComamndsTypes) || "",
             commandOrder: newCommand.commandOrder,
             topologyBlockId: currentTopologyBlockId,
             sayType: newCommand?.sayType || ("" as CommandSayVariationTypes),
@@ -209,9 +181,7 @@ export default function useCreateSayDuplicate({
           topologyBlockId: currentTopologyBlockId,
           newCommand: {
             _id: newCommand.plotfieldCommandId,
-            command:
-              newCommand.commandName ||
-              ("" as AllPossiblePlotFieldComamndsTypes),
+            command: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
             commandOrder: newCommand.commandOrder,
             topologyBlockId: currentTopologyBlockId,
             undoType: "copied",
@@ -243,6 +213,7 @@ export default function useCreateSayDuplicate({
     },
     onError: (err, newCommand, context) => {
       const { commandIfId, isElse, plotfieldCommandId } = newCommand;
+      deleteValue({ id: plotfieldCommandId });
       if (commandIfId?.trim().length) {
         console.error(`Some error happened: ${err.message}`);
 
@@ -258,15 +229,9 @@ export default function useCreateSayDuplicate({
         });
 
         if (isElse) {
-          queryClient.setQueryData(
-            ["plotfield", "commandIf", commandIfId, "insideElse"],
-            context?.prevCommands
-          );
+          queryClient.setQueryData(["plotfield", "commandIf", commandIfId, "insideElse"], context?.prevCommands);
         } else {
-          queryClient.setQueryData(
-            ["plotfield", "commandIf", commandIfId, "insideIf"],
-            context?.prevCommands
-          );
+          queryClient.setQueryData(["plotfield", "commandIf", commandIfId, "insideIf"], context?.prevCommands);
         }
       } else {
         const currentTopologyBlockId = newCommand.topologyBlockId?.trim().length
@@ -277,10 +242,7 @@ export default function useCreateSayDuplicate({
           addOrMinus: "minus",
           topologyBlockId: currentTopologyBlockId,
         });
-        queryClient.setQueryData(
-          ["plotfield", "topologyBlock", currentTopologyBlockId],
-          context?.prevCommands
-        );
+        queryClient.setQueryData(["plotfield", "topologyBlock", currentTopologyBlockId], context?.prevCommands);
       }
     },
   });

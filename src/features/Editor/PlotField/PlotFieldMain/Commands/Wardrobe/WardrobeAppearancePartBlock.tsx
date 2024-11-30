@@ -5,7 +5,14 @@ import { CommandWardrobeAppearanceTypeBlockTypes } from "../../../../../../types
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 import PreviewImageSmallIcons from "../../../../../shared/utilities/PreviewImageSmallIcons";
 
-export default function WardrobeAppearancePartBlock({ appearancePartId }: CommandWardrobeAppearanceTypeBlockTypes) {
+type WardrobeAppearancePartBlockTypes = {
+  setAllAppearanceNames: React.Dispatch<React.SetStateAction<string[]>>;
+} & CommandWardrobeAppearanceTypeBlockTypes;
+
+export default function WardrobeAppearancePartBlock({
+  appearancePartId,
+  setAllAppearanceNames,
+}: WardrobeAppearancePartBlockTypes) {
   const [showFullName, setShowFullName] = useState(false);
   const [appearancePartImg, setAppearancePartImg] = useState<string | null | ArrayBuffer>("");
 
@@ -20,6 +27,13 @@ export default function WardrobeAppearancePartBlock({ appearancePartId }: Comman
   useEffect(() => {
     if (appearancePartTranslated) {
       setAppearancePartName(appearancePartTranslated.translations[0]?.text || "");
+      setAllAppearanceNames((prev) => {
+        if (!prev.includes(appearancePartTranslated.translations[0]?.text)) {
+          return [...prev, appearancePartTranslated.translations[0]?.text];
+        } else {
+          return prev;
+        }
+      });
     }
   }, [appearancePartTranslated]);
 

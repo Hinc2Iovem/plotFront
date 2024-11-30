@@ -8,6 +8,7 @@ import {
   handleDuplicationOptimisticOnError,
   handleDuplicationOptimisticOnMutation,
 } from "./helpers/handleDuplicationOptimistic";
+import useSearch from "../../PlotFieldMain/Search/SearchContext";
 
 type CreateAchievementDuplicateTypes = {
   storyId: string;
@@ -37,6 +38,7 @@ export default function useCreateAchievementDuplicate({
     usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
+  const { addItem, deleteValue } = useSearch();
 
   return useMutation({
     mutationFn: async ({
@@ -58,6 +60,15 @@ export default function useCreateAchievementDuplicate({
         .then((r) => r.data);
     },
     onMutate: async (newCommand: CreateAchievementDuplicateOnMutation) => {
+      addItem({
+        item: {
+          commandName: newCommand.commandName || "command",
+          id: newCommand.plotfieldCommandId,
+          text: "",
+          topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
+          type: "command",
+        },
+      });
       const prevCommands = await handleDuplicationOptimisticOnMutation({
         addCommand,
         characterId: newCommand.characterId || "",
@@ -80,6 +91,7 @@ export default function useCreateAchievementDuplicate({
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
+      deleteValue({ id: newCommand.plotfieldCommandId });
       handleDuplicationOptimisticOnError({
         commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,

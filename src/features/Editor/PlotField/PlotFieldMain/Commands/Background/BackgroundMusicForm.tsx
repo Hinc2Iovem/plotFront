@@ -11,12 +11,10 @@ import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/A
 type BackgroundMusicFormTypes = {
   backgroundId: string;
   musicId: string;
+  setCurrentMusicName: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export default function BackgroundMusicForm({
-  backgroundId,
-  musicId,
-}: BackgroundMusicFormTypes) {
+export default function BackgroundMusicForm({ backgroundId, musicId, setCurrentMusicName }: BackgroundMusicFormTypes) {
   const { storyId } = useParams();
   const [showMusicDropDown, setShowMusicDropDown] = useState(false);
   const [musicName, setMusicName] = useState("");
@@ -35,6 +33,7 @@ export default function BackgroundMusicForm({
   useEffect(() => {
     if (music) {
       setMusicName(music.musicName);
+      setCurrentMusicName(music.musicName);
     }
   }, [music]);
 
@@ -45,6 +44,7 @@ export default function BackgroundMusicForm({
 
   useEffect(() => {
     if (musicName?.trim().length) {
+      setCurrentMusicName(musicName);
       updateMusicText.mutate({ musicName });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,9 +56,7 @@ export default function BackgroundMusicForm({
     showModal: showMusicDropDown,
   });
   return (
-    <div
-      className={`sm:w-[77%] flex-grow w-full flex-wrap sm:flex-row flex-col flex items-center gap-[1rem] relative`}
-    >
+    <div className={`sm:w-[77%] flex-grow w-full flex-wrap sm:flex-row flex-col flex items-center gap-[1rem] relative`}>
       <div className="flex-grow relative sm:w-auto w-full">
         <PlotfieldButton
           onClick={(e) => {
@@ -67,15 +65,10 @@ export default function BackgroundMusicForm({
           }}
           className=""
         >
-          {musicName?.trim().length
-            ? `Музыка - ${musicName}`
-            : "Название Музыки"}
+          {musicName?.trim().length ? `Музыка - ${musicName}` : "Название Музыки"}
         </PlotfieldButton>
 
-        <AsideScrollable
-          ref={musicRef}
-          className={`${showMusicDropDown ? "" : "hidden"} translate-y-[.5rem]`}
-        >
+        <AsideScrollable ref={musicRef} className={`${showMusicDropDown ? "" : "hidden"} translate-y-[.5rem]`}>
           {allMusicMemoized.length ? (
             allMusicMemoized.map((mm, i) => (
               <AsideScrollableButton
@@ -84,11 +77,7 @@ export default function BackgroundMusicForm({
                   setShowMusicDropDown(false);
                   setMusicName(mm);
                 }}
-                className={`${
-                  musicName === mm
-                    ? "bg-primary-darker text-text-light"
-                    : "bg-secondary text-text-dark"
-                }`}
+                className={`${musicName === mm ? "bg-primary-darker text-text-light" : "bg-secondary text-text-dark"}`}
               >
                 {mm}
               </AsideScrollableButton>

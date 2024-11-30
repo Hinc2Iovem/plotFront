@@ -16,12 +16,14 @@ import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionAppearance from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionAppearance";
 import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
 import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
+import useSearch from "../../../../Search/SearchContext";
 
 type ConditionBlockVariationAppearanceTypes = {
   plotfieldCommandId: string;
   conditionBlockId: string;
   currentAppearancePartId: string;
   conditionBlockVariationId: string;
+  topologyBlockId: string;
   currentlyDressed: boolean;
 };
 
@@ -31,7 +33,9 @@ export default function ConditionBlockVariationAppearance({
   currentAppearancePartId,
   conditionBlockVariationId,
   currentlyDressed,
+  topologyBlockId,
 }: ConditionBlockVariationAppearanceTypes) {
+  const { storyId } = useParams();
   const [showAppearancePartPromptModal, setShowAppearancePartPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueNonExisting] = useState(false);
@@ -95,6 +99,35 @@ export default function ConditionBlockVariationAppearance({
       });
     }
   }, [debouncedAppearancePartValue]);
+
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: "Condition - Apperance",
+          id: conditionBlockVariationId,
+          text: debouncedAppearancePartValue?.partName || "",
+          topologyBlockId,
+          type: "conditionVariation",
+        },
+      });
+    }
+  }, [storyId]);
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: "Condition - Apperance",
+        id: conditionBlockVariationId,
+        value: debouncedAppearancePartValue?.partName || "",
+        type: "conditionVariation",
+      });
+    }
+  }, [debouncedAppearancePartValue, storyId]);
 
   return (
     <div className="relative w-full flex gap-[.5rem]">

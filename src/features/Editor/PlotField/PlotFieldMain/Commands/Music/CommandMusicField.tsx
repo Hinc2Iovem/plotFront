@@ -12,13 +12,16 @@ import useGetMusicById from "../../../hooks/Music/useGetMusicById";
 import useUpdateMusicText from "../../../hooks/Music/useUpdateMusicText";
 import "../Prompts/promptStyles.css";
 import CreateMusicField from "./CreateMusicField";
+import useSearch from "../../Search/SearchContext";
+import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 
 type CommandMusicFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
-export default function CommandMusicField({ plotFieldCommandId, command }: CommandMusicFieldTypes) {
+export default function CommandMusicField({ plotFieldCommandId, command, topologyBlockId }: CommandMusicFieldTypes) {
   const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Music");
   const [musicName, setMusicName] = useState<string>("");
@@ -28,6 +31,8 @@ export default function CommandMusicField({ plotFieldCommandId, command }: Comma
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
+
+  const debouncedValue = useDebounce({ value: musicName, delay: 600 });
 
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
@@ -58,6 +63,23 @@ export default function CommandMusicField({ plotFieldCommandId, command }: Comma
     musicId: commandMusic?.musicId || "",
   });
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "music",
+          id: plotFieldCommandId,
+          text: musicName,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   useEffect(() => {
     if (commandMusic) {
       setCommandMusicId(commandMusic._id);
@@ -72,7 +94,7 @@ export default function CommandMusicField({ plotFieldCommandId, command }: Comma
 
   const updateMusicText = useUpdateMusicText({
     storyId: storyId || "",
-    commandMusicId,
+    musicId: commandMusic?.musicId || "",
   });
 
   const handleNewMusicSubmit = (e: React.FormEvent, mm?: string) => {
@@ -96,6 +118,12 @@ export default function CommandMusicField({ plotFieldCommandId, command }: Comma
 
     setShowMusicDropDown(false);
   };
+
+  useEffect(() => {
+    if (debouncedValue?.trim().length && debouncedValue !== musicName && storyId) {
+      updateValue({ storyId, commandName: "music", id: plotFieldCommandId, type: "command", value: debouncedValue });
+    }
+  }, [debouncedValue, musicName, storyId]);
 
   useOutOfModal({
     setShowModal: setShowMusicDropDown,

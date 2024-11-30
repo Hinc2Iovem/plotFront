@@ -6,13 +6,17 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandEffectFieldTypes = {
   plotFieldCommandId: string;
   command: string;
+  topologyBlockId: string;
 };
 
-export default function CommandEffectField({ plotFieldCommandId, command }: CommandEffectFieldTypes) {
+export default function CommandEffectField({ plotFieldCommandId, command, topologyBlockId }: CommandEffectFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Effect");
   const [textValue, setTextValue] = useState("");
   const { data: commandEffect } = useGetCommandEffect({
@@ -47,8 +51,28 @@ export default function CommandEffectField({ plotFieldCommandId, command }: Comm
     effectName: debouncedValue,
   });
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "effect",
+          id: plotFieldCommandId,
+          text: textValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   useEffect(() => {
     if (commandEffect?.effectName !== debouncedValue && debouncedValue?.trim().length) {
+      if (storyId) {
+        updateValue({ storyId, commandName: "effect", id: plotFieldCommandId, type: "command", value: debouncedValue });
+      }
       updateEffectText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

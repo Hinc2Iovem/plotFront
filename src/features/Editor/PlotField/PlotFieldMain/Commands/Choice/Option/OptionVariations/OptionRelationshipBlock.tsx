@@ -4,12 +4,17 @@ import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetchi
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetRelationshipOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetRelationshipOption";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
+import useSearch from "../../../../Search/SearchContext";
+import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
+import { useParams } from "react-router-dom";
 
 type OptionRelationshipBlockTypes = {
   choiceOptionId: string;
+  debouncedValue: string;
 };
 
-export default function OptionRelationshipBlock({ choiceOptionId }: OptionRelationshipBlockTypes) {
+export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue }: OptionRelationshipBlockTypes) {
+  const { storyId } = useParams();
   const { data: optionRelationship } = useGetRelationshipOption({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
@@ -74,6 +79,22 @@ export default function OptionRelationshipBlock({ choiceOptionId }: OptionRelati
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterId]);
+
+  const { updateValue } = useSearch();
+
+  const debouncedCharacter = useDebounce({ value: characterName, delay: 600 });
+
+  useEffect(() => {
+    if (storyId) {
+      updateValue({
+        storyId,
+        commandName: `Choice - Relationship`,
+        id: choiceOptionId,
+        value: `${debouncedValue} ${debouncedCharacter} ${amountOfPoints}`,
+        type: "choiceOption",
+      });
+    }
+  }, [amountOfPoints, storyId, debouncedCharacter, debouncedValue]);
 
   return (
     <div className="self-end w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap mt-[.5rem]">

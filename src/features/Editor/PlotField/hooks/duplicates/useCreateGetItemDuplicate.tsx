@@ -8,6 +8,7 @@ import {
   handleDuplicationOptimisticOnError,
   handleDuplicationOptimisticOnMutation,
 } from "./helpers/handleDuplicationOptimistic";
+import useSearch from "../../PlotFieldMain/Search/SearchContext";
 
 type CreateGetItemDuplicateTypes = {
   topologyBlockId: string;
@@ -27,19 +28,12 @@ type CreateGetItemDuplicateOnMutation = {
   plotfieldCommandId: string;
 };
 
-export default function useCreateGetItemDuplicate({
-  topologyBlockId,
-  episodeId,
-}: CreateGetItemDuplicateTypes) {
-  const {
-    addCommand,
-    updateCommandInfo,
-    addCommandIf,
-    updateCommandIfInfo,
-    removeCommandIfItem,
-  } = usePlotfieldCommands();
+export default function useCreateGetItemDuplicate({ topologyBlockId, episodeId }: CreateGetItemDuplicateTypes) {
+  const { addCommand, updateCommandInfo, addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
+    usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
+  const { addItem, deleteValue } = useSearch();
 
   return useMutation({
     mutationFn: async ({
@@ -49,29 +43,32 @@ export default function useCreateGetItemDuplicate({
       isElse,
       topologyBlockId: bodyTopologyBlockId,
     }: CreateGetItemDuplicateOnMutation) => {
-      const currentTopologyBlockId = bodyTopologyBlockId?.trim().length
-        ? bodyTopologyBlockId
-        : topologyBlockId;
+      const currentTopologyBlockId = bodyTopologyBlockId?.trim().length ? bodyTopologyBlockId : topologyBlockId;
       await axiosCustomized
-        .post(
-          `/plotFieldCommands/getItems/topologyBlocks/${currentTopologyBlockId}/copy`,
-          {
-            commandOrder,
-            plotfieldCommandId,
-            commandIfId,
-            isElse,
-          }
-        )
+        .post(`/plotFieldCommands/getItems/topologyBlocks/${currentTopologyBlockId}/copy`, {
+          commandOrder,
+          plotfieldCommandId,
+          commandIfId,
+          isElse,
+        })
         .then((r) => r.data);
     },
     onMutate: async (newCommand: CreateGetItemDuplicateOnMutation) => {
+      addItem({
+        item: {
+          commandName: newCommand.commandName || "command",
+          id: newCommand.plotfieldCommandId,
+          text: "",
+          topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
+          type: "command",
+        },
+      });
       const prevCommands = await handleDuplicationOptimisticOnMutation({
         addCommand,
         characterId: newCommand.characterId || "",
         characterName: newCommand.characterName || "",
         commandIfId: newCommand.commandIfId || "",
-        commandName:
-          newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
+        commandName: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
         commandOrder: newCommand.commandOrder,
         emotionName: newCommand.emotionName || "",
         episodeId: episodeId,
@@ -79,9 +76,7 @@ export default function useCreateGetItemDuplicate({
         plotfieldCommandId: newCommand.plotfieldCommandId,
         queryClient,
         sayType: newCommand.sayType || ("" as CommandSayVariationTypes),
-        topologyBlockId: newCommand.topologyBlockId?.trim().length
-          ? newCommand.topologyBlockId
-          : topologyBlockId,
+        topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         setNewCommand,
         updateCommandInfo,
         addCommandIf,
@@ -90,13 +85,12 @@ export default function useCreateGetItemDuplicate({
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
+      deleteValue({ id: newCommand.plotfieldCommandId });
       handleDuplicationOptimisticOnError({
         commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,
         queryClient,
-        topologyBlockId: newCommand.topologyBlockId?.trim().length
-          ? newCommand.topologyBlockId
-          : topologyBlockId,
+        topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         updateCommandInfo,
         isElse: newCommand.isElse || false,
         message: err.message,

@@ -39,6 +39,7 @@ import useConditionBlocks from "../Condition/Context/ConditionContext";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
 import useCreateCommandKey from "../../../hooks/Key/useCreateCommandKey";
 import useCreateCommandAchievement from "../../../hooks/Achievement/useCreateCommandAchievement";
+import useSearch from "../../Search/SearchContext";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -79,6 +80,7 @@ export default function PlotfieldBlank({
   isElse,
 }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
+  const { addItem } = useSearch();
   const { episodeId } = useParams();
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
@@ -208,18 +210,54 @@ export default function PlotfieldBlank({
           characterName,
           sayType: "character",
         });
+        if (storyId) {
+          addItem({
+            storyId,
+            item: {
+              commandName: "character",
+              type: "command",
+              id: plotFieldCommandId,
+              text: "",
+              topologyBlockId,
+            },
+          });
+        }
       } else {
         updateCommandNameOptimistic({
           id: plotFieldCommandId,
           newCommand: "say",
           sayType,
         });
+        if (storyId) {
+          addItem({
+            storyId,
+            item: {
+              commandName: sayType || "say",
+              type: "command",
+              id: plotFieldCommandId,
+              text: "",
+              topologyBlockId,
+            },
+          });
+        }
       }
     } else {
       updateCommandNameOptimistic({
         id: plotFieldCommandId,
         newCommand: commandName,
       });
+      if (storyId) {
+        addItem({
+          storyId,
+          item: {
+            commandName: commandName,
+            type: "command",
+            id: plotFieldCommandId,
+            text: "",
+            topologyBlockId,
+          },
+        });
+      }
     }
   };
 
@@ -248,6 +286,18 @@ export default function PlotfieldBlank({
           sayType: "character",
           isElse,
         });
+        if (storyId) {
+          addItem({
+            storyId,
+            item: {
+              commandName: "character",
+              type: "command",
+              id: plotFieldCommandId,
+              text: "",
+              topologyBlockId,
+            },
+          });
+        }
       } else {
         updateCommandIfNameOptimistic({
           id: plotFieldCommandId,
@@ -255,6 +305,18 @@ export default function PlotfieldBlank({
           sayType,
           isElse,
         });
+        if (storyId) {
+          addItem({
+            storyId,
+            item: {
+              commandName: sayType || "say",
+              type: "command",
+              id: plotFieldCommandId,
+              text: "",
+              topologyBlockId,
+            },
+          });
+        }
       }
     } else {
       updateCommandIfNameOptimistic({
@@ -262,6 +324,18 @@ export default function PlotfieldBlank({
         newCommand: commandName,
         isElse,
       });
+      if (storyId) {
+        addItem({
+          storyId,
+          item: {
+            commandName: commandName,
+            type: "command",
+            id: plotFieldCommandId,
+            text: "",
+            topologyBlockId,
+          },
+        });
+      }
     }
   };
 

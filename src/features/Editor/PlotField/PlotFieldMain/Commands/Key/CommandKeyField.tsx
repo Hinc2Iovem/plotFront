@@ -6,13 +6,17 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
+import useSearch from "../../Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CommandKeyFieldTypes = {
   plotFieldCommandId: string;
+  topologyBlockId: string;
   command: string;
 };
 
-export default function CommandKeyField({ plotFieldCommandId, command }: CommandKeyFieldTypes) {
+export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, command }: CommandKeyFieldTypes) {
+  const { storyId } = useParams();
   const [nameValue] = useState<string>(command ?? "Key");
   const [textValue, setTextValue] = useState("");
   const { data: commandKey } = useGetKeyByPlotfieldCommandId({
@@ -39,6 +43,23 @@ export default function CommandKeyField({ plotFieldCommandId, command }: Command
     }
   }, [commandKey]);
 
+  const { addItem, updateValue } = useSearch();
+
+  useEffect(() => {
+    if (storyId) {
+      addItem({
+        storyId,
+        item: {
+          commandName: nameValue || "key",
+          id: plotFieldCommandId,
+          text: textValue,
+          topologyBlockId,
+          type: "command",
+        },
+      });
+    }
+  }, [storyId]);
+
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateKeyText = useUpdateKeyText({
@@ -48,6 +69,9 @@ export default function CommandKeyField({ plotFieldCommandId, command }: Command
 
   useEffect(() => {
     if (commandKey?.text !== debouncedValue && debouncedValue?.trim().length) {
+      if (storyId) {
+        updateValue({ storyId, commandName: "key", id: plotFieldCommandId, type: "command", value: debouncedValue });
+      }
       updateKeyText.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

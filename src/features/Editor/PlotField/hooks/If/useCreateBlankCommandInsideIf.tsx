@@ -3,6 +3,7 @@ import { axiosCustomized } from "../../../../../api/axios";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import usePlotfieldCommands from "../../Context/PlotFieldContext";
+import useSearch from "../../PlotFieldMain/Search/SearchContext";
 
 type CreateBlankCommandTypes = {
   topologyBlockId: string;
@@ -20,72 +21,55 @@ type NewCommandTypes = {
   commandOrder: number;
 };
 
-export default function useCreateBlankCommandInsideIf({
-  topologyBlockId,
-  commandIfId,
-}: CreateBlankCommandTypes) {
+export default function useCreateBlankCommandInsideIf({ topologyBlockId, commandIfId }: CreateBlankCommandTypes) {
   const queryClient = useQueryClient();
+  const { addItem } = useSearch();
 
-  const { addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
-    usePlotfieldCommands();
+  const { addCommandIf, updateCommandIfInfo, removeCommandIfItem } = usePlotfieldCommands();
 
   return useMutation({
     mutationFn: async (commandOrder: NewCommandTypes) => {
       const ifId = commandIfId ? commandIfId : commandOrder?.commandIfId;
       const elseOrIf = commandOrder.isElse;
-      const currentTopologyBlockId = commandOrder?.topologyBlockId?.trim()
-        .length
+      const currentTopologyBlockId = commandOrder?.topologyBlockId?.trim().length
         ? commandOrder.topologyBlockId
         : topologyBlockId;
 
-      await axiosCustomized.post(
-        `/plotField/topologyBlocks/${currentTopologyBlockId}/commandIfs/${ifId}`,
-        {
-          isElse: elseOrIf,
-          commandOrder: commandOrder.commandOrder,
-          _id: commandOrder._id,
-          commandName: commandOrder.command,
-        }
-      );
+      await axiosCustomized.post(`/plotField/topologyBlocks/${currentTopologyBlockId}/commandIfs/${ifId}`, {
+        isElse: elseOrIf,
+        commandOrder: commandOrder.commandOrder,
+        _id: commandOrder._id,
+        commandName: commandOrder.command,
+      });
     },
     onMutate: async (commandOrder: NewCommandTypes) => {
       let prevCommands;
       const elseOrIf = commandOrder.isElse;
-      const currentTopologyBlockId = commandOrder?.topologyBlockId?.trim()
-        .length
+      const currentTopologyBlockId = commandOrder?.topologyBlockId?.trim().length
         ? commandOrder.topologyBlockId
         : topologyBlockId;
 
+      addItem({
+        item: {
+          commandName:
+            commandOrder.command === "say" ? commandOrder.sayType || "author" : commandOrder.command || "command",
+          type: "command",
+          id: commandOrder._id,
+          text: "",
+          topologyBlockId: currentTopologyBlockId,
+        },
+      });
+
       if (elseOrIf) {
         await queryClient.cancelQueries({
-          queryKey: [
-            "plotfield",
-            "commandIf",
-            commandOrder.commandIfId,
-            "insideElse",
-          ],
+          queryKey: ["plotfield", "commandIf", commandOrder.commandIfId, "insideElse"],
         });
-        prevCommands = queryClient.getQueryData([
-          "plotfield",
-          "commandIf",
-          commandOrder.commandIfId,
-          "insideElse",
-        ]);
+        prevCommands = queryClient.getQueryData(["plotfield", "commandIf", commandOrder.commandIfId, "insideElse"]);
       } else {
         await queryClient.cancelQueries({
-          queryKey: [
-            "plotfield",
-            "commandIf",
-            commandOrder.commandIfId,
-            "insideElse",
-          ],
+          queryKey: ["plotfield", "commandIf", commandOrder.commandIfId, "insideElse"],
         });
-        prevCommands = queryClient.getQueryData([
-          "plotfield",
-          "commandIf",
-          commandOrder.commandIfId,
-          "insideIf",
-        ]);
+        prevCommands = queryClient.getQueryData(["plotfield", "commandIf", commandOrder.commandIfId, "insideIf"]);
       }
 
       addCommandIf({
@@ -94,8 +78,7 @@ export default function useCreateBlankCommandInsideIf({
         newCommand: {
           commandOrder: commandOrder.commandOrder,
           _id: commandOrder._id,
-          command:
-            commandOrder?.command || ("" as AllPossiblePlotFieldComamndsTypes),
+          command: commandOrder?.command || ("" as AllPossiblePlotFieldComamndsTypes),
           isElse: elseOrIf,
           topologyBlockId: currentTopologyBlockId,
           commandIfId: commandOrder?.commandIfId || "",
@@ -131,10 +114,7 @@ export default function useCreateBlankCommandInsideIf({
           context?.prevCommands
         );
       } else {
-        queryClient.setQueryData(
-          ["plotfield", "commandIf", newCommand.commandIfId, "insideIf"],
-          context?.prevCommands
-        );
+        queryClient.setQueryData(["plotfield", "commandIf", newCommand.commandIfId, "insideIf"], context?.prevCommands);
       }
     },
   });
