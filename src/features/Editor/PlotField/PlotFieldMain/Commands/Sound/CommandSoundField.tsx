@@ -22,7 +22,7 @@ type CommandSoundFieldTypes = {
 };
 
 export default function CommandSoundField({ plotFieldCommandId, command, topologyBlockId }: CommandSoundFieldTypes) {
-  const { storyId } = useParams();
+  const { storyId, episodeId } = useParams();
   const [showSoundDropDown, setShowSoundDropDown] = useState(false);
   const [showCreateSoundModal, setShowCreateSoundModal] = useState(false);
   const [nameValue] = useState<string>(command ?? "Sound");
@@ -75,9 +75,9 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "sound",
           id: plotFieldCommandId,
@@ -87,7 +87,7 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   const updateSoundText = useUpdateSoundText({
     storyId: storyId ?? "",
@@ -116,10 +116,10 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
   };
 
   useEffect(() => {
-    if (debouncedValue?.trim().length && debouncedValue !== soundName && storyId) {
-      updateValue({ storyId, commandName: "sound", id: plotFieldCommandId, type: "command", value: debouncedValue });
+    if (debouncedValue?.trim().length && debouncedValue !== soundName && episodeId) {
+      updateValue({ episodeId, commandName: "sound", id: plotFieldCommandId, type: "command", value: debouncedValue });
     }
-  }, [debouncedValue, soundName, storyId]);
+  }, [debouncedValue, soundName, episodeId]);
 
   useOutOfModal({
     setShowModal: setShowSoundDropDown,

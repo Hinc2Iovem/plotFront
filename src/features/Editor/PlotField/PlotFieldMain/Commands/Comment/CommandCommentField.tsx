@@ -19,7 +19,7 @@ export default function CommandCommentField({
   topologyBlockId,
   command,
 }: CommandCommentFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Comment");
 
   const { data: commandComment } = useGetCommandComment({
@@ -50,9 +50,9 @@ export default function CommandCommentField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "comment",
           id: plotFieldCommandId,
@@ -62,13 +62,13 @@ export default function CommandCommentField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (commandComment?.comment !== debouncedValue && debouncedValue?.trim().length && commandCommentId) {
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           commandName: "comment",
           id: plotFieldCommandId,
           type: "command",

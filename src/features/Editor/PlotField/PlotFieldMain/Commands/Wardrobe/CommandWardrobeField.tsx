@@ -27,7 +27,7 @@ export default function CommandWardrobeField({
   command,
   topologyBlockId,
 }: CommandWardrobeFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Wardrobe");
   const [wardrobeTitle, setWardrobeTitle] = useState("");
   const [commandWardrobeId, setCommandWardrobeId] = useState("");
@@ -76,9 +76,9 @@ export default function CommandWardrobeField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "wardrobe",
           id: plotFieldCommandId,
@@ -88,7 +88,7 @@ export default function CommandWardrobeField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   const updateWardrobeTranslatedTitle = useUpdateWardrobeTranslationText({
     commandId: plotFieldCommandId,
@@ -117,16 +117,16 @@ export default function CommandWardrobeField({
   });
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "wardrobe",
         id: plotFieldCommandId,
         type: "command",
         value: `${wardrobeTitle} ${allAppearanceNames.map((an) => `${an}`).join(" ")}`,
       });
     }
-  }, [allAppearanceNames, storyId, wardrobeTitle]);
+  }, [allAppearanceNames, episodeId, wardrobeTitle]);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">

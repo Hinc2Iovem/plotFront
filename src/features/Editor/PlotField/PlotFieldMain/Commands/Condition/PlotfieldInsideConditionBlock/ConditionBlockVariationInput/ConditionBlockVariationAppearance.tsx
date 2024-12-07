@@ -35,7 +35,7 @@ export default function ConditionBlockVariationAppearance({
   currentlyDressed,
   topologyBlockId,
 }: ConditionBlockVariationAppearanceTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [showAppearancePartPromptModal, setShowAppearancePartPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueNonExisting] = useState(false);
@@ -103,9 +103,9 @@ export default function ConditionBlockVariationAppearance({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "Condition - Apperance",
           id: conditionBlockVariationId,
@@ -115,19 +115,19 @@ export default function ConditionBlockVariationAppearance({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "Condition - Apperance",
         id: conditionBlockVariationId,
         value: debouncedAppearancePartValue?.partName || "",
         type: "conditionVariation",
       });
     }
-  }, [debouncedAppearancePartValue, storyId]);
+  }, [debouncedAppearancePartValue, episodeId]);
 
   return (
     <div className="relative w-full flex gap-[.5rem]">

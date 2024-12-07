@@ -182,6 +182,7 @@ function ConditionBlocksList({
     <div className={`w-full bg-primary rounded-md p-[.5rem]`}>
       <div className={`${showConditionBlockPlot || isFocusedBackground ? "" : "hidden"} flex flex-col gap-[1rem]`}>
         <PlotfieldInsideConditionBlock
+          topologyBlockId={topologyBlockId}
           isFocusedBackground={isFocusedBackground}
           plotfieldCommandId={plotFieldCommandId}
           setShowConditionBlockPlot={setShowConditionBlockPlot}

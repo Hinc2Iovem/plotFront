@@ -20,7 +20,7 @@ export default function CommandAchievementField({
   command,
   topologyBlockId,
 }: CommandAchievementFieldTypes) {
-  const { storyId } = useParams();
+  const { storyId, episodeId } = useParams();
   const [nameValue] = useState(command ?? "achievement");
   const [initialTextValue, setInitialTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
@@ -39,9 +39,9 @@ export default function CommandAchievementField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "achievement",
           id: plotFieldCommandId,
@@ -51,7 +51,7 @@ export default function CommandAchievementField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (translatedAchievement && !textValue.trim().length) {
@@ -71,9 +71,9 @@ export default function CommandAchievementField({
 
   useEffect(() => {
     if (initialTextValue !== debouncedValue && debouncedValue?.trim().length) {
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           commandName: "achievement",
           id: plotFieldCommandId,
           type: "command",

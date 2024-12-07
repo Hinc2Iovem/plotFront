@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import commands from "../../../assets/images/Editor/commands.png";
-import characteristic from "../../../assets/images/Story/characteristic.png";
-import emotion from "../../../assets/images/Story/emotion.png";
+// import characteristic from "../../../assets/images/Story/characteristic.png";
+// import emotion from "../../../assets/images/Story/emotion.png";
 import stats from "../../../assets/images/shared/stats.png";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import ButtonHoverPromptModal from "../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
@@ -14,16 +14,12 @@ type EditorHeaderTypes = {
   showHeader: boolean;
 };
 
-export default function EditorHeader({
-  setShowHeader,
-  showHeader,
-}: EditorHeaderTypes) {
+export default function EditorHeader({ setShowHeader, showHeader }: EditorHeaderTypes) {
   const { storyId } = useParams();
   const theme = localStorage.getItem("theme");
   const modalRef = useRef<HTMLDivElement>(null);
   const [showCreateEmotionModal, setShowCreateEmotionModal] = useState(false);
-  const [showCreateCharacteristicModal, setShowCreateCharacteristicModal] =
-    useState(false);
+  const [showCreateCharacteristicModal, setShowCreateCharacteristicModal] = useState(false);
 
   useOutOfModal({
     modalRef,
@@ -44,10 +40,7 @@ export default function EditorHeader({
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
           } text-text-light rounded-md px-[1rem] hover:scale-[1.01] hover:shadow-md py-[.5rem] transition-all`}
         >
-          <Link
-            className="text-[2.5rem] outline-none"
-            to={`/stories/${storyId}`}
-          >
+          <Link className="text-[2.5rem] outline-none" to={`/stories/${storyId}`}>
             Назад к Истории
           </Link>
         </button>
@@ -72,7 +65,7 @@ export default function EditorHeader({
               <img src={stats} alt="Episode Info" className="w-[4rem]" />
             </ButtonHoverPromptModal>
           </div>
-          <div
+          {/* <div
             className={`flex gap-[.5rem] ${
               theme === "light" ? "bg-green-200" : "bg-primary-darker"
             } rounded-md p-[.5rem] py-[.2rem] items-center shadow-md`}
@@ -105,7 +98,7 @@ export default function EditorHeader({
                 className="w-[4rem]"
               />
             </ButtonHoverPromptModal>
-          </div>
+          </div> */}
         </div>
       </div>
 

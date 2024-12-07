@@ -14,6 +14,13 @@ import { fetchAllMightyPaginatedTranslationAchievement } from "../hooks/useGetPa
 import { fetchAllMightyPaginatedTranslationAppearancePart } from "../hooks/useGetPaginatedTranslationAppearancePart";
 import { fetchAllMightyPaginatedTranslationCharacter } from "../hooks/useGetPaginatedTranslationCharacter";
 import { fetchAllMightyPaginatedTranslationCharacteristic } from "../hooks/useGetPaginatedTranslationCharacteristic";
+import { fetchAllSound } from "../../PlotField/hooks/Sound/useGetAllSoundsByStoryId";
+import { fetchAllMusic } from "../../PlotField/hooks/Music/useGetAllMusicByStoryId";
+import { fetchAllTranslationAchievements } from "../../PlotField/hooks/Achievement/useGetAllTranslationAchievementByStoryId";
+import { fetchAllTranslationCharacteristics } from "../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
+import { fetchAllTranslationAppearanceParts } from "../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
+import { getTranslationCharactersByType } from "../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByType";
+import { fetchAllKeys } from "../../PlotField/hooks/Key/useGetAllKeysByStoryId";
 
 const AllMightySearchCategories: {
   [key in AllPossibleAllMightySearchCategoriesTypes]: AllPossibleAllMightySearchCategoriesRusTypes;
@@ -29,16 +36,24 @@ const AllMightySearchCategories: {
 
 type AllMightySearchCategoriesTypes = {
   setCurrentCategory: React.Dispatch<React.SetStateAction<AllPossibleAllMightySearchCategoriesTypes>>;
-  setShowKeyBinds: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowContent: React.Dispatch<
+    React.SetStateAction<{
+      showKeyBinds: boolean;
+      showSearch: boolean;
+    }>
+  >;
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
-  showKeyBinds: boolean;
+  showContent: {
+    showKeyBinds: boolean;
+    showSearch: boolean;
+  };
 };
 
 export default function AllMightySearchSidebar({
   currentCategory,
-  showKeyBinds,
+  showContent,
   setCurrentCategory,
-  setShowKeyBinds,
+  setShowContent,
 }: AllMightySearchCategoriesTypes) {
   return (
     <header className="w-[20%] min-w-fit flex flex-col gap-[1rem] justify-between p-[1rem] mt-[1rem]">
@@ -47,7 +62,7 @@ export default function AllMightySearchSidebar({
           <AllMightySearchSidebarCategoryButton
             key={key}
             setCurrentCategory={setCurrentCategory}
-            setShowKeyBinds={setShowKeyBinds}
+            setShowContent={setShowContent}
             currentCategory={currentCategory}
             valueEng={key as AllPossibleAllMightySearchCategoriesTypes}
             valueRus={value}
@@ -55,22 +70,45 @@ export default function AllMightySearchSidebar({
         ))}
       </ul>
 
-      <PlotfieldButton
-        onClick={() => {
-          setShowKeyBinds((prev) => !prev);
-          setCurrentCategory("" as AllPossibleAllMightySearchCategoriesTypes);
-        }}
-        className={`${showKeyBinds ? "bg-primary" : ""} text-center text-[2.3rem]`}
-      >
-        Бинды
-      </PlotfieldButton>
+      <div className="flex flex-col gap-[1rem]">
+        <PlotfieldButton
+          onClick={() => {
+            setShowContent(() => ({
+              showKeyBinds: false,
+              showSearch: true,
+            }));
+            setCurrentCategory("" as AllPossibleAllMightySearchCategoriesTypes);
+          }}
+          className={`${showContent.showSearch ? "bg-primary" : ""} text-center text-[2.3rem]`}
+        >
+          Поиск
+        </PlotfieldButton>
+
+        <PlotfieldButton
+          onClick={() => {
+            setShowContent(() => ({
+              showKeyBinds: true,
+              showSearch: false,
+            }));
+            setCurrentCategory("" as AllPossibleAllMightySearchCategoriesTypes);
+          }}
+          className={`${showContent.showKeyBinds ? "bg-primary" : ""} text-center text-[2.3rem]`}
+        >
+          Бинды
+        </PlotfieldButton>
+      </div>
     </header>
   );
 }
 
 type AllMightySearchSidebarCategoryButtonTypes = {
   setCurrentCategory: React.Dispatch<React.SetStateAction<AllPossibleAllMightySearchCategoriesTypes>>;
-  setShowKeyBinds: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowContent: React.Dispatch<
+    React.SetStateAction<{
+      showKeyBinds: boolean;
+      showSearch: boolean;
+    }>
+  >;
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
   valueEng: AllPossibleAllMightySearchCategoriesTypes;
   valueRus: AllPossibleAllMightySearchCategoriesRusTypes;
@@ -81,7 +119,7 @@ function AllMightySearchSidebarCategoryButton({
   valueRus,
   currentCategory,
   setCurrentCategory,
-  setShowKeyBinds,
+  setShowContent,
 }: AllMightySearchSidebarCategoryButtonTypes) {
   const { storyId } = useParams();
   const queryClient = useQueryClient();
@@ -95,10 +133,10 @@ function AllMightySearchSidebarCategoryButton({
         queryFn: () => fetchAllMightyPaginatedKey({ limit: 10, page: 1, storyId: storyId || "" }),
         initialPageParam: 1,
       });
-      // queryClient.prefetchQuery({
-      //   queryKey: ["stories", storyId, "key"],
-      //   queryFn: () => fetchAllKeys({ storyId: storyId || "" }),
-      // });
+      queryClient.prefetchQuery({
+        queryKey: ["stories", storyId, "key"],
+        queryFn: () => fetchAllKeys({ storyId: storyId || "" }),
+      });
     } else if (valueEng === "character") {
       queryClient.prefetchInfiniteQuery({
         queryKey: [
@@ -123,16 +161,16 @@ function AllMightySearchSidebarCategoryButton({
           }),
         initialPageParam: 1,
       });
-      // queryClient.prefetchQuery({
-      //   queryKey: ["translation", "russian", "character", "type", "all", "story", storyId, "search", ""],
-      //   queryFn: () =>
-      //     getTranslationCharactersByType({
-      //       storyId: storyId || "",
-      //       language: "russian",
-      //       characterType: "all",
-      //       debouncedValue: "",
-      //     }),
-      // });
+      queryClient.prefetchQuery({
+        queryKey: ["translation", "russian", "character", "type", "all", "story", storyId, "search", ""],
+        queryFn: () =>
+          getTranslationCharactersByType({
+            storyId: storyId || "",
+            language: "russian",
+            characterType: "all",
+            debouncedValue: "",
+          }),
+      });
     } else if (valueEng === "appearance") {
       queryClient.prefetchInfiniteQuery({
         queryKey: [
@@ -163,10 +201,10 @@ function AllMightySearchSidebarCategoryButton({
           }),
         initialPageParam: 1,
       });
-      // queryClient.prefetchQuery({
-      //   queryKey: ["translation", "russian", "story", storyId, "appearancePart"],
-      //   queryFn: () => fetchAllTranslationAppearanceParts({ storyId: storyId || "", language: "russian" }),
-      // });
+      queryClient.prefetchQuery({
+        queryKey: ["translation", "russian", "story", storyId, "appearancePart"],
+        queryFn: () => fetchAllTranslationAppearanceParts({ storyId: storyId || "", language: "russian" }),
+      });
     } else if (valueEng === "characteristic") {
       queryClient.prefetchInfiniteQuery({
         queryKey: [
@@ -191,10 +229,10 @@ function AllMightySearchSidebarCategoryButton({
           }),
         initialPageParam: 1,
       });
-      // queryClient.prefetchQuery({
-      //   queryKey: ["translation", "russian", "story", storyId, "characteristic"],
-      //   queryFn: () => fetchAllTranslationCharacteristics({ storyId: storyId || "", language: "russian" }),
-      // });
+      queryClient.prefetchQuery({
+        queryKey: ["translation", "russian", "story", storyId, "characteristic"],
+        queryFn: () => fetchAllTranslationCharacteristics({ storyId: storyId || "", language: "russian" }),
+      });
     } else if (valueEng === "achievement") {
       queryClient.prefetchInfiniteQuery({
         queryKey: [
@@ -219,10 +257,10 @@ function AllMightySearchSidebarCategoryButton({
           }),
         initialPageParam: 1,
       });
-      // queryClient.prefetchQuery({
-      //   queryKey: ["story", storyId, "translation", "russian", "achievements"],
-      //   queryFn: () => fetchAllTranslationAchievements({ storyId: storyId || "", language: "russian" }),
-      // });
+      queryClient.prefetchQuery({
+        queryKey: ["story", storyId, "translation", "russian", "achievements"],
+        queryFn: () => fetchAllTranslationAchievements({ storyId: storyId || "", language: "russian" }),
+      });
     } else if (valueEng === "music") {
       queryClient.prefetchInfiniteQuery({
         queryKey: ["all-mighty-search", "story", storyId, "music", "paginated", "page", 1, "limit", 10],
@@ -234,10 +272,10 @@ function AllMightySearchSidebarCategoryButton({
           }),
         initialPageParam: 1,
       });
-      // queryClient.prefetchQuery({
-      //   queryKey: ["stories", storyId, "music"],
-      //   queryFn: () => fetchAllMusic({ storyId: storyId || "" }),
-      // });
+      queryClient.prefetchQuery({
+        queryKey: ["stories", storyId, "music"],
+        queryFn: () => fetchAllMusic({ storyId: storyId || "" }),
+      });
     } else if (valueEng === "sound") {
       queryClient.prefetchInfiniteQuery({
         queryKey: ["all-mighty-search", "story", storyId, "sound", "paginated", "page", 1, "limit", 10],
@@ -249,10 +287,10 @@ function AllMightySearchSidebarCategoryButton({
           }),
         initialPageParam: 1,
       });
-      // queryClient.prefetchQuery({
-      //   queryKey: ["story", storyId, "sound"],
-      //   queryFn: () => fetchAllSound({ storyId: storyId || "" }),
-      // });
+      queryClient.prefetchQuery({
+        queryKey: ["story", storyId, "sound"],
+        queryFn: () => fetchAllSound({ storyId: storyId || "" }),
+      });
     } else {
       console.log("Lol how");
       return;
@@ -262,7 +300,10 @@ function AllMightySearchSidebarCategoryButton({
   return (
     <PlotfieldButton
       onClick={() => {
-        setShowKeyBinds(false);
+        setShowContent(() => ({
+          showKeyBinds: false,
+          showSearch: false,
+        }));
         setCurrentCategory(valueEng);
       }}
       onMouseEnter={() => {

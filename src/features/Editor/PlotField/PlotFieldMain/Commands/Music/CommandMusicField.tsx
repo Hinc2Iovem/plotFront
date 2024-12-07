@@ -22,7 +22,7 @@ type CommandMusicFieldTypes = {
 };
 
 export default function CommandMusicField({ plotFieldCommandId, command, topologyBlockId }: CommandMusicFieldTypes) {
-  const { storyId } = useParams();
+  const { storyId, episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Music");
   const [musicName, setMusicName] = useState<string>("");
   const [showMusicDropDown, setShowMusicDropDown] = useState(false);
@@ -66,9 +66,9 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "music",
           id: plotFieldCommandId,
@@ -78,7 +78,7 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (commandMusic) {
@@ -120,10 +120,10 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
   };
 
   useEffect(() => {
-    if (debouncedValue?.trim().length && debouncedValue !== musicName && storyId) {
-      updateValue({ storyId, commandName: "music", id: plotFieldCommandId, type: "command", value: debouncedValue });
+    if (debouncedValue?.trim().length && debouncedValue !== musicName && episodeId) {
+      updateValue({ episodeId, commandName: "music", id: plotFieldCommandId, type: "command", value: debouncedValue });
     }
-  }, [debouncedValue, musicName, storyId]);
+  }, [debouncedValue, musicName, episodeId]);
 
   useOutOfModal({
     setShowModal: setShowMusicDropDown,

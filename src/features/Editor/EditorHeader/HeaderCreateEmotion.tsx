@@ -3,6 +3,7 @@ import CharacterPrompt from "../../Profile/Translator/InputPrompts/CharacterProm
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import useCreateEmotion from "../../../hooks/Posting/Emotion/useCreateEmotion";
 import PlotfieldInput from "../../shared/Inputs/PlotfieldInput";
+import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
 
 type HeaderCreateEmotionTypes = {
   storyId: string;
@@ -35,7 +36,8 @@ export default function HeaderCreateEmotion({
       console.log("Заполните Поле");
       return;
     }
-    createEmotion.mutate();
+    const emotionId = generateMongoObjectId();
+    createEmotion.mutate({ emotionId });
     setShowCreateEmotionModal(false);
   };
 

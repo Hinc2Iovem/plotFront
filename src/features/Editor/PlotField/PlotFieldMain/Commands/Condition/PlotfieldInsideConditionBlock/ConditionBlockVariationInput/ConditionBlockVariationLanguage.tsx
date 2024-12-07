@@ -27,7 +27,7 @@ export default function ConditionBlockVariationLanguage({
   plotfieldCommandId,
   topologyBlockId,
 }: ConditionBlockVariationLanguageTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [language, setLanguage] = useState(typeof currentLanguage === "string" ? currentLanguage : "");
   const [showAllLangauges, setShowAllLanguages] = useState(false);
 
@@ -40,9 +40,9 @@ export default function ConditionBlockVariationLanguage({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "Condition - Language",
           id: conditionBlockVariationId,
@@ -52,19 +52,19 @@ export default function ConditionBlockVariationLanguage({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "Condition - Language",
         id: conditionBlockVariationId,
         value: `${language}`,
         type: "conditionVariation",
       });
     }
-  }, [language, storyId]);
+  }, [language, episodeId]);
 
   useOutOfModal({
     modalRef: languageModalRef,

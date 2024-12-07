@@ -33,7 +33,7 @@ export default function ConditionBlockVariationStatus({
   currentCharacterId,
   topologyBlockId,
 }: ConditionBlockVariationStatusTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [status, setStatus] = useState(typeof currentStatus === "string" ? currentStatus : "");
   const [showAllLangauges, setShowAllStatuses] = useState(false);
 
@@ -101,9 +101,9 @@ export default function ConditionBlockVariationStatus({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "Condition - Status",
           id: conditionBlockVariationId,
@@ -113,19 +113,19 @@ export default function ConditionBlockVariationStatus({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "Condition - Status",
         id: conditionBlockVariationId,
         value: `${debouncedConditionName} ${status}`,
         type: "conditionVariation",
       });
     }
-  }, [status, storyId, debouncedConditionName]);
+  }, [status, episodeId, debouncedConditionName]);
 
   useOutOfModal({
     modalRef,

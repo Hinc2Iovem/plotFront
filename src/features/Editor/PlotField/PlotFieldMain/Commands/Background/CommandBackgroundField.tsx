@@ -23,7 +23,7 @@ export default function CommandBackgroundField({
   topologyBlockId,
   command,
 }: CommandBackgroundFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Background");
   const [backgroundName, setBackgroundName] = useState<string>("");
   const [currentMusicName, setCurrentMusicName] = useState("");
@@ -64,9 +64,9 @@ export default function CommandBackgroundField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "background",
           id: plotFieldCommandId,
@@ -76,7 +76,7 @@ export default function CommandBackgroundField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (commandBackground?.backgroundName !== debouncedNameValue && debouncedNameValue?.trim().length) {
@@ -98,16 +98,16 @@ export default function CommandBackgroundField({
   }, [pointOfMovement]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "background",
         id: plotFieldCommandId,
         type: "command",
         value: `${debouncedNameValue} ${currentMusicName} ${pointOfMovement}`,
       });
     }
-  }, [currentMusicName, debouncedNameValue, storyId, pointOfMovement]);
+  }, [currentMusicName, debouncedNameValue, episodeId, pointOfMovement]);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">

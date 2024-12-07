@@ -18,7 +18,7 @@ type CommandSuitFieldTypes = {
 };
 
 export default function CommandSuitField({ plotFieldCommandId, command, topologyBlockId }: CommandSuitFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Suit");
   const [textValue, setTextValue] = useState("");
   const [currentCharacterId, setCurrentCharacterId] = useState("");
@@ -76,9 +76,9 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "suit",
           id: plotFieldCommandId,
@@ -88,7 +88,7 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
@@ -100,9 +100,9 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
 
   useEffect(() => {
     if (debouncedValue?.trim().length || currentCharacterImg?.trim().length) {
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           commandName: "suit",
           id: plotFieldCommandId,
           type: "command",

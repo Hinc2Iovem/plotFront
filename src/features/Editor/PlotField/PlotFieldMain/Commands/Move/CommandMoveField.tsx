@@ -17,7 +17,7 @@ type CommandMoveFieldTypes = {
 const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
 
 export default function CommandMoveField({ plotFieldCommandId, command, topologyBlockId }: CommandMoveFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Move");
   const [moveValue, setMoveValue] = useState<string>("");
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -54,9 +54,9 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "move",
           id: plotFieldCommandId,
@@ -66,12 +66,12 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (moveValue.trim().length) {
-      if (storyId) {
-        updateValue({ storyId, commandName: "move", id: plotFieldCommandId, type: "command", value: moveValue });
+      if (episodeId) {
+        updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: moveValue });
       }
       if (regexCheckDecimalNumberBetweenZeroAndOne.test(moveValue)) {
         setShowNotificationModal(false);

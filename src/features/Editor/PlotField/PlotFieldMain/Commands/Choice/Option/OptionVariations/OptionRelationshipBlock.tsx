@@ -14,7 +14,7 @@ type OptionRelationshipBlockTypes = {
 };
 
 export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue }: OptionRelationshipBlockTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const { data: optionRelationship } = useGetRelationshipOption({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
@@ -85,16 +85,16 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
   const debouncedCharacter = useDebounce({ value: characterName, delay: 600 });
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: `Choice - Relationship`,
         id: choiceOptionId,
         value: `${debouncedValue} ${debouncedCharacter} ${amountOfPoints}`,
         type: "choiceOption",
       });
     }
-  }, [amountOfPoints, storyId, debouncedCharacter, debouncedValue]);
+  }, [amountOfPoints, episodeId, debouncedCharacter, debouncedValue]);
 
   return (
     <div className="self-end w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap mt-[.5rem]">

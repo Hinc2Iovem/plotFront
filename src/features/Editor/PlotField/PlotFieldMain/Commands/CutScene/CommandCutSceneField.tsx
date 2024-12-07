@@ -20,7 +20,7 @@ export default function CommandCutSceneField({
   command,
   topologyBlockId,
 }: CommandCutSceneFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "CutScene");
   const [textValue, setTextValue] = useState("");
   const { data: commandCutScene } = useGetCommandCutScene({
@@ -38,9 +38,9 @@ export default function CommandCutSceneField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "cutScene",
           id: plotFieldCommandId,
@@ -50,7 +50,7 @@ export default function CommandCutSceneField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (commandCutScene) {
@@ -73,9 +73,9 @@ export default function CommandCutSceneField({
 
   useEffect(() => {
     if (commandCutScene?.cutSceneName !== debouncedValue && debouncedValue?.trim().length) {
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           commandName: "cutScene",
           id: plotFieldCommandId,
           type: "command",

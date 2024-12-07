@@ -31,26 +31,23 @@ export default function FiltersEverythingPlotAchievement({
     queryKey: "achievement",
     translateToLanguage,
   });
-  const { data: translatedAchievements } =
-    useGetAllAchievementTranslationsByTopologyBlockId({
-      language: translateFromLanguage,
-      topologyBlockId,
-    });
-  const { data: nonTranslatedAchievements } =
-    useGetAllAchievementTranslationsByTopologyBlockId({
-      language: translateToLanguage,
-      topologyBlockId,
-    });
+  const { data: translatedAchievements } = useGetAllAchievementTranslationsByTopologyBlockId({
+    language: translateFromLanguage,
+    topologyBlockId,
+  });
+  const { data: nonTranslatedAchievements } = useGetAllAchievementTranslationsByTopologyBlockId({
+    language: translateToLanguage,
+    topologyBlockId,
+  });
 
   const memoizedCombinedTranslations = useMemo(() => {
-    const combinedArray: CombinedTranslatedAndNonTranslatedAchievementTypes[] =
-      [];
+    const combinedArray: CombinedTranslatedAndNonTranslatedAchievementTypes[] = [];
     const achievementMap: {
       [key: string]: CombinedTranslatedAndNonTranslatedAchievementTypes;
     } = {};
 
     translatedAchievements?.forEach((tc) => {
-      const achievementId = tc.commandId;
+      const achievementId = tc.achievementId;
       if (!achievementMap[achievementId]) {
         achievementMap[achievementId] = {
           translated: tc,
@@ -62,7 +59,7 @@ export default function FiltersEverythingPlotAchievement({
     });
 
     nonTranslatedAchievements?.forEach((ntc) => {
-      const achievementId = ntc.commandId;
+      const achievementId = ntc.achievementId;
       if (!achievementMap[achievementId]) {
         achievementMap[achievementId] = {
           translated: null,

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AllMightySearchMain from "./Search/AllMightySearchMain";
 import AllMightySearchSidebar from "./Sidebar/AllMightySearchSidebar";
+import PlotfieldSearch from "./PlotfieldSearch/PlotfieldSearch";
 
 type AllMightySearchTypes = {
   setShowAllMightySearch: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,36 +27,47 @@ export type AllPossibleAllMightySearchCategoriesRusTypes =
   | "звуки";
 
 export default function AllMightySearch({ setShowAllMightySearch, showAllMightySearch }: AllMightySearchTypes) {
-  const theme = localStorage.getItem("theme");
-
   const [currentCategory, setCurrentCategory] = useState("" as AllPossibleAllMightySearchCategoriesTypes);
-  const [showKeyBinds, setShowKeyBinds] = useState(false);
+  const [showContent, setShowContent] = useState({
+    showKeyBinds: false,
+    showSearch: true,
+  });
 
   return (
     <>
       {showAllMightySearch ? (
         <section className={`flex w-full h-[calc(100vh-2.30rem)] bg-secondary relative`}>
-          <button
-            onClick={() => setShowAllMightySearch(false)}
-            className={`w-[2.5rem] h-[1rem] shadow-inner ${
-              theme === "light" ? "shadow-secondary-darker hover:shadow-md" : "shadow-gray-700 hover:scale-[1.03]"
-            } transition-shadow rounded-md absolute top-[.5rem] right-[.5rem]`}
-          >
-            {/* Close AllMightySearch button */}
-          </button>
-
+          <CloseAllMightySearchButton setShowAllMightySearch={setShowAllMightySearch} />
           <AllMightySearchSidebar
             setCurrentCategory={setCurrentCategory}
-            setShowKeyBinds={setShowKeyBinds}
+            setShowContent={setShowContent}
             currentCategory={currentCategory}
-            showKeyBinds={showKeyBinds}
+            showContent={showContent}
           />
-
-          {showKeyBinds ? null : (
+          {showContent.showKeyBinds ? null : showContent.showSearch ? (
+            <PlotfieldSearch setShowAllMightySearch={setShowAllMightySearch} />
+          ) : (
             <AllMightySearchMain setCurrentCategory={setCurrentCategory} currentCategory={currentCategory} />
           )}
         </section>
       ) : null}
     </>
+  );
+}
+
+type CloseAllMightySearchButtonTypes = {
+  setShowAllMightySearch: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function CloseAllMightySearchButton({ setShowAllMightySearch }: CloseAllMightySearchButtonTypes) {
+  const theme = localStorage.getItem("theme");
+
+  return (
+    <button
+      onClick={() => setShowAllMightySearch(false)}
+      className={`w-[2.5rem] h-[1rem] shadow-inner ${
+        theme === "light" ? "shadow-secondary-darker hover:shadow-md" : "shadow-gray-700 hover:scale-[1.03]"
+      } transition-shadow rounded-md absolute top-[.5rem] right-[.5rem]`}
+    ></button>
   );
 }

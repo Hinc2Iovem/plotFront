@@ -3,7 +3,7 @@ import { devtools } from "zustand/middleware";
 
 export type AllPossibleSearchTypes = "command" | "choiceOption" | "conditionVariation" | "ifVariation";
 
-type SearchItemTypes = {
+export type SearchItemTypes = {
   commandName: string;
   topologyBlockId: string;
   text: string;
@@ -12,7 +12,7 @@ type SearchItemTypes = {
 };
 
 type SearchTypes = {
-  storyId: string;
+  episodeId: string;
   items: SearchItemTypes[];
 };
 
@@ -21,8 +21,8 @@ type SearchTypes = {
 
 type SearchStoreTypes = {
   results: SearchTypes[];
-  getSearchResults: ({ value }: { value: string; storyId: string }) => SearchItemTypes[];
-  addItem: ({ item }: { item: SearchItemTypes; storyId: string }) => void;
+  getSearchResults: ({ value, episodeId }: { value: string; episodeId: string }) => SearchItemTypes[];
+  addItem: ({ item }: { item: SearchItemTypes; episodeId: string }) => void;
   updateValue: ({
     value,
     id,
@@ -33,43 +33,53 @@ type SearchStoreTypes = {
     id: string;
     type: AllPossibleSearchTypes;
     commandName: string;
-    storyId: string;
+    episodeId: string;
   }) => void;
-  deleteValue: ({ id }: { id: string; storyId: string }) => void;
+  deleteValue: ({ id }: { id: string; episodeId: string }) => void;
 };
 
 const useSearch = create<SearchStoreTypes>()(
   devtools(
     (set, get) => ({
       results: [],
-      getSearchResults: ({ value, storyId }) => {
+      getSearchResults: ({ value = "", episodeId }) => {
+        if (!value?.trim().length) {
+          return [];
+        }
         const results = get()
-          .results.find((r) => r.storyId === storyId)
-          ?.items.filter((r) => r.text?.toLowerCase().includes(value?.toLowerCase()));
+          .results.find((r) => r.episodeId === episodeId)
+          ?.items.filter(
+            (r) =>
+              r.text?.toLowerCase().includes(value?.toLowerCase()) ||
+              r.commandName?.toLowerCase().includes(value?.toLowerCase())
+          );
         if (results) {
           return results;
         } else {
           return [];
         }
       },
-      addItem: ({ item, storyId }) => {
-        const story = get().results.find((r) => r.storyId === storyId);
-        if (story) {
-          if (!story.items.find((r) => r.id === item.id)) {
+      addItem: ({ item, episodeId }) => {
+        const episode = get().results.find((r) => r.episodeId === episodeId);
+        if (episode) {
+          if (!episode.items.find((r) => r.id === item.id)) {
             set((state) => ({
-              results: state.results.map((r) => (r.storyId === storyId ? { ...r, items: [...r.items, item] } : r)),
+              results: state.results.map((r) => (r.episodeId === episodeId ? { ...r, items: [...r.items, item] } : r)),
             }));
           }
         } else {
           set((state) => ({
-            results: [...state.results, { storyId, items: [item] }],
+            results: [...state.results, { episodeId, items: [item] }],
           }));
         }
       },
-      updateValue: ({ id, type, value, commandName, storyId }) => {
-        const story = get().results.find((r) => r.storyId === storyId);
-        if (!story) {
-          console.error(`Story with ID ${storyId} not found.`);
+      updateValue: ({ id, type, value, commandName, episodeId }) => {
+        if (value === null || value === "null") {
+          return;
+        }
+        const episode = get().results.find((r) => r.episodeId === episodeId);
+        if (!episode) {
+          console.error(`Episode with ID ${episodeId} not found.`);
           return;
         }
 
@@ -77,7 +87,7 @@ const useSearch = create<SearchStoreTypes>()(
           results: state.results.map((r) => ({
             ...r,
             items:
-              r.storyId === storyId
+              r.episodeId === episodeId
                 ? r.items.map((ri) =>
                     ri.id === id
                       ? {
@@ -93,17 +103,17 @@ const useSearch = create<SearchStoreTypes>()(
         }));
       },
 
-      deleteValue: ({ id, storyId }) => {
-        const story = get().results.find((r) => r.storyId === storyId);
-        if (!story) {
-          console.error(`Story with ID ${storyId} not found.`);
+      deleteValue: ({ id, episodeId }) => {
+        const episode = get().results.find((r) => r.episodeId === episodeId);
+        if (!episode) {
+          console.error(`Episode with ID ${episodeId} not found.`);
           return;
         }
 
         set((state) => ({
           results: state.results.map((r) => ({
             ...r,
-            items: r.storyId === storyId ? r.items.filter((ri) => ri.id !== id) : r.items,
+            items: r.episodeId === episodeId ? r.items.filter((ri) => ri.id !== id) : r.items,
           })),
         }));
       },

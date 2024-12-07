@@ -16,7 +16,7 @@ type CommandEffectFieldTypes = {
 };
 
 export default function CommandEffectField({ plotFieldCommandId, command, topologyBlockId }: CommandEffectFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Effect");
   const [textValue, setTextValue] = useState("");
   const { data: commandEffect } = useGetCommandEffect({
@@ -54,9 +54,9 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "effect",
           id: plotFieldCommandId,
@@ -66,12 +66,18 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (commandEffect?.effectName !== debouncedValue && debouncedValue?.trim().length) {
-      if (storyId) {
-        updateValue({ storyId, commandName: "effect", id: plotFieldCommandId, type: "command", value: debouncedValue });
+      if (episodeId) {
+        updateValue({
+          episodeId,
+          commandName: "effect",
+          id: plotFieldCommandId,
+          type: "command",
+          value: debouncedValue,
+        });
       }
       updateEffectText.mutate();
     }

@@ -65,7 +65,7 @@ export default function CommandSayCharacterFieldItem({
   commandIfId,
   isElse,
 }: CommandSayCharacterFieldItemTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const {
     updateCharacterProperties,
     updateEmotionProperties,
@@ -120,9 +120,9 @@ export default function CommandSayCharacterFieldItem({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "character",
           id: plotFieldCommandId,
@@ -132,7 +132,7 @@ export default function CommandSayCharacterFieldItem({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (translatedSayText && !textValue.trim().length) {
@@ -203,9 +203,9 @@ export default function CommandSayCharacterFieldItem({
         }
       }
 
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           commandName: "character",
           id: plotFieldCommandId,
           type: "command",
@@ -231,9 +231,9 @@ export default function CommandSayCharacterFieldItem({
 
   useEffect(() => {
     if (debouncedValue?.trim().length) {
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           commandName: "character",
           id: plotFieldCommandId,
           type: "command",

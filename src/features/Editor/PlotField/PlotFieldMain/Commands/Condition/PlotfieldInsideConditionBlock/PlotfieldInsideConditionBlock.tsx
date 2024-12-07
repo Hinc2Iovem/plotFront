@@ -12,6 +12,7 @@ type PlotfieldInsideConditionBlockTypes = {
   showConditionBlockPlot: boolean;
   isFocusedBackground: boolean;
   plotfieldCommandId: string;
+  topologyBlockId: string;
   setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
   setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -19,6 +20,7 @@ type PlotfieldInsideConditionBlockTypes = {
 export default function PlotfieldInsideConditionBlock({
   showConditionBlockPlot,
   plotfieldCommandId,
+  topologyBlockId,
   isFocusedBackground,
   setIsFocusedBackground,
   setShowConditionBlockPlot,
@@ -72,6 +74,7 @@ export default function PlotfieldInsideConditionBlock({
             key={"optionValueInput-" + op.targetBlockId + "-" + op.topologyBlockName + "-" + i}
             {...op}
             plotfieldCommandId={plotfieldCommandId}
+            topologyBlockId={topologyBlockId}
             insidePlotfield={true}
           />
         ))}

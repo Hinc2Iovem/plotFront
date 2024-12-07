@@ -43,10 +43,5 @@ export default function useReorderElseCommands({
         });
       });
     }
-  }, [
-    currentCommandOrdersIf,
-    commandIfId,
-    currentCommandsState,
-    newlyFetchedIfCommands,
-  ]);
+  }, [currentCommandOrdersIf, commandIfId, currentCommandsState, newlyFetchedIfCommands]);
 }

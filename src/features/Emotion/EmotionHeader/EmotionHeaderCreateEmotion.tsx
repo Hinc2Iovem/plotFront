@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import useCreateEmotion from "../../../hooks/Posting/Emotion/useCreateEmotion";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
+import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
 
 type EmotionHeaderCreateEmotionTypes = {
   setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,7 +29,8 @@ export default function EmotionHeaderCreateEmotion({
       console.log("Заполните поле");
       return;
     }
-    createEmotion.mutate();
+    const emotionId = generateMongoObjectId();
+    createEmotion.mutate({ emotionId });
     setShowModal(false);
   };
 

@@ -32,7 +32,7 @@ export default function ConditionBlockVariationKey({
   keyId,
   topologyBlockId,
 }: ConditionBlockVariationKeyTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [showKeyPromptModal, setShowKeyPromptModal] = useState(false);
   const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
@@ -63,9 +63,9 @@ export default function ConditionBlockVariationKey({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "Condition - Key",
           id: conditionBlockVariationId,
@@ -75,7 +75,7 @@ export default function ConditionBlockVariationKey({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   const debouncedValue = useDebounce({
     delay: 700,
@@ -83,9 +83,9 @@ export default function ConditionBlockVariationKey({
   });
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "Condition - Key",
         id: conditionBlockVariationId,
         type: "conditionVariation",
@@ -98,9 +98,9 @@ export default function ConditionBlockVariationKey({
     // when user deleted some part of the input for no reason and then closed propmt modal, this will restore value to the initial state
     if (backUpConditionName && !showKeyPromptModal) {
       if (backUpConditionName !== currentConditionName) {
-        if (storyId) {
+        if (episodeId) {
           updateValue({
-            storyId,
+            episodeId,
             commandName: "Condition - Key",
             id: conditionBlockVariationId,
             type: "conditionVariation",

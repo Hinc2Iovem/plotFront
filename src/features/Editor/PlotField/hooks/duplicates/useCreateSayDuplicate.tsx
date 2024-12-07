@@ -73,6 +73,7 @@ export default function useCreateSayDuplicate({ topologyBlockId, episodeId }: Cr
         : topologyBlockId;
 
       addItem({
+        episodeId,
         item: {
           commandName: newCommand.sayType || "author",
           id: newCommand.plotfieldCommandId,
@@ -213,7 +214,7 @@ export default function useCreateSayDuplicate({ topologyBlockId, episodeId }: Cr
     },
     onError: (err, newCommand, context) => {
       const { commandIfId, isElse, plotfieldCommandId } = newCommand;
-      deleteValue({ id: plotfieldCommandId });
+      deleteValue({ id: plotfieldCommandId, episodeId });
       if (commandIfId?.trim().length) {
         console.error(`Some error happened: ${err.message}`);
 

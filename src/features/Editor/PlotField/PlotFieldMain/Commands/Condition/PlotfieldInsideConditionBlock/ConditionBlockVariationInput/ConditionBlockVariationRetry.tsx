@@ -24,7 +24,7 @@ export default function ConditionBlockVariationRetry({
   topologyBlockId,
   conditionBlockVariationId,
 }: ConditionBlockVariationRetryTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [retryAmount, setRetryAmount] = useState(typeof currentRentryAmount === "number" ? currentRentryAmount : null);
   const { updateConditionBlockVariationValue, getConditionBlockVariationById } = useConditionBlocks();
 
@@ -37,9 +37,9 @@ export default function ConditionBlockVariationRetry({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "Condition - Retry",
           id: conditionBlockVariationId,
@@ -49,12 +49,12 @@ export default function ConditionBlockVariationRetry({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "Condition - Retry",
         id: conditionBlockVariationId,
         value: `${
@@ -63,7 +63,7 @@ export default function ConditionBlockVariationRetry({
         type: "conditionVariation",
       });
     }
-  }, [retryAmount, storyId]);
+  }, [retryAmount, episodeId]);
 
   return (
     <div className="relative flex gap-[.5rem] items-center w-full">

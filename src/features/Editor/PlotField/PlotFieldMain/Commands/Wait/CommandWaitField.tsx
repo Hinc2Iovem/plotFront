@@ -14,7 +14,7 @@ type CommandWaitFieldTypes = {
 };
 
 export default function CommandWaitField({ plotFieldCommandId, command, topologyBlockId }: CommandWaitFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Wait");
   const [waitValue, setWaitValue] = useState("");
   const { data: commandWait } = useGetCommandWait({
@@ -42,9 +42,9 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "wait",
           id: plotFieldCommandId,
@@ -54,7 +54,7 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   const updateWaitText = useUpdateWaitText({
     waitValue: Number(waitValue),
@@ -62,8 +62,8 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
 
   useEffect(() => {
     if (waitValue) {
-      if (storyId) {
-        updateValue({ storyId, commandName: "wait", id: plotFieldCommandId, type: "command", value: waitValue });
+      if (episodeId) {
+        updateValue({ episodeId, commandName: "wait", id: plotFieldCommandId, type: "command", value: waitValue });
       }
       updateWaitText.mutate({
         waitId: commandWaitId || commandWait?._id || "",

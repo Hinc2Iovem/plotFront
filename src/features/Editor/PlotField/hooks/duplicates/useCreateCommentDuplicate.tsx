@@ -54,6 +54,7 @@ export default function useCreateCommentDuplicate({ topologyBlockId, episodeId }
     },
     onMutate: async (newCommand: CreateCommentDuplicateOnMutation) => {
       addItem({
+        episodeId,
         item: {
           commandName: newCommand.commandName || "command",
           id: newCommand.plotfieldCommandId,
@@ -84,7 +85,7 @@ export default function useCreateCommentDuplicate({ topologyBlockId, episodeId }
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
-      deleteValue({ id: newCommand.plotfieldCommandId });
+      deleteValue({ id: newCommand.plotfieldCommandId, episodeId });
       handleDuplicationOptimisticOnError({
         commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,

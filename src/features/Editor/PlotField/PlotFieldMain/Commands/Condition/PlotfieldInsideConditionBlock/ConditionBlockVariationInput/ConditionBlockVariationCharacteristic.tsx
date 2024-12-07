@@ -110,7 +110,7 @@ function CharacteristicInputField({
   value,
   topologyBlockId,
 }: CharacteristicInputFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
   const [currentConditionName, setCurrentConditionName] = useState<string | number>(value ? value : "");
@@ -160,9 +160,9 @@ function CharacteristicInputField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "Condition - Characteristic",
           id: conditionBlockVariationId,
@@ -172,19 +172,19 @@ function CharacteristicInputField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "Condition - Characteristic",
         id: conditionBlockVariationId,
         value: debouncedConditionName,
         type: "conditionVariation",
       });
     }
-  }, [debouncedConditionName, storyId]);
+  }, [debouncedConditionName, episodeId]);
 
   return (
     <div className="w-[40%] flex-grow min-w-[10rem] relative">

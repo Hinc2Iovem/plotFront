@@ -75,6 +75,7 @@ export default function useCreateBlankCommand({
         : topologyBlockId;
 
       addItem({
+        episodeId,
         item: {
           commandName:
             newCommand.commandName === "say" ? newCommand.sayType || "author" : newCommand.commandName || "command",

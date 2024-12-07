@@ -22,7 +22,7 @@ export default function CommandGetItemField({
   plotFieldCommandId,
   command,
 }: CommandGetItemFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "GetItem");
   const [itemNameInitial, setItemNameInitial] = useState("");
   const [itemDescriptionInitial, setItemDescriptionInitial] = useState("");
@@ -68,9 +68,9 @@ export default function CommandGetItemField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "getItem",
           id: plotFieldCommandId,
@@ -80,7 +80,7 @@ export default function CommandGetItemField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   const debouncedItemNameValue = useDebounce({ value: itemName, delay: 500 });
   const debouncedItemDescriptionValue = useDebounce({
@@ -123,9 +123,9 @@ export default function CommandGetItemField({
   }, [debouncedButtonTextValue]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: nameValue || "getItem",
         id: plotFieldCommandId,
         value: `${debouncedItemNameValue} ${debouncedItemDescriptionValue} ${debouncedButtonTextValue}`,

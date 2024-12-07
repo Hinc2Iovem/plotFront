@@ -40,7 +40,7 @@ export default function ChoiceQuestionField({
   plotFieldCommandId,
   textStyle,
 }: ChoiceQuestionFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -137,9 +137,9 @@ export default function ChoiceQuestionField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "Choice",
           id: plotFieldCommandId,
@@ -149,19 +149,19 @@ export default function ChoiceQuestionField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "Choice",
         id: plotFieldCommandId,
         value: isAuthor ? debouncedValue : `${characterName} ${debouncedValue}`,
         type: "command",
       });
     }
-  }, [characterName, debouncedValue, storyId]);
+  }, [characterName, debouncedValue, episodeId]);
 
   return (
     <div className="w-full flex-grow flex gap-[1rem] bg-primary rounded-md shadow-md p-[.5rem] flex-wrap items-center">

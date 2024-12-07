@@ -4,6 +4,7 @@ import { AllPossiblePlotFieldComamndsTypes } from "../../../../../types/StoryEdi
 import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import usePlotfieldCommands from "../../Context/PlotFieldContext";
 import useSearch from "../../PlotFieldMain/Search/SearchContext";
+import { useParams } from "react-router-dom";
 
 type CreateBlankCommandTypes = {
   topologyBlockId: string;
@@ -23,6 +24,7 @@ type NewCommandTypes = {
 
 export default function useCreateBlankCommandInsideIf({ topologyBlockId, commandIfId }: CreateBlankCommandTypes) {
   const queryClient = useQueryClient();
+  const { episodeId } = useParams();
   const { addItem } = useSearch();
 
   const { addCommandIf, updateCommandIfInfo, removeCommandIfItem } = usePlotfieldCommands();
@@ -50,6 +52,7 @@ export default function useCreateBlankCommandInsideIf({ topologyBlockId, command
         : topologyBlockId;
 
       addItem({
+        episodeId: episodeId || "",
         item: {
           commandName:
             commandOrder.command === "say" ? commandOrder.sayType || "author" : commandOrder.command || "command",

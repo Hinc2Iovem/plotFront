@@ -20,7 +20,7 @@ type CommandCallFieldTypes = {
 };
 
 export default function CommandCallField({ plotFieldCommandId, topologyBlockId, command }: CommandCallFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Call");
 
   const { data: commandCall } = useGetCommandCall({
@@ -44,9 +44,9 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "call",
           id: plotFieldCommandId,
@@ -56,7 +56,7 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (currentTopologyBlock) {
@@ -75,16 +75,16 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
   }, [commandCall]);
 
   useEffect(() => {
-    if (typeof currentReferencedCommandIndex === "number" && storyId) {
+    if (typeof currentReferencedCommandIndex === "number" && episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "call",
         id: plotFieldCommandId,
         type: "command",
         value: `${currentReferencedCommandIndex}`,
       });
     }
-  }, [currentReferencedCommandIndex, storyId]);
+  }, [currentReferencedCommandIndex, episodeId]);
 
   return (
     <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">

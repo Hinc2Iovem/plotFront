@@ -1,26 +1,19 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useRef, useState } from "react";
 import plus from "../../../../../../assets/images/shared/plus.png";
 import { AllPossibleConditionBlockVariations } from "../../../../../../const/CONDITION_BLOCK_VARIATIONS";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import { StatusTypes } from "../../../../../../types/StoryData/Status/StatusTypes";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
 import useAddNewLogicalOperator from "../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useAddNewLogicalOperator";
 import useAddNewConditionBlockVariation from "../../../hooks/Condition/ConditionBlock/BlockVariations/useAddNewConditionBlockVariation";
-import useGetAllConditionBlockVariationsByConditionBlockId, {
-  ConditionVariationResponseTypes,
-} from "../../../hooks/Condition/ConditionBlock/BlockVariations/useGetAllConditionBlockVariationsByConditionBlockId";
-import useUpdateConditionBlockTopologyBlockId from "../../../hooks/Condition/ConditionBlock/useUpdateConditionBlockTopologyBlockId";
-import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
-import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
 import ConditionBlockShowPlot from "./ConditionBlockShowPlot";
+import ConditionBlockTopologyBlockField from "./ConditionBlockTopologyBlockField";
 import ConditionValueItem from "./ConditionValueItem";
-import useConditionBlocks, { ConditionBlockItemTypes, ConditionBlockVariationTypes } from "./Context/ConditionContext";
+import useConditionBlocks, { ConditionBlockItemTypes } from "./Context/ConditionContext";
 import DisplayOrderOfIfsModal from "./DisplayOrderOfIfsModal";
+import useRefineAndAssignConditionVariations from "./useRefineAndAssignConditionVariations";
 
 type ConditionBlockItemProps = {
   currentTopologyBlockId: string;
@@ -42,160 +35,16 @@ export default function ConditionBlockItem({
   conditionBlockVariations,
   logicalOperators,
 }: ConditionBlockItemProps) {
-  const { episodeId } = useParams();
-  const {
-    updateConditionBlockTargetBlockId,
-    setConditionBlockVariations,
-    addConditionBlockVariation,
-    getAmountOfConditionBlockVariations,
-    addNewLogicalOperator,
-  } = useConditionBlocks();
-  const modalRef = useRef<HTMLDivElement>(null);
-  const { data: topologyBlock } = useGetTopologyBlockById({
-    topologyBlockId: targetBlockId,
-  });
+  const { addConditionBlockVariation, getAmountOfConditionBlockVariations, addNewLogicalOperator } =
+    useConditionBlocks();
 
   const [showCreateCondition, setShowCreateCondition] = useState(false);
   const conditionModalRef = useRef<HTMLDivElement>(null);
 
-  const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
-
-  const { data: variations } = useGetAllConditionBlockVariationsByConditionBlockId({ conditionBlockId });
-
-  useEffect(() => {
-    if (variations) {
-      const mapToConditionBlockVariations = (
-        variations: ConditionVariationResponseTypes
-      ): ConditionBlockVariationTypes[] => {
-        const newVariations: ConditionBlockVariationTypes[] = [];
-
-        variations.key.forEach((item) => {
-          newVariations.push({
-            conditionBlockVariationId: item._id,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            type: "key",
-            commandKeyId: item.commandKeyId,
-          });
-        });
-
-        variations.appearance.forEach((item) => {
-          newVariations.push({
-            conditionBlockVariationId: item._id,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            type: "appearance",
-            appearancePartId: item.appearancePartId,
-            currentlyDressed: item.currentlyDressed,
-          });
-        });
-
-        variations.retry.forEach((item) => {
-          newVariations.push({
-            conditionBlockVariationId: item._id,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            type: "retry",
-            amountOfRetries: item.amountOfRetries,
-            sign: item.sign,
-          });
-        });
-
-        variations.character.forEach((item) => {
-          newVariations.push({
-            conditionBlockVariationId: item._id,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            type: "character",
-            characterId: item.characterId,
-            value: item.value,
-            sign: item.sign,
-          });
-        });
-
-        variations.characteristic.forEach((item) => {
-          newVariations.push({
-            conditionBlockVariationId: item._id,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            type: "characteristic",
-            characteristicId: item.characteristicId,
-            secondCharacteristicId: item.secondCharacteristicId,
-            value: item.value,
-            sign: item.sign,
-          });
-        });
-
-        variations.language.forEach((item) => {
-          newVariations.push({
-            conditionBlockVariationId: item._id,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            type: "language",
-            currentLanguage: item.currentLanguage,
-          });
-        });
-
-        variations.status.forEach((item) => {
-          newVariations.push({
-            conditionBlockVariationId: item._id,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            type: "status",
-            characterId: item.characterId,
-            status: item.status as StatusTypes,
-          });
-        });
-
-        variations.random.forEach((item) => {
-          newVariations.push({
-            conditionBlockVariationId: item._id,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            type: "random",
-            isRandom: item.isRandom,
-          });
-        });
-        return newVariations.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-      };
-
-      setConditionBlockVariations({
-        conditionBlockId,
-        conditionBlockVariations: mapToConditionBlockVariations(variations),
-        plotfieldCommandId,
-      });
-    }
-  }, [variations]);
-
-  useEffect(() => {
-    if (topologyBlock) {
-      updateConditionBlockTargetBlockId({
-        conditionBlockId,
-        plotfieldCommandId,
-        targetBlockId,
-        topologyBlockName: topologyBlock?.name || "",
-      });
-    }
-  }, [topologyBlock]);
-
-  const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
-    episodeId: episodeId ?? "",
-  });
-
-  const updateTopologyBlock = useUpdateConditionBlockTopologyBlockId({
-    conditionBlockId: conditionBlockId,
-    sourceBlockId: targetBlockId,
-    episodeId: episodeId || "",
-  });
+  useRefineAndAssignConditionVariations({ conditionBlockId, plotfieldCommandId });
 
   const createConditionVariation = useAddNewConditionBlockVariation({ conditionBlockId });
   const addLogicalOperator = useAddNewLogicalOperator({ conditionBlockId });
-
-  useOutOfModal({
-    setShowModal: setShowAllTopologyBlocks,
-    showModal: showAllTopologyBlocks,
-    modalRef,
-  });
 
   useOutOfModal({
     setShowModal: setShowCreateCondition,
@@ -290,51 +139,14 @@ export default function ConditionBlockItem({
               currentOrder={orderOfExecution}
               plotfieldCommandId={plotfieldCommandId}
             />
-            <div className="relative w-full flex justify-between flex-wrap gap-[1rem]">
-              <PlotfieldButton
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowAllTopologyBlocks((prev) => !prev);
-                }}
-                type="button"
-              >
-                {topologyBlockName ? `Ветка - ${topologyBlockName}` : "Текущая Ветка"}
-              </PlotfieldButton>
-              <AsideScrollable className={`${showAllTopologyBlocks ? "" : "hidden"} translate-y-[3.5rem]`}>
-                {(allTopologyBlocks?.length || 0) > 1 ? (
-                  allTopologyBlocks?.map((tb) => (
-                    <AsideScrollableButton
-                      key={tb._id}
-                      type="button"
-                      onClick={() => {
-                        setShowAllTopologyBlocks(false);
-                        updateConditionBlockTargetBlockId({
-                          conditionBlockId,
-                          plotfieldCommandId,
-                          targetBlockId: tb._id,
-                          topologyBlockName: tb?.name || "",
-                        });
-                        updateTopologyBlock.mutate({ targetBlockId: tb._id });
-                      }}
-                      className={`${currentTopologyBlockId === tb._id ? "hidden" : ""} ${
-                        tb._id === targetBlockId ? "hidden" : ""
-                      }`}
-                    >
-                      {tb.name}
-                    </AsideScrollableButton>
-                  ))
-                ) : (
-                  <AsideScrollableButton
-                    type="button"
-                    onClick={() => {
-                      setShowAllTopologyBlocks(false);
-                    }}
-                  >
-                    Пусто
-                  </AsideScrollableButton>
-                )}
-              </AsideScrollable>
-            </div>
+            <ConditionBlockTopologyBlockField
+              conditionBlockId={conditionBlockId}
+              currentTopologyBlockId={currentTopologyBlockId}
+              isElse={isElse}
+              plotfieldCommandId={plotfieldCommandId}
+              targetBlockId={targetBlockId}
+              topologyBlockName={topologyBlockName || ""}
+            />
           </div>
         </div>
       ) : (
@@ -346,52 +158,14 @@ export default function ConditionBlockItem({
             targetBlockId={targetBlockId}
             isElse={isElse}
           />
-          <div className="relative self-end flex-grow">
-            <PlotfieldButton
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowAllTopologyBlocks((prev) => !prev);
-              }}
-              className="py-[1rem]"
-              type="button"
-            >
-              {topologyBlockName ? `Ветка - ${topologyBlockName}` : "Текущая Ветка"}
-            </PlotfieldButton>
-            <AsideScrollable ref={modalRef} className={`${showAllTopologyBlocks ? "" : "hidden"} translate-y-[3.5rem]`}>
-              {(allTopologyBlocks?.length || 0) > 1 ? (
-                allTopologyBlocks?.map((tb) => (
-                  <AsideScrollableButton
-                    key={tb._id}
-                    type="button"
-                    onClick={() => {
-                      setShowAllTopologyBlocks(false);
-                      updateConditionBlockTargetBlockId({
-                        conditionBlockId,
-                        plotfieldCommandId,
-                        targetBlockId: tb._id,
-                        topologyBlockName: tb?.name || "",
-                      });
-                      updateTopologyBlock.mutate({ targetBlockId: tb._id });
-                    }}
-                    className={`${currentTopologyBlockId === tb._id ? "hidden" : ""} ${
-                      tb._id === targetBlockId ? "hidden" : ""
-                    }`}
-                  >
-                    {tb.name}
-                  </AsideScrollableButton>
-                ))
-              ) : (
-                <AsideScrollableButton
-                  type="button"
-                  onClick={() => {
-                    setShowAllTopologyBlocks(false);
-                  }}
-                >
-                  Пусто
-                </AsideScrollableButton>
-              )}
-            </AsideScrollable>
-          </div>
+          <ConditionBlockTopologyBlockField
+            conditionBlockId={conditionBlockId}
+            currentTopologyBlockId={currentTopologyBlockId}
+            isElse={isElse}
+            plotfieldCommandId={plotfieldCommandId}
+            targetBlockId={targetBlockId}
+            topologyBlockName={topologyBlockName || ""}
+          />
         </div>
       )}
     </>

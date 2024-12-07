@@ -23,6 +23,27 @@ import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
 import { PlotfieldOptimisticCommandTypes } from "../../Context/PlotfieldCommandSlice";
 import { useEffect } from "react";
 import usePlotfieldCommands from "../../Context/PlotFieldContext";
+import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
+import { ErrorBoundary } from "react-error-boundary";
+
+function ErrorFallback({
+  error,
+  commandName,
+  resetErrorBoundary,
+}: {
+  commandName: string;
+  error: Error;
+  resetErrorBoundary: () => void;
+}) {
+  return (
+    <div>
+      <h2 className="text-[1.5rem] text-red-400">
+        Ошибка в комманде {commandName}: {error.message}
+      </h2>
+      <PlotfieldButton onClick={() => resetErrorBoundary()}>Обоновить</PlotfieldButton>
+    </div>
+  );
+}
 
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
@@ -100,68 +121,70 @@ export default function PlotfieldItem({
         command?.trim().length ? "outline-gray-300" : `outline-gray-600`
       }`}
     >
-      {!command ? (
-        <PlotfieldBlank
-          plotFieldCommandId={_id}
-          commandIfId={commandIfId ?? ""}
-          topologyBlockId={topologyBlockId}
-          isElse={isElse}
-        />
-      ) : command === "say" ? (
-        <CommandSayField
-          topologyBlockId={topologyBlockId}
-          plotFieldCommandId={_id}
-          characterId={characterId}
-          characterName={characterName}
-          sayType={sayType}
-          commandIfId={commandIfId}
-          characterImg={characterImg}
-          emotionId={emotionId}
-          emotionImg={emotionImg}
-          emotionName={emotionName}
-          isElse={isElse}
-          commandSide={commandSide}
-        />
-      ) : command === "achievement" ? (
-        <CommandAchievementField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
-      ) : command === "ambient" ? (
-        <CommandAmbientField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "cutscene" ? (
-        <CommandCutSceneField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "effect" ? (
-        <CommandEffectField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "key" ? (
-        <CommandKeyField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "move" ? (
-        <CommandMoveField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "music" ? (
-        <CommandMusicField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "sound" ? (
-        <CommandSoundField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "suit" ? (
-        <CommandSuitField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "wait" ? (
-        <CommandWaitField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "name" ? (
-        <CommandNameField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "background" ? (
-        <CommandBackgroundField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : command === "getitem" ? (
-        <CommandGetItemField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
-      ) : command === "if" ? (
-        <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
-      ) : command === "wardrobe" ? (
-        <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
-      ) : command === "choice" ? (
-        <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
-      ) : command === "call" ? (
-        <CommandCallField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
-      ) : command === "condition" ? (
-        <CommandConditionField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
-      ) : command === "comment" ? (
-        <CommandCommentField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
-      ) : null}
-      <span className="w-[3rem] bg-red-500 text-center text-text-light rounded-md text-[1.5rem]">{commandOrder}</span>
+      <ErrorBoundary FallbackComponent={(error) => <ErrorFallback commandName={command} {...error} />}>
+        {!command ? (
+          <PlotfieldBlank
+            plotFieldCommandId={_id}
+            commandIfId={commandIfId ?? ""}
+            topologyBlockId={topologyBlockId}
+            isElse={isElse}
+          />
+        ) : command === "say" ? (
+          <CommandSayField
+            topologyBlockId={topologyBlockId}
+            plotFieldCommandId={_id}
+            characterId={characterId}
+            characterName={characterName}
+            sayType={sayType}
+            commandIfId={commandIfId}
+            characterImg={characterImg}
+            emotionId={emotionId}
+            emotionImg={emotionImg}
+            emotionName={emotionName}
+            isElse={isElse}
+            commandSide={commandSide}
+          />
+        ) : command === "achievement" ? (
+          <CommandAchievementField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+        ) : command === "ambient" ? (
+          <CommandAmbientField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "cutscene" ? (
+          <CommandCutSceneField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "effect" ? (
+          <CommandEffectField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "key" ? (
+          <CommandKeyField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "move" ? (
+          <CommandMoveField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "music" ? (
+          <CommandMusicField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "sound" ? (
+          <CommandSoundField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "suit" ? (
+          <CommandSuitField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "wait" ? (
+          <CommandWaitField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "name" ? (
+          <CommandNameField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "background" ? (
+          <CommandBackgroundField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "getitem" ? (
+          <CommandGetItemField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+        ) : command === "if" ? (
+          <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+        ) : command === "wardrobe" ? (
+          <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+        ) : command === "choice" ? (
+          <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+        ) : command === "call" ? (
+          <CommandCallField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+        ) : command === "condition" ? (
+          <CommandConditionField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+        ) : command === "comment" ? (
+          <CommandCommentField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : null}
+        <span className="w-[3rem] bg-red-500 text-center text-text-light rounded-md text-[1.5rem]">{commandOrder}</span>
+      </ErrorBoundary>
     </li>
   );
 }

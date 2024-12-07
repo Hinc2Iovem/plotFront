@@ -57,6 +57,7 @@ export default function useCreateIfDuplicate({ topologyBlockId, episodeId }: Cre
       console.log("newCommand: ", newCommand);
 
       addItem({
+        episodeId,
         item: {
           commandName: newCommand.commandName || "command",
           id: newCommand.plotfieldCommandId,
@@ -87,7 +88,7 @@ export default function useCreateIfDuplicate({ topologyBlockId, episodeId }: Cre
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
-      deleteValue({ id: newCommand.plotfieldCommandId });
+      deleteValue({ id: newCommand.plotfieldCommandId, episodeId });
       handleDuplicationOptimisticOnError({
         commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,

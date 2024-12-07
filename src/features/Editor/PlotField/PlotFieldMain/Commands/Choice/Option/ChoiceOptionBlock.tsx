@@ -39,7 +39,7 @@ export default function ChoiceOptionBlock({
   isFocusedBackground,
   setShowOptionPlot,
 }: ChoiceOptionBlockTypes) {
-  const { episodeId, storyId } = useParams();
+  const { episodeId } = useParams();
 
   const {
     updateChoiceOptionText,
@@ -110,9 +110,9 @@ export default function ChoiceOptionBlock({
   const { addItem } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId: storyId || "",
+        episodeId: episodeId || "",
         item: {
           commandName: `Choice - ${optionType}`,
           id: choiceOptionId,
@@ -122,7 +122,7 @@ export default function ChoiceOptionBlock({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if ((optionText || "") !== debouncedValue && debouncedValue?.trim().length) {

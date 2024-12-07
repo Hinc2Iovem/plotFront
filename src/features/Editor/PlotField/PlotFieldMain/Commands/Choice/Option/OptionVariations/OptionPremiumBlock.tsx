@@ -10,7 +10,7 @@ type OptionPremiumBlockTypes = {
 };
 
 export default function OptionPremiumBlock({ choiceOptionId, debouncedValue }: OptionPremiumBlockTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const { data: optionPremium } = useGetPremiumOption({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
@@ -37,16 +37,16 @@ export default function OptionPremiumBlock({ choiceOptionId, debouncedValue }: O
   const { updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: `Choice - Premium`,
         id: choiceOptionId,
         value: `${debouncedValue} ${priceAmethysts}`,
         type: "choiceOption",
       });
     }
-  }, [priceAmethysts, debouncedValue, storyId]);
+  }, [priceAmethysts, debouncedValue, episodeId]);
 
   return (
     <div className="self-end flex-grow w-full px-[.5rem]">

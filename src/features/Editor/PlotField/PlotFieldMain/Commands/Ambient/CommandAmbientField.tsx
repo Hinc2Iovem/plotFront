@@ -20,7 +20,7 @@ export default function CommandAmbientField({
   command,
   topologyBlockId,
 }: CommandAmbientFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Ambient");
   const [textValue, setTextValue] = useState("");
   const { data: commandAmbient } = useGetCommandAmbient({
@@ -50,9 +50,9 @@ export default function CommandAmbientField({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "ambient",
           id: plotFieldCommandId,
@@ -62,7 +62,7 @@ export default function CommandAmbientField({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
@@ -73,9 +73,9 @@ export default function CommandAmbientField({
 
   useEffect(() => {
     if (commandAmbient?.ambientName !== debouncedValue && debouncedValue?.trim().length) {
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           commandName: "ambient",
           id: plotFieldCommandId,
           type: "command",

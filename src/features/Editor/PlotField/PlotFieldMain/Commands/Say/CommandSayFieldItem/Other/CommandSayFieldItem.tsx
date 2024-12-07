@@ -44,7 +44,7 @@ export default function CommandSayFieldItem({
   commandIfId,
   isElse,
 }: CommandSayFieldItemTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
   const [currentTextSide, setCurrentTextSide] = useState(textSide);
   const [showTextSettingsModal, setShowTextSettingsModal] = useState(false);
@@ -68,9 +68,9 @@ export default function CommandSayFieldItem({
   useEffect(() => {
     if (nameValue) {
       setSayVariationType(nameValue);
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           id: plotFieldCommandId,
           type: "command",
           value: debouncedValue,
@@ -78,14 +78,14 @@ export default function CommandSayFieldItem({
         });
       }
     }
-  }, [nameValue, storyId]);
+  }, [nameValue, episodeId]);
 
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue,
           id: plotFieldCommandId,
@@ -95,7 +95,7 @@ export default function CommandSayFieldItem({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (commandSayText && !textValue.trim().length) {
@@ -119,9 +119,9 @@ export default function CommandSayFieldItem({
 
   useEffect(() => {
     if (debouncedValue?.trim().length) {
-      if (storyId) {
+      if (episodeId) {
         updateValue({
-          storyId,
+          episodeId,
           id: plotFieldCommandId,
           type: "command",
           value: debouncedValue,

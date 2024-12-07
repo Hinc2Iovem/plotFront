@@ -210,9 +210,9 @@ export default function PlotfieldBlank({
           characterName,
           sayType: "character",
         });
-        if (storyId) {
+        if (episodeId) {
           addItem({
-            storyId,
+            episodeId,
             item: {
               commandName: "character",
               type: "command",
@@ -228,9 +228,9 @@ export default function PlotfieldBlank({
           newCommand: "say",
           sayType,
         });
-        if (storyId) {
+        if (episodeId) {
           addItem({
-            storyId,
+            episodeId,
             item: {
               commandName: sayType || "say",
               type: "command",
@@ -246,9 +246,9 @@ export default function PlotfieldBlank({
         id: plotFieldCommandId,
         newCommand: commandName,
       });
-      if (storyId) {
+      if (episodeId) {
         addItem({
-          storyId,
+          episodeId,
           item: {
             commandName: commandName,
             type: "command",
@@ -286,9 +286,9 @@ export default function PlotfieldBlank({
           sayType: "character",
           isElse,
         });
-        if (storyId) {
+        if (episodeId) {
           addItem({
-            storyId,
+            episodeId,
             item: {
               commandName: "character",
               type: "command",
@@ -305,9 +305,9 @@ export default function PlotfieldBlank({
           sayType,
           isElse,
         });
-        if (storyId) {
+        if (episodeId) {
           addItem({
-            storyId,
+            episodeId,
             item: {
               commandName: sayType || "say",
               type: "command",
@@ -324,9 +324,9 @@ export default function PlotfieldBlank({
         newCommand: commandName,
         isElse,
       });
-      if (storyId) {
+      if (episodeId) {
         addItem({
-          storyId,
+          episodeId,
           item: {
             commandName: commandName,
             type: "command",

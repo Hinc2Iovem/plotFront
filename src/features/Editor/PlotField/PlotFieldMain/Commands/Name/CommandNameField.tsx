@@ -20,7 +20,7 @@ type CommandNameFieldTypes = {
 };
 
 export default function CommandNameField({ plotFieldCommandId, command, topologyBlockId }: CommandNameFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Name");
 
   const [characterValue, setCharacterValue] = useState<UnknownCharacterValueTypes>({
@@ -73,9 +73,9 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "name",
           id: plotFieldCommandId,
@@ -85,7 +85,7 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
     if (commandName) {
@@ -117,16 +117,16 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
   });
 
   useEffect(() => {
-    if (characterDebouncedValue && characterValue.characterUnknownName !== characterDebouncedValue && storyId) {
+    if (characterDebouncedValue && characterValue.characterUnknownName !== characterDebouncedValue && episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "name",
         id: plotFieldCommandId,
         type: "command",
         value: `${characterValue.characterUnknownName} ${characterValue.characterName}`,
       });
     }
-  }, [characterDebouncedValue, storyId]);
+  }, [characterDebouncedValue, episodeId]);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">

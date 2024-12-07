@@ -13,7 +13,7 @@ type OptionCharacteristicBlockTypes = {
 };
 
 export default function OptionCharacteristicBlock({ choiceOptionId, debouncedValue }: OptionCharacteristicBlockTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const { data: optionCharacteristic } = useGetCharacteristicOption({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
@@ -76,16 +76,16 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
   const debouncedCharacteristic = useDebounce({ value: characteristicName, delay: 600 });
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: `Choice - Characteristic`,
         id: choiceOptionId,
         value: `${debouncedValue} ${debouncedCharacteristic} ${amountOfPoints}`,
         type: "choiceOption",
       });
     }
-  }, [amountOfPoints, debouncedCharacteristic, storyId, debouncedValue]);
+  }, [amountOfPoints, debouncedCharacteristic, episodeId, debouncedValue]);
 
   return (
     <div className="self-end sm:w-fit w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap">

@@ -5,6 +5,7 @@ import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
 import usePlotfieldCommands from "../../../../../../Context/PlotFieldContext";
 import useUpdateNameOrEmotion from "../../../../../../hooks/Say/useUpdateNameOrEmotion";
 import { EmotionTypes } from "../CommandSayCharacterFieldItem";
+import { generateMongoObjectId } from "../../../../../../../../../utils/generateMongoObjectId";
 
 type CommandSayCreateEmotionFieldModalTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,8 +36,7 @@ export default function CommandSayCreateEmotionFieldModal({
   const cursorRef = useRef<HTMLButtonElement | null>(null);
   const queryClient = useQueryClient();
   const [newEmotionId, setNewEmotionId] = useState("");
-  const { updateEmotionProperties, updateEmotionPropertiesIf } =
-    usePlotfieldCommands();
+  const { updateEmotionProperties, updateEmotionPropertiesIf } = usePlotfieldCommands();
 
   useEffect(() => {
     if (showModal) {
@@ -51,7 +51,10 @@ export default function CommandSayCreateEmotionFieldModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createEmotion.mutate();
+
+    const emotionId = generateMongoObjectId();
+    createEmotion.mutate({ emotionId });
+    setNewEmotionId(emotionId);
     queryClient.invalidateQueries({
       queryKey: ["character", characterId],
     });
@@ -67,7 +70,6 @@ export default function CommandSayCreateEmotionFieldModal({
         emotionName: prev.emotionName,
         imgUrl: null,
       }));
-      setNewEmotionId(createEmotion.data.emotions[lastEmotion - 1]._id || "");
       if (commandIfId?.trim().length) {
         updateEmotionPropertiesIf({
           emotionId: createEmotion.data.emotions[lastEmotion - 1]._id || "",

@@ -100,7 +100,7 @@ export function ConditionBlockInputFieldItem({
   const [allConditionBlockVariations, setAllConditionBlockVariations] = useState<
     AllConditionValueVariationByLogicalOperatorIndexTypes[]
   >([]);
-  const currentLogicalOperator = logicalOperators.length - 1 >= index ? logicalOperators?.split(",")[index] : null;
+  const currentLogicalOperator = logicalOperators?.length - 1 >= index ? logicalOperators?.split(",")[index] : null;
 
   const [suggestToChangeLogicalOperator, setSuggestToChangeLogicalOperator] = useState(false);
   const [suggestToDeleteLogicalOperator, setSuggestToDeleteLogicalOperator] = useState(false);
@@ -413,7 +413,7 @@ function DeleteLogicalOperatorButton({
         removeLogicalOperator({ conditionBlockId, index, plotfieldCommandId });
         deleteLogicalOperatorAsync.mutate({ index });
 
-        if (allConditionBlockVariations.length > 0) {
+        if (allConditionBlockVariations?.length > 0) {
           for (const variation of allConditionBlockVariations) {
             removeConditionBlockVariation({
               conditionBlockId,

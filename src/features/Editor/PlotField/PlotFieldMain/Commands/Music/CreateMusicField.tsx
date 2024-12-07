@@ -28,7 +28,7 @@ export default function CreateMusicField({
 
   const updateMusicText = useUpdateMusicText({
     storyId: storyId ?? "",
-    commandMusicId,
+    musicId: commandMusicId,
   });
 
   const handleSubmit = (e: React.FormEvent) => {

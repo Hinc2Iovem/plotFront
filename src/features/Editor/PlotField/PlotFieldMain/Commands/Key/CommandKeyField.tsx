@@ -16,7 +16,7 @@ type CommandKeyFieldTypes = {
 };
 
 export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, command }: CommandKeyFieldTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Key");
   const [textValue, setTextValue] = useState("");
   const { data: commandKey } = useGetKeyByPlotfieldCommandId({
@@ -46,9 +46,9 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: nameValue || "key",
           id: plotFieldCommandId,
@@ -58,7 +58,7 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
@@ -69,8 +69,8 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
 
   useEffect(() => {
     if (commandKey?.text !== debouncedValue && debouncedValue?.trim().length) {
-      if (storyId) {
-        updateValue({ storyId, commandName: "key", id: plotFieldCommandId, type: "command", value: debouncedValue });
+      if (episodeId) {
+        updateValue({ episodeId, commandName: "key", id: plotFieldCommandId, type: "command", value: debouncedValue });
       }
       updateKeyText.mutate();
     }

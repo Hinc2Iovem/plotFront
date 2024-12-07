@@ -28,7 +28,7 @@ export default function ConditionBlockVariationCharacter({
   topologyBlockId,
   conditionBlockCharacterId,
 }: ConditionBlockVariationCharacterTypes) {
-  const { storyId } = useParams();
+  const { episodeId } = useParams();
   const [showCharacterPromptModal, setShowCharacterPromptModal] = useState(false);
   const { getConditionBlockVariationById, updateConditionBlockVariationValue } = useConditionBlocks();
 
@@ -79,9 +79,9 @@ export default function ConditionBlockVariationCharacter({
   const { addItem, updateValue } = useSearch();
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       addItem({
-        storyId,
+        episodeId,
         item: {
           commandName: "Condition - Character",
           id: conditionBlockCharacterId,
@@ -91,19 +91,19 @@ export default function ConditionBlockVariationCharacter({
         },
       });
     }
-  }, [storyId]);
+  }, [episodeId]);
 
   useEffect(() => {
-    if (storyId) {
+    if (episodeId) {
       updateValue({
-        storyId,
+        episodeId,
         commandName: "Condition - Character",
         id: conditionBlockCharacterId,
         value: `${debouncedConditionName} ${currentConditionValue}`,
         type: "conditionVariation",
       });
     }
-  }, [debouncedConditionName, storyId, currentConditionValue]);
+  }, [debouncedConditionName, episodeId, currentConditionValue]);
 
   useEffect(() => {
     if (debouncedCharacter) {

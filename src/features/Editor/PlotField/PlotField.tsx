@@ -13,12 +13,8 @@ type PlotFieldProps = {
   hideFlowchartFromScriptwriter: boolean;
   expansionDivDirection: "right" | "left";
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
-  setHideFlowchartFromScriptwriter: React.Dispatch<
-    React.SetStateAction<boolean | null>
-  >;
-  setExpansionDivDirection: React.Dispatch<
-    React.SetStateAction<"right" | "left">
-  >;
+  setHideFlowchartFromScriptwriter: React.Dispatch<React.SetStateAction<boolean | null>>;
+  setExpansionDivDirection: React.Dispatch<React.SetStateAction<"right" | "left">>;
 };
 
 export default function PlotField({
@@ -55,13 +51,8 @@ export default function PlotField({
 
   useEffect(() => {
     const handleUpdatingCommandsInfo = () => {
-      const currentTopologyBlockId = sessionStorage.getItem(
-        "focusedTopologyBlock"
-      );
-      if (
-        currentTopologyBlockId?.trim().length &&
-        currentTopologyBlockId !== topologyBlockId
-      ) {
+      const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+      if (currentTopologyBlockId?.trim().length && currentTopologyBlockId !== topologyBlockId) {
         setCurrentTopologyBlockId(currentTopologyBlockId);
       }
     };
@@ -76,8 +67,7 @@ export default function PlotField({
     if (currentTopologyBlock) {
       setCurrentAmountOfCommands({
         topologyBlockId,
-        amountOfCommands:
-          currentTopologyBlock.topologyBlockInfo.amountOfCommands,
+        amountOfCommands: currentTopologyBlock.topologyBlockInfo.amountOfCommands,
       });
 
       updateTopologyBlock({ newTopologyBlock: currentTopologyBlock });
@@ -87,11 +77,7 @@ export default function PlotField({
   const [showAllCommands, setShowAllCommands] = useState<boolean>(false);
   return (
     <section
-      className={`${
-        command === "expandPlotField" || expansionDivDirection === "right"
-          ? "w-full"
-          : " w-1/2"
-      } ${
+      className={`${command === "expandPlotField" || expansionDivDirection === "right" ? "w-full" : " w-1/2"} ${
         command === "expandPlotField" || !command ? "" : "hidden"
       } flex-grow flex-shrink-0 bg-secondary rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
     >
@@ -113,10 +99,7 @@ export default function PlotField({
           setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
         />
       ) : null}
-      <PlotFieldMain
-        showAllCommands={showAllCommands}
-        topologyBlockId={topologyBlockId}
-      />
+      <PlotFieldMain showAllCommands={showAllCommands} topologyBlockId={topologyBlockId} />
     </section>
   );
 }
