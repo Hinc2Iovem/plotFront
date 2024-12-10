@@ -17,7 +17,7 @@ import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type CommandSayCharacterFieldItemTypes = {

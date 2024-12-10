@@ -3,7 +3,7 @@ import { axiosCustomized } from "../../../../../api/axios";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import usePlotfieldCommands from "../../Context/PlotFieldContext";
-import useSearch from "../../PlotFieldMain/Search/SearchContext";
+import useSearch from "../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type CreateBlankCommandTypes = {

@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import EditorHeader from "./EditorHeader/EditorHeader";
-import useUpdateRootTopologyBlockOnSearchResult from "./EditorHooks/PlotfieldSearch/useUpdateRootTopologyBlockOnSearchResult";
-import useUpdateValuesOnPageEnter from "./EditorHooks/useUpdateValuesOnPageEnter";
-import useUpdateValuesOnPageReload from "./EditorHooks/useUpdateValuesOnPageReload";
+import useUpdateRootTopologyBlockOnSearchResult from "./hooks/PlotfieldSearch/useUpdateRootTopologyBlockOnSearchResult";
+import useUpdateValuesOnPageEnter from "./hooks/useUpdateValuesOnPageEnter";
+import useUpdateValuesOnPageReload from "./hooks/useUpdateValuesOnPageReload";
 import EditorMain from "./EditorMain";
-import "./Flowchart/FlowchartStyles.css";
 import useGetFirstTopologyBlock from "./PlotField/hooks/TopologyBlock/useGetFirstTopologyBlock";
-import useGetSearchDataByEpisodeId from "./EditorHooks/PlotfieldSearch/useGetSearchDataByEpisodeId";
+import useGetDataForPlotfieldSearch from "./hooks/PlotfieldSearch/useGetDataForPlotfieldSearch";
+import useSearch from "./Context/Search/SearchContext";
+import useNavigation from "./Context/Navigation/NavigationContext";
+import "./Flowchart/FlowchartStyles.css";
 
 export default function EpisodeEditor() {
-  const [showHeader, setShowHeader] = useState(false);
   const { episodeId } = useParams();
+  const { addItem } = useSearch();
+  const { currentTopologyBlockId, setCurrentTopologyBlockId } = useNavigation();
+
+  // basically when user uses plotfieldSearch and gets teleported to another block useEffect below triggers addItem and ui experiences strange behavior because of array's values update
+  const [showHeader, setShowHeader] = useState(false);
 
   const { data: firstTopologyBlock } = useGetFirstTopologyBlock({
     episodeId: episodeId || "",
@@ -19,23 +25,29 @@ export default function EpisodeEditor() {
 
   const [localTopologyBlockId] = useState(localStorage.getItem(`${episodeId}-topologyBlockId`));
 
-  const [currentTopologyBlockId, setCurrentTopologyBlockId] = useState(firstTopologyBlock?._id || "");
+  const { data } = useGetDataForPlotfieldSearch({
+    episodeId: episodeId || "",
+    currentLanguage: "russian",
+    topologyBlockId: currentTopologyBlockId,
+  });
+
+  useEffect(() => {
+    if (data) {
+      const episodeId = data.episodeId;
+      for (const r of data.results) {
+        addItem({ episodeId, item: r });
+      }
+    }
+  }, [data]);
 
   useUpdateValuesOnPageEnter({ firstTopologyBlock, localTopologyBlockId, setCurrentTopologyBlockId });
   useUpdateValuesOnPageReload({ firstTopologyBlock, localTopologyBlockId });
 
-  useGetSearchDataByEpisodeId({ currentTopologyBlockId, episodeId: episodeId || "", language: "russian" });
   useUpdateRootTopologyBlockOnSearchResult({ currentTopologyBlockId, setCurrentTopologyBlockId });
   return (
     <section className="p-[1rem] mx-auto max-w-[146rem] flex flex-col gap-[1rem] | containerScroll">
       <EditorHeader setShowHeader={setShowHeader} showHeader={showHeader} />
-      {currentTopologyBlockId ? (
-        <EditorMain
-          setShowHeader={setShowHeader}
-          currentTopologyBlockId={currentTopologyBlockId}
-          setCurrentTopologyBlockId={setCurrentTopologyBlockId}
-        />
-      ) : null}
+      {currentTopologyBlockId ? <EditorMain setShowHeader={setShowHeader} /> : null}
     </section>
   );
 }

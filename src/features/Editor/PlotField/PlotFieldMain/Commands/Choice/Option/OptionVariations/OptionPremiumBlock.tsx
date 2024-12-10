@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetPremiumOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetPremiumOption";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type OptionPremiumBlockTypes = {

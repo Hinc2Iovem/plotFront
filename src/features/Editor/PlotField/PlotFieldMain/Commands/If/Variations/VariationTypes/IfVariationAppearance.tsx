@@ -14,7 +14,7 @@ import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScroll
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import IfFieldName from "./shared/IfFieldName";
 import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import useUpdateIfAppearance from "../../../../../hooks/If/BlockVariations/patch/useUpdateIfAppearance";
 import useIfVariations from "../../Context/IfContext";
 

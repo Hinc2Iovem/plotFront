@@ -12,7 +12,7 @@ import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import { DebouncedCheckCharacterTypes } from "../../../Choice/ChoiceQuestionField";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 import useUpdateIfStatus from "../../../../../hooks/If/BlockVariations/patch/useUpdateIfStatus";
 

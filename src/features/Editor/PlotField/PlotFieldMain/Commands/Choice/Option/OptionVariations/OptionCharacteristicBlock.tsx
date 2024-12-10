@@ -3,7 +3,7 @@ import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetch
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetCharacteristicOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetCharacteristicOption";
 import PlotfieldCharacteristicPromptMain from "../../../Prompts/Characteristics/PlotfieldCharacteristicPromptMain";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { useParams } from "react-router-dom";
 

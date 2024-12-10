@@ -8,7 +8,7 @@ import {
   handleDuplicationOptimisticOnError,
   handleDuplicationOptimisticOnMutation,
 } from "./helpers/handleDuplicationOptimistic";
-import useSearch from "../../PlotFieldMain/Search/SearchContext";
+import useSearch from "../../../Context/Search/SearchContext";
 
 type CreateKeyDuplicateTypes = {
   topologyBlockId: string;

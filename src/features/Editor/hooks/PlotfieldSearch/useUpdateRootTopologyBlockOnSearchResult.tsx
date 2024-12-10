@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 type UpdateRootTopologyBlockOnSearchResultTypes = {
-  setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
+  setCurrentTopologyBlockId: ({ topologyBlockId }: { topologyBlockId: string }) => void;
   currentTopologyBlockId: string;
 };
 
@@ -19,7 +19,7 @@ export default function useUpdateRootTopologyBlockOnSearchResult({
       console.log("As expected");
       if (storedTopologyBlockId !== currentTopologyBlockId) {
         sessionStorage.setItem("altArrowLeft", currentTopologyBlockId);
-        setCurrentTopologyBlockId(storedTopologyBlockId);
+        setCurrentTopologyBlockId({ topologyBlockId: storedTopologyBlockId });
       }
     };
 

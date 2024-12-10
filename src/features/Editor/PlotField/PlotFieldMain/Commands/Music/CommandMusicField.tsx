@@ -12,7 +12,7 @@ import useGetMusicById from "../../../hooks/Music/useGetMusicById";
 import useUpdateMusicText from "../../../hooks/Music/useUpdateMusicText";
 import "../Prompts/promptStyles.css";
 import CreateMusicField from "./CreateMusicField";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 
 type CommandMusicFieldTypes = {

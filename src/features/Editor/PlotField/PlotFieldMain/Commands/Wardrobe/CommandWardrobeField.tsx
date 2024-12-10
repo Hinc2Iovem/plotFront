@@ -13,7 +13,7 @@ import useGetAllWardrobeAppearancePartBlocks from "../../../hooks/Wardrobe/Wardr
 import "../Prompts/promptStyles.css";
 import WardrobeAppearancePartBlock from "./WardrobeAppearancePartBlock";
 import WardrobeCharacterAppearancePartForm from "./WardrobeCharacterAppearancePartForm";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type CommandWardrobeFieldTypes = {

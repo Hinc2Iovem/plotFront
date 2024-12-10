@@ -11,7 +11,7 @@ import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetch
 import useUpdateConditionCharacteristic from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
 import ConditionSignField from "./ConditionSignField";
 import { isNumeric } from "../../../../../../../../utils/regExpIsNumeric";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 
 type ConditionBlockVariationCharacteristicTypes = {
   plotfieldCommandId: string;

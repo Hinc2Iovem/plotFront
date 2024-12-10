@@ -5,7 +5,7 @@ import useUpdateConditionRetry from "../../../../../hooks/Condition/ConditionBlo
 import ConditionSignField from "./ConditionSignField";
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type ConditionBlockVariationRetryTypes = {

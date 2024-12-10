@@ -6,7 +6,7 @@ import { TopologyBlockTypes } from "../../../types/TopologyBlock/TopologyBlockTy
 type UpdateValuesOnPageEnterTypes = {
   firstTopologyBlock: TopologyBlockTypes | undefined;
   localTopologyBlockId: string | null;
-  setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
+  setCurrentTopologyBlockId: ({ topologyBlockId }: { topologyBlockId: string }) => void;
 };
 
 export default function useUpdateValuesOnPageEnter({
@@ -44,7 +44,11 @@ export default function useUpdateValuesOnPageEnter({
         updateFocuseReset({ value: false });
       }
 
-      setCurrentTopologyBlockId(localTopologyBlockId ? localTopologyBlockId : firstTopologyBlock?._id || "");
+      setCurrentTopologyBlockId(
+        localTopologyBlockId
+          ? { topologyBlockId: localTopologyBlockId }
+          : { topologyBlockId: firstTopologyBlock?._id || "" }
+      );
     }
   }, [firstTopologyBlock, localTopologyBlockId, updateFocuseReset, episodeId]);
 }

@@ -12,7 +12,7 @@ import useGetSoundById from "../../../hooks/Sound/useGetSoundById";
 import useUpdateSoundText from "../../../hooks/Sound/useUpdateSoundText";
 import "../Prompts/promptStyles.css";
 import CreateSoundField from "./CreateSoundField";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 
 type CommandSoundFieldTypes = {

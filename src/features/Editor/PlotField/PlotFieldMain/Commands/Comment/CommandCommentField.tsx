@@ -5,7 +5,7 @@ import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldTextarea from "../../../../../shared/Textareas/PlotfieldTextarea";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type CommandCommentFieldTypes = {

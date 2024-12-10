@@ -15,7 +15,7 @@ import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScroll
 import useUpdateConditionKey from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionKey";
 import useGetKeyById from "../../../../../hooks/Key/useGetKeyById";
 import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 
 type ConditionBlockVariationKeyTypes = {
   plotfieldCommandId: string;

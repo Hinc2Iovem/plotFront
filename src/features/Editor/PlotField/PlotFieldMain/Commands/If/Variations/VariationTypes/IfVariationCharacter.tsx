@@ -9,7 +9,7 @@ import IfSignField from "../IfSignField";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import IfFieldName from "./shared/IfFieldName";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 import useUpdateIfCharacter from "../../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacter";
 

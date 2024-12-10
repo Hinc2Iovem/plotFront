@@ -1,19 +1,17 @@
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import useGetAllTopologyBlocksByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
-import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
-import FlowchartArrowList from "./FlowchartArrowList";
-import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
-import "./FlowchartStyles.css";
-import useCreateTopologyBlock from "../PlotField/hooks/TopologyBlock/useCreateTopologyBlock";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
+import useCreateTopologyBlock from "../PlotField/hooks/TopologyBlock/useCreateTopologyBlock";
+import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
+import useGetAllTopologyBlocksByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import FlowchartArrowList from "./FlowchartArrowList";
+import "./FlowchartStyles.css";
+import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
 
 type FlowChartTypes = {
-  setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
   setScale: React.Dispatch<React.SetStateAction<number>>;
   hideFlowchartFromScriptwriter: boolean;
   command: PossibleCommandsCreatedByCombinationOfKeysTypes;
-  currentTopologyBlockId: string;
   scale: number;
   expansionDivDirection: "right" | "left";
 };
@@ -24,8 +22,6 @@ export default function Flowchart({
   scale,
   hideFlowchartFromScriptwriter,
   setScale,
-  setCurrentTopologyBlockId,
-  currentTopologyBlockId,
   command,
   expansionDivDirection,
 }: FlowChartTypes) {
@@ -33,9 +29,7 @@ export default function Flowchart({
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
     episodeId: episodeId || "",
   });
-  const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId(
-    { episodeId: episodeId || "" }
-  );
+  const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId({ episodeId: episodeId || "" });
 
   const boundsRef = useRef<HTMLDivElement>(null);
 
@@ -70,15 +64,9 @@ export default function Flowchart({
   return (
     <section
       ref={boundsRef}
-      className={`${
-        scale >= 0.99 ? "" : "border-secondary border-[4px] border-dashed"
-      }
+      className={`${scale >= 0.99 ? "" : "border-secondary border-[4px] border-dashed"}
        ${hideFlowchartFromScriptwriter ? "hidden" : ""}
-       ${
-         command === "expandFlowchart" || expansionDivDirection === "left"
-           ? "w-full"
-           : "w-1/2"
-       } ${
+       ${command === "expandFlowchart" || expansionDivDirection === "left" ? "w-full" : "w-1/2"} ${
         command === "expandFlowchart" || !command ? "" : "hidden"
       } overflow-auto rounded-md shadow-md relative bg-primary-darker | containerScroll`}
     >
@@ -90,25 +78,14 @@ export default function Flowchart({
         className="z-[2] border-secondary border-[4px] border-dashed w-full h-full rounded-md min-w-[500rem] min-h-[500rem] relative bg-primary-darker"
       >
         {allTopologyBlocks
-          ? allTopologyBlocks.map((tb) => (
-              <FlowchartTopologyBlockRemake
-                currentTopologyBlockId={currentTopologyBlockId}
-                setCurrentTopologyBlockId={setCurrentTopologyBlockId}
-                key={tb._id}
-                {...tb}
-              />
-            ))
+          ? allTopologyBlocks.map((tb) => <FlowchartTopologyBlockRemake key={tb._id} {...tb} />)
           : null}
-        {allConnections
-          ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />)
-          : null}
+        {allConnections ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />) : null}
       </div>
       <button
         onClick={() => createTopologyBlock.mutate()}
         className={`fixed bottom-[1.5rem] ${
-          command !== "expandFlowchart"
-            ? "left-[calc(50%+.6rem)]"
-            : "left-[2rem]"
+          command !== "expandFlowchart" ? "left-[calc(50%+.6rem)]" : "left-[2rem]"
         } z-[10] px-[1rem] py-[.5rem] text-text-light bg-secondary rounded-md shadow-sm text-[1.4rem]`}
       >
         Создать Блок

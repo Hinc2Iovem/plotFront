@@ -4,7 +4,7 @@ import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotF
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import usePlotfieldCommands from "../../Context/PlotFieldContext";
 import usePlotfieldCommandPossiblyBeingUndo from "../../Context/CommandsPossiblyBeingUndo/PlotfieldCommandsPossiblyBeingUndo";
-import useSearch from "../../PlotFieldMain/Search/SearchContext";
+import useSearch from "../../../Context/Search/SearchContext";
 
 type CreateSayDuplicateTypes = {
   topologyBlockId: string;
@@ -77,7 +77,10 @@ export default function useCreateSayDuplicate({ topologyBlockId, episodeId }: Cr
         item: {
           commandName: newCommand.sayType || "author",
           id: newCommand.plotfieldCommandId,
-          text: newCommand.sayType === "character" ? `${newCommand.characterName} ${newCommand.emotionName}` : "",
+          text:
+            newCommand.sayType === "character"
+              ? `${newCommand.characterName} ${newCommand.emotionName}`
+              : `${newCommand.sayType || "author"}`,
           topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
           type: "command",
         },

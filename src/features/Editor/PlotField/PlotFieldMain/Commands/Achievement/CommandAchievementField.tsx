@@ -7,7 +7,7 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import useGetTranslationAchievementEnabled from "../../../hooks/Achievement/useGetTranslationAchievementEnabled";
 import useUpdateAchievementText from "../../../hooks/Achievement/useUpdateAchievementText";
 import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 
 type CommandAchievementFieldTypes = {
   plotFieldCommandId: string;

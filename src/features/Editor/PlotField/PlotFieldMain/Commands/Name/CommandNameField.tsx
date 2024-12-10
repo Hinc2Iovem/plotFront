@@ -7,7 +7,7 @@ import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useGetCommandName from "../../../hooks/Name/useGetCommandName";
 import useUpdateNameText from "../../../hooks/Name/useUpdateNameText";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import PlotfieldUnknownCharacterPromptMain, {
   UnknownCharacterValueTypes,
 } from "../Prompts/Characters/PlotfieldUnknownCharacterPromptMain";

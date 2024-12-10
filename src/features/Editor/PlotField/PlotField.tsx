@@ -6,9 +6,9 @@ import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
 import ShowAllCommandsPlotfield from "./ShowAllCommands/ShowAllCommandsPlotfield";
 import usePlotfieldCommands from "./Context/PlotFieldContext";
 import useTopologyBlocks from "../Flowchart/Context/TopologyBlockContext";
+import useNavigation from "../Context/Navigation/NavigationContext";
 
 type PlotFieldProps = {
-  topologyBlockId: string;
   command: PossibleCommandsCreatedByCombinationOfKeysTypes;
   hideFlowchartFromScriptwriter: boolean;
   expansionDivDirection: "right" | "left";
@@ -18,7 +18,6 @@ type PlotFieldProps = {
 };
 
 export default function PlotField({
-  topologyBlockId,
   command,
   hideFlowchartFromScriptwriter,
   expansionDivDirection,
@@ -26,6 +25,7 @@ export default function PlotField({
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
 }: PlotFieldProps) {
+  const { currentTopologyBlockId: topologyBlockId, setCurrentTopologyBlockId } = useNavigation();
   const { setCurrentAmountOfCommands } = usePlotfieldCommands();
   const { updateTopologyBlock } = useTopologyBlocks();
   const { data: rootTopologyBlock } = useGetTopologyBlockById({
@@ -43,17 +43,15 @@ export default function PlotField({
     }
   }, [rootTopologyBlock, topologyBlockId, updateTopologyBlock]);
 
-  const [currentTopologyBlockId, setCurrentTopologyBlockId] = useState("");
-
   const { data: currentTopologyBlock } = useGetTopologyBlockById({
-    topologyBlockId: currentTopologyBlockId,
+    topologyBlockId,
   });
 
   useEffect(() => {
     const handleUpdatingCommandsInfo = () => {
       const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
       if (currentTopologyBlockId?.trim().length && currentTopologyBlockId !== topologyBlockId) {
-        setCurrentTopologyBlockId(currentTopologyBlockId);
+        setCurrentTopologyBlockId({ topologyBlockId: currentTopologyBlockId });
       }
     };
 

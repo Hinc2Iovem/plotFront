@@ -16,7 +16,7 @@ import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import TextSettingsModal from "../../../../components/TextSettingsModal";
 import { TextStyleTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import { checkTextStyle } from "../../../utils/checkTextStyleTextSide";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type ChoiceQuestionFieldTypes = {

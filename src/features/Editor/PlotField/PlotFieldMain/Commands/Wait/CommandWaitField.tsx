@@ -4,7 +4,7 @@ import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useGetCommandWait from "../../../hooks/Wait/useGetCommandWait";
 import useUpdateWaitText from "../../../hooks/Wait/useUpdateWaitText";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type CommandWaitFieldTypes = {

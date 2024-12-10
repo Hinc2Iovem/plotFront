@@ -13,7 +13,7 @@ import OptionSelectTopologyBlock from "./OptionSelectTopologyBlock";
 import OptionCharacteristicBlock from "./OptionVariations/OptionCharacteristicBlock";
 import OptionPremiumBlock from "./OptionVariations/OptionPremiumBlock";
 import OptionRelationshipBlock from "./OptionVariations/OptionRelationshipBlock";
-import useSearch from "../../../Search/SearchContext";
+import useSearch from "../../../../../Context/Search/SearchContext";
 
 type ChoiceOptionBlockTypes = {
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;

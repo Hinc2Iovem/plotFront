@@ -11,7 +11,7 @@ import useUpdateCallCommandIndex from "../../../hooks/Call/useUpdateCallCommandI
 import useUpdateCallText from "../../../hooks/Call/useUpdateCallText";
 import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 
 type CommandCallFieldTypes = {
   plotFieldCommandId: string;

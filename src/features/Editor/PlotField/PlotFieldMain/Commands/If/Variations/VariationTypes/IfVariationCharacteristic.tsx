@@ -9,7 +9,7 @@ import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import useIfVariations from "../../Context/IfContext";
 import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetching/Translation/useGetTranslationCharacteristic";
 import { isNumeric } from "../../../../../../../../utils/regExpIsNumeric";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import IfSignField from "../IfSignField";
 import useUpdateIfCharacteristic from "../../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacteristic";
 

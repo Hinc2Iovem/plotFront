@@ -3,7 +3,7 @@ import useIfVariations from "../../Context/IfContext";
 import IfSignField from "../IfSignField";
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import IfFieldName from "./shared/IfFieldName";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 import { ConditionSignTypes } from "../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import useUpdateIfRetry from "../../../../../hooks/If/BlockVariations/patch/useUpdateIfRetry";

@@ -13,18 +13,14 @@ import Flowchart from "./Flowchart/Flowchart";
 import "./Flowchart/FlowchartStyles.css";
 import useHandleDeletionOfCommand from "./PlotField/hooks/helpers/useHandleDeletionOfCommand";
 import PlotField from "./PlotField/PlotField";
+import useNavigation from "./Context/Navigation/NavigationContext";
 
 type EditorMainTypes = {
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrentTopologyBlockId: React.Dispatch<React.SetStateAction<string>>;
-  currentTopologyBlockId: string;
 };
 
-export default function EditorMain({
-  setCurrentTopologyBlockId,
-  setShowHeader,
-  currentTopologyBlockId,
-}: EditorMainTypes) {
+export default function EditorMain({ setShowHeader }: EditorMainTypes) {
+  const { currentTopologyBlockId } = useNavigation();
   const [command, setCommand] = useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
     "" as PossibleCommandsCreatedByCombinationOfKeysTypes
   );
@@ -74,7 +70,6 @@ export default function EditorMain({
             hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
             setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
             setShowHeader={setShowHeader}
-            topologyBlockId={currentTopologyBlockId}
             setExpansionDivDirection={setExpansionDivDirection}
             command={command}
           />
@@ -100,8 +95,6 @@ export default function EditorMain({
             <Flowchart
               expansionDivDirection={expansionDivDirection}
               hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
-              currentTopologyBlockId={currentTopologyBlockId}
-              setCurrentTopologyBlockId={setCurrentTopologyBlockId}
               command={command}
               scale={scale}
               setScale={setScale}

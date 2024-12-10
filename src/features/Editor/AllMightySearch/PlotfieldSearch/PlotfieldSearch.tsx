@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../shared/Inputs/PlotfieldInput";
-import useSearch, { SearchItemTypes } from "../../PlotField/PlotFieldMain/Search/SearchContext";
+import useSearch, { SearchItemTypes } from "../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 import useGetTopologyBlockById from "../../PlotField/hooks/TopologyBlock/useGetTopologyBlockById";
 import { getAllPlotfieldCommands } from "../../PlotField/hooks/useGetAllPlotFieldCommands";
 import { useQueryClient } from "@tanstack/react-query";
+import useNavigation from "../../Context/Navigation/NavigationContext";
 
 type PlotfieldSearchTypes = {
   setShowAllMightySearch: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,6 +45,7 @@ function PlotfieldSearchResultsItem({
   setShowAllMightySearch,
 }: PlotfieldSearchResultsItemTypes) {
   const queryClient = useQueryClient();
+  const { currentTopologyBlockId, setCurrentTopologyBlockId } = useNavigation();
   const { data } = useGetTopologyBlockById({ topologyBlockId });
 
   const handlePrefetchPlotfieldCommands = () => {
@@ -56,11 +58,21 @@ function PlotfieldSearchResultsItem({
   return (
     <div className="flex flex-col p-[.5rem] rounded-md bg-primary-darker gap-[2.5rem]">
       <div className="flex w-full justify-between">
-        <h2 className="capitalize text-[1.6rem] text-text-light bg-secondary py-[.3rem] px-[1rem] rounded-md">
+        <h2
+          onMouseOver={handlePrefetchPlotfieldCommands}
+          onFocus={handlePrefetchPlotfieldCommands}
+          onClick={() => {
+            setShowAllMightySearch(false);
+            sessionStorage.setItem("altCurrent", topologyBlockId);
+            sessionStorage.setItem("altArrowLeft", currentTopologyBlockId);
+            setCurrentTopologyBlockId({ topologyBlockId });
+          }}
+          className="capitalize cursor-pointer text-[1.6rem] text-text-light bg-secondary py-[.3rem] px-[1rem] rounded-md"
+        >
           {commandName}
         </h2>
         <h3 className="capitalize text-[1.5rem] text-text-light bg-secondary py-[.3rem] px-[1rem] rounded-md">
-          Блок - {data?.name}
+          {data?.name}
         </h3>
       </div>
 
@@ -71,6 +83,8 @@ function PlotfieldSearchResultsItem({
           onClick={() => {
             setShowAllMightySearch(false);
             sessionStorage.setItem("altCurrent", topologyBlockId);
+            sessionStorage.setItem("altArrowLeft", currentTopologyBlockId);
+            setCurrentTopologyBlockId({ topologyBlockId });
           }}
         >
           <p className="text-text-light text-[1.4rem] w-full text-ellipsis text-start hover:opacity-90 transition-all">

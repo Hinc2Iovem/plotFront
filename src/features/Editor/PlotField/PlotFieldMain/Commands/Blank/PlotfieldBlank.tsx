@@ -39,7 +39,7 @@ import useConditionBlocks from "../Condition/Context/ConditionContext";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
 import useCreateCommandKey from "../../../hooks/Key/useCreateCommandKey";
 import useCreateCommandAchievement from "../../../hooks/Achievement/useCreateCommandAchievement";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -235,7 +235,7 @@ export default function PlotfieldBlank({
               commandName: sayType || "say",
               type: "command",
               id: plotFieldCommandId,
-              text: "",
+              text: `${sayType || "author"}`,
               topologyBlockId,
             },
           });
@@ -312,7 +312,7 @@ export default function PlotfieldBlank({
               commandName: sayType || "say",
               type: "command",
               id: plotFieldCommandId,
-              text: "",
+              text: `${sayType || "author"}`,
               topologyBlockId,
             },
           });

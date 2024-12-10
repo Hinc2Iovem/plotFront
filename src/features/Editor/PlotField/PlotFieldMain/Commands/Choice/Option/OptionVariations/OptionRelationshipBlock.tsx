@@ -4,7 +4,7 @@ import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetchi
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetRelationshipOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetRelationshipOption";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { useParams } from "react-router-dom";
 

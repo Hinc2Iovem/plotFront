@@ -8,7 +8,7 @@ import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldComm
 import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
 import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type CommandSuitFieldTypes = {

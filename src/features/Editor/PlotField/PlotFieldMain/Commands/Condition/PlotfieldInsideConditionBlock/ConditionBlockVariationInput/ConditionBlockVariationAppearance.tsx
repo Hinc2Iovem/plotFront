@@ -16,7 +16,7 @@ import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionAppearance from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionAppearance";
 import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
 import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 
 type ConditionBlockVariationAppearanceTypes = {
   plotfieldCommandId: string;

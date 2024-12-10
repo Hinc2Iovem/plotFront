@@ -15,12 +15,8 @@ type PlotFieldHeaderTypes = {
   showAllCommands: boolean;
   hideFlowchartFromScriptwriter: boolean;
   setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
-  setHideFlowchartFromScriptwriter: React.Dispatch<
-    React.SetStateAction<boolean | null>
-  >;
-  setExpansionDivDirection: React.Dispatch<
-    React.SetStateAction<"right" | "left">
-  >;
+  setHideFlowchartFromScriptwriter: React.Dispatch<React.SetStateAction<boolean | null>>;
+  setExpansionDivDirection: React.Dispatch<React.SetStateAction<"right" | "left">>;
   setShowAllCommands: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -31,38 +27,27 @@ export default function PlotfieldHeader({
   setExpansionDivDirection,
   hideFlowchartFromScriptwriter,
   showAllCommands,
-  setShowAllCommands,
-}: PlotFieldHeaderTypes) {
+}: // setShowAllCommands,
+PlotFieldHeaderTypes) {
   const { episodeId } = useParams();
-  const {
-    updateFocuseReset,
-    getCurrentAmountOfIfCommands,
-    getCommandIfByPlotfieldCommandId,
-  } = usePlotfieldCommands();
-  const [increaseFocusModalHeight, setIncreaseFocusModalHeight] =
-    useState(false);
+  const { updateFocuseReset, getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
+  const [increaseFocusModalHeight, setIncreaseFocusModalHeight] = useState(false);
   const theme = localStorage.getItem("theme");
 
   const createCommand = useCreateBlankCommand({
-    topologyBlockId:
-      sessionStorage.getItem(`focusedTopologyBlock`) || topologyBlockId,
+    topologyBlockId: sessionStorage.getItem(`focusedTopologyBlock`) || topologyBlockId,
     episodeId: episodeId || "",
   });
 
   const createCommandInsideIfOrElse = useCreateBlankCommandInsideIf({
-    topologyBlockId:
-      sessionStorage.getItem(`focusedTopologyBlock`) || topologyBlockId,
+    topologyBlockId: sessionStorage.getItem(`focusedTopologyBlock`) || topologyBlockId,
   });
 
-  const commandCreatedByKeyCombinationBlankCommand =
-    useCheckKeysCombinationCreateBlankCommand();
+  const commandCreatedByKeyCombinationBlankCommand = useCheckKeysCombinationCreateBlankCommand();
 
   const handleCreateCommand = () => {
     const _id = generateMongoObjectId();
-    const focusedCommandIf = sessionStorage
-      .getItem(`focusedCommandIf`)
-      ?.split("?")
-      .filter(Boolean);
+    const focusedCommandIf = sessionStorage.getItem(`focusedCommandIf`)?.split("?").filter(Boolean);
     const currentFocusedCommand = sessionStorage.getItem("focusedCommand");
 
     const deepLevelCommandIf = focusedCommandIf?.includes("none")
@@ -72,16 +57,13 @@ export default function PlotfieldHeader({
       : null;
 
     const currentCommandIf =
-      typeof deepLevelCommandIf === "number"
-        ? (focusedCommandIf || [])[deepLevelCommandIf]
-        : null;
+      typeof deepLevelCommandIf === "number" ? (focusedCommandIf || [])[deepLevelCommandIf] : null;
 
     const commandIfId = currentCommandIf?.split("-")[3];
     const focusedCommandIfIsElseOrIf = currentCommandIf?.split("-")[0];
     const currentCommandIfPlotfiledCommandId = currentCommandIf?.split("-")[1];
 
-    const currentTopologyBlockId =
-      sessionStorage.getItem(`focusedTopologyBlock`);
+    const currentTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`);
 
     if (typeof deepLevelCommandIf !== "number") {
       console.log("Shouldn't be here");
@@ -93,13 +75,9 @@ export default function PlotfieldHeader({
       return;
     }
 
-    if (
-      focusedCommandIfIsElseOrIf === "if" ||
-      focusedCommandIfIsElseOrIf === "else"
-    ) {
+    if (focusedCommandIfIsElseOrIf === "if" || focusedCommandIfIsElseOrIf === "else") {
       const currentFocusedCommandId = currentFocusedCommand?.split("-")[1];
-      const isCreatedUnderCertainCommand =
-        currentFocusedCommandId !== currentCommandIfPlotfiledCommandId;
+      const isCreatedUnderCertainCommand = currentFocusedCommandId !== currentCommandIfPlotfiledCommandId;
 
       const existingCommandIf = isCreatedUnderCertainCommand
         ? getCommandIfByPlotfieldCommandId({
@@ -154,20 +132,14 @@ export default function PlotfieldHeader({
   };
 
   useEffect(() => {
-    if (
-      commandCreatedByKeyCombinationBlankCommand === "blankPlotFieldCommand"
-    ) {
+    if (commandCreatedByKeyCombinationBlankCommand === "blankPlotFieldCommand") {
       handleCreateCommand();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commandCreatedByKeyCombinationBlankCommand]);
 
   return (
-    <header
-      className={`${
-        showAllCommands ? "hidden" : ""
-      } flex gap-[1rem] justify-between items-center`}
-    >
+    <header className={`${showAllCommands ? "hidden" : ""} flex gap-[1rem] justify-between items-center`}>
       <button
         onMouseOver={() => setIncreaseFocusModalHeight(true)}
         onMouseLeave={() => setIncreaseFocusModalHeight(false)}
@@ -192,7 +164,7 @@ export default function PlotfieldHeader({
         Сбросить Фокус
       </button>
       <div className="flex gap-[1rem]">
-        <ButtonHoverPromptModal
+        {/* <ButtonHoverPromptModal
           onClick={() => setShowAllCommands(true)}
           contentName="Все команды"
           positionByAbscissa="left"
@@ -201,7 +173,7 @@ export default function PlotfieldHeader({
           variant="rectangle"
         >
           <img src={command} alt="Commands" className="w-[3rem]" />
-        </ButtonHoverPromptModal>
+        </ButtonHoverPromptModal> */}
         <ButtonHoverPromptModal
           contentName="Создать строку"
           positionByAbscissa="left"
@@ -228,20 +200,14 @@ export default function PlotfieldHeader({
         >
           Заголовок
         </button>
-        <div
-          className={`relative w-[2rem] ${
-            hideFlowchartFromScriptwriter ? "" : "hidden"
-          } `}
-        >
+        <div className={`relative w-[2rem] ${hideFlowchartFromScriptwriter ? "" : "hidden"} `}>
           <button
             onClick={() => {
               setHideFlowchartFromScriptwriter(false);
               setExpansionDivDirection("" as "right" | "left");
             }}
             className={`w-[2.5rem] h-[1rem] shadow-inner ${
-              theme === "light"
-                ? "shadow-secondary-darker hover:shadow-md"
-                : "shadow-gray-700 hover:scale-[1.03]"
+              theme === "light" ? "shadow-secondary-darker hover:shadow-md" : "shadow-gray-700 hover:scale-[1.03]"
             } transition-shadow rounded-md absolute top-[-1rem] right-[-.5rem]`}
           ></button>
         </div>

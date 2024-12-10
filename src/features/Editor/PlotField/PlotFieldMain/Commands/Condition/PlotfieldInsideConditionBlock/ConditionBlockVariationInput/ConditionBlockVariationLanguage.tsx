@@ -9,7 +9,7 @@ import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
 import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionLanguage from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionLanguage";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type ConditionBlockVariationLanguageTypes = {

@@ -7,7 +7,7 @@ import {
 import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 import usePlotfieldCommandPossiblyBeingUndo from "../Context/CommandsPossiblyBeingUndo/PlotfieldCommandsPossiblyBeingUndo";
-import useSearch from "../PlotFieldMain/Search/SearchContext";
+import useSearch from "../../Context/Search/SearchContext";
 
 type NewCommandTypes = {
   _id: string;
@@ -81,7 +81,7 @@ export default function useCreateBlankCommand({
             newCommand.commandName === "say" ? newCommand.sayType || "author" : newCommand.commandName || "command",
           type: "command",
           id: newCommand._id,
-          text: "",
+          text: newCommand.commandName === "say" ? newCommand.sayType || "author" : "",
           topologyBlockId: currentTopologyBlockId,
         },
       });

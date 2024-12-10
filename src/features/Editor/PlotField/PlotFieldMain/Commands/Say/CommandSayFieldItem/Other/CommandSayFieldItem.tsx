@@ -18,7 +18,7 @@ import useUpdateCommandSayType from "../../../../../hooks/Say/useUpdateCommandSa
 import useUpdateSayTextSide from "../../../../../hooks/Say/useUpdateSayTextSide";
 import useUpdateSayTextStyle from "../../../../../hooks/Say/useUpdateSayTextStyle";
 import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type CommandSayFieldItemTypes = {
@@ -73,7 +73,7 @@ export default function CommandSayFieldItem({
           episodeId,
           id: plotFieldCommandId,
           type: "command",
-          value: debouncedValue,
+          value: `${nameValue} ${debouncedValue}`,
           commandName: nameValue,
         });
       }
@@ -124,7 +124,7 @@ export default function CommandSayFieldItem({
           episodeId,
           id: plotFieldCommandId,
           type: "command",
-          value: debouncedValue,
+          value: `${nameValue} ${debouncedValue}`,
           commandName: sayVariationType,
         });
       }

@@ -7,7 +7,7 @@ import BackgroundNameAndImage from "./BackgroundNameAndImage";
 import BackgroundPointOfMovement from "./BackgroundPointOfMovement";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useSearch from "../../Search/SearchContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
 type CommandBackgroundFieldTypes = {

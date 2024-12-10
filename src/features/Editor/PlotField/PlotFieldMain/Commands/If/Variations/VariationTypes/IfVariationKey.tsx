@@ -15,7 +15,7 @@ import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScroll
 import useUpdateIfKey from "../../../../../hooks/If/BlockVariations/patch/useUpdateIfKey";
 import useGetKeyById from "../../../../../hooks/Key/useGetKeyById";
 import IfFieldName from "./shared/IfFieldName";
-import useSearch from "../../../../Search/SearchContext";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 
 type IfVariationKeyTypes = {
   plotfieldCommandId: string;
