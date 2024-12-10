@@ -87,7 +87,6 @@ export default function PlotfieldBlank({
   });
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const { getTopologyBlock } = useTopologyBlocks();
   const { addConditionBlock } = useConditionBlocks();
@@ -534,11 +533,6 @@ export default function PlotfieldBlank({
         <PlotfieldInput
           type="text"
           ref={currentInput}
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           value={value}
           onClick={(e) => {
             e.stopPropagation();

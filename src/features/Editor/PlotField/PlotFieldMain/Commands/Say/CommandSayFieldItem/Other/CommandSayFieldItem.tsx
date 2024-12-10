@@ -229,14 +229,14 @@ export default function CommandSayFieldItem({
         />
 
         <TextSettingsModal
-          translateY="translate-y-[-15rem]"
+          translateY="translate-y-[-13.5rem] right-0"
           plotfieldCommandId={plotFieldCommandId}
           setShowModal={setShowTextSettingsModal}
           currentTextStyle={currentTextStyle}
           setCurrentTextStyle={setCurrentTextStyle}
           setTextValue={setTextValue}
           showModal={showTextSettingsModal}
-          showTextSideRow={true}
+          showTextSideRow={false}
           showTextStyleRow={true}
           setCurrentTextSide={setCurrentTextSide}
           currentSide={currentTextSide}

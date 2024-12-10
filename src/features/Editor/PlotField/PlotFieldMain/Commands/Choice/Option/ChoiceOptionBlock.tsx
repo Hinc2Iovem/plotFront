@@ -34,7 +34,6 @@ export default function ChoiceOptionBlock({
   plotFieldCommandId,
   currentTopologyBlockId,
   amountOfOptions,
-  optionText,
   updated,
   isFocusedBackground,
   setShowOptionPlot,
@@ -125,11 +124,13 @@ export default function ChoiceOptionBlock({
   }, [episodeId]);
 
   useEffect(() => {
-    if ((optionText || "") !== debouncedValue && debouncedValue?.trim().length) {
+    if (debouncedValue?.trim().length) {
       updateOptionTextTranslation.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue]);
+
+  console.log("debouncedValue: ", debouncedValue);
 
   useOutOfModal({
     modalRef: deleteRef,

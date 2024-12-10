@@ -26,8 +26,6 @@ export default function IfVariationRetry({
   const [retryAmount, setRetryAmount] = useState(typeof currentRentryAmount === "number" ? currentRentryAmount : null);
   const { updateIfVariationValue, getIfVariationById } = useIfVariations();
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const updateIfRetry = useUpdateIfRetry({ ifRetryId: ifVariationId });
@@ -70,12 +68,9 @@ export default function IfVariationRetry({
       <div className="w-full relative">
         <PlotfieldInput
           type="number"
-          focusedSecondTime={focusedSecondTime}
           onBlur={() => {
-            setFocusedSecondTime(false);
             setCurrentlyActive(false);
           }}
-          setFocusedSecondTime={setFocusedSecondTime}
           value={retryAmount || ""}
           className="border-[3px] border-double border-dark-mid-gray"
           onClick={() => setCurrentlyActive(true)}

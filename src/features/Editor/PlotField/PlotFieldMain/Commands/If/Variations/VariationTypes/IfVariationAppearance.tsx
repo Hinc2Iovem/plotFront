@@ -40,7 +40,6 @@ export default function IfVariationAppearance({
   const [appearancePartId, setAppearancePartId] = useState(currentAppearancePartId || "");
   const [debouncedAppearancePartValue, setDebouncedAppearancePartValue] =
     useState<DebouncedCheckAppearancePartTypes | null>(null);
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const { updateIfVariationValue } = useIfVariations();
 
@@ -130,12 +129,9 @@ export default function IfVariationAppearance({
       <div className="flex-grow relative">
         <PlotfieldInput
           type="text"
-          focusedSecondTime={focusedSecondTime}
           onBlur={() => {
-            setFocusedSecondTime(false);
             setCurrentlyActive(false);
           }}
-          setFocusedSecondTime={setFocusedSecondTime}
           placeholder="Часть внешности"
           onClick={(e) => {
             e.stopPropagation();

@@ -24,7 +24,6 @@ export default function EpisodePrompt({
   const [episodeBackupValue, setEpisodeBackupValue] = useState("");
 
   const modalEpisodesRef = useRef<HTMLDivElement>(null);
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   useOutOfModal({
     modalRef: modalEpisodesRef,
@@ -84,11 +83,6 @@ export default function EpisodePrompt({
     <form className="rounded-md shadow-md relative" onSubmit={(e) => e.preventDefault()}>
       <PlotfieldInput
         type="text"
-        focusedSecondTime={focusedSecondTime}
-        onBlur={() => {
-          setFocusedSecondTime(false);
-        }}
-        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Название Эпизода"
         onClick={(e) => {
           e.stopPropagation();

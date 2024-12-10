@@ -160,11 +160,7 @@ export default function FormEmotion({
         <div className="w-full relative">
           <PlotfieldInput
             type="text"
-            focusedSecondTime={focusedSecondTime}
-            onBlur={() => {
-              setFocusedSecondTime(false);
-            }}
-            setFocusedSecondTime={setFocusedSecondTime}
+            onBlur={() => {}}
             value={emotionValue?.emotionName || ""}
             placeholder="Эмоция"
             onClick={(e) => {

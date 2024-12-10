@@ -33,7 +33,6 @@ export default function KeyBindsCharacterModalByEpisode({
   const modalRef = useRef<HTMLDivElement>(null);
 
   const [characterBackupValue, setCharacterBackupValue] = useState("");
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const { data: characters } = useGetAllCharactersByStoryId({
     storyId: storyId || "",
@@ -135,11 +134,6 @@ export default function KeyBindsCharacterModalByEpisode({
       className="relative w-[20rem]"
     >
       <PlotfieldInput
-        focusedSecondTime={focusedSecondTime}
-        onBlur={() => {
-          setFocusedSecondTime(false);
-        }}
-        setFocusedSecondTime={setFocusedSecondTime}
         onChange={(e) => {
           setShowModal(true);
           setCharacterName(e.target.value);

@@ -31,7 +31,6 @@ export default function SeasonPrompt({
   const [seasonBackupValue, setSeasonBackupValue] = useState("");
   const modalSeasonsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const { data: seasonsSearch, isLoading } = useGetSeasonsByStoryId({
     language: "russian",
@@ -102,11 +101,6 @@ export default function SeasonPrompt({
     <form className={`rounded-md shadow-sm relative`} onSubmit={handleSubmit}>
       <PlotfieldInput
         type="text"
-        focusedSecondTime={focusedSecondTime}
-        onBlur={() => {
-          setFocusedSecondTime(false);
-        }}
-        setFocusedSecondTime={setFocusedSecondTime}
         ref={inputRef}
         placeholder="Название Сезона"
         onClick={(e) => {

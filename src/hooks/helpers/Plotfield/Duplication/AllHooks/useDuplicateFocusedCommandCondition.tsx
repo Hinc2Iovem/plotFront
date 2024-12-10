@@ -29,7 +29,11 @@ export default function useDuplicateFocusedCommandCondition({
     const handleKeyDown = (event: KeyboardEvent) => {
       pressedKeys.add(event.key?.toLowerCase());
 
-      if (pressedKeys.has("control") && (pressedKeys.has("v") || pressedKeys.has("м"))) {
+      if (
+        pressedKeys.has("control") &&
+        (pressedKeys.has("v") || pressedKeys.has("м")) &&
+        document.activeElement?.tagName !== "INPUT"
+      ) {
         event.preventDefault();
 
         const currentFocusedTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`);

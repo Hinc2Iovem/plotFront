@@ -41,7 +41,6 @@ export default function ChoiceQuestionField({
   textStyle,
 }: ChoiceQuestionFieldTypes) {
   const { episodeId } = useParams();
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
@@ -225,11 +224,6 @@ export default function ChoiceQuestionField({
       <form className="flex-grow relative" onSubmit={(e) => e.preventDefault()}>
         <PlotfieldInput
           type="text"
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           value={question}
           onContextMenu={(e) => {
             e.preventDefault();
@@ -320,7 +314,6 @@ function ChoiceQuestionCharacterField({
 }: ChoiceQuestionCharacterFieldTypes) {
   const [initialCharacterId] = useState(characterId);
   const [debouncedCharacter, setDebouncedCharacter] = useState<DebouncedCheckCharacterTypes | null>(null);
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const debouncedValue = useDebounce({ value: characterName, delay: 700 });
 
@@ -349,11 +342,6 @@ function ChoiceQuestionCharacterField({
       className="w-full relative flex gap-[.5rem] bg-primary rounded-md"
     >
       <PlotfieldInput
-        focusedSecondTime={focusedSecondTime}
-        onBlur={() => {
-          setFocusedSecondTime(false);
-        }}
-        setFocusedSecondTime={setFocusedSecondTime}
         onClick={(e) => {
           e.stopPropagation();
           setShowAllCharacters(true);

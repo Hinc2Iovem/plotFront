@@ -91,9 +91,9 @@ export default function WardrobeAppearancePartBlock({
             setShowFullName(true);
           }
         }}
-        className="text-[1.4rem] whitespace-nowrap px-[1rem] text-text-light"
+        className="text-[1.4rem] whitespace-nowrap px-[1rem] text-text-light w-full"
       >
-        {appearancePartName?.trim().length > 13 ? appearancePartName.substring(0, 13) + "..." : appearancePartName}
+        {appearancePartName?.trim().length > 13 ? appearancePartName.substring(0, 9) + "..." : appearancePartName}
       </h4>
       <aside
         onMouseOut={() => {
@@ -103,7 +103,7 @@ export default function WardrobeAppearancePartBlock({
         }}
         className={`${
           showFullName ? "" : "hidden"
-        } absolute bottom-[0rem] bg-secondary w-fit whitespace-nowrap rounded-md shadow-md shadow-gray-400 text-[1.2rem] p-[.5rem]`}
+        } absolute bottom-[0rem] text-text-light bg-secondary w-fit whitespace-nowrap rounded-md shadow-sm shadow-gray-400 text-[1.4rem] p-[.5rem]`}
       >
         {appearancePartName}
       </aside>

@@ -54,6 +54,12 @@ export default function CommandWardrobeChoosingAppearanceType({
             key={p}
             type="button"
             onClick={() => {
+              if (p === transmittingAppearancePartVariableEngToRus) {
+                setTransmittingAppearancePartVariableEngToRus("");
+                setAppearancePartVariationType("" as PossibleWardrobeAppearancePartVariationsTypes);
+                setShowAppearancePartVariationModal(false);
+                return;
+              }
               if (p === "Волосы") {
                 setTransmittingAppearancePartVariableEngToRus("Волосы");
                 setAppearancePartVariationType("hair");

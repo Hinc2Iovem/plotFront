@@ -30,7 +30,6 @@ export default function CommandAmbientField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
@@ -99,11 +98,6 @@ export default function CommandAmbientField({
           type="text"
           value={textValue}
           ref={currentInput}
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           placeholder="Such a lovely day"
           onChange={(e) => setTextValue(e.target.value)}
         />

@@ -29,7 +29,11 @@ export default function useDuplicateFocusedCommandIf({ topologyBlockId }: Duplic
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
 
-      if (pressedKeys.has("control") && (pressedKeys.has("v") || pressedKeys.has("м"))) {
+      if (
+        pressedKeys.has("control") &&
+        (pressedKeys.has("v") || pressedKeys.has("м")) &&
+        document.activeElement?.tagName !== "INPUT"
+      ) {
         event.preventDefault();
 
         const currentFocusedTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`);

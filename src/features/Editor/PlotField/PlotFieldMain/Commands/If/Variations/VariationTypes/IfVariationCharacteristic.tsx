@@ -100,7 +100,6 @@ function CharacteristicInputField({
   topologyBlockId,
 }: CharacteristicInputFieldTypes) {
   const { episodeId } = useParams();
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
   const [currentIfName, setCurrentIfName] = useState<string | number>(value ? value : "");
   const [backUpIfName, setBackUpIfName] = useState<string | number>(value ? value : "");
@@ -178,11 +177,6 @@ function CharacteristicInputField({
     <div className="w-[40%] flex-grow min-w-[10rem] relative">
       <PlotfieldInput
         type="text"
-        focusedSecondTime={focusedSecondTime}
-        onBlur={() => {
-          setFocusedSecondTime(false);
-        }}
-        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Характеристика"
         onClick={(e) => {
           e.stopPropagation();

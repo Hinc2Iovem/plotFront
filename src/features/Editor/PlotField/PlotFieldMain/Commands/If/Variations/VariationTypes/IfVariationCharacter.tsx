@@ -38,8 +38,6 @@ export default function IfVariationCharacter({
     })?.value || null
   );
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   const [characterId, setCharacterId] = useState(currentCharacterId || "");
 
   const { data: currentCharacter } = useGetCharacterById({ characterId });
@@ -134,11 +132,7 @@ export default function IfVariationCharacter({
         <div className="flex-grow min-w-[10rem] relative">
           <PlotfieldInput
             type="text"
-            focusedSecondTime={focusedSecondTime}
-            onBlur={() => {
-              setFocusedSecondTime(false);
-            }}
-            setFocusedSecondTime={setFocusedSecondTime}
+            onBlur={() => {}}
             placeholder="Персонаж"
             onClick={(e) => {
               setShowCharacterPromptModal((prev) => !prev);
@@ -206,7 +200,6 @@ function IfValueField({
   setShowCharacterPromptModal,
 }: IfValueFieldTypes) {
   const { updateIfVariationValue } = useIfVariations();
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [currentlyActive, setCurrentlyActive] = useState(false);
 
@@ -218,15 +211,12 @@ function IfValueField({
     <div className="min-w-[10rem] flex-grow relative">
       <PlotfieldInput
         type="text"
-        focusedSecondTime={focusedSecondTime}
         onBlur={() => {
-          setFocusedSecondTime(false);
           setCurrentlyActive(false);
         }}
         onClick={() => {
           setCurrentlyActive(true);
         }}
-        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Значение"
         value={currentIfValue || ""}
         onChange={(e) => {

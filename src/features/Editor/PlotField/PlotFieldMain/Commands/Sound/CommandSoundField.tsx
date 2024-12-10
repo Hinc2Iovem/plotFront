@@ -33,7 +33,6 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const debouncedValue = useDebounce({ value: soundName, delay: 600 });
 
@@ -136,11 +135,7 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
       <div className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}>
         <form onSubmit={handleNewSoundSubmit} className="w-full">
           <PlotfieldInput
-            focusedSecondTime={focusedSecondTime}
-            onBlur={() => {
-              setFocusedSecondTime(false);
-            }}
-            setFocusedSecondTime={setFocusedSecondTime}
+            onBlur={() => {}}
             onClick={(e) => {
               e.stopPropagation();
               setShowSoundDropDown((prev) => !prev);

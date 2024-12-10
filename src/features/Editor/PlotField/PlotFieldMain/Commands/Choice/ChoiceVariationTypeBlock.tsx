@@ -153,7 +153,6 @@ function ChoiceTimeLimitBlock({
   insidePlotfield,
 }: ChoiceTimeLimitBlockTypes) {
   const modalRef = useRef<HTMLDivElement>(null);
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const updateChoice = useUpdateChoice({ choiceId });
 
@@ -188,11 +187,6 @@ function ChoiceTimeLimitBlock({
     <div className={`flex ${choiceVariationTypes === "timelimit" ? "" : "hidden"} gap-[.5rem] w-full flex-wrap`}>
       <PlotfieldInput
         type="text"
-        focusedSecondTime={focusedSecondTime}
-        onBlur={() => {
-          setFocusedSecondTime(false);
-        }}
-        setFocusedSecondTime={setFocusedSecondTime}
         className="flex-grow"
         value={timeLimit || ""}
         onChange={(e) => setTimeLimit(+e.target.value)}

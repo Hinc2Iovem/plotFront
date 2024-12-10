@@ -37,7 +37,6 @@ export default function CommandWardrobeCharacter({
     characterId,
     language: "russian",
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   useEffect(() => {
     if (character) {
@@ -102,11 +101,6 @@ export default function CommandWardrobeCharacter({
     <>
       <form onSubmit={handleSubmit} className="w-full relative flex gap-[.5rem]">
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           onClick={(e) => {
             e.stopPropagation();
             setShowAppearancePartModal(false);

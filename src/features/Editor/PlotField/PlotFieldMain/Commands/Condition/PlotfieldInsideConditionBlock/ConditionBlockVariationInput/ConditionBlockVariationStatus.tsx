@@ -37,8 +37,6 @@ export default function ConditionBlockVariationStatus({
   const [status, setStatus] = useState(typeof currentStatus === "string" ? currentStatus : "");
   const [showAllLangauges, setShowAllStatuses] = useState(false);
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   const { updateConditionBlockVariationValue } = useConditionBlocks();
 
   const statusModalRef = useRef<HTMLDivElement>(null);
@@ -144,11 +142,6 @@ export default function ConditionBlockVariationStatus({
       <div className="relative w-full">
         <PlotfieldInput
           type="text"
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           placeholder="Персонаж"
           className="border-[3px] border-double border-dark-mid-gray"
           onClick={(e) => {

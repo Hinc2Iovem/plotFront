@@ -26,8 +26,6 @@ export default function BackgroundNameAndImage({
   const [showFullSizeImg, setShowFullSizeImg] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   useEffect(() => {
     if (isMounted && imagePreview) {
       updateBackgroundImg.mutate({});
@@ -48,11 +46,7 @@ export default function BackgroundNameAndImage({
           <PlotfieldInput
             type="text"
             value={backgroundName || ""}
-            focusedSecondTime={focusedSecondTime}
-            onBlur={() => {
-              setFocusedSecondTime(false);
-            }}
-            setFocusedSecondTime={setFocusedSecondTime}
+            onBlur={() => {}}
             placeholder="Название заднего плана"
             onChange={(e) => setBackgroundName(e.target.value)}
           />

@@ -27,7 +27,6 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
@@ -68,21 +67,23 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
     }
   }, [episodeId]);
 
-  useEffect(() => {
-    if (moveValue.trim().length) {
+  const handleBlur = () => {
+    if (moveValue.trim().length && currentInput.current && document.activeElement !== currentInput.current) {
+      const fixIfZeroOrOne = moveValue === "0" ? "0.0" : moveValue === "1" ? "1.0" : moveValue;
+      setMoveValue(fixIfZeroOrOne);
+
       if (episodeId) {
-        updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: moveValue });
+        updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: fixIfZeroOrOne });
       }
-      if (regexCheckDecimalNumberBetweenZeroAndOne.test(moveValue)) {
+
+      if (regexCheckDecimalNumberBetweenZeroAndOne.test(fixIfZeroOrOne)) {
         setShowNotificationModal(false);
         updateMoveText.mutate();
       } else {
         setShowNotificationModal(true);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [moveValue]);
-
+  };
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -92,12 +93,8 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
       </div>
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
+          onBlur={handleBlur}
           value={moveValue || ""}
           type="text"
           placeholder="Such a lovely day"

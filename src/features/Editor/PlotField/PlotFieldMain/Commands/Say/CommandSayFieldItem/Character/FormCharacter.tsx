@@ -195,11 +195,6 @@ export default function FormCharacter({
     <>
       <form onSubmit={handleNameFormSubmit} className={`${showCharacters ? "z-[10]" : ""} w-full relative`}>
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
           onClick={(e) => {
             e.stopPropagation();

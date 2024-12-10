@@ -30,7 +30,6 @@ export default function CommandCutSceneField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
@@ -96,11 +95,6 @@ export default function CommandCutSceneField({
       </div>
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
           value={textValue}
           type="text"

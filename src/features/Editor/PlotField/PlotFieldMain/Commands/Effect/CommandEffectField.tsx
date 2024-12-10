@@ -22,7 +22,6 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
   const { data: commandEffect } = useGetCommandEffect({
     plotFieldCommandId,
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
@@ -93,11 +92,6 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
       </div>
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
           value={textValue}
           type="text"

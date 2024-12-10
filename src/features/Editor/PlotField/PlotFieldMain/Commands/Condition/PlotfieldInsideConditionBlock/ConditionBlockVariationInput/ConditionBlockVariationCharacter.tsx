@@ -41,8 +41,6 @@ export default function ConditionBlockVariationCharacter({
     })?.value || null
   );
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   const [characterId, setCharacterId] = useState(currentCharacterId || "");
 
   const { data: currentCharacter } = useGetCharacterById({ characterId });
@@ -138,11 +136,7 @@ export default function ConditionBlockVariationCharacter({
         <div className="flex-grow min-w-[10rem] relative">
           <PlotfieldInput
             type="text"
-            focusedSecondTime={focusedSecondTime}
-            onBlur={() => {
-              setFocusedSecondTime(false);
-            }}
-            setFocusedSecondTime={setFocusedSecondTime}
+            onBlur={() => {}}
             placeholder="Персонаж"
             onClick={(e) => {
               setShowCharacterPromptModal((prev) => !prev);
@@ -218,7 +212,6 @@ function ConditionValueField({
   setShowCharacterPromptModal,
 }: ConditionValueFieldTypes) {
   const { updateConditionBlockVariationValue } = useConditionBlocks();
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [currentlyActive, setCurrentlyActive] = useState(false);
 
@@ -230,15 +223,12 @@ function ConditionValueField({
     <div className="min-w-[10rem] flex-grow relative">
       <PlotfieldInput
         type="text"
-        focusedSecondTime={focusedSecondTime}
         onBlur={() => {
-          setFocusedSecondTime(false);
           setCurrentlyActive(false);
         }}
         onClick={() => {
           setCurrentlyActive(true);
         }}
-        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Значение"
         value={currentConditionValue || ""}
         onChange={(e) => {

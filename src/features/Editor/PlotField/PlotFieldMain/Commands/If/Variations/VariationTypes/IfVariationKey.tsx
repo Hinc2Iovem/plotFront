@@ -36,8 +36,6 @@ export default function IfVariationKey({
   const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
   const [commandKeyId, setCommandKeyId] = useState(keyId || "");
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const [currentIfName, setCurrentIfName] = useState("");
@@ -114,12 +112,9 @@ export default function IfVariationKey({
     <div className="relative w-full">
       <PlotfieldInput
         type="text"
-        focusedSecondTime={focusedSecondTime}
         onBlur={() => {
-          setFocusedSecondTime(false);
           setCurrentlyActive(false);
         }}
-        setFocusedSecondTime={setFocusedSecondTime}
         placeholder="Ключ"
         onClick={(e) => {
           e.stopPropagation();

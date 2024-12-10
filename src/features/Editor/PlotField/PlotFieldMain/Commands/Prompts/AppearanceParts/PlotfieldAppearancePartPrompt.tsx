@@ -21,15 +21,14 @@ export default function PlotfieldAppearancePartsPrompt({
   const { data: appearancePart } = useGetAppearancePartById({
     appearancePartId,
   });
-  const [currentAppearancePartName] = useState(
-    (translations || [])[0]?.text || ""
-  );
+  const [currentAppearancePartName] = useState((translations || [])[0]?.text || "");
 
   return (
     <>
       {appearancePart?.img ? (
         <AsideScrollableButton
           type="button"
+          className="flex items-center justify-between flex-row-reverse px-[1rem]"
           onClick={() => {
             if (setAppearancePartName) {
               setAppearancePartName(currentAppearancePartName);
@@ -46,11 +45,7 @@ export default function PlotfieldAppearancePartsPrompt({
           {currentAppearancePartName.length > 20
             ? currentAppearancePartName.substring(0, 20) + "..."
             : currentAppearancePartName}
-          <img
-            src={appearancePart?.img || ""}
-            alt="AppearancePartImg"
-            className="w-[3rem] rounded-md"
-          />
+          <img src={appearancePart?.img || ""} alt="AppearancePartImg" className="w-[3rem] rounded-md" />
         </AsideScrollableButton>
       ) : (
         <AsideScrollableButton

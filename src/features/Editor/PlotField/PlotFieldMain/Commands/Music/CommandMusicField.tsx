@@ -34,8 +34,6 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
 
   const debouncedValue = useDebounce({ value: musicName, delay: 600 });
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   const { data: allMusic } = useGetAllMusicByStoryId({
     storyId: storyId ?? "",
   });
@@ -141,11 +139,7 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
       <div className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}>
         <form onSubmit={handleNewMusicSubmit} className="w-full">
           <PlotfieldInput
-            focusedSecondTime={focusedSecondTime}
-            onBlur={() => {
-              setFocusedSecondTime(false);
-            }}
-            setFocusedSecondTime={setFocusedSecondTime}
+            onBlur={() => {}}
             onClick={(e) => {
               e.stopPropagation();
               setShowMusicDropDown((prev) => !prev);

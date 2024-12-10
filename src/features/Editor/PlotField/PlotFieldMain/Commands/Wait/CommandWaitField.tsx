@@ -23,7 +23,6 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [commandWaitId, setCommandWaitId] = useState("");
 
@@ -81,11 +80,6 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
       </div>
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           value={waitValue || ""}
           type="number"
           placeholder="Ожидание"

@@ -31,7 +31,6 @@ export default function CharacterPrompt({
   const [characterValue, setCharacterValue] = useState("");
   const [characterBackupValue, setCharacterBackupValue] = useState("");
   const theme = localStorage.getItem("theme");
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   useOutOfModal({
     modalRef: modalCharactersRef,
@@ -103,11 +102,7 @@ export default function CharacterPrompt({
         <>
           <PlotfieldInput
             type="text"
-            focusedSecondTime={focusedSecondTime}
-            onBlur={() => {
-              setFocusedSecondTime(false);
-            }}
-            setFocusedSecondTime={setFocusedSecondTime}
+            onBlur={() => {}}
             placeholder="Имя Персонажа"
             onClick={(e) => {
               e.stopPropagation();

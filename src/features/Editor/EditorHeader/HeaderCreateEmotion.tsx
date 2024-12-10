@@ -20,8 +20,6 @@ export default function HeaderCreateEmotion({
   const [emotionName, setEmotionName] = useState("");
   const [characterId, setCharacterId] = useState("");
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   useOutOfModal({
     modalRef,
     setShowModal: setShowCreateEmotionModal,
@@ -62,11 +60,6 @@ export default function HeaderCreateEmotion({
         <PlotfieldInput
           type="text"
           value={emotionName}
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           placeholder="Эмоция"
           onChange={(e) => setEmotionName(e.target.value)}
         />

@@ -42,7 +42,6 @@ export default function ConditionBlockVariationAppearance({
   const [appearancePartId, setAppearancePartId] = useState(currentAppearancePartId || "");
   const [debouncedAppearancePartValue, setDebouncedAppearancePartValue] =
     useState<DebouncedCheckAppearancePartTypes | null>(null);
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const { updateConditionBlockVariationValue } = useConditionBlocks();
 
@@ -134,12 +133,9 @@ export default function ConditionBlockVariationAppearance({
       <div className="flex-grow relative">
         <PlotfieldInput
           type="text"
-          focusedSecondTime={focusedSecondTime}
           onBlur={() => {
-            setFocusedSecondTime(false);
             setCurrentlyActive(false);
           }}
-          setFocusedSecondTime={setFocusedSecondTime}
           placeholder="Часть внешности"
           onClick={(e) => {
             e.stopPropagation();

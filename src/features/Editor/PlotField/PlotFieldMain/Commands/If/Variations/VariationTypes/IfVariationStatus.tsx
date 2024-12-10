@@ -35,8 +35,6 @@ export default function IfVariationStatus({
   const [status, setStatus] = useState(typeof currentStatus === "string" ? currentStatus : "");
   const [showAllLangauges, setShowAllStatuses] = useState(false);
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   const { updateIfVariationValue } = useIfVariations();
 
   const statusModalRef = useRef<HTMLDivElement>(null);
@@ -141,11 +139,6 @@ export default function IfVariationStatus({
       <div className="relative w-full">
         <PlotfieldInput
           type="text"
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           placeholder="Персонаж"
           className="border-[3px] border-double border-dark-mid-gray"
           onClick={(e) => {

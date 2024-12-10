@@ -27,7 +27,6 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
   });
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const [commandKeyId, setCommandKeyId] = useState("");
 
@@ -86,11 +85,6 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
       </div>
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           ref={currentInput}
           value={textValue}
           type="text"

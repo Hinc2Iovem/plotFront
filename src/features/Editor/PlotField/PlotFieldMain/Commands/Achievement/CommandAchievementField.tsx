@@ -27,7 +27,6 @@ export default function CommandAchievementField({
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const currentInput = useRef<HTMLInputElement | null>(null);
   useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
@@ -96,11 +95,6 @@ export default function CommandAchievementField({
         <PlotfieldInput
           ref={currentInput}
           value={textValue}
-          focusedSecondTime={focusedSecondTime}
-          onBlur={() => {
-            setFocusedSecondTime(false);
-          }}
-          setFocusedSecondTime={setFocusedSecondTime}
           type="text"
           placeholder="Such a lovely day"
           onChange={(e) => setTextValue(e.target.value)}

@@ -28,8 +28,6 @@ export default function ConditionBlockVariationRetry({
   const [retryAmount, setRetryAmount] = useState(typeof currentRentryAmount === "number" ? currentRentryAmount : null);
   const { updateConditionBlockVariationValue, getConditionBlockVariationById } = useConditionBlocks();
 
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
   const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const updateConditionRetry = useUpdateConditionRetry({ conditionBlockRetryId: conditionBlockVariationId });
@@ -79,12 +77,9 @@ export default function ConditionBlockVariationRetry({
       <div className="w-full relative">
         <PlotfieldInput
           type="number"
-          focusedSecondTime={focusedSecondTime}
           onBlur={() => {
-            setFocusedSecondTime(false);
             setCurrentlyActive(false);
           }}
-          setFocusedSecondTime={setFocusedSecondTime}
           value={retryAmount || ""}
           className="border-[3px] border-double border-dark-mid-gray"
           onClick={() => setCurrentlyActive(true)}

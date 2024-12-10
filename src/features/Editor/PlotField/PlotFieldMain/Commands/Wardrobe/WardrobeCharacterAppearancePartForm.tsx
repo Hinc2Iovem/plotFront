@@ -33,7 +33,6 @@ export default function WardrobeCharacterAppearancePartForm({
     appearancePartId,
     commandWardrobeId,
   });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   useEffect(() => {
     if (appearancePartId?.trim().length) {
@@ -79,11 +78,7 @@ export default function WardrobeCharacterAppearancePartForm({
           className="w-full relative"
         >
           <PlotfieldInput
-            focusedSecondTime={focusedSecondTime}
-            onBlur={() => {
-              setFocusedSecondTime(false);
-            }}
-            setFocusedSecondTime={setFocusedSecondTime}
+            onBlur={() => {}}
             onClick={(e) => {
               e.stopPropagation();
               setShowCharacterModal(false);
