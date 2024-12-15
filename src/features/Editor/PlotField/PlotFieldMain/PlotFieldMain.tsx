@@ -16,7 +16,11 @@ export default function PlotFieldMain({
   showAllCommands,
   renderedAsSubPlotfield = false,
 }: PlotFieldMainTypes) {
-  const { getCommandsByTopologyBlockId, setAllCommands } = usePlotfieldCommands();
+  const {
+    getCommandsByTopologyBlockId,
+    setAllCommands,
+    updateCommandOrder: updateCommandOrderOptimistic,
+  } = usePlotfieldCommands();
   const { data: plotfieldCommands } = useGetAllPlotFieldCommands({
     topologyBlockId,
   });
@@ -38,6 +42,11 @@ export default function PlotFieldMain({
     updateCommandOrder.mutate({
       newOrder: result.destination.index,
       plotFieldCommandId: result.draggableId,
+    });
+    updateCommandOrderOptimistic({
+      commandOrder: result.destination.index,
+      id: result.draggableId,
+      topologyBlockId,
     });
     setAllCommands({ commands: orderedCommands, topologyBlockId });
   };

@@ -1,34 +1,15 @@
 import { create } from "zustand";
-import {
-  createPlotfieldCommandIfInfoSlice,
-  PlotfieldCommandIfInfoSliceTypes,
-} from "./PlotfieldCommandIfInfoSlice";
-import {
-  CreatePlotfieldCommandIfSliceTypes,
-  createPlotfieldIfCommandSlice,
-} from "./PlotfieldCommandIfSlice";
-import {
-  createPlotfieldCommandInfoSlice,
-  PlotfieldCommandInfoSliceTypes,
-} from "./PlotfieldCommandInfoSlice";
-import {
-  createPlotfieldCommandSlice,
-  CreatePlotfieldCommandSliceTypes,
-} from "./PlotfieldCommandSlice";
 import { devtools } from "zustand/middleware";
+import { createPlotfieldCommandInfoSlice, PlotfieldCommandInfoSliceTypes } from "./PlotfieldCommandInfoSlice";
+import { createPlotfieldCommandSlice, CreatePlotfieldCommandSliceTypes } from "./PlotfieldCommandSlice";
 
-type UsePlotfieldCommandsStoreTypes = PlotfieldCommandIfInfoSliceTypes &
-  PlotfieldCommandInfoSliceTypes &
-  CreatePlotfieldCommandSliceTypes &
-  CreatePlotfieldCommandIfSliceTypes;
+type UsePlotfieldCommandsStoreTypes = PlotfieldCommandInfoSliceTypes & CreatePlotfieldCommandSliceTypes;
 
 const usePlotfieldCommands = create<UsePlotfieldCommandsStoreTypes>()(
   devtools(
     (...a) => ({
       ...createPlotfieldCommandSlice(...a),
       ...createPlotfieldCommandInfoSlice(...a),
-      ...createPlotfieldIfCommandSlice(...a),
-      ...createPlotfieldCommandIfInfoSlice(...a),
     }),
     { name: "PlotfieldName", store: "PlotfieldStore" }
   )

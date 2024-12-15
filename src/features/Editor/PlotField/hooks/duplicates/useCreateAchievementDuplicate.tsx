@@ -1,41 +1,25 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../api/axios";
-import usePlotfieldCommands from "../../Context/PlotFieldContext";
+import {
+  CreateDuplicateOnMutation,
+  CreateDuplicateWithStoryTypes,
+} from "../../../../../hooks/helpers/Plotfield/Duplication/createDuplicateTypes";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import useSearch from "../../../Context/Search/SearchContext";
 import usePlotfieldCommandPossiblyBeingUndo from "../../Context/CommandsPossiblyBeingUndo/PlotfieldCommandsPossiblyBeingUndo";
+import usePlotfieldCommands from "../../Context/PlotFieldContext";
 import {
   handleDuplicationOptimisticOnError,
   handleDuplicationOptimisticOnMutation,
 } from "./helpers/handleDuplicationOptimistic";
-import useSearch from "../../../Context/Search/SearchContext";
-
-type CreateAchievementDuplicateTypes = {
-  storyId: string;
-  episodeId: string;
-  topologyBlockId: string;
-};
-
-type CreateAchievementDuplicateOnMutation = {
-  plotfieldCommandId: string;
-  commandIfId?: string;
-  isElse?: boolean;
-  topologyBlockId: string;
-  commandName?: AllPossiblePlotFieldComamndsTypes;
-  sayType?: CommandSayVariationTypes;
-  characterId?: string;
-  emotionName?: string;
-  characterName?: string;
-  commandOrder: number;
-};
 
 export default function useCreateAchievementDuplicate({
   storyId,
   topologyBlockId,
   episodeId,
-}: CreateAchievementDuplicateTypes) {
-  const { addCommand, updateCommandInfo, addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
-    usePlotfieldCommands();
+}: CreateDuplicateWithStoryTypes) {
+  const { addCommand, updateCommandInfo } = usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
   const { addItem, deleteValue } = useSearch();
@@ -47,7 +31,7 @@ export default function useCreateAchievementDuplicate({
       commandIfId,
       isElse,
       topologyBlockId: bodyTopologyBlockId,
-    }: CreateAchievementDuplicateOnMutation) => {
+    }: CreateDuplicateOnMutation) => {
       const currentTopologyBlockId = bodyTopologyBlockId?.trim().length ? bodyTopologyBlockId : topologyBlockId;
       await axiosCustomized
         .post(`/plotFieldCommands/commandAchievements/topologyBlocks/${currentTopologyBlockId}/copy`, {
@@ -59,7 +43,7 @@ export default function useCreateAchievementDuplicate({
         })
         .then((r) => r.data);
     },
-    onMutate: async (newCommand: CreateAchievementDuplicateOnMutation) => {
+    onMutate: async (newCommand: CreateDuplicateOnMutation) => {
       addItem({
         episodeId,
         item: {
@@ -86,24 +70,17 @@ export default function useCreateAchievementDuplicate({
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         setNewCommand,
         updateCommandInfo,
-        addCommandIf,
-        updateCommandIfInfo,
       });
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
       deleteValue({ id: newCommand.plotfieldCommandId, episodeId });
       handleDuplicationOptimisticOnError({
-        commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,
         queryClient,
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         updateCommandInfo,
-        isElse: newCommand.isElse || false,
         message: err.message,
-        plotfieldCommandId: newCommand.plotfieldCommandId,
-        removeCommandIfItem,
-        updateCommandIfInfo,
       });
     },
   });

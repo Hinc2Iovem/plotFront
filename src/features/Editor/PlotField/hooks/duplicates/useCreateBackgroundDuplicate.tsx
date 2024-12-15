@@ -9,28 +9,13 @@ import {
   handleDuplicationOptimisticOnMutation,
 } from "./helpers/handleDuplicationOptimistic";
 import useSearch from "../../../Context/Search/SearchContext";
+import {
+  CreateDuplicateOnMutation,
+  CreateDuplicateTypes,
+} from "../../../../../hooks/helpers/Plotfield/Duplication/createDuplicateTypes";
 
-type CreateBackgroundDuplicateTypes = {
-  topologyBlockId: string;
-  episodeId: string;
-};
-
-type CreateBackgroundDuplicateOnMutation = {
-  commandOrder: number;
-  commandIfId?: string;
-  isElse?: boolean;
-  topologyBlockId: string;
-  commandName?: AllPossiblePlotFieldComamndsTypes;
-  sayType?: CommandSayVariationTypes;
-  characterId?: string;
-  emotionName?: string;
-  characterName?: string;
-  plotfieldCommandId: string;
-};
-
-export default function useCreateBackgroundDuplicate({ topologyBlockId, episodeId }: CreateBackgroundDuplicateTypes) {
-  const { addCommand, updateCommandInfo, addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
-    usePlotfieldCommands();
+export default function useCreateBackgroundDuplicate({ topologyBlockId, episodeId }: CreateDuplicateTypes) {
+  const { addCommand, updateCommandInfo } = usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
   const { addItem, deleteValue } = useSearch();
@@ -42,7 +27,7 @@ export default function useCreateBackgroundDuplicate({ topologyBlockId, episodeI
       commandIfId,
       isElse,
       topologyBlockId: bodyTopologyBlockId,
-    }: CreateBackgroundDuplicateOnMutation) => {
+    }: CreateDuplicateOnMutation) => {
       const currentTopologyBlockId = bodyTopologyBlockId?.trim().length ? bodyTopologyBlockId : topologyBlockId;
 
       await axiosCustomized
@@ -54,7 +39,7 @@ export default function useCreateBackgroundDuplicate({ topologyBlockId, episodeI
         })
         .then((r) => r.data);
     },
-    onMutate: async (newCommand: CreateBackgroundDuplicateOnMutation) => {
+    onMutate: async (newCommand: CreateDuplicateOnMutation) => {
       addItem({
         episodeId,
         item: {
@@ -81,24 +66,17 @@ export default function useCreateBackgroundDuplicate({ topologyBlockId, episodeI
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         setNewCommand,
         updateCommandInfo,
-        addCommandIf,
-        updateCommandIfInfo,
       });
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
       deleteValue({ id: newCommand.plotfieldCommandId, episodeId });
       handleDuplicationOptimisticOnError({
-        commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,
         queryClient,
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         updateCommandInfo,
-        isElse: newCommand.isElse || false,
         message: err.message,
-        plotfieldCommandId: newCommand.plotfieldCommandId,
-        removeCommandIfItem,
-        updateCommandIfInfo,
       });
     },
   });

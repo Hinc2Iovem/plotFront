@@ -1,12 +1,11 @@
 import { useEffect } from "react";
-import usePlotfieldCommands from "../PlotField/Context/PlotFieldContext";
 import { useParams } from "react-router-dom";
 import { TopologyBlockTypes } from "../../../types/TopologyBlock/TopologyBlockTypes";
 
 type UpdateValuesOnPageEnterTypes = {
   firstTopologyBlock: TopologyBlockTypes | undefined;
   localTopologyBlockId: string | null;
-  setCurrentTopologyBlockId: ({ topologyBlockId }: { topologyBlockId: string }) => void;
+  setCurrentTopologyBlockId: ({ _id }: { _id: string }) => void;
 };
 
 export default function useUpdateValuesOnPageEnter({
@@ -15,7 +14,6 @@ export default function useUpdateValuesOnPageEnter({
   setCurrentTopologyBlockId,
 }: UpdateValuesOnPageEnterTypes) {
   const { episodeId } = useParams();
-  const { updateFocuseReset } = usePlotfieldCommands();
 
   useEffect(() => {
     if (localTopologyBlockId || firstTopologyBlock) {
@@ -41,14 +39,12 @@ export default function useUpdateValuesOnPageEnter({
         sessionStorage.setItem("altArrowLeft", "");
         sessionStorage.setItem("altArrowRight", "");
         sessionStorage.setItem("altCurrent", "");
-        updateFocuseReset({ value: false });
+        ({ value: false });
       }
 
       setCurrentTopologyBlockId(
-        localTopologyBlockId
-          ? { topologyBlockId: localTopologyBlockId }
-          : { topologyBlockId: firstTopologyBlock?._id || "" }
+        localTopologyBlockId ? { _id: localTopologyBlockId } : { _id: firstTopologyBlock?._id || "" }
       );
     }
-  }, [firstTopologyBlock, localTopologyBlockId, updateFocuseReset, episodeId]);
+  }, [firstTopologyBlock, localTopologyBlockId, episodeId]);
 }

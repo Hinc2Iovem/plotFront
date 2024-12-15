@@ -7,29 +7,18 @@ type CreateSayCommandTypes = {
   topologyBlockId: string;
 };
 
-type CreateSayCommandOnMutationTypes = {
+export type CreateSayCommandOnMutationTypes = {
   type: CommandSayVariationTypes;
   plotfieldCommandId?: string;
 };
 
-export default function useCreateSayCommandBlank({
-  plotFieldCommandId,
-  topologyBlockId,
-}: CreateSayCommandTypes) {
+export default function useCreateSayCommandBlank({ plotFieldCommandId, topologyBlockId }: CreateSayCommandTypes) {
   return useMutation({
-    mutationFn: async ({
-      type,
-      plotfieldCommandId,
-    }: CreateSayCommandOnMutationTypes) => {
-      const commandId = plotFieldCommandId?.trim().length
-        ? plotFieldCommandId
-        : plotfieldCommandId;
-      await axiosCustomized.post(
-        `/says/${commandId}/topologyBlocks/${topologyBlockId}/blank/translations`,
-        {
-          type,
-        }
-      );
+    mutationFn: async ({ type, plotfieldCommandId }: CreateSayCommandOnMutationTypes) => {
+      const commandId = plotFieldCommandId?.trim().length ? plotFieldCommandId : plotfieldCommandId;
+      await axiosCustomized.post(`/says/${commandId}/topologyBlocks/${topologyBlockId}/blank/translations`, {
+        type,
+      });
     },
   });
 }

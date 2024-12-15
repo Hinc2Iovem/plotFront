@@ -5,7 +5,6 @@ import useUpdateEffectText from "../../../hooks/Effect/useUpdateEffectText";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
@@ -27,7 +26,6 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
     plotFieldCommandId,
   });
   const currentInput = useRef<HTMLInputElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
   const [commandEffectId, setCommandEffectId] = useState("");
 

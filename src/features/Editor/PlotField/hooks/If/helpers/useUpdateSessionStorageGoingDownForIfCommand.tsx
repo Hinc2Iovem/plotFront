@@ -1,28 +1,16 @@
 import { useEffect } from "react";
-import { GoingDownInsideIf } from "../../../../../../hooks/helpers/Plotfield/navigationHelpers/ChecksForCommandIf";
-import { PlotfieldOptimisticCommandInsideIfTypes } from "../../../Context/PlotfieldCommandIfSlice";
+import { GoingDownInsideIf } from "../../../../../../hooks/helpers/Plotfield/navigationHelpers/functions/ChecksForCommandIf";
 
 type UpdateSessionStorageGoingDownForIfCommandTypes = {
   commandIfId: string;
   plotfieldCommandId: string;
-  getFirstCommandInsideIf: ({
-    commandIfId,
-    isElse,
-  }: {
-    commandIfId: string;
-    isElse: boolean;
-  }) => PlotfieldOptimisticCommandInsideIfTypes | null;
-  updateFocuseReset: ({ value }: { value: boolean }) => void;
-  updateFocuseIfReset: ({ value }: { value: boolean }) => void;
+
   setIsBackgroundFocused: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function useUpdateSessionStorageGoingDownForIfCommand({
   commandIfId,
   plotfieldCommandId,
-  getFirstCommandInsideIf,
-  updateFocuseReset,
-  updateFocuseIfReset,
   setIsBackgroundFocused,
 }: UpdateSessionStorageGoingDownForIfCommandTypes) {
   useEffect(() => {
@@ -83,13 +71,11 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
             } else {
               setIsBackgroundFocused(false);
               event.stopImmediatePropagation();
+              // TODO getFirstCommandInsideIf
               GoingDownInsideIf({
                 currentCommandId: commandIfId,
                 insideIf: focusedCommandIfOrElse === "if",
                 isGoingDown: true,
-                getFirstCommandInsideIf,
-                updateFocuseReset,
-                updateFocuseIfReset,
               });
             }
           } else {
@@ -105,6 +91,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
 
     const handleKeyUp = (event: KeyboardEvent) => {
       pressedKeys.delete(event.key?.toLowerCase());
+      pressedKeys.clear();
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -114,7 +101,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [commandIfId, getFirstCommandInsideIf, updateFocuseReset, updateFocuseIfReset, plotfieldCommandId]);
+  }, [commandIfId, plotfieldCommandId]);
 }
 
 // const currentFocusedCommandIf =

@@ -9,28 +9,13 @@ import {
   handleDuplicationOptimisticOnMutation,
 } from "./helpers/handleDuplicationOptimistic";
 import useSearch from "../../../Context/Search/SearchContext";
+import {
+  CreateDuplicateOnMutation,
+  CreateDuplicateTypes,
+} from "../../../../../hooks/helpers/Plotfield/Duplication/createDuplicateTypes";
 
-type CreateConditionDuplicateTypes = {
-  topologyBlockId: string;
-  episodeId: string;
-};
-
-type CreateConditionDuplicateOnMutation = {
-  commandOrder: number;
-  commandIfId?: string;
-  isElse?: boolean;
-  topologyBlockId: string;
-  commandName?: AllPossiblePlotFieldComamndsTypes;
-  sayType?: CommandSayVariationTypes;
-  characterId?: string;
-  emotionName?: string;
-  characterName?: string;
-  plotfieldCommandId: string;
-};
-
-export default function useCreateConditionDuplicate({ topologyBlockId, episodeId }: CreateConditionDuplicateTypes) {
-  const { addCommand, updateCommandInfo, addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
-    usePlotfieldCommands();
+export default function useCreateConditionDuplicate({ topologyBlockId, episodeId }: CreateDuplicateTypes) {
+  const { addCommand, updateCommandInfo } = usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
   const { addItem, deleteValue } = useSearch();
@@ -42,7 +27,7 @@ export default function useCreateConditionDuplicate({ topologyBlockId, episodeId
       commandIfId,
       isElse,
       topologyBlockId: bodyTopologyBlockId,
-    }: CreateConditionDuplicateOnMutation) => {
+    }: CreateDuplicateOnMutation) => {
       const currentTopologyBlockId = bodyTopologyBlockId?.trim().length ? bodyTopologyBlockId : topologyBlockId;
       await axiosCustomized
         .post(`/plotFieldCommands/conditions/topologyBlocks/${currentTopologyBlockId}/copy`, {
@@ -53,7 +38,7 @@ export default function useCreateConditionDuplicate({ topologyBlockId, episodeId
         })
         .then((r) => r.data);
     },
-    onMutate: async (newCommand: CreateConditionDuplicateOnMutation) => {
+    onMutate: async (newCommand: CreateDuplicateOnMutation) => {
       addItem({
         episodeId,
         item: {
@@ -80,24 +65,17 @@ export default function useCreateConditionDuplicate({ topologyBlockId, episodeId
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         setNewCommand,
         updateCommandInfo,
-        addCommandIf,
-        updateCommandIfInfo,
       });
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
       deleteValue({ id: newCommand.plotfieldCommandId, episodeId });
       handleDuplicationOptimisticOnError({
-        commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,
         queryClient,
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         updateCommandInfo,
-        isElse: newCommand.isElse || false,
         message: err.message,
-        plotfieldCommandId: newCommand.plotfieldCommandId,
-        removeCommandIfItem,
-        updateCommandIfInfo,
       });
     },
   });

@@ -1,25 +1,15 @@
 import { useEffect } from "react";
-import { PlotfieldOptimisticCommandInsideIfTypes } from "../../../Context/PlotfieldCommandIfSlice";
 
 type UpdateSessionStorageGoingUpForIfCommandTypes = {
   commandIfId: string;
   plotfieldCommandId: string;
-  getFirstCommandInsideIf: ({
-    commandIfId,
-    isElse,
-  }: {
-    commandIfId: string;
-    isElse: boolean;
-  }) => PlotfieldOptimisticCommandInsideIfTypes | null;
-  updateFocuseReset: ({ value }: { value: boolean }) => void;
-  updateFocuseIfReset: ({ value }: { value: boolean }) => void;
+
   setIsBackgroundFocused: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function useUpdateSessionStorageGoingUpForIfCommand({
   commandIfId,
   plotfieldCommandId,
-  getFirstCommandInsideIf,
   setIsBackgroundFocused,
 }: UpdateSessionStorageGoingUpForIfCommandTypes) {
   useEffect(() => {
@@ -109,6 +99,7 @@ export default function useUpdateSessionStorageGoingUpForIfCommand({
 
     const handleKeyUp = (event: KeyboardEvent) => {
       pressedKeys.delete(event.key?.toLowerCase());
+      pressedKeys.clear();
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -118,7 +109,7 @@ export default function useUpdateSessionStorageGoingUpForIfCommand({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [commandIfId, getFirstCommandInsideIf, plotfieldCommandId]);
+  }, [commandIfId, plotfieldCommandId]);
 }
 
 // const currentFocusedCommandIf =

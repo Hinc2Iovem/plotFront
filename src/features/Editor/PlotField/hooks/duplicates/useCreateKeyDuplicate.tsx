@@ -9,29 +9,13 @@ import {
   handleDuplicationOptimisticOnMutation,
 } from "./helpers/handleDuplicationOptimistic";
 import useSearch from "../../../Context/Search/SearchContext";
+import {
+  CreateDuplicateOnMutation,
+  CreateDuplicateWithStoryTypes,
+} from "../../../../../hooks/helpers/Plotfield/Duplication/createDuplicateTypes";
 
-type CreateKeyDuplicateTypes = {
-  topologyBlockId: string;
-  storyId: string;
-  episodeId: string;
-};
-
-type CreateKeyDuplicateOnMutation = {
-  commandOrder: number;
-  commandIfId?: string;
-  isElse?: boolean;
-  topologyBlockId: string;
-  commandName?: AllPossiblePlotFieldComamndsTypes;
-  sayType?: CommandSayVariationTypes;
-  characterId?: string;
-  emotionName?: string;
-  characterName?: string;
-  plotfieldCommandId: string;
-};
-
-export default function useCreateKeyDuplicate({ topologyBlockId, storyId, episodeId }: CreateKeyDuplicateTypes) {
-  const { addCommand, updateCommandInfo, addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
-    usePlotfieldCommands();
+export default function useCreateKeyDuplicate({ topologyBlockId, storyId, episodeId }: CreateDuplicateWithStoryTypes) {
+  const { addCommand, updateCommandInfo } = usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
   const { addItem, deleteValue } = useSearch();
@@ -43,7 +27,7 @@ export default function useCreateKeyDuplicate({ topologyBlockId, storyId, episod
       commandIfId,
       isElse,
       topologyBlockId: bodyTopologyBlockId,
-    }: CreateKeyDuplicateOnMutation) => {
+    }: CreateDuplicateOnMutation) => {
       const currentTopologyBlockId = bodyTopologyBlockId?.trim().length ? bodyTopologyBlockId : topologyBlockId;
 
       await axiosCustomized
@@ -55,7 +39,7 @@ export default function useCreateKeyDuplicate({ topologyBlockId, storyId, episod
         })
         .then((r) => r.data);
     },
-    onMutate: async (newCommand: CreateKeyDuplicateOnMutation) => {
+    onMutate: async (newCommand: CreateDuplicateOnMutation) => {
       addItem({
         episodeId,
         item: {
@@ -82,24 +66,17 @@ export default function useCreateKeyDuplicate({ topologyBlockId, storyId, episod
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         setNewCommand,
         updateCommandInfo,
-        addCommandIf,
-        updateCommandIfInfo,
       });
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
       deleteValue({ id: newCommand.plotfieldCommandId, episodeId });
       handleDuplicationOptimisticOnError({
-        commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,
         queryClient,
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         updateCommandInfo,
-        isElse: newCommand.isElse || false,
         message: err.message,
-        plotfieldCommandId: newCommand.plotfieldCommandId,
-        removeCommandIfItem,
-        updateCommandIfInfo,
       });
     },
   });

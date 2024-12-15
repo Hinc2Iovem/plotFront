@@ -127,6 +127,7 @@ export default function useHandleNavigationThroughOptionsInsideChoice({
 
     const handleKeyUp = (event: KeyboardEvent) => {
       pressedKeys.delete(event.key?.toLowerCase());
+      pressedKeys.clear();
     };
 
     window.addEventListener("keydown", handleKeyDown);

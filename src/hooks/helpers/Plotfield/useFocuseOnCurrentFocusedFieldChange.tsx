@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 
 type FocuseOnCurrentFocusedFieldChangeTypes = {
-  currentInput: React.MutableRefObject<
-    HTMLInputElement | HTMLTextAreaElement | null
-  >;
+  currentInput: React.MutableRefObject<HTMLInputElement | HTMLTextAreaElement | null>;
   isCommandFocused: boolean;
 };
 
@@ -15,5 +13,5 @@ export default function useFocuseOnCurrentFocusedFieldChange({
     if (isCommandFocused && currentInput) {
       currentInput.current?.focus();
     }
-  }, [isCommandFocused]);
+  }, [isCommandFocused, currentInput]);
 }

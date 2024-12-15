@@ -2,10 +2,10 @@ import { useRef, useState } from "react";
 import search from "../../assets/images/Editor/search.png";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import useHandleDuplicationOfAllCommands from "../../hooks/helpers/Plotfield/Duplication/useHandleDuplicationOfAllCommands";
-import useHandleAllCommandsCreatedViaKeyCombination from "../../hooks/helpers/Plotfield/useHandleAllCommandsCreatedViaKeyCombination";
-import useHandleNavigationThroughCommands from "../../hooks/helpers/Plotfield/useHandleNavigationThroughCommands";
-import useHandleResizeOfEditorWindows from "../../hooks/helpers/Plotfield/useHandleResizeOfEditorWindows";
-import useResizeEditorWindow from "../../hooks/helpers/Plotfield/useResizeEditorWindow";
+import useHandleAllCommandsCreatedViaKeyCombination from "../../hooks/helpers/Plotfield/CreatingViaKeyCombination/useHandleAllCommandsCreatedViaKeyCombination";
+import useHandleNavigationThroughCommands from "../../hooks/helpers/Plotfield/navigationHelpers/hooks/useHandleNavigationThroughCommands";
+import useHandleResizeOfEditorWindows from "../../hooks/helpers/Plotfield/ResizeWindow/useHandleResizeOfEditorWindows";
+import useResizeEditorWindow from "../../hooks/helpers/Plotfield/ResizeWindow/useResizeEditorWindow";
 import AllMightySearch from "./AllMightySearch/AllMightySearch";
 import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
 import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
@@ -20,7 +20,7 @@ type EditorMainTypes = {
 };
 
 export default function EditorMain({ setShowHeader }: EditorMainTypes) {
-  const { currentTopologyBlockId } = useNavigation();
+  const { currentTopologyBlock } = useNavigation();
   const [command, setCommand] = useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
     "" as PossibleCommandsCreatedByCombinationOfKeysTypes
   );
@@ -45,11 +45,11 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
   useResizeEditorWindow({ command, containerRef, setScaleDivPosition });
 
   useHandleAllCommandsCreatedViaKeyCombination({
-    topologyBlockId: currentTopologyBlockId,
+    topologyBlockId: currentTopologyBlock._id,
   });
 
   useHandleDuplicationOfAllCommands({
-    topologyBlockId: currentTopologyBlockId,
+    topologyBlockId: currentTopologyBlock._id,
   });
 
   useHandleNavigationThroughCommands();

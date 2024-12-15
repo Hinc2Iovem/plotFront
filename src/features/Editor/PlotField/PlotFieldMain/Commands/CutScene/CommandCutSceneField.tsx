@@ -5,7 +5,6 @@ import useUpdateCutSceneText from "../../../hooks/CutScene/useUpdateCutSceneText
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
@@ -32,7 +31,6 @@ export default function CommandCutSceneField({
   });
 
   const currentInput = useRef<HTMLInputElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
   const { addItem, updateValue } = useSearch();
 

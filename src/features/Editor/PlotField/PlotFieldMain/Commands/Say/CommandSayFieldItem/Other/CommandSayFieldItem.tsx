@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
@@ -11,6 +11,7 @@ import {
 import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
 import PlotfieldTextarea from "../../../../../../../shared/Textareas/PlotfieldTextarea";
 import TextSettingsModal from "../../../../../../components/TextSettingsModal";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useGetTranslationSay from "../../../../../hooks/Say/useGetTranslationSay";
 import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
@@ -18,8 +19,6 @@ import useUpdateCommandSayType from "../../../../../hooks/Say/useUpdateCommandSa
 import useUpdateSayTextSide from "../../../../../hooks/Say/useUpdateSayTextSide";
 import useUpdateSayTextStyle from "../../../../../hooks/Say/useUpdateSayTextStyle";
 import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
-import useSearch from "../../../../../../Context/Search/SearchContext";
-import { useParams } from "react-router-dom";
 
 type CommandSayFieldItemTypes = {
   nameValue: string;
@@ -28,8 +27,6 @@ type CommandSayFieldItemTypes = {
   topologyBlockId: string;
   textStyle: TextStyleTypes;
   textSide: CommandSideTypes;
-  commandIfId: string;
-  isElse: boolean;
 };
 
 const CommandSayPossibleUpdateVariations = ["author", "hint", "notify"];
@@ -41,8 +38,6 @@ export default function CommandSayFieldItem({
   topologyBlockId,
   textStyle,
   textSide,
-  commandIfId,
-  isElse,
 }: CommandSayFieldItemTypes) {
   const { episodeId } = useParams();
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
@@ -53,9 +48,7 @@ export default function CommandSayFieldItem({
   });
 
   const currentInput = useRef<HTMLTextAreaElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
-
-  const { updateCommandSide, updateCommandIfSide } = usePlotfieldCommands();
+  const { updateCommandSide } = usePlotfieldCommands();
   const { data: commandSayText } = useGetTranslationSay({
     commandId: plotFieldCommandId,
     language: "russian",
@@ -135,9 +128,6 @@ export default function CommandSayFieldItem({
         setCurrentTextSide,
         plotfieldCommandId: plotFieldCommandId,
         updateCommandSide,
-        updateCommandIfSide,
-        commandIfId,
-        isElse,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -240,7 +230,6 @@ export default function CommandSayFieldItem({
           showTextStyleRow={true}
           setCurrentTextSide={setCurrentTextSide}
           currentSide={currentTextSide}
-          isElse={isElse}
         />
       </form>
     </div>

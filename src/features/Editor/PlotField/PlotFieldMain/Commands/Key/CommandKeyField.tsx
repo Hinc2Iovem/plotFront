@@ -5,7 +5,6 @@ import useUpdateKeyText from "../../../hooks/Key/useUpdateKeyText";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
@@ -26,7 +25,6 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
     plotFieldCommandId,
   });
   const currentInput = useRef<HTMLInputElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
   const [commandKeyId, setCommandKeyId] = useState("");
 

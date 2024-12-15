@@ -6,7 +6,7 @@ type CreateConditionTypes = {
   episodeId: string;
 };
 
-type CreateConditionOnMutation = {
+export type CreateConditionOnMutation = {
   coordinatesX: number;
   coordinatesY: number;
   targetBlockId: string;
@@ -16,10 +16,7 @@ type CreateConditionOnMutation = {
   plotfieldCommandId?: string;
 };
 
-export default function useCreateCondition({
-  plotFieldCommandId,
-  episodeId,
-}: CreateConditionTypes) {
+export default function useCreateCondition({ plotFieldCommandId, episodeId }: CreateConditionTypes) {
   return useMutation({
     mutationFn: async ({
       coordinatesX,
@@ -30,21 +27,16 @@ export default function useCreateCondition({
       conditionBlockId,
       plotfieldCommandId,
     }: CreateConditionOnMutation) => {
-      const commandId = plotFieldCommandId?.trim().length
-        ? plotFieldCommandId
-        : plotfieldCommandId;
+      const commandId = plotFieldCommandId?.trim().length ? plotFieldCommandId : plotfieldCommandId;
 
-      await axiosCustomized.post(
-        `/plotFieldCommands/${commandId}/episodes/${episodeId}/conditions`,
-        {
-          coordinatesX,
-          coordinatesY,
-          sourceBlockName,
-          targetBlockId,
-          topologyBlockId,
-          conditionBlockId,
-        }
-      );
+      await axiosCustomized.post(`/plotFieldCommands/${commandId}/episodes/${episodeId}/conditions`, {
+        coordinatesX,
+        coordinatesY,
+        sourceBlockName,
+        targetBlockId,
+        topologyBlockId,
+        conditionBlockId,
+      });
     },
   });
 }

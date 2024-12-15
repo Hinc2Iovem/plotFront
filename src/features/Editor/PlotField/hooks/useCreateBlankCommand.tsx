@@ -16,60 +16,46 @@ type NewCommandTypes = {
   topologyBlockId: string;
   commandName?: AllPossiblePlotFieldComamndsTypes;
   sayType?: CommandSayVariationTypes;
+
+  commandOrder?: number;
+  plotfieldCommandIfId?: string;
+  plotfieldCommandElseId?: string;
+  plotfieldCommandIfElseEndId?: string;
 };
 
 export default function useCreateBlankCommand({
   topologyBlockId,
   episodeId,
+  commandOrder,
 }: {
   topologyBlockId: string;
   episodeId: string;
+  commandOrder?: number;
 }) {
-  const { addCommand, updateCommandInfo, getCurrentAmountOfCommands, getCommandByPlotfieldCommandId } =
-    usePlotfieldCommands();
-
+  const { addCommand, updateCommandInfo } = usePlotfieldCommands();
   const { addItem } = useSearch();
-
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
-  const currentTopologyBlock = sessionStorage.getItem(`focusedTopologyBlock`);
-  const currentCommand = sessionStorage.getItem(`focusedCommand`)?.split("-");
-
-  let valueOrNull = null;
-  const currentCommandId = (currentCommand || [])[1];
-  if (currentTopologyBlock === currentCommandId) {
-    valueOrNull = null;
-  } else {
-    valueOrNull = getCommandByPlotfieldCommandId({
-      plotfieldCommandId: currentCommandId,
-      topologyBlockId: currentTopologyBlock?.trim().length ? currentTopologyBlock : topologyBlockId,
-    })?.commandOrder;
-  }
 
   const queryClient = useQueryClient();
+  // TODO need to add here if checks, what command creates, and create according state, for example, if commandIf, we will create command else and command end with it
+
   return useMutation({
     mutationKey: ["new", "plotfield", "topologyBlock", topologyBlockId],
-    mutationFn: async (commandOrder) => {
-      const currentTopologyBlockId = commandOrder?.topologyBlockId?.trim().length
-        ? commandOrder.topologyBlockId
+    mutationFn: async (newCommand) => {
+      const currentCommandOrder = typeof commandOrder === "number" ? commandOrder : newCommand.commandOrder;
+      const currentTopologyBlockId = newCommand?.topologyBlockId?.trim().length
+        ? newCommand.topologyBlockId
         : topologyBlockId;
       return await axiosCustomized
         .post<PlotFieldTypes>(`/plotField/topologyBlocks/${currentTopologyBlockId}`, {
-          commandOrder:
-            typeof valueOrNull === "number"
-              ? valueOrNull + 1
-              : getCurrentAmountOfCommands({
-                  topologyBlockId: currentTopologyBlockId,
-                }) === 1
-              ? 0
-              : getCurrentAmountOfCommands({
-                  topologyBlockId: currentTopologyBlockId,
-                }) - 1,
-          _id: commandOrder._id,
-          commandName: commandOrder.commandName,
+          commandOrder: currentCommandOrder,
+          _id: newCommand._id,
+          commandName: newCommand.commandName,
         })
         .then((r) => r.data);
     },
     onMutate: async (newCommand: NewCommandTypes) => {
+      const currentCommandOrder = typeof commandOrder === "number" ? commandOrder : newCommand.commandOrder;
       const currentTopologyBlockId = newCommand?.topologyBlockId?.trim().length
         ? newCommand.topologyBlockId
         : topologyBlockId;
@@ -96,18 +82,17 @@ export default function useCreateBlankCommand({
         newCommand: {
           _id: newCommand._id,
           command: (newCommand.commandName as AllPossiblePlotFieldComamndsTypes) || "",
-          commandOrder:
-            typeof valueOrNull === "number"
-              ? valueOrNull + 1
-              : getCurrentAmountOfCommands({
-                  topologyBlockId: currentTopologyBlockId,
-                }),
+          commandOrder: currentCommandOrder || 0,
           topologyBlockId: currentTopologyBlockId,
           sayType: newCommand?.sayType || ("" as CommandSayVariationTypes),
           isElse: newCommand.isElse,
-          commandIfId: newCommand.commandIfId,
+
+          plotfieldCommandIfId: newCommand.plotfieldCommandIfId,
         },
         topologyBlockId: currentTopologyBlockId,
+        plotfieldCommandElseId: newCommand.plotfieldCommandElseId,
+        plotfieldCommandIfElseEndId: newCommand.plotfieldCommandIfElseEndId,
+        plotfieldCommandIfId: newCommand.plotfieldCommandIfId,
       });
 
       setNewCommand({
@@ -116,20 +101,16 @@ export default function useCreateBlankCommand({
         newCommand: {
           _id: newCommand._id,
           command: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
-          commandOrder:
-            typeof valueOrNull === "number"
-              ? valueOrNull + 1
-              : getCurrentAmountOfCommands({
-                  topologyBlockId: currentTopologyBlockId,
-                }),
+          commandOrder: currentCommandOrder || 0,
           topologyBlockId: currentTopologyBlockId,
           undoType: "created",
           characterId: "",
           emotionName: "",
           characterName: "",
           sayType: newCommand.sayType,
-          commandIfId: newCommand.commandIfId,
           isElse: newCommand.isElse,
+
+          plotfieldCommandIfId: newCommand.plotfieldCommandIfId,
         },
       });
 

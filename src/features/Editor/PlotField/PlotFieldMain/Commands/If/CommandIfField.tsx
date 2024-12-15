@@ -1,16 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import { PlotfieldOptimisticCommandInsideIfTypes } from "../../../Context/PlotfieldCommandIfSlice";
-import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useUpdateSessionStorageGoingDownForIfCommand from "../../../hooks/If/helpers/useUpdateSessionStorageGoingDownForIfCommand";
 import useUpdateSessionStorageGoingUpForIfCommand from "../../../hooks/If/helpers/useUpdateSessionStorageGoingUpForIfCommand";
 import useGetCommandIf from "../../../hooks/If/useGetCommandIf";
-import useGetAllPlotFieldCommandsByIfIdInsideElse from "../../../hooks/useGetAllPlotFieldCommandsByIfIdInsideIElse";
-import useGetAllPlotFieldCommandsByIfIdInsideIf from "../../../hooks/useGetAllPlotFieldCommandsByIfIdInsideIf";
 import CommandIfNameField from "./CommandIfNameField";
-import PlotfieldIfItems from "./PlotfieldIfItems";
-import IfVariationsField from "./Variations/IfVariationsField";
 import useIfVariations from "./Context/IfContext";
+import IfVariationsField from "./Variations/IfVariationsField";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -19,16 +14,7 @@ type CommandIfFieldTypes = {
 };
 
 export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: CommandIfFieldTypes) {
-  const {
-    setAllIfCommands,
-    setCurrentAmountOfIfCommands,
-    updateFocuseReset,
-    updateFocuseIfReset,
-    getFirstCommandInsideIf,
-  } = usePlotfieldCommands();
-
   const [hideIfCommands, setHideIfCommands] = useState(false);
-  const [hideElseCommands, setHideElseCommands] = useState(false);
   const { data: commandIf } = useGetCommandIf({
     plotFieldCommandId,
   });
@@ -83,47 +69,18 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
   useUpdateSessionStorageGoingDownForIfCommand({
     commandIfId,
     plotfieldCommandId: plotFieldCommandId,
-    updateFocuseReset,
-    getFirstCommandInsideIf,
-    updateFocuseIfReset,
     setIsBackgroundFocused,
   });
 
   useUpdateSessionStorageGoingUpForIfCommand({
-    commandIfId,
     plotfieldCommandId: plotFieldCommandId,
-    updateFocuseReset,
-    getFirstCommandInsideIf,
-    updateFocuseIfReset,
     setIsBackgroundFocused,
-  });
-
-  const { data: commandsInsideIf } = useGetAllPlotFieldCommandsByIfIdInsideIf({
     commandIfId,
   });
-  const { data: commandsInsideElse } = useGetAllPlotFieldCommandsByIfIdInsideElse({
-    commandIfId,
-  });
-
-  useEffect(() => {
-    if (commandsInsideElse && commandsInsideIf && commandIfId) {
-      setAllIfCommands({
-        commandIfId,
-        commandsInsideElse: commandsInsideElse as PlotfieldOptimisticCommandInsideIfTypes[],
-        commandsInsideIf: commandsInsideIf as PlotfieldOptimisticCommandInsideIfTypes[],
-      });
-    }
-  }, [commandsInsideIf, commandsInsideElse, commandIfId]);
 
   useEffect(() => {
     if (commandIf) {
       setCommandIfId(commandIf._id);
-
-      setCurrentAmountOfIfCommands({
-        commandIfId: commandIf._id,
-        amountOfCommandsInsideElse: commandIf.amountOfCommandsInsideElse,
-        amountOfCommandsInsideIf: commandIf.amountOfCommandsInsideIf,
-      });
     }
   }, [commandIf]);
 
@@ -147,37 +104,6 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
         ifId={commandIfId}
         logicalOperators={getAllLogicalOperators({ plotfieldCommandId: plotFieldCommandId })}
         topologyBlockId={topologyBlockId}
-      />
-
-      <PlotfieldIfItems
-        commandIfId={commandIfId}
-        droppableId="commandIf"
-        hideCommands={hideIfCommands}
-        isBackgroundFocused={isBackgroundFocused}
-        isElse={false}
-        isFocusedIf={isFocusedIf}
-      />
-
-      <CommandIfNameField
-        plotfieldCommandId={plotFieldCommandId}
-        commandIfId={commandIfId}
-        createInsideElse={true}
-        hideCommands={hideElseCommands}
-        isBackgroundFocused={!isBackgroundFocused}
-        isCommandFocused={isCommandFocused}
-        isFocusedIf={!isFocusedIf}
-        nameValue="else"
-        setHideCommands={setHideElseCommands}
-        topologyBlockId={topologyBlockId}
-      />
-
-      <PlotfieldIfItems
-        commandIfId={commandIfId}
-        droppableId="commandIfElse"
-        hideCommands={hideElseCommands}
-        isBackgroundFocused={isBackgroundFocused}
-        isElse={true}
-        isFocusedIf={!isFocusedIf}
       />
     </div>
   );

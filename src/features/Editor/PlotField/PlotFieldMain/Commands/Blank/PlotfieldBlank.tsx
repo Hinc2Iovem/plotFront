@@ -6,14 +6,12 @@ import {
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useCreateAmbient from "../../../hooks/Ambient/useCreateAmbient";
@@ -40,12 +38,11 @@ import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
 import useCreateCommandKey from "../../../hooks/Key/useCreateCommandKey";
 import useCreateCommandAchievement from "../../../hooks/Achievement/useCreateCommandAchievement";
 import useSearch from "../../../../Context/Search/SearchContext";
+import useNavigation from "../../../../Context/Navigation/NavigationContext";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
-  commandIfId: string;
-  isElse?: boolean;
 };
 
 const AllCommands = [
@@ -73,12 +70,7 @@ const AllCommands = [
   "comment",
 ];
 
-export default function PlotfieldBlank({
-  plotFieldCommandId,
-  topologyBlockId,
-  commandIfId,
-  isElse,
-}: PlotFieldBlankTypes) {
+export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: PlotFieldBlankTypes) {
   const { storyId } = useParams();
   const { addItem } = useSearch();
   const { episodeId } = useParams();
@@ -86,9 +78,8 @@ export default function PlotfieldBlank({
     plotFieldCommandId,
   });
   const currentInput = useRef<HTMLInputElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
-  const { getTopologyBlock } = useTopologyBlocks();
+  const { currentTopologyBlock } = useNavigation();
   const { addConditionBlock } = useConditionBlocks();
   const [showCreateCharacterModal, setShowCreateCharacterModal] = useState(false);
 
@@ -184,8 +175,7 @@ export default function PlotfieldBlank({
     topologyBlockId,
   });
 
-  const { updateCommandName: updateCommandNameOptimistic, updateCommandIfName: updateCommandIfNameOptimistic } =
-    usePlotfieldCommands();
+  const { updateCommandName: updateCommandNameOptimistic } = usePlotfieldCommands();
 
   const handleCreatingOptimisticCommand = ({
     commandName,
@@ -193,12 +183,20 @@ export default function PlotfieldBlank({
     characterId,
     sayType,
     characterName,
+
+    plotfieldCommandIfId,
+    plotfieldCommandElseId,
+    plotfieldCommandIfElseEndId,
   }: {
     valueForSay: boolean;
     commandName: AllPossiblePlotFieldComamndsTypes;
     sayType?: CommandSayVariationTypes;
     characterId?: string;
     characterName?: string;
+
+    plotfieldCommandIfId?: string;
+    plotfieldCommandElseId?: string;
+    plotfieldCommandIfElseEndId?: string;
   }) => {
     if (valueForSay) {
       if (characterId?.trim().length) {
@@ -208,6 +206,10 @@ export default function PlotfieldBlank({
           characterId,
           characterName,
           sayType: "character",
+          topologyBlockId,
+          plotfieldCommandElseId,
+          plotfieldCommandIfElseEndId,
+          plotfieldCommandIfId,
         });
         if (episodeId) {
           addItem({
@@ -226,6 +228,10 @@ export default function PlotfieldBlank({
           id: plotFieldCommandId,
           newCommand: "say",
           sayType,
+          topologyBlockId,
+          plotfieldCommandElseId,
+          plotfieldCommandIfElseEndId,
+          plotfieldCommandIfId,
         });
         if (episodeId) {
           addItem({
@@ -244,6 +250,7 @@ export default function PlotfieldBlank({
       updateCommandNameOptimistic({
         id: plotFieldCommandId,
         newCommand: commandName,
+        topologyBlockId,
       });
       if (episodeId) {
         addItem({
@@ -260,83 +267,83 @@ export default function PlotfieldBlank({
     }
   };
 
-  const handleCreatingOptimisticCommandIf = ({
-    commandName,
-    valueForSay,
-    characterId,
-    sayType,
-    characterName,
-    isElse,
-  }: {
-    valueForSay: boolean;
-    commandName: AllPossiblePlotFieldComamndsTypes;
-    sayType?: CommandSayVariationTypes;
-    characterId?: string;
-    characterName?: string;
-    isElse: boolean;
-  }) => {
-    if (valueForSay) {
-      if (characterId?.trim().length) {
-        updateCommandIfNameOptimistic({
-          id: plotFieldCommandId,
-          newCommand: "say",
-          characterId,
-          characterName,
-          sayType: "character",
-          isElse,
-        });
-        if (episodeId) {
-          addItem({
-            episodeId,
-            item: {
-              commandName: "character",
-              type: "command",
-              id: plotFieldCommandId,
-              text: "",
-              topologyBlockId,
-            },
-          });
-        }
-      } else {
-        updateCommandIfNameOptimistic({
-          id: plotFieldCommandId,
-          newCommand: "say",
-          sayType,
-          isElse,
-        });
-        if (episodeId) {
-          addItem({
-            episodeId,
-            item: {
-              commandName: sayType || "say",
-              type: "command",
-              id: plotFieldCommandId,
-              text: `${sayType || "author"}`,
-              topologyBlockId,
-            },
-          });
-        }
-      }
-    } else {
-      updateCommandIfNameOptimistic({
-        id: plotFieldCommandId,
-        newCommand: commandName,
-        isElse,
-      });
-      if (episodeId) {
-        addItem({
-          episodeId,
-          item: {
-            commandName: commandName,
-            type: "command",
-            id: plotFieldCommandId,
-            text: "",
-            topologyBlockId,
-          },
-        });
-      }
-    }
-  };
+  // const handleCreatingOptimisticCommandIf = ({
+  //   commandName,
+  //   valueForSay,
+  //   characterId,
+  //   sayType,
+  //   characterName,
+  //   isElse,
+  // }: {
+  //   valueForSay: boolean;
+  //   commandName: AllPossiblePlotFieldComamndsTypes;
+  //   sayType?: CommandSayVariationTypes;
+  //   characterId?: string;
+  //   characterName?: string;
+  //   isElse: boolean;
+  // }) => {
+  //   if (valueForSay) {
+  //     if (characterId?.trim().length) {
+  //       updateCommandIfNameOptimistic({
+  //         id: plotFieldCommandId,
+  //         newCommand: "say",
+  //         characterId,
+  //         characterName,
+  //         sayType: "character",
+  //         isElse,
+  //       });
+  //       if (episodeId) {
+  //         addItem({
+  //           episodeId,
+  //           item: {
+  //             commandName: "character",
+  //             type: "command",
+  //             id: plotFieldCommandId,
+  //             text: "",
+  //             topologyBlockId,
+  //           },
+  //         });
+  //       }
+  //     } else {
+  //       updateCommandIfNameOptimistic({
+  //         id: plotFieldCommandId,
+  //         newCommand: "say",
+  //         sayType,
+  //         isElse,
+  //       });
+  //       if (episodeId) {
+  //         addItem({
+  //           episodeId,
+  //           item: {
+  //             commandName: sayType || "say",
+  //             type: "command",
+  //             id: plotFieldCommandId,
+  //             text: `${sayType || "author"}`,
+  //             topologyBlockId,
+  //           },
+  //         });
+  //       }
+  //     }
+  //   } else {
+  //     updateCommandIfNameOptimistic({
+  //       id: plotFieldCommandId,
+  //       newCommand: commandName,
+  //       isElse,
+  //     });
+  //     if (episodeId) {
+  //       addItem({
+  //         episodeId,
+  //         item: {
+  //           commandName: commandName,
+  //           type: "command",
+  //           id: plotFieldCommandId,
+  //           text: "",
+  //           topologyBlockId,
+  //         },
+  //       });
+  //     }
+  //   }
+  // };
 
   const handleSubmit = ({
     submittedByCharacter,
@@ -350,48 +357,30 @@ export default function PlotfieldBlank({
         translatedCharacters?.map((tc) => {
           tc.translations?.map((tct) => {
             if (tct.textFieldName === "characterName" && tct.text.toLowerCase() === value.toLowerCase()) {
-              if (commandIfId?.trim().length) {
-                handleCreatingOptimisticCommandIf({
-                  valueForSay: true,
-                  commandName: "say",
-                  characterId: tc.characterId,
-                  characterName: value,
-                  sayType: "character",
-                  isElse: isElse || false,
-                });
-              } else {
-                handleCreatingOptimisticCommand({
-                  valueForSay: true,
-                  commandName: "say",
-                  characterId: tc.characterId,
-                  characterName: value,
-                  sayType: "character",
-                });
-              }
+              handleCreatingOptimisticCommand({
+                valueForSay: true,
+                commandName: "say",
+                characterId: tc.characterId,
+                characterName: value,
+                sayType: "character",
+              });
 
               createSayCommand.mutate({ type, characterId: tc.characterId });
             }
           });
         });
       } else {
-        if (commandIfId?.trim().length) {
-          handleCreatingOptimisticCommandIf({
-            valueForSay: true,
-            commandName: "say",
-            sayType: type,
-            isElse: isElse || false,
-          });
-        } else {
-          handleCreatingOptimisticCommand({
-            valueForSay: true,
-            commandName: "say",
-            sayType: type,
-          });
-        }
+        handleCreatingOptimisticCommand({
+          valueForSay: true,
+          commandName: "say",
+          sayType: type,
+        });
         createSayCommand.mutate({ type });
       }
       updateCommandName.mutate({ valueForSay: true });
     } else if (!submittedByCharacter) {
+      const plotFieldCommandElseId = generateMongoObjectId();
+      const plotFieldCommandIfElseEndId = generateMongoObjectId();
       const allCommands: AllPossiblePlotFieldComamndsTypes = value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
       if (allCommands === "achievement") {
         createCommandAchievement.mutate({
@@ -404,8 +393,7 @@ export default function PlotfieldBlank({
       } else if (allCommands === "call") {
         createCall.mutate({});
       } else if (allCommands === "choice") {
-        const choiceId = generateMongoObjectId();
-        createChoice.mutate({ choiceId });
+        createChoice.mutate({});
       } else if (allCommands === "condition") {
         const targetBlockId = generateMongoObjectId();
         const conditionBlockId = generateMongoObjectId();
@@ -419,18 +407,18 @@ export default function PlotfieldBlank({
             logicalOperators: "",
             targetBlockId,
             topologyBlockName: makeTopologyBlockName({
-              name: getTopologyBlock()?.name || "",
-              amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+              name: currentTopologyBlock?.name || "",
+              amountOfOptions: currentTopologyBlock?.topologyBlockInfo?.amountOfChildBlocks || 1,
             }),
           },
         });
 
         createCondition.mutate({
-          coordinatesX: getTopologyBlock().coordinatesX,
-          coordinatesY: getTopologyBlock().coordinatesY,
+          coordinatesX: currentTopologyBlock?.coordinatesX,
+          coordinatesY: currentTopologyBlock?.coordinatesY,
           sourceBlockName: makeTopologyBlockName({
-            name: getTopologyBlock()?.name || "",
-            amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+            name: currentTopologyBlock?.name || "",
+            amountOfOptions: currentTopologyBlock?.topologyBlockInfo?.amountOfChildBlocks || 1,
           }),
           targetBlockId,
           topologyBlockId,
@@ -443,7 +431,10 @@ export default function PlotfieldBlank({
       } else if (allCommands === "getitem") {
         createGetItem.mutate({});
       } else if (allCommands === "if") {
-        createCommandIf.mutate({});
+        createCommandIf.mutate({
+          plotFieldCommandElseId,
+          plotFieldCommandIfElseEndId,
+        });
       } else if (allCommands === "key") {
         createKey.mutate({});
       } else if (allCommands === "move") {
@@ -464,18 +455,13 @@ export default function PlotfieldBlank({
         createComment.mutate({});
       }
 
-      if (commandIfId?.trim().length) {
-        handleCreatingOptimisticCommandIf({
-          valueForSay: false,
-          commandName: allCommands,
-          isElse: isElse || false,
-        });
-      } else {
-        handleCreatingOptimisticCommand({
-          valueForSay: false,
-          commandName: allCommands,
-        });
-      }
+      handleCreatingOptimisticCommand({
+        valueForSay: false,
+        commandName: allCommands,
+        plotfieldCommandIfId: plotFieldCommandId,
+        plotfieldCommandElseId: plotFieldCommandElseId,
+        plotfieldCommandIfElseEndId: plotFieldCommandIfElseEndId,
+      });
 
       updateCommandName.mutate({ valueForSay: false });
     }
@@ -584,8 +570,6 @@ export default function PlotfieldBlank({
         plotFieldCommandId={plotFieldCommandId}
         topologyBlockId={topologyBlockId}
         showModal={showCreateCharacterModal}
-        commandIfId={commandIfId}
-        isElse={isElse}
       />
     </div>
   );

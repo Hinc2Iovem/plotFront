@@ -2,11 +2,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { TopologyBlockTypes } from "../../../types/TopologyBlock/TopologyBlockTypes";
-import usePlotfieldCommands from "../PlotField/Context/PlotFieldContext";
+import useNavigation from "../Context/Navigation/NavigationContext";
 import useUpdateTopologyBlockCoordinates from "../PlotField/hooks/TopologyBlock/useUpdateTopologyBlockCoordinates";
 import { getAllPlotfieldCommands } from "../PlotField/hooks/useGetAllPlotFieldCommands";
 import useCoordinates from "./Context/useCoordinates";
-import useNavigation from "../Context/Navigation/NavigationContext";
 import "./FlowchartStyles.css";
 
 export default function FlowchartTopologyBlock({
@@ -15,11 +14,12 @@ export default function FlowchartTopologyBlock({
   coordinatesY,
   episodeId,
   name,
+  isStartingTopologyBlock,
+  topologyBlockInfo,
 }: TopologyBlockTypes) {
-  const { currentTopologyBlockId, setCurrentTopologyBlockId } = useNavigation();
+  const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
 
   const { coordinates, setCoordinates } = useCoordinates();
-  const { updateFocuseReset } = usePlotfieldCommands();
   const theme = localStorage.getItem("theme");
   const topologyBlockRef = useRef<HTMLDivElement>(null);
   const [localCoordinates, setLocalCoordinates] = useState<{
@@ -91,9 +91,19 @@ export default function FlowchartTopologyBlock({
                 localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
                 sessionStorage.setItem(`focusedTopologyBlock`, _id);
                 sessionStorage.setItem(`focusedCommand`, `none-${_id}`);
-                setCurrentTopologyBlockId({ topologyBlockId: _id });
+                setCurrentTopologyBlock({
+                  topologyBlock: {
+                    _id,
+                    coordinatesX,
+                    coordinatesY,
+                    episodeId,
+                    isStartingTopologyBlock,
+                    topologyBlockInfo,
+                    name,
+                  },
+                });
                 setClicked(false);
-                updateFocuseReset({ value: true });
+                ({ value: true });
               } else {
                 setClicked(true);
                 setTimeout(() => {
@@ -103,7 +113,7 @@ export default function FlowchartTopologyBlock({
             }}
             ref={topologyBlockRef}
             className={` ${
-              currentTopologyBlockId === _id
+              currentTopologyBlock._id === _id
                 ? `${theme === "light" ? "bg-green-300 text-text-dark " : "bg-green-500 text-text-light"}`
                 : "bg-secondary "
             } text-text-light z-[10] w-[10rem] text-[2rem] rounded-md shadow-md absolute px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}

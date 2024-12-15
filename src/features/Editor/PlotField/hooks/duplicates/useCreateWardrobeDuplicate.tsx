@@ -9,28 +9,13 @@ import {
   handleDuplicationOptimisticOnMutation,
 } from "./helpers/handleDuplicationOptimistic";
 import useSearch from "../../../Context/Search/SearchContext";
+import {
+  CreateDuplicateOnMutation,
+  CreateDuplicateTypes,
+} from "../../../../../hooks/helpers/Plotfield/Duplication/createDuplicateTypes";
 
-type CreateWardrobeDuplicateTypes = {
-  topologyBlockId: string;
-  episodeId: string;
-};
-
-type CreateWardrobeDuplicateOnMutation = {
-  commandOrder: number;
-  commandIfId?: string;
-  isElse?: boolean;
-  topologyBlockId: string;
-  commandName?: AllPossiblePlotFieldComamndsTypes;
-  sayType?: CommandSayVariationTypes;
-  characterId?: string;
-  emotionName?: string;
-  characterName?: string;
-  plotfieldCommandId: string;
-};
-
-export default function useCreateWardrobeDuplicate({ topologyBlockId, episodeId }: CreateWardrobeDuplicateTypes) {
-  const { addCommand, updateCommandInfo, addCommandIf, updateCommandIfInfo, removeCommandIfItem } =
-    usePlotfieldCommands();
+export default function useCreateWardrobeDuplicate({ topologyBlockId, episodeId }: CreateDuplicateTypes) {
+  const { addCommand, updateCommandInfo } = usePlotfieldCommands();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
   const queryClient = useQueryClient();
   const { addItem, deleteValue } = useSearch();
@@ -42,7 +27,7 @@ export default function useCreateWardrobeDuplicate({ topologyBlockId, episodeId 
       commandIfId,
       isElse,
       topologyBlockId: bodyTopologyBlockId,
-    }: CreateWardrobeDuplicateOnMutation) => {
+    }: CreateDuplicateOnMutation) => {
       const currentTopologyBlockId = bodyTopologyBlockId?.trim().length ? bodyTopologyBlockId : topologyBlockId;
 
       await axiosCustomized
@@ -54,7 +39,7 @@ export default function useCreateWardrobeDuplicate({ topologyBlockId, episodeId 
         })
         .then((r) => r.data);
     },
-    onMutate: async (newCommand: CreateWardrobeDuplicateOnMutation) => {
+    onMutate: async (newCommand: CreateDuplicateOnMutation) => {
       addItem({
         episodeId,
         item: {
@@ -81,24 +66,17 @@ export default function useCreateWardrobeDuplicate({ topologyBlockId, episodeId 
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         setNewCommand,
         updateCommandInfo,
-        addCommandIf,
-        updateCommandIfInfo,
       });
       return { prevCommands };
     },
     onError: (err, newCommand, context) => {
       deleteValue({ id: newCommand.plotfieldCommandId, episodeId });
       handleDuplicationOptimisticOnError({
-        commandIfId: newCommand.commandIfId || "",
         prevCommands: context?.prevCommands,
         queryClient,
         topologyBlockId: newCommand.topologyBlockId?.trim().length ? newCommand.topologyBlockId : topologyBlockId,
         updateCommandInfo,
-        isElse: newCommand.isElse || false,
         message: err.message,
-        plotfieldCommandId: newCommand.plotfieldCommandId,
-        removeCommandIfItem,
-        updateCommandIfInfo,
       });
     },
   });

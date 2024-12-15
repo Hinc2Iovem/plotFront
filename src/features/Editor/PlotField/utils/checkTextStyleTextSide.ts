@@ -6,10 +6,7 @@ type CheckTextStyleTypes = {
   setCurrentTextStyle: React.Dispatch<React.SetStateAction<TextStyleTypes>>;
 };
 
-export const checkTextStyle = ({
-  debouncedValue,
-  setCurrentTextStyle,
-}: CheckTextStyleTypes) => {
+export const checkTextStyle = ({ debouncedValue, setCurrentTextStyle }: CheckTextStyleTypes) => {
   if (debouncedValue.includes("<i>")) {
     setCurrentTextStyle("italic");
   } else if (debouncedValue.includes("<b>")) {
@@ -21,24 +18,7 @@ export const checkTextStyle = ({
 
 type CheckTextSideTypes = {
   debouncedValue: string;
-  updateCommandSide: ({
-    commandSide,
-    id,
-  }: {
-    id: string;
-    commandSide: "left" | "right";
-  }) => void;
-  updateCommandIfSide: ({
-    commandSide,
-    id,
-    isElse,
-  }: {
-    id: string;
-    commandSide: "left" | "right";
-    isElse: boolean;
-  }) => void;
-  commandIfId: string;
-  isElse: boolean;
+  updateCommandSide: ({ commandSide, id }: { id: string; commandSide: "left" | "right" }) => void;
   plotfieldCommandId: string;
   setCurrentTextSide: React.Dispatch<React.SetStateAction<CommandSideTypes>>;
 };
@@ -48,34 +28,16 @@ export const checkTextSide = ({
   setCurrentTextSide,
   updateCommandSide,
   plotfieldCommandId,
-  commandIfId,
-  isElse,
-  updateCommandIfSide,
 }: CheckTextSideTypes) => {
   if (debouncedValue.includes("<left>")) {
     setCurrentTextSide("left");
-    if (commandIfId?.trim().length) {
-      updateCommandIfSide({
-        commandSide: "left",
-        id: plotfieldCommandId,
-        isElse,
-      });
-    } else {
-      updateCommandSide({ commandSide: "left", id: plotfieldCommandId });
-    }
+
+    updateCommandSide({ commandSide: "left", id: plotfieldCommandId });
   } else {
     if (debouncedValue.includes("<right>")) {
       setCurrentTextSide("right");
 
-      if (commandIfId?.trim().length) {
-        updateCommandIfSide({
-          commandSide: "right",
-          id: plotfieldCommandId,
-          isElse,
-        });
-      } else {
-        updateCommandSide({ commandSide: "right", id: plotfieldCommandId });
-      }
+      updateCommandSide({ commandSide: "right", id: plotfieldCommandId });
     }
   }
 };

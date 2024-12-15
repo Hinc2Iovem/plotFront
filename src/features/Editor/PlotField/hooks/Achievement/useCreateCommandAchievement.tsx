@@ -9,17 +9,19 @@ type CreateCommandAchievementTypes = {
   language: CurrentlyAvailableLanguagesTypes;
 };
 
+export type CreateCommandAchievementOnMutationTypes = {
+  achievementId?: string;
+  plotfieldCommandId?: string;
+  createNewAchievement?: boolean;
+};
+
 export default function useCreateCommandAchievement({ text, storyId, language }: CreateCommandAchievementTypes) {
   return useMutation({
     mutationFn: async ({
       achievementId,
       createNewAchievement = false,
       plotfieldCommandId,
-    }: {
-      achievementId?: string;
-      plotfieldCommandId: string;
-      createNewAchievement?: boolean;
-    }) => {
+    }: CreateCommandAchievementOnMutationTypes) => {
       await axiosCustomized.post(`/plotFieldCommands/commandAchievements`, {
         storyId,
         currentLanguage: language,

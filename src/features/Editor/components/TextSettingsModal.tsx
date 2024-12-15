@@ -18,8 +18,6 @@ type TextSettingsModalTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentTextStyle?: React.Dispatch<React.SetStateAction<TextStyleTypes>>;
   setCurrentTextSide?: React.Dispatch<React.SetStateAction<CommandSideTypes>>;
-
-  isElse?: boolean;
 };
 
 const AllTextStyleTypes = ["b", "d", "i", "u"];
@@ -37,12 +35,10 @@ export default function TextSettingsModal({
   currentTextStyle,
   translateY,
   plotfieldCommandId,
-
-  isElse,
 }: TextSettingsModalTypes) {
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [descriptionText, setDescriptionText] = useState("" as TextStyleTypes);
-  const { updateCommandSide, updateCommandIfSide } = usePlotfieldCommands();
+  const { updateCommandSide } = usePlotfieldCommands();
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const handleHoverFocusTextStyle = (ts: string) => {
@@ -72,9 +68,7 @@ export default function TextSettingsModal({
   return (
     <AsideScrollable
       ref={modalRef}
-      className={`${
-        showModal ? "" : "hidden"
-      } ${translateY} shadow-sm shadow-gray-500 min-h-[7rem] h-fit w-[20rem]`}
+      className={`${showModal ? "" : "hidden"} ${translateY} shadow-sm shadow-gray-500 min-h-[7rem] h-fit w-[20rem]`}
     >
       {showTextStyleRow ? (
         <div className="w-full flex gap-[.5rem]">
@@ -102,18 +96,12 @@ export default function TextSettingsModal({
               }}
               key={ts}
               className={`${
-                currentTextStyle?.slice(0, 1) === ts
-                  ? "text-text-light bg-primary"
-                  : "bg-primary-darker"
+                currentTextStyle?.slice(0, 1) === ts ? "text-text-light bg-primary" : "bg-primary-darker"
               } relative text-[1.3rem] px-[0rem] py-[.5rem] hover:bg-primary `}
             >
               {ts}
 
-              <TextStyleSubModal
-                showModal={showDescriptionModal}
-                ts={ts}
-                text={descriptionText}
-              />
+              <TextStyleSubModal showModal={showDescriptionModal} ts={ts} text={descriptionText} />
             </AsideScrollableButton>
           ))}
         </div>
@@ -131,20 +119,13 @@ export default function TextSettingsModal({
                     commandSide: ts,
                     id: plotfieldCommandId,
                   });
-                  updateCommandIfSide({
-                    commandSide: ts,
-                    id: plotfieldCommandId,
-                    isElse: isElse || false,
-                  });
                 }
                 setShowModal(false);
                 setTextValue((prev) => prev.replace(/<\/?(left|right)>/g, ""));
               }}
               key={ts}
               className={`${
-                currentSide === ts
-                  ? "text-text-light bg-primary"
-                  : "bg-primary-darker"
+                currentSide === ts ? "text-text-light bg-primary" : "bg-primary-darker"
               } relative text-[1.3rem] px-[0rem] py-[.5rem] hover:bg-primary `}
             >
               {ts}

@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import command from "../../../../assets/images/Editor/command.png";
 import plus from "../../../../assets/images/shared/add.png";
-import useCheckKeysCombinationCreateBlankCommand from "../../../../hooks/helpers/useCheckKeysCombinationCreateBlankCommand";
+import useCheckKeysCombinationCreateBlankCommand from "../../../../hooks/helpers/keyCombinations/useCheckKeysCombinationCreateBlankCommand";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import ButtonHoverPromptModal from "../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
-import useCreateBlankCommandInsideIf from "../hooks/If/useCreateBlankCommandInsideIf";
 import useCreateBlankCommand from "../hooks/useCreateBlankCommand";
 
 type PlotFieldHeaderTypes = {
@@ -27,10 +26,10 @@ export default function PlotfieldHeader({
   setExpansionDivDirection,
   hideFlowchartFromScriptwriter,
   showAllCommands,
-}: // setShowAllCommands,
-PlotFieldHeaderTypes) {
+}: PlotFieldHeaderTypes) {
+  // TODO this is zalupa
   const { episodeId } = useParams();
-  const { updateFocuseReset, getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
+  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
   const [increaseFocusModalHeight, setIncreaseFocusModalHeight] = useState(false);
   const theme = localStorage.getItem("theme");
 
@@ -157,7 +156,7 @@ PlotFieldHeaderTypes) {
           sessionStorage.setItem("focusedConditionBlock", `none`);
           sessionStorage.setItem("focusedCommandInsideType", `default?`);
           sessionStorage.setItem("focusedChoiceOption", `none`);
-          updateFocuseReset({ value: true });
+          ({ value: true });
         }}
         className={`absolute hover:bg-dark-blue bg-dark-dark-blue text-center w-[15rem] text-text-light text-[1.4rem] overflow-hidden transition-all rounded-md left-1/2 -translate-x-1/2 top-0`}
       >

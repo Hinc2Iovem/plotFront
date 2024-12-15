@@ -4,7 +4,6 @@ import useUpdateMoveText from "../../../hooks/Move/useUpdateMoveText";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 
@@ -29,7 +28,6 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
   });
 
   const currentInput = useRef<HTMLInputElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
   const [commandMoveId, setCommandMoveId] = useState("");
 

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
-import PlotfieldHeader from "./PlotFieldHeader/PlotfieldHeader";
-import useGetTopologyBlockById from "./hooks/TopologyBlock/useGetTopologyBlockById";
-import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
-import ShowAllCommandsPlotfield from "./ShowAllCommands/ShowAllCommandsPlotfield";
-import usePlotfieldCommands from "./Context/PlotFieldContext";
-import useTopologyBlocks from "../Flowchart/Context/TopologyBlockContext";
 import useNavigation from "../Context/Navigation/NavigationContext";
+import usePlotfieldCommands from "./Context/PlotFieldContext";
+import useGetTopologyBlockById from "./hooks/TopologyBlock/useGetTopologyBlockById";
+import PlotfieldHeader from "./PlotFieldHeader/PlotfieldHeader";
+import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
 
 type PlotFieldProps = {
   command: PossibleCommandsCreatedByCombinationOfKeysTypes;
@@ -25,52 +23,49 @@ export default function PlotField({
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
 }: PlotFieldProps) {
-  const { currentTopologyBlockId: topologyBlockId, setCurrentTopologyBlockId } = useNavigation();
+  const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
   const { setCurrentAmountOfCommands } = usePlotfieldCommands();
-  const { updateTopologyBlock } = useTopologyBlocks();
   const { data: rootTopologyBlock } = useGetTopologyBlockById({
-    topologyBlockId,
+    topologyBlockId: currentTopologyBlock._id,
   });
 
   useEffect(() => {
     if (rootTopologyBlock) {
       setCurrentAmountOfCommands({
-        topologyBlockId,
+        topologyBlockId: currentTopologyBlock._id,
         amountOfCommands: rootTopologyBlock.topologyBlockInfo.amountOfCommands,
       });
-
-      updateTopologyBlock({ newTopologyBlock: rootTopologyBlock });
     }
-  }, [rootTopologyBlock, topologyBlockId, updateTopologyBlock]);
+  }, [rootTopologyBlock, currentTopologyBlock]);
 
-  const { data: currentTopologyBlock } = useGetTopologyBlockById({
-    topologyBlockId,
+  const { data: topologyBlockData } = useGetTopologyBlockById({
+    topologyBlockId: currentTopologyBlock._id,
   });
 
-  useEffect(() => {
-    const handleUpdatingCommandsInfo = () => {
-      const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
-      if (currentTopologyBlockId?.trim().length && currentTopologyBlockId !== topologyBlockId) {
-        setCurrentTopologyBlockId({ topologyBlockId: currentTopologyBlockId });
-      }
-    };
+  // TODO this zalupa dolshna bit somewhere else
+  // useEffect(() => {
+  //   const handleUpdatingCommandsInfo = () => {
+  //     const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+  //     if (currentTopologyBlockId?.trim().length && currentTopologyBlockId !== currentTopologyBlock._id) {
 
-    window.addEventListener("storage", handleUpdatingCommandsInfo);
-    return () => {
-      window.removeEventListener("storage", handleUpdatingCommandsInfo);
-    };
-  }, [topologyBlockId]);
+  //     }
+  //   };
+
+  //   window.addEventListener("storage", handleUpdatingCommandsInfo);
+  //   return () => {
+  //     window.removeEventListener("storage", handleUpdatingCommandsInfo);
+  //   };
+  // }, [currentTopologyBlock]);
 
   useEffect(() => {
-    if (currentTopologyBlock) {
+    if (topologyBlockData) {
       setCurrentAmountOfCommands({
-        topologyBlockId,
-        amountOfCommands: currentTopologyBlock.topologyBlockInfo.amountOfCommands,
+        topologyBlockId: currentTopologyBlock._id,
+        amountOfCommands: topologyBlockData.topologyBlockInfo.amountOfCommands,
       });
-
-      updateTopologyBlock({ newTopologyBlock: currentTopologyBlock });
+      setCurrentTopologyBlock({ ...topologyBlockData });
     }
-  }, [currentTopologyBlock, topologyBlockId, updateTopologyBlock]);
+  }, [topologyBlockData, currentTopologyBlock._id]);
 
   const [showAllCommands, setShowAllCommands] = useState<boolean>(false);
   return (
@@ -79,13 +74,13 @@ export default function PlotField({
         command === "expandPlotField" || !command ? "" : "hidden"
       } flex-grow flex-shrink-0 bg-secondary rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
     >
-      <ShowAllCommandsPlotfield
+      {/* <ShowAllCommandsPlotfield
         command={command}
-        topologyBlockId={topologyBlockId}
+        topologyBlockId={currentTopologyBlock._id}
         showAllCommands={showAllCommands}
         plotfieldExpanded={command === "expandPlotField"}
         setShowAllCommands={setShowAllCommands}
-      />
+      /> */}
       {rootTopologyBlock ? (
         <PlotfieldHeader
           setShowAllCommands={setShowAllCommands}
@@ -93,11 +88,11 @@ export default function PlotField({
           hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
           setExpansionDivDirection={setExpansionDivDirection}
           setShowHeader={setShowHeader}
-          topologyBlockId={topologyBlockId}
+          topologyBlockId={currentTopologyBlock._id}
           setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
         />
       ) : null}
-      <PlotFieldMain showAllCommands={showAllCommands} topologyBlockId={topologyBlockId} />
+      <PlotFieldMain showAllCommands={showAllCommands} topologyBlockId={currentTopologyBlock._id} />
     </section>
   );
 }

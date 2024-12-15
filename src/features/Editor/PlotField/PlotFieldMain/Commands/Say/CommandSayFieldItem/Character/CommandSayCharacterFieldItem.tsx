@@ -14,7 +14,6 @@ import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextSty
 import FormCharacter from "./FormCharacter";
 import FormEmotion from "./FormEmotion";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
 import useSearch from "../../../../../../Context/Search/SearchContext";
@@ -103,7 +102,6 @@ export default function CommandSayCharacterFieldItem({
   });
 
   const currentInput = useRef<HTMLTextAreaElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
   const [showCreateCharacterModal, setShowCreateCharacterModal] = useState(false);
   const [showCreateEmotionModal, setShowCreateEmotionModal] = useState(false);

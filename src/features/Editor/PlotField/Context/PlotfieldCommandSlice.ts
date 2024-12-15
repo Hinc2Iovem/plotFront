@@ -3,7 +3,7 @@ import { AllPossiblePlotFieldComamndsTypes } from "../../../../types/StoryEditor
 import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotField/Say/SayTypes";
 
 export type PlotfieldOptimisticCommandTypes = {
-  _id: string;
+  _id: string; //plotfieldCommandId
   command: AllPossiblePlotFieldComamndsTypes;
   commandOrder: number;
   commandSide?: "right" | "left";
@@ -21,20 +21,25 @@ export type PlotfieldOptimisticCommandTypes = {
   emotionImg?: string;
 
   commandIfId?: string;
-  isElse?: boolean;
+  isElse?: boolean; //typeof boolean, if so, means that this command is inside commandIf
+  plotfieldCommandIfId?: string;
 };
 
 type UpdateCommandNameTypes = {
   id: string;
+  topologyBlockId: string;
   newCommand: AllPossiblePlotFieldComamndsTypes;
   sayType?: CommandSayVariationTypes;
   characterId?: string;
   characterName?: string;
   characterImg?: string;
+
+  plotfieldCommandIfId?: string;
+  plotfieldCommandElseId?: string;
+  plotfieldCommandIfElseEndId?: string;
 };
 
 export type CreatePlotfieldCommandSliceTypes = {
-  focuseReset: boolean;
   commands: {
     topologyBlockId: string;
     commands: PlotfieldOptimisticCommandTypes[];
@@ -46,11 +51,7 @@ export type CreatePlotfieldCommandSliceTypes = {
     plotfieldCommandId: string;
     topologyBlockId: string;
   }) => PlotfieldOptimisticCommandTypes | null;
-  getCurrentAmountOfCommands: ({
-    topologyBlockId,
-  }: {
-    topologyBlockId: string;
-  }) => number;
+  getCurrentAmountOfCommands: ({ topologyBlockId }: { topologyBlockId: string }) => number;
   getFirstCommandByTopologyBlockId: ({
     topologyBlockId,
   }: {
@@ -61,11 +62,7 @@ export type CreatePlotfieldCommandSliceTypes = {
   }: {
     plotfieldCommandId: string;
   }) => PlotfieldOptimisticCommandTypes | null;
-  getCommandsByTopologyBlockId: ({
-    topologyBlockId,
-  }: {
-    topologyBlockId: string;
-  }) => PlotfieldOptimisticCommandTypes[];
+  getCommandsByTopologyBlockId: ({ topologyBlockId }: { topologyBlockId: string }) => PlotfieldOptimisticCommandTypes[];
   getPreviousCommandByPlotfieldId: ({
     plotfieldCommandId,
     topologyBlockId,
@@ -83,11 +80,17 @@ export type CreatePlotfieldCommandSliceTypes = {
   addCommand: ({
     newCommand,
     topologyBlockId,
+    plotfieldCommandIfId,
+    isElse,
   }: {
     newCommand: PlotfieldOptimisticCommandTypes;
     topologyBlockId: string;
+    plotfieldCommandIfId?: string;
+
+    plotfieldCommandElseId?: string;
+    plotfieldCommandIfElseEndId?: string;
+    isElse?: boolean;
   }) => void;
-  updateFocuseReset: ({ value }: { value: boolean }) => void;
   updateCommandName: ({
     id,
     newCommand,
@@ -95,49 +98,22 @@ export type CreatePlotfieldCommandSliceTypes = {
     characterId,
     characterName,
     characterImg,
+    plotfieldCommandIfId,
   }: UpdateCommandNameTypes) => void;
-  removeCommandItem: ({
-    id,
+  removeCommandItem: ({ id, topologyBlockId }: { id: string; topologyBlockId: string }) => void;
+  updateCommandOrder: ({
+    commandOrder,
     topologyBlockId,
+    id,
   }: {
     id: string;
     topologyBlockId: string;
-  }) => void;
-  updateCommandOrder: ({
-    commandOrder,
-    id,
-  }: {
-    id: string;
     commandOrder: number;
   }) => void;
-  updateSayType: ({
-    sayType,
-    id,
-  }: {
-    id: string;
-    sayType: CommandSayVariationTypes;
-  }) => void;
-  updateCommandSide: ({
-    commandSide,
-    id,
-  }: {
-    id: string;
-    commandSide: "left" | "right";
-  }) => void;
-  updateCharacterName: ({
-    characterName,
-    id,
-  }: {
-    id: string;
-    characterName: string;
-  }) => void;
-  updateEmotionName: ({
-    emotionName,
-    id,
-  }: {
-    id: string;
-    emotionName: string;
-  }) => void;
+  updateSayType: ({ sayType, id }: { id: string; sayType: CommandSayVariationTypes }) => void;
+  updateCommandSide: ({ commandSide, id }: { id: string; commandSide: "left" | "right" }) => void;
+  updateCharacterName: ({ characterName, id }: { id: string; characterName: string }) => void;
+  updateEmotionName: ({ emotionName, id }: { id: string; emotionName: string }) => void;
   updateCharacterProperties: ({
     characterName,
     characterId,
@@ -176,7 +152,6 @@ export const createPlotfieldCommandSlice: StateCreator<
   [],
   CreatePlotfieldCommandSliceTypes
 > = (set, get) => ({
-  focuseReset: false,
   commands: [
     {
       topologyBlockId: "",
@@ -184,9 +159,7 @@ export const createPlotfieldCommandSlice: StateCreator<
     },
   ],
   getFirstCommandByTopologyBlockId: ({ topologyBlockId }) => {
-    const firstCommand = get().commands.find(
-      (c) => c.topologyBlockId === topologyBlockId
-    )?.commands[0];
+    const firstCommand = get().commands.find((c) => c.topologyBlockId === topologyBlockId)?.commands[0];
 
     if (firstCommand) {
       return firstCommand;
@@ -195,10 +168,8 @@ export const createPlotfieldCommandSlice: StateCreator<
     }
   },
   getCurrentAmountOfCommands: ({ topologyBlockId }) => {
-    const currentAmount = get().commands.find(
-      (c) => c.topologyBlockId === topologyBlockId
-    )?.commands.length;
-    return typeof currentAmount === "number" ? currentAmount : 0;
+    const currentAmount = get().commands.find((c) => c.topologyBlockId === topologyBlockId)?.commands.length;
+    return typeof currentAmount === "number" ? currentAmount : 1;
   },
   getCommandByPlotfieldCommandId: ({ topologyBlockId, plotfieldCommandId }) => {
     const allCommands =
@@ -216,149 +187,210 @@ export const createPlotfieldCommandSlice: StateCreator<
     );
   },
   getCommandsByTopologyBlockId: ({ topologyBlockId }) => {
-    const allCommands =
-      get().commands.find((c) => c.topologyBlockId === topologyBlockId)
-        ?.commands || [];
+    const allCommands = get().commands.find((c) => c.topologyBlockId === topologyBlockId)?.commands || [];
     return allCommands;
   },
-  getPreviousCommandByPlotfieldId: ({
-    plotfieldCommandId,
-    topologyBlockId,
-  }) => {
-    const allCommands =
-      get().commands.find((c) => c.topologyBlockId === topologyBlockId)
-        ?.commands || [];
-    const currentCommandIndex = allCommands.findIndex(
-      (c) => c._id === plotfieldCommandId
-    );
+  getPreviousCommandByPlotfieldId: ({ plotfieldCommandId, topologyBlockId }) => {
+    const allCommands = get().commands.find((c) => c.topologyBlockId === topologyBlockId)?.commands || [];
+    const currentCommandIndex = allCommands.findIndex((c) => c._id === plotfieldCommandId);
     if (currentCommandIndex === 0) {
       return null;
     }
     return allCommands[currentCommandIndex - 1];
   },
   getNextCommandByPlotfieldId: ({ plotfieldCommandId, topologyBlockId }) => {
-    const allCommands =
-      get().commands.find((c) => c.topologyBlockId === topologyBlockId)
-        ?.commands || [];
+    const allCommands = get().commands.find((c) => c.topologyBlockId === topologyBlockId)?.commands || [];
 
-    const currentCommandIndex = allCommands.findIndex(
-      (c) => c._id === plotfieldCommandId
-    );
+    const currentCommandIndex = allCommands.findIndex((c) => c._id === plotfieldCommandId);
 
-    if (
-      currentCommandIndex !== -1 &&
-      currentCommandIndex < allCommands.length - 1
-    ) {
+    if (currentCommandIndex !== -1 && currentCommandIndex < allCommands.length - 1) {
       return allCommands[currentCommandIndex + 1];
     }
 
     return null;
   },
-  addCommand: ({ newCommand, topologyBlockId }) =>
+  addCommand: ({
+    newCommand,
+    topologyBlockId,
+    isElse,
+    plotfieldCommandIfId,
+    plotfieldCommandElseId,
+    plotfieldCommandIfElseEndId,
+  }) =>
     set((state) => {
-      const existingBlock = state.commands.find(
-        (block) => block.topologyBlockId === topologyBlockId
-      );
+      const existingBlock = state.commands.find((block) => block.topologyBlockId === topologyBlockId);
 
       if (existingBlock) {
-        const updatedCommands = existingBlock.commands.map((command) =>
-          command.commandOrder >= newCommand.commandOrder &&
-          command._id !== newCommand._id
-            ? { ...command, commandOrder: command.commandOrder + 1 }
-            : command
-        );
+        if (newCommand.command === "if" && newCommand) {
+          const newElseCommand: PlotfieldOptimisticCommandTypes = {
+            _id: plotfieldCommandElseId || "",
+            command: "else",
+            commandOrder: newCommand.commandOrder + 1,
+            topologyBlockId,
+            plotfieldCommandIfId,
+          };
+          const newIfElseEndCommand: PlotfieldOptimisticCommandTypes = {
+            _id: plotfieldCommandIfElseEndId || "",
+            command: "end",
+            commandOrder: newCommand.commandOrder + 2,
+            topologyBlockId,
+            plotfieldCommandIfId,
+          };
 
-        return {
-          commands: state.commands.map((block) =>
-            block.topologyBlockId === topologyBlockId
-              ? {
-                  ...block,
-                  commands: [...updatedCommands, newCommand].sort(
-                    (a, b) => a.commandOrder - b.commandOrder
-                  ),
-                }
-              : block
-          ),
-        };
+          const updatedCommandsBesideIf = existingBlock.commands.map((c) =>
+            c._id !== newCommand._id && c.commandOrder > newCommand.commandOrder
+              ? { ...c, commandOrder: c.commandOrder + 2 }
+              : c
+          );
+
+          return {
+            commands: state.commands.map((c) =>
+              c.topologyBlockId === topologyBlockId
+                ? {
+                    ...c,
+                    commands: [...updatedCommandsBesideIf, newCommand, newElseCommand, newIfElseEndCommand].sort(
+                      (a, b) => a.commandOrder - b.commandOrder
+                    ),
+                  }
+                : c
+            ),
+          };
+        } else {
+          const updatedCommands = existingBlock.commands.map((command) =>
+            command.commandOrder >= newCommand.commandOrder && command._id !== newCommand._id
+              ? { ...command, commandOrder: command.commandOrder + 1, plotfieldCommandIfId, isElse }
+              : command
+          );
+
+          return {
+            commands: state.commands.map((block) =>
+              block.topologyBlockId === topologyBlockId
+                ? {
+                    ...block,
+                    commands: [...updatedCommands, newCommand].sort((a, b) => a.commandOrder - b.commandOrder),
+                  }
+                : block
+            ),
+          };
+        }
       } else {
         return {
-          commands: [
-            ...state.commands,
-            { topologyBlockId, commands: [newCommand] },
-          ],
+          commands: [...state.commands, { topologyBlockId, commands: [newCommand] }],
         };
       }
     }),
-  updateFocuseReset: ({ value }) =>
-    set(() => ({
-      focuseReset: value,
-    })),
   updateCommandName: ({
     id,
     newCommand,
-    sayType,
+    topologyBlockId,
     characterId,
-    characterName,
     characterImg,
-  }: {
-    id: string;
-    newCommand: AllPossiblePlotFieldComamndsTypes;
-    sayType?: CommandSayVariationTypes;
-    characterId?: string;
-    characterName?: string;
-    characterImg?: string;
-  }) =>
-    set((state) => ({
-      commands: state.commands.map((block) => ({
-        ...block,
-        commands: block.commands.map((command) =>
-          command._id === id
-            ? {
-                ...command,
-                command: newCommand,
-                sayType,
-                characterId,
-                characterName,
-                characterImg,
-              }
-            : command
+    characterName,
+    plotfieldCommandIfId,
+    plotfieldCommandElseId,
+    plotfieldCommandIfElseEndId,
+    sayType,
+  }: UpdateCommandNameTypes) =>
+    set((state) => {
+      const existingTopologyBlock = state.commands.find((c) => c.topologyBlockId === topologyBlockId);
+
+      if (!existingTopologyBlock) {
+        return { ...state };
+      }
+
+      const updatedCommands = existingTopologyBlock.commands.map((c) =>
+        c._id === id ? { ...c, command: newCommand, characterId, characterImg, characterName, sayType } : c
+      );
+      const currentCommand = updatedCommands.find((c) => c._id === id);
+      if (newCommand === "if" && currentCommand) {
+        const newElseCommand: PlotfieldOptimisticCommandTypes = {
+          _id: plotfieldCommandElseId || "",
+          command: "else",
+          commandOrder: currentCommand.commandOrder + 1,
+          topologyBlockId,
+          plotfieldCommandIfId,
+        };
+        const newIfElseEndCommand: PlotfieldOptimisticCommandTypes = {
+          _id: plotfieldCommandIfElseEndId || "",
+          command: "end",
+          commandOrder: currentCommand.commandOrder + 2,
+          topologyBlockId,
+          plotfieldCommandIfId,
+        };
+
+        const updatedCommandsBesideIf = existingTopologyBlock.commands.map((c) =>
+          c._id !== id && c.commandOrder > currentCommand.commandOrder ? { ...c, commandOrder: c.commandOrder + 2 } : c
+        );
+
+        return {
+          commands: state.commands.map((c) =>
+            c.topologyBlockId === topologyBlockId
+              ? {
+                  ...c,
+                  commands: [...updatedCommandsBesideIf, newElseCommand, newIfElseEndCommand].sort(
+                    (a, b) => a.commandOrder - b.commandOrder
+                  ),
+                }
+              : c
+          ),
+        };
+      }
+
+      return {
+        commands: state.commands.map((c) =>
+          c.topologyBlockId === topologyBlockId ? { ...c, commands: updatedCommands } : c
         ),
-      })),
-    })),
-  updateCommandOrder: ({ id, commandOrder }) =>
-    set((state) => ({
-      commands: state.commands.map((block) => ({
-        ...block,
-        commands: block.commands.map((command) =>
-          command._id === id ? { ...command, commandOrder } : command
+      };
+    }),
+  updateCommandOrder: ({ id, topologyBlockId, commandOrder }) =>
+    set((state) => {
+      const existingBlock = state.commands.find((c) => c.topologyBlockId === topologyBlockId);
+
+      if (!existingBlock) {
+        return { ...state };
+      }
+
+      const currentCommand = existingBlock.commands.find((c) => c._id === id);
+
+      if (!currentCommand) {
+        return { ...state };
+      }
+
+      const updatedCommands = existingBlock.commands.map((c) =>
+        c.commandOrder >= commandOrder && c._id !== id //updating all commands after dragged command
+          ? { ...c, commandOrder: c.commandOrder + 1 }
+          : c._id !== id && c.commandOrder < commandOrder && c.commandOrder > currentCommand.commandOrder //updating all commands before dragged command
+          ? { ...c, commandOrder: c.commandOrder - 1 }
+          : c._id === id //updating dragged command
+          ? { ...c, commandOrder }
+          : c
+      );
+
+      return {
+        commands: state.commands.map((c) =>
+          c.topologyBlockId === topologyBlockId ? { ...c, commands: updatedCommands } : c
         ),
-      })),
-    })),
+      };
+    }),
   updateCharacterName: ({ id, characterName }) =>
     set((state) => ({
       commands: state.commands.map((block) => ({
         ...block,
-        commands: block.commands.map((command) =>
-          command._id === id ? { ...command, characterName } : command
-        ),
+        commands: block.commands.map((command) => (command._id === id ? { ...command, characterName } : command)),
       })),
     })),
   updateEmotionName: ({ id, emotionName }) =>
     set((state) => ({
       commands: state.commands.map((block) => ({
         ...block,
-        commands: block.commands.map((command) =>
-          command._id === id ? { ...command, emotionName } : command
-        ),
+        commands: block.commands.map((command) => (command._id === id ? { ...command, emotionName } : command)),
       })),
     })),
   updateCommandSide: ({ id, commandSide }) =>
     set((state) => ({
       commands: state.commands.map((block) => ({
         ...block,
-        commands: block.commands.map((command) =>
-          command._id === id ? { ...command, commandSide } : command
-        ),
+        commands: block.commands.map((command) => (command._id === id ? { ...command, commandSide } : command)),
       })),
     })),
   updateEmotionProperties: ({ id, emotionName, emotionId, emotionImg }) =>
@@ -366,25 +398,16 @@ export const createPlotfieldCommandSlice: StateCreator<
       commands: state.commands.map((block) => ({
         ...block,
         commands: block.commands.map((command) =>
-          command._id === id
-            ? { ...command, emotionName, emotionId, emotionImg }
-            : command
+          command._id === id ? { ...command, emotionName, emotionId, emotionImg } : command
         ),
       })),
     })),
-  updateCharacterProperties: ({
-    id,
-    characterId,
-    characterName,
-    characterImg,
-  }) =>
+  updateCharacterProperties: ({ id, characterId, characterName, characterImg }) =>
     set((state) => ({
       commands: state.commands.map((block) => ({
         ...block,
         commands: block.commands.map((command) =>
-          command._id === id
-            ? { ...command, characterId, characterName, characterImg }
-            : command
+          command._id === id ? { ...command, characterId, characterName, characterImg } : command
         ),
       })),
     })),
@@ -392,23 +415,17 @@ export const createPlotfieldCommandSlice: StateCreator<
     set((state) => ({
       commands: state.commands.map((block) => ({
         ...block,
-        commands: block.commands.map((command) =>
-          command._id === id ? { ...command, sayType } : command
-        ),
+        commands: block.commands.map((command) => (command._id === id ? { ...command, sayType } : command)),
       })),
     })),
   setAllCommands: ({ commands, topologyBlockId }) =>
     set((state) => {
-      const existingBlock = state.commands.find(
-        (block) => block.topologyBlockId === topologyBlockId
-      );
+      const existingBlock = state.commands.find((block) => block.topologyBlockId === topologyBlockId);
 
       if (existingBlock) {
         return {
           commands: state.commands.map((block) =>
-            block.topologyBlockId === topologyBlockId
-              ? { ...block, commands }
-              : block
+            block.topologyBlockId === topologyBlockId ? { ...block, commands } : block
           ),
         };
       } else {
@@ -422,9 +439,7 @@ export const createPlotfieldCommandSlice: StateCreator<
       const updatedCommands = state.commands.map((block) => {
         if (block.topologyBlockId !== topologyBlockId) return block;
 
-        const commandToRemove = block.commands.find(
-          (command) => command._id === id
-        );
+        const commandToRemove = block.commands.find((command) => command._id === id);
         if (!commandToRemove) return block;
 
         const removedCommandOrder = commandToRemove.commandOrder;

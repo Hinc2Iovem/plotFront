@@ -53,12 +53,10 @@ export default function PlotfieldItem({
   _id,
   command,
   topologyBlockId,
-  commandIfId,
   provided,
   characterId,
   characterName,
   sayType,
-  isElse,
   characterImg,
   commandSide,
   emotionId,
@@ -117,18 +115,11 @@ export default function PlotfieldItem({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      className={`${commandIfId ? "" : ""} w-full flex gap-[1rem] ${
-        command?.trim().length ? "outline-gray-300" : `outline-gray-600`
-      }`}
+      className={`w-full flex gap-[1rem] ${command?.trim().length ? "outline-gray-300" : `outline-gray-600`}`}
     >
       <ErrorBoundary FallbackComponent={(error) => <ErrorFallback commandName={command} {...error} />}>
         {!command ? (
-          <PlotfieldBlank
-            plotFieldCommandId={_id}
-            commandIfId={commandIfId ?? ""}
-            topologyBlockId={topologyBlockId}
-            isElse={isElse}
-          />
+          <PlotfieldBlank plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "say" ? (
           <CommandSayField
             topologyBlockId={topologyBlockId}
@@ -136,12 +127,10 @@ export default function PlotfieldItem({
             characterId={characterId}
             characterName={characterName}
             sayType={sayType}
-            commandIfId={commandIfId}
             characterImg={characterImg}
             emotionId={emotionId}
             emotionImg={emotionImg}
             emotionName={emotionName}
-            isElse={isElse}
             commandSide={commandSide}
           />
         ) : command === "achievement" ? (

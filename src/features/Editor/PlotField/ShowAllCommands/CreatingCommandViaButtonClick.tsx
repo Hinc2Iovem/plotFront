@@ -7,7 +7,6 @@ import {
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
-import useTopologyBlocks from "../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../Flowchart/utils/makeTopologyBlockName";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 import useCreateCommandAchievement from "../hooks/Achievement/useCreateCommandAchievement";
@@ -34,6 +33,7 @@ import useUpdateCommandName from "../hooks/useUpdateCommandName";
 import useCreateWait from "../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 import useConditionBlocks from "../PlotFieldMain/Commands/Condition/Context/ConditionContext";
+import useNavigation from "../../Context/Navigation/NavigationContext";
 
 type CreatingCommandViaButtonClickTypes = {
   pc: string;
@@ -51,7 +51,7 @@ export default function CreatingCommandViaButtonClick({
   const currentlyFocusedTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
   const { updateCommandInfo } = usePlotfieldCommands();
   const { addConditionBlock } = useConditionBlocks();
-  const { getTopologyBlock } = useTopologyBlocks();
+  const { currentTopologyBlock } = useNavigation();
   // const { data: translatedCharacters } = useGetTranslationCharacters({
   //   language: "russian",
   //   storyId: storyId || "",
@@ -215,19 +215,19 @@ export default function CreatingCommandViaButtonClick({
             logicalOperators: "",
             targetBlockId,
             topologyBlockName: makeTopologyBlockName({
-              name: getTopologyBlock()?.name || "",
-              amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+              name: currentTopologyBlock?.name || "",
+              amountOfOptions: currentTopologyBlock?.topologyBlockInfo?.amountOfChildBlocks || 1,
             }),
           },
         });
 
         createCondition.mutate({
           conditionBlockId,
-          coordinatesX: getTopologyBlock()?.coordinatesX || 0,
-          coordinatesY: (getTopologyBlock()?.coordinatesY || 0) + 50,
+          coordinatesX: currentTopologyBlock?.coordinatesX || 0,
+          coordinatesY: (currentTopologyBlock?.coordinatesY || 0) + 50,
           sourceBlockName: makeTopologyBlockName({
-            name: getTopologyBlock()?.name || "",
-            amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks,
+            name: currentTopologyBlock?.name || "",
+            amountOfOptions: currentTopologyBlock?.topologyBlockInfo?.amountOfChildBlocks,
           }),
           targetBlockId,
           topologyBlockId,
@@ -239,7 +239,8 @@ export default function CreatingCommandViaButtonClick({
       } else if (allCommands === "getitem") {
         createGetItem.mutate({});
       } else if (allCommands === "if") {
-        createCommandIf.mutate({});
+        // TODO this shit will cause problems, but because I hid this feature completely from the site I can do it this way(for a better time)
+        createCommandIf.mutate({ plotFieldCommandElseId: "", plotFieldCommandIfElseEndId: "", plotfieldCommandId: "" });
       } else if (allCommands === "key") {
         createKey.mutate({});
       } else if (allCommands === "move") {

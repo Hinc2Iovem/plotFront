@@ -1,34 +1,32 @@
-import useDuplicateFocusedCommandAchievement from "./AllHooks/useDuplicateFocusedCommandAchievement";
-import useDuplicateFocusedCommandAmbient from "./AllHooks/useDuplicateFocusedCommandAmbient";
-import useDuplicateFocusedCommandAuthor from "./AllHooks/useDuplicateFocusedCommandAuthor";
-import useDuplicateFocusedCommandBackground from "./AllHooks/useDuplicateFocusedCommandBackground";
-import useDuplicateFocusedCommandCall from "./AllHooks/useDuplicateFocusedCommandCall";
-import useDuplicateFocusedCommandCharacter from "./AllHooks/useDuplicateFocusedCommandCharacter";
-import useDuplicateFocusedCommandChoice from "./AllHooks/useDuplicateFocusedCommandChoice";
-import useDuplicateFocusedCommandComment from "./AllHooks/useDuplicateFocusedCommandComment";
-import useDuplicateFocusedCommandCondition from "./AllHooks/useDuplicateFocusedCommandCondition";
-import useDuplicateFocusedCommandCutScene from "./AllHooks/useDuplicateFocusedCommandCutScene";
-import useDuplicateFocusedCommandEffect from "./AllHooks/useDuplicateFocusedCommandEffect";
-import useDuplicateFocusedCommandGetItem from "./AllHooks/useDuplicateFocusedCommandGetItem";
-import useDuplicateFocusedCommandHint from "./AllHooks/useDuplicateFocusedCommandHint";
-import useDuplicateFocusedCommandIf from "./AllHooks/useDuplicateFocusedCommandIf";
-import useDuplicateFocusedCommandKey from "./AllHooks/useDuplicateFocusedCommandKey";
-import useDuplicateFocusedCommandMove from "./AllHooks/useDuplicateFocusedCommandMove";
-import useDuplicateFocusedCommandMusic from "./AllHooks/useDuplicateFocusedCommandMusic";
-import useDuplicateFocusedCommandNotify from "./AllHooks/useDuplicateFocusedCommandNotify";
-import useDuplicateFocusedCommandSound from "./AllHooks/useDuplicateFocusedCommandSound";
-import useDuplicateFocusedCommandSuit from "./AllHooks/useDuplicateFocusedCommandSuit";
-import useDuplicateFocusedCommandWait from "./AllHooks/useDuplicateFocusedCommandWait";
-import useDuplicateFocusedCommandWardrobe from "./AllHooks/useDuplicateFocusedCommandWardrobe";
-import useDuplicateFocusedCommandName from "./AllHooks/useDuplicateFocusedCommandName";
+import useDuplicateFocusedCommandAchievement from "./allHooks/useDuplicateFocusedCommandAchievement";
+import useDuplicateFocusedCommandAmbient from "./allHooks/useDuplicateFocusedCommandAmbient";
+import useDuplicateFocusedCommandAuthor from "./allHooks/useDuplicateFocusedCommandAuthor";
+import useDuplicateFocusedCommandBackground from "./allHooks/useDuplicateFocusedCommandBackground";
+import useDuplicateFocusedCommandCall from "./allHooks/useDuplicateFocusedCommandCall";
+import useDuplicateFocusedCommandCharacter from "./allHooks/useDuplicateFocusedCommandCharacter";
+import useDuplicateFocusedCommandChoice from "./allHooks/useDuplicateFocusedCommandChoice";
+import useDuplicateFocusedCommandComment from "./allHooks/useDuplicateFocusedCommandComment";
+import useDuplicateFocusedCommandCondition from "./allHooks/useDuplicateFocusedCommandCondition";
+import useDuplicateFocusedCommandCutScene from "./allHooks/useDuplicateFocusedCommandCutScene";
+import useDuplicateFocusedCommandEffect from "./allHooks/useDuplicateFocusedCommandEffect";
+import useDuplicateFocusedCommandGetItem from "./allHooks/useDuplicateFocusedCommandGetItem";
+import useDuplicateFocusedCommandHint from "./allHooks/useDuplicateFocusedCommandHint";
+import useDuplicateFocusedCommandIf from "./allHooks/useDuplicateFocusedCommandIf";
+import useDuplicateFocusedCommandKey from "./allHooks/useDuplicateFocusedCommandKey";
+import useDuplicateFocusedCommandMove from "./allHooks/useDuplicateFocusedCommandMove";
+import useDuplicateFocusedCommandMusic from "./allHooks/useDuplicateFocusedCommandMusic";
+import useDuplicateFocusedCommandNotify from "./allHooks/useDuplicateFocusedCommandNotify";
+import useDuplicateFocusedCommandSound from "./allHooks/useDuplicateFocusedCommandSound";
+import useDuplicateFocusedCommandSuit from "./allHooks/useDuplicateFocusedCommandSuit";
+import useDuplicateFocusedCommandWait from "./allHooks/useDuplicateFocusedCommandWait";
+import useDuplicateFocusedCommandWardrobe from "./allHooks/useDuplicateFocusedCommandWardrobe";
+import useDuplicateFocusedCommandName from "./allHooks/useDuplicateFocusedCommandName";
 
 type HandleDuplicationOfAllCommandsTypes = {
   topologyBlockId: string;
 };
 
-export default function useHandleDuplicationOfAllCommands({
-  topologyBlockId,
-}: HandleDuplicationOfAllCommandsTypes) {
+export default function useHandleDuplicationOfAllCommands({ topologyBlockId }: HandleDuplicationOfAllCommandsTypes) {
   const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
   useDuplicateFocusedCommandAchievement({
     topologyBlockId: currentTopologyBlockId || topologyBlockId,

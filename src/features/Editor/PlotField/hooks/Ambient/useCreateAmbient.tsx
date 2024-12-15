@@ -5,18 +5,10 @@ type CreateAmbientTypes = {
   plotFieldCommandId?: string;
 };
 
-export default function useCreateAmbient({
-  plotFieldCommandId,
-}: CreateAmbientTypes) {
+export default function useCreateAmbient({ plotFieldCommandId }: CreateAmbientTypes) {
   return useMutation({
-    mutationFn: async ({
-      plotfieldCommandId,
-    }: {
-      plotfieldCommandId?: string;
-    }) => {
-      const commandId = plotFieldCommandId?.trim().length
-        ? plotFieldCommandId
-        : plotfieldCommandId;
+    mutationFn: async ({ plotfieldCommandId }: { plotfieldCommandId?: string }) => {
+      const commandId = plotFieldCommandId?.trim().length ? plotFieldCommandId : plotfieldCommandId;
       await axiosCustomized.post(`/plotFieldCommands/${commandId}/ambients`);
     },
   });

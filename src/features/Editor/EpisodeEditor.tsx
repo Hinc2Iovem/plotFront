@@ -14,7 +14,7 @@ import "./Flowchart/FlowchartStyles.css";
 export default function EpisodeEditor() {
   const { episodeId } = useParams();
   const { addItem } = useSearch();
-  const { currentTopologyBlockId, setCurrentTopologyBlockId } = useNavigation();
+  const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
 
   // basically when user uses plotfieldSearch and gets teleported to another block useEffect below triggers addItem and ui experiences strange behavior because of array's values update
   const [showHeader, setShowHeader] = useState(false);
@@ -28,7 +28,7 @@ export default function EpisodeEditor() {
   const { data } = useGetDataForPlotfieldSearch({
     episodeId: episodeId || "",
     currentLanguage: "russian",
-    topologyBlockId: currentTopologyBlockId,
+    topologyBlockId: currentTopologyBlock._id,
   });
 
   useEffect(() => {
@@ -40,14 +40,21 @@ export default function EpisodeEditor() {
     }
   }, [data]);
 
-  useUpdateValuesOnPageEnter({ firstTopologyBlock, localTopologyBlockId, setCurrentTopologyBlockId });
+  useUpdateValuesOnPageEnter({
+    firstTopologyBlock,
+    localTopologyBlockId,
+    setCurrentTopologyBlockId: setCurrentTopologyBlock,
+  });
   useUpdateValuesOnPageReload({ firstTopologyBlock, localTopologyBlockId });
 
-  useUpdateRootTopologyBlockOnSearchResult({ currentTopologyBlockId, setCurrentTopologyBlockId });
+  useUpdateRootTopologyBlockOnSearchResult({
+    currentTopologyBlockId: currentTopologyBlock._id,
+    setCurrentTopologyBlockId: setCurrentTopologyBlock,
+  });
   return (
     <section className="p-[1rem] mx-auto max-w-[146rem] flex flex-col gap-[1rem] | containerScroll">
       <EditorHeader setShowHeader={setShowHeader} showHeader={showHeader} />
-      {currentTopologyBlockId ? <EditorMain setShowHeader={setShowHeader} /> : null}
+      {currentTopologyBlock._id?.trim().length ? <EditorMain setShowHeader={setShowHeader} /> : null}
     </section>
   );
 }

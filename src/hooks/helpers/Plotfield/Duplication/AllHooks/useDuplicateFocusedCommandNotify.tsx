@@ -35,21 +35,19 @@ export default function useDuplicateFocusedCommandNotify({ topologyBlockId }: Du
         event.preventDefault();
 
         const currentFocusedTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`);
-        const currentFocusedPlotfieldCommand = sessionStorage.getItem(`focusedCommand`)?.split("-");
-
-        if ((currentFocusedPlotfieldCommand || [])[0] !== "notify") {
+        if (currentlyFocusedCommandId.commandName !== "notify") {
           console.log("Not an notify");
           return;
         }
 
         const currentFocusedPlotfieldCommandId = (currentFocusedPlotfieldCommand || [])[1];
-        if (currentFocusedTopologyBlockId === currentFocusedPlotfieldCommandId) {
+        if (currentlyFocusedCommandId.type !== "command") {
           console.log("Can not copy topologyBlock, try to copy a command");
           return;
         }
 
         const currentCommand = getCommandByPlotfieldCommandId({
-          plotfieldCommandId: currentFocusedPlotfieldCommandId,
+          plotfieldCommandId: currentlyFocusedCommandId._id,
           topologyBlockId: currentFocusedTopologyBlockId || topologyBlockId,
         });
 
@@ -119,7 +117,6 @@ export default function useDuplicateFocusedCommandNotify({ topologyBlockId }: Du
             topologyBlockId: currentFocusedTopologyBlockId || topologyBlockId,
             characterId: currentCommand?.characterId,
             characterName: currentCommand?.characterName,
-            commandIfId: currentCommand?.commandIfId,
             commandName: currentCommand?.command,
             emotionName: currentCommand?.emotionName,
             isElse: currentCommand?.isElse,
@@ -141,6 +138,7 @@ export default function useDuplicateFocusedCommandNotify({ topologyBlockId }: Du
 
     const handleKeyUp = (event: KeyboardEvent) => {
       pressedKeys.delete(event.key?.toLowerCase());
+      pressedKeys.clear();
     };
 
     window.addEventListener("keydown", handleKeyDown);

@@ -41,7 +41,7 @@ export default function CommandIfNameField({
   createInsideElse,
   setHideCommands,
 }: CommandIfNameFieldTypes) {
-  const { getCurrentAmountOfIfCommands } = usePlotfieldCommands();
+  const { getCurrentAmountOfCommands } = usePlotfieldCommands();
 
   const createCommandInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
@@ -56,9 +56,8 @@ export default function CommandIfNameField({
   const handleCreateCommand = (isElse: boolean) => {
     const _id = generateMongoObjectId();
     if (isElse) {
-      const elseCommandOrder = getCurrentAmountOfIfCommands({
-        commandIfId,
-        isElse: true,
+      const elseCommandOrder = getCurrentAmountOfCommands({
+        topologyBlockId,
       });
       createCommandInsideElse.mutate({
         commandOrder: elseCommandOrder,
@@ -69,9 +68,8 @@ export default function CommandIfNameField({
         commandIfId,
       });
     } else {
-      const ifCommandOrder = getCurrentAmountOfIfCommands({
-        commandIfId,
-        isElse: false,
+      const ifCommandOrder = getCurrentAmountOfCommands({
+        topologyBlockId,
       });
 
       createCommandInsideIf.mutate({

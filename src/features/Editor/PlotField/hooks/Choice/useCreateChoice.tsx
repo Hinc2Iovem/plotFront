@@ -6,27 +6,11 @@ type CreateChoiceTypes = {
   topologyBlockId: string;
 };
 
-export default function useCreateChoice({
-  plotFieldCommandId,
-  topologyBlockId,
-}: CreateChoiceTypes) {
+export default function useCreateChoice({ plotFieldCommandId, topologyBlockId }: CreateChoiceTypes) {
   return useMutation({
-    mutationFn: async ({
-      plotfieldCommandId,
-      choiceId,
-    }: {
-      plotfieldCommandId?: string;
-      choiceId?: string;
-    }) => {
-      const commandId = plotFieldCommandId?.trim().length
-        ? plotFieldCommandId
-        : plotfieldCommandId;
-      await axiosCustomized.post(
-        `/choices/${commandId}/topologyBlocks/${topologyBlockId}/translations`,
-        {
-          choiceId,
-        }
-      );
+    mutationFn: async ({ plotfieldCommandId }: { plotfieldCommandId?: string }) => {
+      const commandId = plotFieldCommandId?.trim().length ? plotFieldCommandId : plotfieldCommandId;
+      await axiosCustomized.post(`/choices/${commandId}/topologyBlocks/${topologyBlockId}/translations`);
     },
   });
 }

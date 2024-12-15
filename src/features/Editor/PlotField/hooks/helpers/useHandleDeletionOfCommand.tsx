@@ -34,6 +34,7 @@ export default function useHandleDeletionOfCommand() {
     const handleKeyUp = (event: KeyboardEvent) => {
       pressedKeys.delete(event.key?.toLowerCase());
       pressedKeys.clear();
+      pressedKeys.clear();
     };
 
     window.addEventListener("keydown", handleKeyDown);

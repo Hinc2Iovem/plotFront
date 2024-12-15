@@ -13,8 +13,6 @@ type PlotFieldBlankCreateCharacterTypes = {
   characterName: string;
   plotFieldCommandId: string;
   topologyBlockId: string;
-  commandIfId?: string;
-  isElse?: boolean;
 };
 
 export default function PlotFieldBlankCreateCharacter({
@@ -23,17 +21,10 @@ export default function PlotFieldBlankCreateCharacter({
   characterName,
   plotFieldCommandId,
   topologyBlockId,
-  commandIfId,
-  isElse,
 }: PlotFieldBlankCreateCharacterTypes) {
   const { storyId } = useParams();
-  const currentlyFocusedTopologyBlock = sessionStorage.getItem(
-    "focusedTopologyBlock"
-  );
-  const {
-    updateCommandName: updateCommandNameOptimistic,
-    updateCommandIfName: updateCommandIfNameOptimistic,
-  } = usePlotfieldCommands();
+  const currentlyFocusedTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
+  const { updateCommandName: updateCommandNameOptimistic } = usePlotfieldCommands();
 
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
@@ -68,24 +59,14 @@ export default function PlotFieldBlankCreateCharacter({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (commandIfId?.trim().length) {
-      updateCommandIfNameOptimistic({
-        id: plotFieldCommandId,
-        characterId,
-        newCommand: "say",
-        characterName,
-        sayType: "character",
-        isElse: isElse || false,
-      });
-    } else {
-      updateCommandNameOptimistic({
-        id: plotFieldCommandId,
-        characterId,
-        newCommand: "say",
-        characterName,
-        sayType: "character",
-      });
-    }
+    updateCommandNameOptimistic({
+      id: plotFieldCommandId,
+      characterId,
+      newCommand: "say",
+      characterName,
+      sayType: "character",
+      topologyBlockId,
+    });
 
     createCharacter.mutate({ characterId });
     updateCommandName.mutate({ valueForSay: true });
@@ -106,9 +87,7 @@ export default function PlotFieldBlankCreateCharacter({
       } z-10 shadow-md text-text-light w-full rounded-md absolute translate-y-[.5rem] p-[1rem]`}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-[.5rem]">
-        <p className="text-[1.4rem] text-text-dark">
-          Такой команды или персонажа с таким именем не существует
-        </p>
+        <p className="text-[1.4rem] text-text-dark">Такой команды или персонажа с таким именем не существует</p>
         <button
           ref={cursorRef}
           className="w-fit self-end text-[1.5rem] border-[1px] border-dotted border-black rounded-md px-[1rem] focus:shadow-inner active:bg-black shadow-md shadow-gray-200"

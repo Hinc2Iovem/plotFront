@@ -20,9 +20,12 @@ export type AllPossiblePlotFieldComamndsTypes =
   | "achievement"
   | "ambient"
   | "background"
+  | "blank"
   | "call"
   | "choice"
   | "if"
+  | "else"
+  | "end"
   | "condition"
   | "cutscene"
   | "effect"
@@ -37,3 +40,5 @@ export type AllPossiblePlotFieldComamndsTypes =
   | "wait"
   | "comment"
   | "wardrobe";
+
+export type OmittedCommandNames = Exclude<AllPossiblePlotFieldComamndsTypes, "end" | "else">;

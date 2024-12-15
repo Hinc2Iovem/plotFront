@@ -6,7 +6,6 @@ import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
 import useGetTranslationAchievementEnabled from "../../../hooks/Achievement/useGetTranslationAchievementEnabled";
 import useUpdateAchievementText from "../../../hooks/Achievement/useUpdateAchievementText";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useSearch from "../../../../Context/Search/SearchContext";
 
 type CommandAchievementFieldTypes = {
@@ -29,7 +28,6 @@ export default function CommandAchievementField({
   });
 
   const currentInput = useRef<HTMLInputElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
 
   const { data: translatedAchievement } = useGetTranslationAchievementEnabled({
     commandId: plotFieldCommandId,

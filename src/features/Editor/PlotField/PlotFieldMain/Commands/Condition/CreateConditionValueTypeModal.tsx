@@ -3,10 +3,10 @@ import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
-import useTopologyBlocks from "../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import useAddAnotherConditionBlock from "../../../hooks/Condition/ConditionBlock/useAddAnotherConditionBlock";
 import useConditionBlocks from "./Context/ConditionContext";
+import useNavigation from "../../../../Context/Navigation/NavigationContext";
 
 type CreateConditionValueTypeModalTypes = {
   setShowCreateValueType: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +23,7 @@ export default function CreateConditionValueTypeModal({
 }: CreateConditionValueTypeModalTypes) {
   const { episodeId } = useParams();
   const { addConditionBlock, getAmountOfOnlyIfConditionBlocks } = useConditionBlocks();
-  const { getTopologyBlock, updateAmountOfChildBlocks } = useTopologyBlocks();
+  const { currentTopologyBlock, updateAmountOfChildBlocks } = useNavigation();
   const modalRef = useRef<HTMLDivElement>(null);
 
   const createCommandinsideCondition = useAddAnotherConditionBlock({
@@ -48,22 +48,22 @@ export default function CreateConditionValueTypeModal({
             : getAmountOfOnlyIfConditionBlocks({ plotfieldCommandId }) + 1,
         targetBlockId,
         topologyBlockName: makeTopologyBlockName({
-          name: getTopologyBlock()?.name || "",
-          amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+          name: currentTopologyBlock?.name || "",
+          amountOfOptions: currentTopologyBlock?.topologyBlockInfo?.amountOfChildBlocks || 1,
         }),
       },
       plotfieldCommandId,
     });
 
     createCommandinsideCondition.mutate({
-      coordinatesX: getTopologyBlock().coordinatesX,
-      coordinatesY: getTopologyBlock().coordinatesY,
+      coordinatesX: currentTopologyBlock?.coordinatesX,
+      coordinatesY: currentTopologyBlock?.coordinatesY,
       sourceBlockName: makeTopologyBlockName({
-        name: getTopologyBlock()?.name || "",
-        amountOfOptions: getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+        name: currentTopologyBlock?.name || "",
+        amountOfOptions: currentTopologyBlock?.topologyBlockInfo?.amountOfChildBlocks || 1,
       }),
       targetBlockId,
-      topologyBlockId: getTopologyBlock()._id,
+      topologyBlockId: currentTopologyBlock?._id,
       conditionBlockId,
       orderOfExecution:
         getAmountOfOnlyIfConditionBlocks({ plotfieldCommandId }) < 1

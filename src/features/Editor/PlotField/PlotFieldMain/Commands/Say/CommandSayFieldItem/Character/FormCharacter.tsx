@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetTranslationCharacters from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useFocuseOnCurrentFocusedFieldChange from "../../../../../../../../hooks/helpers/Plotfield/useFocuseOnCurrentFocusedFieldChange";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
@@ -69,7 +68,7 @@ export default function FormCharacter({
   });
 
   const currentInput = useRef<HTMLInputElement | null>(null);
-  useFocuseOnCurrentFocusedFieldChange({ currentInput, isCommandFocused });
+
   const [focusedSecondTime, setFocusedSecondTime] = useState(false);
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({

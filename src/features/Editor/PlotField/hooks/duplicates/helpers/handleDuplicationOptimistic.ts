@@ -4,7 +4,6 @@ import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/Pl
 import { PlotfieldOptimisticUndoCommandTypes } from "../../../Context/CommandsPossiblyBeingUndo/PlotfieldCommandsPossiblyBeingUndo";
 import { UpdateCommandInfoSignType } from "../../../Context/PlotfieldCommandInfoSlice";
 import { PlotfieldOptimisticCommandTypes } from "../../../Context/PlotfieldCommandSlice";
-import { PlotfieldOptimisticCommandInsideIfTypes } from "../../../Context/PlotfieldCommandIfSlice";
 
 type HandleDuplicationOptimisticOnMutationTypes = {
   setNewCommand: ({
@@ -42,24 +41,11 @@ type HandleDuplicationOptimisticOnMutationTypes = {
   commandOrder: number;
   plotfieldCommandId: string;
   episodeId: string;
-  addCommandIf: ({
-    commandIfId,
-    newCommand,
-    isElse,
-  }: {
-    newCommand: PlotfieldOptimisticCommandInsideIfTypes;
-    commandIfId: string;
-    isElse: boolean;
-  }) => void;
-  updateCommandIfInfo: ({
-    addOrMinus,
-    commandIfId,
-    isElse,
-  }: {
-    commandIfId: string;
-    isElse: boolean;
-    addOrMinus: UpdateCommandInfoSignType;
-  }) => void;
+
+  characterImg?: string;
+  commandSide?: "left" | "right";
+  emotionId?: string;
+  emotionImg?: string;
 };
 
 export async function handleDuplicationOptimisticOnMutation({
@@ -68,130 +54,77 @@ export async function handleDuplicationOptimisticOnMutation({
   commandName,
   isElse,
   sayType,
-  commandIfId,
   characterName,
   emotionName,
   characterId,
   commandOrder,
   plotfieldCommandId,
   episodeId,
+  commandIfId,
+  commandSide,
+  characterImg,
+  emotionId,
+  emotionImg,
   addCommand,
   setNewCommand,
   updateCommandInfo,
-  addCommandIf,
-  updateCommandIfInfo,
 }: HandleDuplicationOptimisticOnMutationTypes) {
-  if (commandIfId?.trim().length) {
-    let prevCommands;
-    if (isElse) {
-      await queryClient.cancelQueries({
-        queryKey: ["plotfield", "commandIf", commandIfId, "insideElse"],
-      });
-      prevCommands = queryClient.getQueryData([
-        "plotfield",
-        "commandIf",
-        commandIfId,
-        "insideElse",
-      ]);
-    } else {
-      await queryClient.cancelQueries({
-        queryKey: ["plotfield", "commandIf", commandIfId, "insideIf"],
-      });
-      prevCommands = queryClient.getQueryData([
-        "plotfield",
-        "commandIf",
-        commandIfId,
-        "insideIf",
-      ]);
-    }
+  await queryClient.cancelQueries({
+    queryKey: ["plotfield", "topologyBlock", topologyBlockId],
+  });
 
-    addCommandIf({
-      commandIfId: commandIfId || "",
+  const prevCommands = queryClient.getQueryData(["plotfield", "topologyBlock", topologyBlockId]);
+
+  // TODO add plotfieldCommandIfId
+  // search
+  addCommand({
+    newCommand: {
+      _id: plotfieldCommandId,
+      command: (commandName as AllPossiblePlotFieldComamndsTypes) || "",
+      commandOrder: commandOrder,
+      topologyBlockId,
+      sayType: sayType || ("" as CommandSayVariationTypes),
+
+      commandSide: commandSide,
+      characterId: characterId,
+      characterImg: characterImg,
+      characterName: characterName,
+      commandIfId: commandIfId,
+      emotionId: emotionId,
+      emotionImg: emotionImg,
+      emotionName: emotionName,
       isElse: isElse,
-      newCommand: {
-        commandOrder: commandOrder,
-        _id: plotfieldCommandId,
-        command: commandName || ("" as AllPossiblePlotFieldComamndsTypes),
-        isElse: isElse,
-        topologyBlockId,
-        commandIfId: commandIfId || "",
-        commandSide: "right",
-        characterId,
-        characterName,
-        emotionName,
-        sayType,
-      },
-    });
+    },
+    topologyBlockId,
+  });
 
-    setNewCommand({
-      episodeId,
+  // undoCommand
+  setNewCommand({
+    episodeId,
+    topologyBlockId,
+    newCommand: {
+      _id: plotfieldCommandId,
+      command: commandName || ("" as AllPossiblePlotFieldComamndsTypes),
+      commandOrder: commandOrder,
       topologyBlockId,
-      newCommand: {
-        _id: plotfieldCommandId,
-        command: commandName || ("" as AllPossiblePlotFieldComamndsTypes),
-        commandOrder: commandOrder,
-        topologyBlockId,
-        undoType: "copied",
-        characterId: characterId,
-        emotionName: emotionName,
-        characterName: characterName,
-        sayType: sayType,
-        commandIfId: commandIfId,
-        isElse: isElse,
-      },
-    });
-
-    updateCommandIfInfo({
-      addOrMinus: "add",
-      commandIfId: commandIfId || "",
+      undoType: "created",
+      characterId: characterId,
+      emotionName: emotionName,
+      characterName: characterName,
+      sayType: sayType,
       isElse: isElse,
-    });
 
-    return { prevCommands };
-  } else {
-    await queryClient.cancelQueries({
-      queryKey: ["plotfield", "topologyBlock", topologyBlockId],
-    });
+      commandSide: commandSide,
+      characterImg: characterImg,
+      emotionId: emotionId,
+      emotionImg: emotionImg,
+    },
+  });
 
-    const prevCommands = queryClient.getQueryData([
-      "plotfield",
-      "topologyBlock",
-      topologyBlockId,
-    ]);
+  // plotfieldCommands(info)
+  updateCommandInfo({ addOrMinus: "add", topologyBlockId });
 
-    addCommand({
-      newCommand: {
-        _id: plotfieldCommandId,
-        command: (commandName as AllPossiblePlotFieldComamndsTypes) || "",
-        commandOrder: commandOrder,
-        topologyBlockId,
-        sayType: sayType || ("" as CommandSayVariationTypes),
-      },
-      topologyBlockId,
-    });
-
-    setNewCommand({
-      episodeId,
-      topologyBlockId,
-      newCommand: {
-        _id: plotfieldCommandId,
-        command: commandName || ("" as AllPossiblePlotFieldComamndsTypes),
-        commandOrder: commandOrder,
-        topologyBlockId,
-        undoType: "copied",
-        characterId: characterId,
-        emotionName: emotionName,
-        characterName: characterName,
-        sayType: sayType,
-        commandIfId: commandIfId,
-        isElse: isElse,
-      },
-    });
-
-    updateCommandInfo({ addOrMinus: "add", topologyBlockId });
-
-    return { prevCommands };
-  }
+  return { prevCommands };
 }
 
 type HandleDuplicationOptimisticOnErrorTypes = {
@@ -202,7 +135,6 @@ type HandleDuplicationOptimisticOnErrorTypes = {
         prevCommands: unknown;
       }
     | undefined;
-  commandIfId: string;
   updateCommandInfo: ({
     addOrMinus,
     topologyBlockId,
@@ -211,70 +143,16 @@ type HandleDuplicationOptimisticOnErrorTypes = {
     addOrMinus: UpdateCommandInfoSignType;
   }) => void;
   message: string;
-  isElse: boolean;
-  plotfieldCommandId: string;
-  removeCommandIfItem: ({
-    isElse,
-    id,
-    commandIfId,
-  }: {
-    isElse: boolean;
-    id: string;
-    commandIfId: string;
-  }) => void;
-  updateCommandIfInfo: ({
-    addOrMinus,
-    commandIfId,
-    isElse,
-  }: {
-    commandIfId: string;
-    isElse: boolean;
-    addOrMinus: UpdateCommandInfoSignType;
-  }) => void;
 };
 
 export async function handleDuplicationOptimisticOnError({
-  commandIfId,
   queryClient,
   topologyBlockId,
   prevCommands,
-  isElse,
   message,
-  plotfieldCommandId,
-  removeCommandIfItem,
-  updateCommandIfInfo,
   updateCommandInfo,
 }: HandleDuplicationOptimisticOnErrorTypes) {
-  if (commandIfId?.trim().length) {
-    console.error(`Some error happened: ${message}`);
-
-    removeCommandIfItem({
-      id: plotfieldCommandId,
-      isElse: isElse,
-      commandIfId,
-    });
-    updateCommandIfInfo({
-      addOrMinus: "minus",
-      commandIfId: commandIfId || "",
-      isElse: isElse,
-    });
-
-    if (isElse) {
-      queryClient.setQueryData(
-        ["plotfield", "commandIf", commandIfId, "insideElse"],
-        prevCommands
-      );
-    } else {
-      queryClient.setQueryData(
-        ["plotfield", "commandIf", commandIfId, "insideIf"],
-        prevCommands
-      );
-    }
-  } else {
-    updateCommandInfo({ addOrMinus: "minus", topologyBlockId });
-    queryClient.setQueryData(
-      ["plotfield", "topologyBlock", topologyBlockId],
-      prevCommands
-    );
-  }
+  console.error(`Some error happened: ${message}`);
+  updateCommandInfo({ addOrMinus: "minus", topologyBlockId });
+  queryClient.setQueryData(["plotfield", "topologyBlock", topologyBlockId], prevCommands);
 }
