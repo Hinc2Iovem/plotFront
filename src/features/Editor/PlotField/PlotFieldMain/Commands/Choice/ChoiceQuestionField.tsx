@@ -3,7 +3,7 @@ import plus from "../../../../../../assets/images/shared/add.png";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import useGetCommandChoiceTranslation from "../../../hooks/Choice/useGetCommandChoiceTranslation";
 import useUpdateChoice from "../../../hooks/Choice/useUpdateChoice";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
@@ -12,7 +12,7 @@ import CreateChoiceOptionTypeModal from "./Option/CreateChoiceOptionTypeModal";
 import useUpdateChoiceTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateChoiceTranslation";
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationTextFieldNameChoiceTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import TextSettingsModal from "../../../../components/TextSettingsModal";
 import { TextStyleTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import { checkTextStyle } from "../../../utils/checkTextStyleTextSide";
@@ -372,7 +372,7 @@ function ChoiceQuestionCharacterField({
         translateAsideValue={"translate-y-[3.5rem]"}
         debouncedValue={debouncedValue}
         setDebouncedCharacter={setDebouncedCharacter}
-        commandIfId=""
+        plotfieldCommandIfId=""
         isElse={false}
       />
     </form>

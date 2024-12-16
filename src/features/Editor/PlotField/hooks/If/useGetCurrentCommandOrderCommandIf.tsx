@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../api/axios";
 
 type GetCommandIfTypes = {
-  commandIfId: string;
+  plotfieldCommandIfId: string;
   isElse: boolean | null;
 };
 
@@ -11,24 +11,12 @@ type ReturnTypeCommandOrders = {
   commandOrder: number;
 };
 
-export default function useGetCurrentCommandOrderCommandIf({
-  commandIfId,
-  isElse,
-}: GetCommandIfTypes) {
+export default function useGetCurrentCommandOrderCommandIf({ plotfieldCommandIfId, isElse }: GetCommandIfTypes) {
   return useQuery({
-    queryKey: [
-      "plotfieldCommand",
-      "if",
-      commandIfId,
-      "isElse",
-      isElse,
-      "checkOrder",
-    ],
+    queryKey: ["plotfieldCommand", "if", plotfieldCommandIfId, "isElse", isElse, "checkOrder"],
     queryFn: async () =>
       await axiosCustomized
-        .get<ReturnTypeCommandOrders[]>(
-          `/plotFieldCommands/ifs/${commandIfId}/checkOrder?isElse=${isElse}`
-        )
+        .get<ReturnTypeCommandOrders[]>(`/plotFieldCommands/ifs/${plotfieldCommandIfId}/checkOrder?isElse=${isElse}`)
         .then((r) => r.data),
 
     enabled: !!commandIfId && !!isElse,

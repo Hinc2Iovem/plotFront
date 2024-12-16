@@ -87,7 +87,6 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
           plotfieldCommandIfElseEndId,
           plotfieldCommandIfId:
             typeof currentlyFocusedCommandId.isElse === "boolean" ? currentlyFocusedCommandId?.parentId : "",
-          commandIfId: currentlyFocusedCommandId?.parentId || "",
           commandOrder:
             typeof currentlyFocusedCommandId.commandOrder === "number"
               ? currentlyFocusedCommandId?.commandOrder + 1
@@ -120,6 +119,7 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
     secondEngLetter,
     secondRusLetter,
     getCurrentAmountOfCommands,
+    episodeId,
     sayType,
   ]);
 }

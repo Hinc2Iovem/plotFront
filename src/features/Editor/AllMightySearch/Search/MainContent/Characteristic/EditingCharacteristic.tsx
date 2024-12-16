@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { TempCharacteristicTypes } from "./AllMightySearchMainContentCharacteristic";
 import { AllMightySearchCharacteristicResultTypes } from "../../../hooks/useGetPaginatedTranslationCharacteristic";

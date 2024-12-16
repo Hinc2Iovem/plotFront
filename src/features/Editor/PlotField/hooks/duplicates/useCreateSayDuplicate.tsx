@@ -29,7 +29,7 @@ export default function useCreateSayDuplicate({ topologyBlockId, episodeId }: Cr
         sayType,
         characterId,
         emotionId,
-        commandIfId,
+        plotfieldCommandIfId,
         isElse,
         topologyBlockId: bodyTopologyBlockId,
       } = newCommand;
@@ -42,7 +42,7 @@ export default function useCreateSayDuplicate({ topologyBlockId, episodeId }: Cr
           type: sayType,
           characterEmotionId: emotionId,
           characterId,
-          commandIfId,
+          plotfieldCommandIfId,
           isElse,
         })
         .then((r) => r.data);
@@ -63,7 +63,7 @@ export default function useCreateSayDuplicate({ topologyBlockId, episodeId }: Cr
         addCommand,
         characterId: newCommand.characterId || "",
         characterName: newCommand.characterName || "",
-        commandIfId: newCommand.commandIfId || "",
+        plotfieldCommandIfId: newCommand.plotfieldCommandIfId || "",
         commandName: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
         commandOrder: newCommand.commandOrder,
         emotionName: newCommand.emotionName || "",

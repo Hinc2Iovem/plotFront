@@ -3,19 +3,16 @@ import KeyBindsByEpisodeSubHeader from "./CharacterMain/ByEpisode/KeyBindsByEpis
 import KeyBindsCharacterModalByStory from "./CharacterMain/KeyBindsCharacterModalByStory";
 import KeyBindsHeader from "./KeyBindsHeader/KeyBindsHeader";
 import KeyBindsCharacterModalByEpisode from "./CharacterMain/KeyBindsCharacterModalByEpisode";
-import PlotfieldCommandNameField from "../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldCommandNameField from "../../../ui/Texts/PlotfieldCommandNameField";
 
 export type KeyBindsCategoryTypes = "characters" | "commands";
 export type KeyBindsCharacterSubCategoryTypes = "byStory" | "byEpisode";
 
 export default function KeyBinds() {
-  const [currentCategory, setCurrentCategory] = useState<KeyBindsCategoryTypes>(
-    "characters" as KeyBindsCategoryTypes
+  const [currentCategory, setCurrentCategory] = useState<KeyBindsCategoryTypes>("characters" as KeyBindsCategoryTypes);
+  const [characterSubCategory, setCharacterSubCategory] = useState<KeyBindsCharacterSubCategoryTypes>(
+    "byStory" as KeyBindsCharacterSubCategoryTypes
   );
-  const [characterSubCategory, setCharacterSubCategory] =
-    useState<KeyBindsCharacterSubCategoryTypes>(
-      "byStory" as KeyBindsCharacterSubCategoryTypes
-    );
 
   const [seasonId, setSeasonId] = useState("");
   const [episodeId, setEpisodeId] = useState("");
@@ -43,24 +40,16 @@ export default function KeyBinds() {
         />
         {characterSubCategory === "byStory" ? (
           <div className={`w-full flex flex-col gap-[2rem]`}>
-            {...Array.from({ length: 10 }).map((_, i) => (
-              <KeyBindByStoryItem key={`keysByStory-${i}`} index={i} />
-            ))}
+            {...Array.from({ length: 10 }).map((_, i) => <KeyBindByStoryItem key={`keysByStory-${i}`} index={i} />)}
           </div>
         ) : (
           <div className={`w-full flex flex-col gap-[2rem] mt-[2rem]`}>
             {episodeId ? (
               Array.from({ length: 10 }).map((_, i) => (
-                <KeyBindByEpisodeItem
-                  key={`keysByEpisode-${i}`}
-                  index={i}
-                  episodeId={episodeId}
-                />
+                <KeyBindByEpisodeItem key={`keysByEpisode-${i}`} index={i} episodeId={episodeId} />
               ))
             ) : (
-              <PlotfieldCommandNameField>
-                Выберите Эпизод
-              </PlotfieldCommandNameField>
+              <PlotfieldCommandNameField>Выберите Эпизод</PlotfieldCommandNameField>
             )}
           </div>
         )}
@@ -113,10 +102,7 @@ type KeyBindByEpisodeItemTypes = {
   episodeId: string;
 };
 
-const KeyBindByEpisodeItem = ({
-  index,
-  episodeId,
-}: KeyBindByEpisodeItemTypes) => {
+const KeyBindByEpisodeItem = ({ index, episodeId }: KeyBindByEpisodeItemTypes) => {
   const theme = localStorage.getItem("theme");
   const [characterId, setCharacterId] = useState("");
   const [showAllCharacters, setShowAllCharacters] = useState(false);

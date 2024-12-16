@@ -6,8 +6,8 @@ import {
   AllConditionSigns,
   ConditionValueVariationType,
 } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import PlotfieldButton from "../../../../../../shared/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import { PlotfieldIfSingsPrompt } from "./IfVariationsField";
 
 type IfSignFieldTypes = {

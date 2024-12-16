@@ -2,7 +2,7 @@ import {
   ConditionSignTypes,
   ConditionValueVariationType,
 } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import useUpdateIfCharacter from "../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacter";
 import useUpdateIfCharacteristic from "../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacteristic";
 import useUpdateIfRetry from "../../../../hooks/If/BlockVariations/patch/useUpdateIfRetry";

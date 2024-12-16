@@ -1,10 +1,4 @@
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DroppableProvided,
-  DropResult,
-} from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } from "@hello-pangea/dnd";
 import { useEffect, useRef, useState, useTransition } from "react";
 import add from "../../assets/images/shared/add.png";
 import useGetEpisodesBySeasonId from "../../hooks/Fetching/Episode/useGetEpisodesBySeasonId";
@@ -12,21 +6,15 @@ import useUpdateEpisodeOrder from "../../hooks/Patching/Episode/useUpdateEpisode
 import useCreateNewEpisode from "../../hooks/Posting/Episode/useCreateNewEpisode";
 import useOutOfModal from "../../hooks/UI/useOutOfModal";
 import { TranslationSeasonTypes } from "../../types/Additional/TranslationTypes";
-import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import EpisodeItem from "./EpisodeItem";
 
 type DisplaySeasonsTypes = {
   index: number;
 } & TranslationSeasonTypes;
 
-export default function DisplaySeasons({
-  index,
-  seasonId,
-  translations,
-}: DisplaySeasonsTypes) {
-  const [seasonTitle] = useState(
-    translations.find((t) => t.textFieldName === "seasonName")?.text || ""
-  );
+export default function DisplaySeasons({ index, seasonId, translations }: DisplaySeasonsTypes) {
+  const [seasonTitle] = useState(translations.find((t) => t.textFieldName === "seasonName")?.text || "");
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -57,11 +45,7 @@ export default function DisplaySeasons({
         >
           <DisplayEpisodes seasonId={seasonId} />
         </div>
-        <CreateEpisodeBlock
-          seasonId={seasonId}
-          setShowModal={setShowModal}
-          showModal={showModal}
-        />
+        <CreateEpisodeBlock seasonId={seasonId} setShowModal={setShowModal} showModal={showModal} />
       </div>
     </>
   );
@@ -102,11 +86,7 @@ function DisplayEpisodes({ seasonId }: DisplayEpisodesTypes) {
     <DragDropContext onDragEnd={handleOnDragEnd}>
       <Droppable droppableId="episodes">
         {(provided: DroppableProvided) => (
-          <ul
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className={`flex flex-col gap-[1rem]`}
-          >
+          <ul {...provided.droppableProps} ref={provided.innerRef} className={`flex flex-col gap-[1rem]`}>
             {episodes?.length ? (
               episodes?.map((ei, i) => {
                 return (
@@ -134,11 +114,7 @@ type CreateEpisodeBlockTypes = {
   seasonId: string;
 };
 
-function CreateEpisodeBlock({
-  seasonId,
-  setShowModal,
-  showModal,
-}: CreateEpisodeBlockTypes) {
+function CreateEpisodeBlock({ seasonId, setShowModal, showModal }: CreateEpisodeBlockTypes) {
   const [isPending, startTransition] = useTransition();
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
@@ -170,14 +146,9 @@ function CreateEpisodeBlock({
   return (
     <div
       ref={modalRef}
-      className={`${
-        showModal ? "" : "hidden"
-      } h-[20rem] overflow-y-auto flex flex-col gap-[1rem] | containerScroll`}
+      className={`${showModal ? "" : "hidden"} h-[20rem] overflow-y-auto flex flex-col gap-[1rem] | containerScroll`}
     >
-      <form
-        onSubmit={handleSubmit}
-        className={`w-full bg-secondary flex flex-col gap-[1rem] p-[1rem]`}
-      >
+      <form onSubmit={handleSubmit} className={`w-full bg-secondary flex flex-col gap-[1rem] p-[1rem]`}>
         <input
           type="title"
           value={title}

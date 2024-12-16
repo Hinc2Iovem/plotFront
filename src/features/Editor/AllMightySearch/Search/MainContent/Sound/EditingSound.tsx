@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import useUpdateSoundText from "../../../../PlotField/hooks/Sound/useUpdateSoundText";
 import { TempSoundTypes } from "./AllMightySearchMainContentSound";
 import { AllMightySearchSoundResultTypes } from "../../../hooks/useGetPaginatedSounds";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { useParams } from "react-router-dom";
 

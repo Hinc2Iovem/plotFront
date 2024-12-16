@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useGetAppearancePartById from "../../../../../../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
 import { TranslationAppearancePartTypes } from "../../../../../../../types/Additional/TranslationTypes";
-import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 
 type EmotionAppearancePartNameTypes = {
   setAppearancePartName?: React.Dispatch<React.SetStateAction<string>>;

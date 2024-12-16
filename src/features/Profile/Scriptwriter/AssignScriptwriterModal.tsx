@@ -6,7 +6,7 @@ import useAssignWorker from "../../../hooks/Patching/Story/useAssignWorker";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
 import "../../Editor/Flowchart/FlowchartStyles.css";
-import ButtonHoverPromptModal from "../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 
 type AssignScriptwriterModalTypes = {
   setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
@@ -101,11 +101,7 @@ export default function AssignScriptwriterModal({
             setShowScriptwriters((prev) => !prev);
           }}
         >
-          <img
-            src={assignBlack}
-            alt="Назначить Сценариста"
-            className="w-full"
-          />
+          <img src={assignBlack} alt="Назначить Сценариста" className="w-full" />
         </ButtonHoverPromptModal>
       </div>
       <aside
@@ -114,9 +110,7 @@ export default function AssignScriptwriterModal({
           showScriptwriters ? "" : "hidden"
         } z-[10] fixed bottom-[1rem] flex flex-col gap-[1rem] right-[1rem] bg-secondary rounded-md shadow-md p-[1rem] h-[30rem] w-[20rem]`}
       >
-        <h2 className="text-[1.6rem] text-center text-text-light">
-          {storyTitle || ""}
-        </h2>
+        <h2 className="text-[1.6rem] text-center text-text-light">{storyTitle || ""}</h2>
         <ul className="h-[20rem] overflow-auto px-[1rem] py-[.5rem] flex flex-col gap-[1rem] | containerScroll">
           {allScriptwriters ? (
             allScriptwriters?.map((s) => (
@@ -132,22 +126,12 @@ export default function AssignScriptwriterModal({
                   }
                 }}
                 className={`${
-                  characterIds.includes(s._id)
-                    ? "bg-primary  text-text-light"
-                    : "text-black bg-secondary"
+                  characterIds.includes(s._id) ? "bg-primary  text-text-light" : "text-black bg-secondary"
                 } flex px-[.5rem] gap-[.5rem] py-[.5rem] justify-between w-full items-center rounded-md shadow-md hover:text-text-light text-text-dark hover:bg-primary transition-all`}
               >
-                {s.imgUrl ? (
-                  <img
-                    src={s.imgUrl}
-                    alt={s.username}
-                    className="w-[3.5rem] rounded-md"
-                  />
-                ) : null}
+                {s.imgUrl ? <img src={s.imgUrl} alt={s.username} className="w-[3.5rem] rounded-md" /> : null}
                 <p className="text-[1.5rem] w-full">
-                  {s.username.length > 10
-                    ? s.username.substring(0, 10) + "..."
-                    : s.username}
+                  {s.username.length > 10 ? s.username.substring(0, 10) + "..." : s.username}
                 </p>
               </button>
             ))
@@ -163,9 +147,7 @@ export default function AssignScriptwriterModal({
             handleSubmit();
           }}
           className={`w-full px-[1rem] py-[.5rem] rounded-md shadow-md ${
-            theme === "light"
-              ? "hover:bg-green-300 bg-secondary"
-              : "bg-primary-darker"
+            theme === "light" ? "hover:bg-green-300 bg-secondary" : "bg-primary-darker"
           }  text-[1.5rem] text-text-dark hover:text-text-light transition-all`}
         >
           Назначить

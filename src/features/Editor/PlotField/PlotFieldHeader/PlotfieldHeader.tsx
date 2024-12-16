@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import command from "../../../../assets/images/Editor/command.png";
 import plus from "../../../../assets/images/shared/add.png";
 import useCheckKeysCombinationCreateBlankCommand from "../../../../hooks/helpers/keyCombinations/useCheckKeysCombinationCreateBlankCommand";
-import { AllPossiblePlotFieldComamndsTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
-import ButtonHoverPromptModal from "../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import useNavigation from "../../Context/Navigation/NavigationContext";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 import useCreateBlankCommand from "../hooks/useCreateBlankCommand";
 
@@ -29,97 +29,32 @@ export default function PlotfieldHeader({
 }: PlotFieldHeaderTypes) {
   // TODO this is zalupa
   const { episodeId } = useParams();
-  const { getCurrentAmountOfIfCommands, getCommandIfByPlotfieldCommandId } = usePlotfieldCommands();
+  const { currentlyFocusedCommandId } = useNavigation();
+  const { getCurrentAmountOfCommands } = usePlotfieldCommands();
   const [increaseFocusModalHeight, setIncreaseFocusModalHeight] = useState(false);
   const theme = localStorage.getItem("theme");
 
-  const createCommand = useCreateBlankCommand({
-    topologyBlockId: sessionStorage.getItem(`focusedTopologyBlock`) || topologyBlockId,
-    episodeId: episodeId || "",
-  });
+  const currentTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`) || topologyBlockId;
 
-  const createCommandInsideIfOrElse = useCreateBlankCommandInsideIf({
-    topologyBlockId: sessionStorage.getItem(`focusedTopologyBlock`) || topologyBlockId,
+  const createCommand = useCreateBlankCommand({
+    topologyBlockId: currentTopologyBlockId,
+    episodeId: episodeId || "",
   });
 
   const commandCreatedByKeyCombinationBlankCommand = useCheckKeysCombinationCreateBlankCommand();
 
   const handleCreateCommand = () => {
     const _id = generateMongoObjectId();
-    const focusedCommandIf = sessionStorage.getItem(`focusedCommandIf`)?.split("?").filter(Boolean);
-    const currentFocusedCommand = sessionStorage.getItem("focusedCommand");
-
-    const deepLevelCommandIf = focusedCommandIf?.includes("none")
-      ? null
-      : (focusedCommandIf?.length || 0) > 0
-      ? (focusedCommandIf?.length || 0) - 1
-      : null;
-
-    const currentCommandIf =
-      typeof deepLevelCommandIf === "number" ? (focusedCommandIf || [])[deepLevelCommandIf] : null;
-
-    const commandIfId = currentCommandIf?.split("-")[3];
-    const focusedCommandIfIsElseOrIf = currentCommandIf?.split("-")[0];
-    const currentCommandIfPlotfiledCommandId = currentCommandIf?.split("-")[1];
-
-    const currentTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`);
-
-    if (typeof deepLevelCommandIf !== "number") {
-      console.log("Shouldn't be here");
-
-      createCommand.mutate({
-        _id,
-        topologyBlockId: currentTopologyBlockId || topologyBlockId,
-      });
-      return;
-    }
-
-    if (focusedCommandIfIsElseOrIf === "if" || focusedCommandIfIsElseOrIf === "else") {
-      const currentFocusedCommandId = currentFocusedCommand?.split("-")[1];
-      const isCreatedUnderCertainCommand = currentFocusedCommandId !== currentCommandIfPlotfiledCommandId;
-
-      const existingCommandIf = isCreatedUnderCertainCommand
-        ? getCommandIfByPlotfieldCommandId({
-            commandIfId: commandIfId || "",
-            isElse: focusedCommandIfIsElseOrIf === "else",
-            plotfieldCommandId: currentFocusedCommandId || "",
-          })
-        : null;
-      if (focusedCommandIfIsElseOrIf === "if") {
-        createCommandInsideIfOrElse.mutate({
-          _id: _id,
-          command: "" as AllPossiblePlotFieldComamndsTypes,
-          commandOrder: isCreatedUnderCertainCommand
-            ? (existingCommandIf?.commandOrder || 0) + 1
-            : getCurrentAmountOfIfCommands({
-                commandIfId: commandIfId || "",
-                isElse: false,
-              }),
-          isElse: false,
-          topologyBlockId: currentTopologyBlockId || topologyBlockId,
-          commandIfId: commandIfId,
-        });
-      } else {
-        createCommandInsideIfOrElse.mutate({
-          _id: _id,
-          command: "" as AllPossiblePlotFieldComamndsTypes,
-          commandOrder: isCreatedUnderCertainCommand
-            ? (existingCommandIf?.commandOrder || 0) + 1
-            : getCurrentAmountOfIfCommands({
-                commandIfId: commandIfId || "",
-                isElse: true,
-              }),
-          isElse: true,
-          topologyBlockId: currentTopologyBlockId || topologyBlockId,
-          commandIfId: commandIfId,
-        });
-      }
-    } else {
-      createCommand.mutate({
-        _id,
-        topologyBlockId: currentTopologyBlockId || topologyBlockId,
-      });
-    }
+    createCommand.mutate({
+      _id,
+      topologyBlockId: currentTopologyBlockId || topologyBlockId,
+      commandOrder:
+        typeof currentlyFocusedCommandId.commandOrder === "number"
+          ? currentlyFocusedCommandId.commandOrder + 1
+          : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId }),
+      plotfieldCommandIfId: currentlyFocusedCommandId.parentId,
+      isElse: currentlyFocusedCommandId.isElse,
+    });
   };
 
   const handleCreateCommandOnClick = () => {
@@ -127,6 +62,7 @@ export default function PlotfieldHeader({
     createCommand.mutate({
       _id,
       topologyBlockId,
+      commandOrder: getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId }),
     });
   };
 

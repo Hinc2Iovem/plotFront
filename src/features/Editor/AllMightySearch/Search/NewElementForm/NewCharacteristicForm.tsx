@@ -4,8 +4,8 @@ import { TranslationTextFieldName } from "../../../../../const/TRANSLATION_TEXT_
 import useCreateCharacteristicOptimistic from "../../../../../hooks/Posting/Characteristic/useCreateCharacteristicOptimistic";
 import { TranslationCharacterCharacteristicTypes } from "../../../../../types/Additional/TranslationTypes";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
-import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
-import PlotfieldInput from "../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
 
 type NewCharacteristicFormTypes = {
   setNewElement: React.Dispatch<React.SetStateAction<TranslationCharacterCharacteristicTypes>>;

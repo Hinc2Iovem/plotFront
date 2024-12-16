@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import PreviewImageSmallIcons from "../../../../../shared/utilities/PreviewImageSmallIcons";
+import PreviewImageSmallIcons from "../../../../../../ui/shared/PreviewImageSmallIcons";
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 
 type BackgroundNameAndImageTypes = {
   commandBackgroundId: string;

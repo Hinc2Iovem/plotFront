@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { StoryTypes } from "../../types/StoryData/Story/StoryTypes";
-import SyncLoad from "../shared/Loaders/SyncLoader";
-import PreviewImage from "../shared/utilities/PreviewImage";
+import SyncLoad from "../../ui/Loaders/SyncLoader";
+import PreviewImage from "../../ui/shared/PreviewImage";
 
 export default function StoryItem({ _id, imgUrl }: StoryTypes) {
   // const { data } = useGetTranslationStory({ id: _id, language: "russian" });

@@ -1,16 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import useGetTranslationCharacters from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import { useEffect, useRef } from "react";
 import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useUpdateNameOrEmotion from "../../../../../hooks/Say/useUpdateNameOrEmotion";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import { CharacterValueTypes, EmotionTypes } from "./CommandSayCharacterFieldItem";
 import CommandSayCreateCharacterFieldModal from "./ModalCreateCharacter/CommandSayCreateCharacterFieldModal";
-import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import { useQueryClient } from "@tanstack/react-query";
 
 type FormCharacterTypes = {
   plotFieldCommandSayId: string;
@@ -25,9 +21,6 @@ type FormCharacterTypes = {
   initialCharacterId: string;
   setCharacterValue: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
   characterValue: CharacterValueTypes;
-
-  commandIfId: string;
-  isElse: boolean;
 };
 
 export default function FormCharacter({
@@ -41,148 +34,38 @@ export default function FormCharacter({
   characterValue,
   showCharacters,
   showCreateCharacterModal,
-
-  commandIfId,
-  isElse,
 }: FormCharacterTypes) {
+  const preventRerender = useRef<boolean>(false);
+
   const charactersRef = useRef<HTMLDivElement>(null);
-  const { storyId } = useParams();
-  const [previousCharacterId, setPreviousCharacterId] = useState(characterValue?._id || "");
-  const queryClient = useQueryClient();
 
-  const {
-    updateEmotionProperties,
-    updateCharacterName,
-
-    updateEmotionPropertiesIf,
-    updateCharacterNameIf,
-  } = usePlotfieldCommands();
+  const { updateCharacterName } = usePlotfieldCommands();
 
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
 
-  const debouncedValue = useDebounce({
-    delay: 700,
-    value: characterValue?.characterName || "",
-  });
-
-  const currentInput = useRef<HTMLInputElement | null>(null);
-
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
+  const currentInput = useRef<{ updateCharacterNameOnBlur: () => void }>(null);
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     plotFieldCommandId,
     plotFieldCommandSayId,
   });
 
-  const { data: translatedCharacters } = useGetTranslationCharacters({
-    storyId: storyId ?? "",
-    language: "russian",
-  });
-
-  const allNames = useMemo(() => {
-    if (translatedCharacters) {
-      const names = translatedCharacters.map((tc) => (tc.translations || [])[0].text.toLowerCase());
-      return names;
-    }
-    return [];
-  }, [translatedCharacters]);
-
-  const handleNameFormSubmit = (e: React.FormEvent, nf?: string) => {
-    e.preventDefault();
-    if (!characterValue?.characterName?.trim().length && !nf?.trim().length) {
-      console.log("Заполните поле");
-      return;
-    }
-    if (
-      allNames.includes((characterValue?.characterName || "")?.toLowerCase()) ||
-      (nf && allNames.includes(nf.toLowerCase()))
-    ) {
-      translatedCharacters?.map((tc) => {
-        if (
-          tc.translations?.find(
-            (tct) =>
-              tct.text?.toLowerCase() === (characterValue?.characterName || "")?.toLowerCase() ||
-              (nf && tct.text.toLowerCase() === nf.toLowerCase())
-          )
-        ) {
-          setCharacterValue({
-            _id: tc.characterId,
-            characterName: (tc.translations || [])[0]?.text,
-            imgUrl: null,
-          });
-
-          updateCharacterName({
-            id: plotFieldCommandId,
-            characterName: (tc.translations || [])[0]?.text,
-          });
-
-          setEmotionValue({
-            _id: null,
-            emotionName: null,
-            imgUrl: null,
-          });
-
-          if (commandIfId?.trim().length) {
-            updateEmotionPropertiesIf({
-              id: plotFieldCommandId,
-              emotionId: "",
-              emotionName: "",
-              emotionImg: "",
-              isElse: isElse,
-            });
-          } else {
-            updateEmotionProperties({
-              id: plotFieldCommandId,
-              emotionId: "",
-              emotionName: "",
-              emotionImg: "",
-            });
-          }
-
-          updateNameOrEmotion.mutate({ characterBodyId: tc.characterId });
-        }
-      });
-    } else {
-      console.log("No such character, want to create a new one?");
-      setShowCreateCharacterModal(true);
-      return;
+  const handleOnBlur = () => {
+    if (currentInput.current) {
+      currentInput.current.updateCharacterNameOnBlur();
     }
   };
 
   useEffect(() => {
-    if (characterValue?._id && characterValue._id !== previousCharacterId) {
-      queryClient.invalidateQueries({
-        queryKey: ["character", previousCharacterId],
-      });
-
-      setPreviousCharacterId(characterValue._id);
+    if (characterValue._id && preventRerender.current) {
       updateNameOrEmotion.mutate({ characterBodyId: characterValue._id });
-      setEmotionValue({
-        _id: null,
-        emotionName: null,
-        imgUrl: null,
-      });
-
-      if (commandIfId?.trim().length) {
-        updateEmotionPropertiesIf({
-          id: plotFieldCommandId,
-          emotionId: "",
-          emotionName: "",
-          emotionImg: "",
-          isElse: isElse,
-        });
-      } else {
-        updateEmotionProperties({
-          id: plotFieldCommandId,
-          emotionId: "",
-          emotionName: "",
-          emotionImg: "",
-        });
-      }
     }
-  }, [characterValue._id]);
+    return () => {
+      preventRerender.current = true;
+    };
+  }, [characterValue]);
 
   useOutOfModal({
     modalRef: charactersRef,
@@ -192,9 +75,15 @@ export default function FormCharacter({
 
   return (
     <>
-      <form onSubmit={handleNameFormSubmit} className={`${showCharacters ? "z-[10]" : ""} w-full relative`}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleOnBlur();
+        }}
+        className={`${showCharacters ? "z-[10]" : ""} w-full relative`}
+      >
         <PlotfieldInput
-          ref={currentInput}
+          onBlur={handleOnBlur}
           onClick={(e) => {
             e.stopPropagation();
             setShowCharacters(true);
@@ -206,22 +95,13 @@ export default function FormCharacter({
             setShowCharacters(true);
             setShowAllEmotions(false);
             setCharacterValue((prev) => ({
-              _id: prev?._id || "",
+              ...prev,
               characterName: e.target.value,
-              imgUrl: prev?.imgUrl || "",
             }));
-            if (commandIfId?.trim().length) {
-              updateCharacterNameIf({
-                id: plotFieldCommandId,
-                characterName: e.target.value,
-                isElse,
-              });
-            } else {
-              updateCharacterName({
-                id: plotFieldCommandId,
-                characterName: e.target.value,
-              });
-            }
+            updateCharacterName({
+              id: plotFieldCommandId,
+              characterName: e.target.value,
+            });
           }}
           placeholder="Имя Персонажа"
         />
@@ -234,17 +114,15 @@ export default function FormCharacter({
           } w-[3rem] object-cover top-[1.5px] rounded-md right-0 absolute`}
         />
         <PlotfieldCharacterPromptMain
+          ref={currentInput}
           translateAsideValue={"translate-y-[.5rem]"}
-          characterValue={characterValue?.characterName || ""}
           setShowCharacterModal={setShowCharacters}
           showCharacterModal={showCharacters}
           plotfieldCommandId={plotFieldCommandId}
           setCharacterValue={setCharacterValue}
           setEmotionValue={setEmotionValue}
+          characterName={characterValue.characterName || ""}
           currentCharacterId={characterValue?._id || ""}
-          debouncedValue={debouncedValue}
-          commandIfId={commandIfId}
-          isElse={isElse}
         />
       </form>
       <CommandSayCreateCharacterFieldModal
@@ -255,8 +133,6 @@ export default function FormCharacter({
         setShowModal={setShowCreateCharacterModal}
         showModal={showCreateCharacterModal}
         setCharacterValue={setCharacterValue}
-        commandIfId={commandIfId}
-        isElse={isElse}
       />
     </>
   );

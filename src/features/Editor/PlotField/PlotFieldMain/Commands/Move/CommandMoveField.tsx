@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import useGetCommandMove from "../../../hooks/Move/useGetCommandMove";
 import useUpdateMoveText from "../../../hooks/Move/useUpdateMoveText";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";

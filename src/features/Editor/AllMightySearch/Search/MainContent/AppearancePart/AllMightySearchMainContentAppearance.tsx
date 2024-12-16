@@ -9,8 +9,8 @@ import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationAppearancePartTypes } from "../../../../../../types/Additional/TranslationTypes";
 import { AppearancePartVariationRusTypes } from "../../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
-import PreviewImage from "../../../../../shared/utilities/PreviewImage";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
+import PreviewImage from "../../../../../../ui/shared/PreviewImage";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import useGetPaginatedTranslationAppearancePart, {
   AllMightySearchAppearancePartResultTypes,

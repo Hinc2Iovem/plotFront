@@ -2,7 +2,7 @@ import { useRef } from "react";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import useUpdateChoiceOptionOrder from "../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionOrder";
 import useChoiceOptions from "../Context/ChoiceContext";
-import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 
 type OptionSelecteTopologyBlockTypes = {
   setShowAllOrders: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,11 +48,8 @@ export default function OptionSelectOrder({
         } text-text-light hover:text-text-light focus-within:text-text-light focus-within:bg-primary-darker hover:bg-primary-darker shadow-md rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
         type="button"
       >
-        {typeof getChoiceOptionById({ choiceId, choiceOptionId })
-          ?.optionOrder === "number"
-          ? `Порядок Ответа - ${
-              getChoiceOptionById({ choiceId, choiceOptionId })?.optionOrder
-            }`
+        {typeof getChoiceOptionById({ choiceId, choiceOptionId })?.optionOrder === "number"
+          ? `Порядок Ответа - ${getChoiceOptionById({ choiceId, choiceOptionId })?.optionOrder}`
           : "Порядок Ответа"}
       </button>
       <aside
@@ -76,8 +73,7 @@ export default function OptionSelectOrder({
                 updateOptionOrder.mutate({ optionOrder: i });
               }}
               className={`${
-                getChoiceOptionById({ choiceId, choiceOptionId })
-                  ?.optionOrder === i
+                getChoiceOptionById({ choiceId, choiceOptionId })?.optionOrder === i
                   ? "bg-primary-darker text-text-light"
                   : "text-text-dark bg-secondary"
               }`}

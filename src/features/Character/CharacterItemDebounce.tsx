@@ -4,7 +4,7 @@ import wardrobe from "../../assets/images/Story/wardrobe.png";
 import useGetCharacterById from "../../hooks/Fetching/Character/useGetCharacterById";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { TranslationCharacterTypes } from "../../types/Additional/TranslationTypes";
-import PreviewImage from "../shared/utilities/PreviewImage";
+import PreviewImage from "../../ui/shared/PreviewImage";
 import CharacterItemMainHero from "./CharacterMainHero";
 
 export default function CharacterItemDebounce({ characterId, translations }: TranslationCharacterTypes) {

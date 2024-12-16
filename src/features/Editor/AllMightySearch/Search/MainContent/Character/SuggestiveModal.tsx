@@ -4,7 +4,7 @@ import useDeleteCharacter from "../../../../../../hooks/Deleting/Character/useDe
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationCharacterTypes } from "../../../../../../types/Additional/TranslationTypes";
 import { CharacterTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import { AllMightySearchCharacterResultTypes } from "../../../hooks/useGetPaginatedTranslationCharacter";
 import { NewElementTypes } from "../AllMightySearchMainContent";
 import { EditingCharacterTypes } from "./AllMightySearchMainContentCharacter";

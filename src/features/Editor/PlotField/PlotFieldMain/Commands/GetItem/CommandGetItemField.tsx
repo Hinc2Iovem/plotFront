@@ -4,9 +4,9 @@ import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotf
 import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateGetItemTranslation";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import { TranslationTextFieldNameGetItemTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldTextarea from "../../../../../shared/Textareas/PlotfieldTextarea";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useGetSingleGetItemTranslation from "../../../hooks/GetItem/useGetSingleGetItemTranslation";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";

@@ -15,9 +15,6 @@ type CommandSayCreateEmotionFieldModalTypes = {
   plotFieldCommandId: string;
   plotFieldCommandSayId: string;
   setEmotionValue: React.Dispatch<React.SetStateAction<EmotionTypes>>;
-
-  commandIfId: string;
-  isElse: boolean;
 };
 
 export default function CommandSayCreateEmotionFieldModal({
@@ -28,15 +25,12 @@ export default function CommandSayCreateEmotionFieldModal({
   plotFieldCommandId,
   plotFieldCommandSayId,
   setEmotionValue,
-
-  commandIfId,
-  isElse,
 }: CommandSayCreateEmotionFieldModalTypes) {
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
   const queryClient = useQueryClient();
   const [newEmotionId, setNewEmotionId] = useState("");
-  const { updateEmotionProperties, updateEmotionPropertiesIf } = usePlotfieldCommands();
+  const { updateEmotionProperties } = usePlotfieldCommands();
 
   useEffect(() => {
     if (showModal) {
@@ -49,45 +43,34 @@ export default function CommandSayCreateEmotionFieldModal({
     characterId,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const emotionId = generateMongoObjectId();
-    createEmotion.mutate({ emotionId });
     setNewEmotionId(emotionId);
-    queryClient.invalidateQueries({
-      queryKey: ["character", characterId],
-    });
+    updateOptimisticState(emotionId);
     setShowModal(false);
+    await Promise.all([updateNameOrEmotion.mutateAsync({}), createEmotion.mutateAsync({ emotionId })]).then(() => {
+      queryClient.invalidateQueries({
+        queryKey: ["character", characterId],
+      });
+    });
   };
 
-  useEffect(() => {
-    if (createEmotion.status === "success") {
-      console.log("happened?");
-      const lastEmotion = createEmotion.data.emotions.length;
-      setEmotionValue((prev) => ({
-        _id: createEmotion.data.emotions[lastEmotion - 1]._id || "",
-        emotionName: prev.emotionName,
-        imgUrl: null,
-      }));
-      if (commandIfId?.trim().length) {
-        updateEmotionPropertiesIf({
-          emotionId: createEmotion.data.emotions[lastEmotion - 1]._id || "",
-          emotionImg: "",
-          emotionName: emotionName || "",
-          id: plotFieldCommandId,
-          isElse,
-        });
-      } else {
-        updateEmotionProperties({
-          emotionId: createEmotion.data.emotions[lastEmotion - 1]._id || "",
-          emotionImg: "",
-          emotionName: emotionName || "",
-          id: plotFieldCommandId,
-        });
-      }
-    }
-  }, [createEmotion]);
+  const updateOptimisticState = (emotionId: string) => {
+    setEmotionValue((prev) => ({
+      _id: emotionId,
+      emotionName: prev.emotionName,
+      imgUrl: null,
+    }));
+
+    updateEmotionProperties({
+      emotionId: emotionId,
+      emotionImg: "",
+      emotionName: emotionName || "",
+      id: plotFieldCommandId,
+    });
+  };
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     characterEmotionId: newEmotionId,
@@ -95,13 +78,6 @@ export default function CommandSayCreateEmotionFieldModal({
     plotFieldCommandSayId,
     characterId,
   });
-
-  useEffect(() => {
-    if (newEmotionId?.trim().length) {
-      updateNameOrEmotion.mutate({});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newEmotionId]);
 
   useOutOfModal({
     setShowModal,

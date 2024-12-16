@@ -4,7 +4,7 @@ import {
   ChoiceOptionVariationsTypes,
   ChoiceVariationsTypes,
 } from "../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import SyncLoad from "../../../shared/Loaders/SyncLoader";
+import SyncLoad from "../../../../ui/Loaders/SyncLoader";
 import useCreateMultipleCommands from "../hooks/useCreateMultipleCommands";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 
@@ -53,10 +53,7 @@ export default function ButtonCreateCommands({
       setShowAllCommands(false);
       setAllCommandsToCreate([]);
     } else if (createMultipleCommands.status) {
-      console.error(
-        "Error during creation of multiple commands: ",
-        createMultipleCommands.error
-      );
+      console.error("Error during creation of multiple commands: ", createMultipleCommands.error);
     }
   }, [createMultipleCommands.status]);
 
@@ -69,10 +66,7 @@ export default function ButtonCreateCommands({
       }}
       disabled={isPending}
       style={{
-        right:
-          halfSizeOfContainer && plotfieldExpanded
-            ? `calc(50% - ${halfSizeOfContainer}px)`
-            : `-4rem`,
+        right: halfSizeOfContainer && plotfieldExpanded ? `calc(50% - ${halfSizeOfContainer}px)` : `-4rem`,
         transform: !plotfieldExpanded ? `translateX(-50%)` : `translateX(0%)`,
       }}
       className={`${allCommandsToCreate.length ? "" : "hidden"} ${

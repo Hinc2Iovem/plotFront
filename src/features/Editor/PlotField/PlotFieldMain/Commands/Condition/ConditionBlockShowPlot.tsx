@@ -1,4 +1,4 @@
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useConditionBlocks from "./Context/ConditionContext";
 
 type ConditionBlockShowPlotTypes = {

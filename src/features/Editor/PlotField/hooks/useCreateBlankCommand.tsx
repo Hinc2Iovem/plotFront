@@ -11,7 +11,6 @@ import useSearch from "../../Context/Search/SearchContext";
 
 type NewCommandTypes = {
   _id: string;
-  commandIfId?: string;
   isElse?: boolean;
   topologyBlockId: string;
   commandName?: AllPossiblePlotFieldComamndsTypes;
@@ -51,6 +50,8 @@ export default function useCreateBlankCommand({
           commandOrder: currentCommandOrder,
           _id: newCommand._id,
           commandName: newCommand.commandName,
+          plotfieldCommandIfId: newCommand.plotfieldCommandIfId,
+          isElse: newCommand.isElse,
         })
         .then((r) => r.data);
     },
@@ -60,6 +61,7 @@ export default function useCreateBlankCommand({
         ? newCommand.topologyBlockId
         : topologyBlockId;
 
+      // search
       addItem({
         episodeId,
         item: {
@@ -93,6 +95,7 @@ export default function useCreateBlankCommand({
         plotfieldCommandElseId: newCommand.plotfieldCommandElseId,
         plotfieldCommandIfElseEndId: newCommand.plotfieldCommandIfElseEndId,
         plotfieldCommandIfId: newCommand.plotfieldCommandIfId,
+        isElse: newCommand.isElse,
       });
 
       setNewCommand({

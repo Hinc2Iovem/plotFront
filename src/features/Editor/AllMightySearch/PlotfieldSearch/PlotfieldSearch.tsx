@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
-import PlotfieldInput from "../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../ui/Inputs/PlotfieldInput";
 import useSearch, { SearchItemTypes } from "../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 import useGetTopologyBlockById from "../../PlotField/hooks/TopologyBlock/useGetTopologyBlockById";

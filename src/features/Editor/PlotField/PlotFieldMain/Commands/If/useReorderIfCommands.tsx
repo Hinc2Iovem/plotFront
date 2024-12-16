@@ -10,7 +10,7 @@ type ReorderIfCommandsTypes = {
       }[]
     | undefined;
   currentCommandsState: PlotfieldOptimisticCommandInsideIfTypes[];
-  commandIfId: string;
+  plotfieldCommandIfId: string;
   newlyFetchedIfCommands: boolean;
 };
 
@@ -40,10 +40,5 @@ export default function useReorderIfCommands({
         });
       });
     }
-  }, [
-    currentCommandOrdersIf,
-    commandIfId,
-    currentCommandsState,
-    newlyFetchedIfCommands,
-  ]);
+  }, [currentCommandOrdersIf, commandIfId, currentCommandsState, newlyFetchedIfCommands]);
 }

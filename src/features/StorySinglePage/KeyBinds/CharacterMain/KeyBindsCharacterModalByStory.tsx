@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import useGetAllCharactersByStoryId from "../../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
 import useGetTranslationCharacters from "../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
-import PlotfieldInput from "../../../shared/Inputs/PlotfieldInput";
-import AsideScrollable from "../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../ui/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 
 type KeyBindsCharacterModalTypes = {
@@ -53,13 +53,9 @@ export default function KeyBindsCharacterModalByStory({
   const memoizedCharacters = useMemo(() => {
     if (characters && translatedCharacters) {
       return characters?.map((c) => {
-        const currentTranslatedCharacter = translatedCharacters.find(
-          (tc) => tc.characterId === c._id
-        );
+        const currentTranslatedCharacter = translatedCharacters.find((tc) => tc.characterId === c._id);
         const characterName =
-          currentTranslatedCharacter?.translations?.find(
-            (tct) => tct.textFieldName === "characterName"
-          )?.text || "";
+          currentTranslatedCharacter?.translations?.find((tct) => tct.textFieldName === "characterName")?.text || "";
 
         return {
           characterId: c._id,
@@ -74,9 +70,7 @@ export default function KeyBindsCharacterModalByStory({
 
   const filteredMemoization = useMemo(() => {
     if (characterName?.trim().length) {
-      return memoizedCharacters.filter((mc) =>
-        mc.characterName.toLowerCase().includes(characterName.toLowerCase())
-      );
+      return memoizedCharacters.filter((mc) => mc.characterName.toLowerCase().includes(characterName.toLowerCase()));
     }
     return memoizedCharacters;
   }, [memoizedCharacters, characterName]);
@@ -84,14 +78,9 @@ export default function KeyBindsCharacterModalByStory({
   useEffect(() => {
     if (!characterId && debouncedValue?.trim().length) {
       const characterId =
-        translatedCharacters?.find(
-          (cs) => (cs?.translations || [])[0]?.text === debouncedValue
-        )?.characterId || "";
+        translatedCharacters?.find((cs) => (cs?.translations || [])[0]?.text === debouncedValue)?.characterId || "";
       setCharacterId(characterId);
-      localStorage.setItem(
-        `story-${storyId}-c-${index}`,
-        `${characterId}-${characterName}`
-      );
+      localStorage.setItem(`story-${storyId}-c-${index}`, `${characterId}-${characterName}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedValue, translatedCharacters]);
@@ -106,17 +95,12 @@ export default function KeyBindsCharacterModalByStory({
     if (debouncedValue?.trim().length) {
       const matchedCharacter = translatedCharacters?.find((cs) =>
         cs?.translations?.some(
-          (tct) =>
-            tct.textFieldName === "characterName" &&
-            tct.text.toLowerCase() === debouncedValue.toLowerCase()
+          (tct) => tct.textFieldName === "characterName" && tct.text.toLowerCase() === debouncedValue.toLowerCase()
         )
       );
 
       if (matchedCharacter) {
-        localStorage.setItem(
-          `story-${storyId}-c-${index}`,
-          `${characterId}-${characterName}`
-        );
+        localStorage.setItem(`story-${storyId}-c-${index}`, `${characterId}-${characterName}`);
         setCharacterId(matchedCharacter.characterId);
       } else {
         localStorage.removeItem(`story-${storyId}-c-${index}`);
@@ -155,10 +139,7 @@ export default function KeyBindsCharacterModalByStory({
           setCharacterName("");
         }}
       />
-      <AsideScrollable
-        ref={modalRef}
-        className={`${showModal ? "" : "hidden"} translate-y-[.5rem]`}
-      >
+      <AsideScrollable ref={modalRef} className={`${showModal ? "" : "hidden"} translate-y-[.5rem]`}>
         {filteredMemoization.length ? (
           filteredMemoization?.map((mc) => (
             <AsideScrollableButton
@@ -169,10 +150,7 @@ export default function KeyBindsCharacterModalByStory({
                 setShowModal(false);
                 setCharacterId(mc.characterId);
                 setCharacterName(mc.characterName);
-                localStorage.setItem(
-                  `story-${storyId}-c-${index}`,
-                  `${mc.characterId}-${mc.characterName}`
-                );
+                localStorage.setItem(`story-${storyId}-c-${index}`, `${mc.characterId}-${mc.characterName}`);
               }}
             >
               {mc.characterName}
@@ -186,9 +164,7 @@ export default function KeyBindsCharacterModalByStory({
             </AsideScrollableButton>
           ))
         ) : (
-          <AsideScrollableButton onClick={() => setShowModal(false)}>
-            Пусто
-          </AsideScrollableButton>
+          <AsideScrollableButton onClick={() => setShowModal(false)}>Пусто</AsideScrollableButton>
         )}
       </AsideScrollable>
     </form>

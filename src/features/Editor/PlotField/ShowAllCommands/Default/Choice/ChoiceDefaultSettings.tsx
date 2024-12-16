@@ -6,7 +6,7 @@ import {
   ChoiceOptionVariationsTypes,
   ChoiceVariationsTypes,
 } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import IndividualOptionTypeBlock from "./IndividualOptionTypeBlock";
 import MovingOptionBlocks from "./MovingOptionBlocks";
 import ShowOptionVariationsModal from "./ShowOptionVariationsModal";
@@ -17,9 +17,7 @@ import ChoiceTypeModal from "./ChoiceTypeModal";
 type ChoiceDefaultSettings = {
   showChoice: boolean;
   setChoiceType: React.Dispatch<React.SetStateAction<ChoiceVariationsTypes>>;
-  setOptionVariations: React.Dispatch<
-    React.SetStateAction<ChoiceOptionVariationsTypes[]>
-  >;
+  setOptionVariations: React.Dispatch<React.SetStateAction<ChoiceOptionVariationsTypes[]>>;
   choiceType: ChoiceVariationsTypes;
   optionVariations: ChoiceOptionVariationsTypes[];
 };
@@ -33,13 +31,11 @@ export default function ChoiceDefaultSettings({
 }: ChoiceDefaultSettings) {
   const { userId } = useGetDecodedJWTValues();
 
-  const [currentDefaultChoiceOption, setCurrentDefaultChoiceOption] =
-    useState("");
+  const [currentDefaultChoiceOption, setCurrentDefaultChoiceOption] = useState("");
 
   const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [showOptionVariations, setShowOptionVariations] = useState(false);
-  const [addChoiceOptionVariation, setAddChoiceOptionVariation] =
-    useState(false);
+  const [addChoiceOptionVariation, setAddChoiceOptionVariation] = useState(false);
   const [moveBlocks, setMoveBlocks] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -104,11 +100,7 @@ export default function ChoiceDefaultSettings({
   });
 
   return (
-    <div
-      className={`${
-        showChoice ? "" : "hidden"
-      } ml-auto rounded-md h-full flex gap-[2rem]`}
-    >
+    <div className={`${showChoice ? "" : "hidden"} ml-auto rounded-md h-full flex gap-[2rem]`}>
       <ChoiceTypeModal choiceType={choiceType} setChoiceType={setChoiceType} />
       <div className="relative">
         <div
@@ -117,12 +109,7 @@ export default function ChoiceDefaultSettings({
           className={`absolute hover:left-[-2rem] h-full top-[0rem] left-[-1rem] z-[0]`}
         >
           {optionVariations.map((ov, i) => (
-            <MovingOptionBlocks
-              key={`${ov}-MovingOptionBlock-${i}`}
-              moveBlocks={moveBlocks}
-              ov={ov}
-              i={i}
-            />
+            <MovingOptionBlocks key={`${ov}-MovingOptionBlock-${i}`} moveBlocks={moveBlocks} ov={ov} i={i} />
           ))}
         </div>
         <button
@@ -194,9 +181,7 @@ export default function ChoiceDefaultSettings({
                     key={gi[0]}
                     setOptionVariations={setOptionVariations}
                     currentDefaultChoiceOption={currentDefaultChoiceOption}
-                    setCurrentDefaultChoiceOption={
-                      setCurrentDefaultChoiceOption
-                    }
+                    setCurrentDefaultChoiceOption={setCurrentDefaultChoiceOption}
                     gi={gi}
                   />
                 ))}

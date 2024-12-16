@@ -3,7 +3,7 @@ import { useInView } from "react-intersection-observer";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { KeyTypes } from "../../../../../../types/StoryEditor/PlotField/Key/KeyTypes";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useDeleteKey from "../../../../PlotField/hooks/Key/useDeleteKey";
 import useGetAllKeysByStoryId from "../../../../PlotField/hooks/Key/useGetAllKeysByStoryId";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";

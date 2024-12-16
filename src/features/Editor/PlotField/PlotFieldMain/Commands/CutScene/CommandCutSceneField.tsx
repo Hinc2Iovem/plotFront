@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import useGetCommandCutScene from "../../../hooks/CutScene/useGetCommandCutScene";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateCutSceneText from "../../../hooks/CutScene/useUpdateCutSceneText";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useGetCommandCutScene from "../../../hooks/CutScene/useGetCommandCutScene";
+import useUpdateCutSceneText from "../../../hooks/CutScene/useUpdateCutSceneText";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandCutSceneFieldTypes = {
   plotFieldCommandId: string;
@@ -32,22 +32,15 @@ export default function CommandCutSceneField({
 
   const currentInput = useRef<HTMLInputElement | null>(null);
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "cutScene",
-          id: plotFieldCommandId,
-          text: textValue,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "cutScene",
+    id: plotFieldCommandId,
+    text: textValue,
+    topologyBlockId,
+    type: "command",
+  });
 
   useEffect(() => {
     if (commandCutScene) {
@@ -61,28 +54,25 @@ export default function CommandCutSceneField({
     }
   }, [commandCutScene]);
 
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
-
   const updateCutSceneText = useUpdateCutSceneText({
     cutSceneId: commandCutSceneId,
-    cutSceneName: debouncedValue,
+    cutSceneName: textValue,
   });
 
-  useEffect(() => {
-    if (commandCutScene?.cutSceneName !== debouncedValue && debouncedValue?.trim().length) {
+  const onBlur = () => {
+    if (commandCutScene?.cutSceneName !== textValue) {
       if (episodeId) {
         updateValue({
           episodeId,
           commandName: "cutScene",
           id: plotFieldCommandId,
           type: "command",
-          value: debouncedValue,
+          value: textValue,
         });
       }
       updateCutSceneText.mutate();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  };
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
@@ -95,6 +85,7 @@ export default function CommandCutSceneField({
         <PlotfieldInput
           ref={currentInput}
           value={textValue}
+          onBlur={onBlur}
           type="text"
           placeholder="Such a lovely day"
           onChange={(e) => setTextValue(e.target.value)}

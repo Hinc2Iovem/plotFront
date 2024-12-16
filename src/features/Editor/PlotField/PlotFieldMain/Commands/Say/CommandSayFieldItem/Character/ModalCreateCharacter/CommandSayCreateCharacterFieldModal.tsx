@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
 import { generateMongoObjectId } from "../../../../../../../../../utils/generateMongoObjectId";
@@ -16,9 +16,6 @@ type CommandSayCreateCharacterFieldTypes = {
   plotFieldCommandId: string;
   commandSayId: string;
   characterId: string;
-
-  commandIfId: string;
-  isElse: boolean;
 };
 
 export default function CommandSayCreateCharacterFieldModal({
@@ -29,17 +26,12 @@ export default function CommandSayCreateCharacterFieldModal({
   commandSayId,
   plotFieldCommandId,
   characterId,
-
-  commandIfId,
-  isElse,
 }: CommandSayCreateCharacterFieldTypes) {
   const queryClient = useQueryClient();
   const { storyId } = useParams();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);
-  const { updateEmotionProperties, updateEmotionPropertiesIf } =
-    usePlotfieldCommands();
-  const [newCharacterId, setNewCharacterId] = useState("");
+  const { updateEmotionProperties } = usePlotfieldCommands();
 
   useEffect(() => {
     if (showModal) {
@@ -55,7 +47,7 @@ export default function CommandSayCreateCharacterFieldModal({
 
   const updateNameOrEmotion = useUpdateNameOrEmotionOnCondition();
 
-  useEffect(() => {
+  const createNewCharacterOptimistic = (newCharacterId: string) => {
     if (newCharacterId?.trim().length) {
       updateNameOrEmotion.mutate({
         characterEmotionId: "",
@@ -69,30 +61,20 @@ export default function CommandSayCreateCharacterFieldModal({
         imgUrl: null,
       }));
 
-      if (commandIfId?.trim().length) {
-        updateEmotionPropertiesIf({
-          id: plotFieldCommandId,
-          emotionId: "",
-          emotionName: "",
-          emotionImg: "",
-          isElse,
-        });
-      } else {
-        updateEmotionProperties({
-          id: plotFieldCommandId,
-          emotionId: "",
-          emotionName: "",
-          emotionImg: "",
-        });
-      }
+      updateEmotionProperties({
+        id: plotFieldCommandId,
+        emotionId: "",
+        emotionName: "",
+        emotionImg: "",
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newCharacterId]);
+  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newCharId = generateMongoObjectId();
-    setNewCharacterId(newCharId);
+    createNewCharacterOptimistic(newCharId);
 
     queryClient.invalidateQueries({
       queryKey: ["character", characterId],

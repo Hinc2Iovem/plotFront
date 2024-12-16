@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import { ConditionValueVariationType } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import PlotfieldButton from "../../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
 import useDeleteLogicalOperator from "../../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useDeleteLogicalOperator";
 import useUpdateLogicalOperator from "../../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useUpdateLogicalOperator";
 import useDeleteConditionBlockVariation from "../../../../hooks/Condition/ConditionBlock/BlockVariations/useDeleteConditionBlockVariation";

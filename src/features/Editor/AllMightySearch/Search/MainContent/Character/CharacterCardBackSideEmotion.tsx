@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { EmotionsTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PreviewImageSmallIcons from "../../../../../shared/utilities/PreviewImageSmallIcons";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PreviewImageSmallIcons from "../../../../../../ui/shared/PreviewImageSmallIcons";
 import useDeleteEmotion from "../../../../../../hooks/Posting/Emotion/useDeleteEmotion";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useUpdateEmotion from "../../../../../../hooks/Posting/Emotion/useUpdateEmotion";

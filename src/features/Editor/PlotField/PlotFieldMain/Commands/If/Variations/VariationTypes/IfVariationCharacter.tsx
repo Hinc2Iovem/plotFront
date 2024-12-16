@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import { DebouncedCheckCharacterTypes } from "../../../Choice/ChoiceQuestionField";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useIfVariations from "../../Context/IfContext";

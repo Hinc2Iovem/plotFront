@@ -3,8 +3,8 @@ import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useG
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useGetCommandName from "../../../hooks/Name/useGetCommandName";
 import useUpdateNameText from "../../../hooks/Name/useUpdateNameText";
 import useSearch from "../../../../Context/Search/SearchContext";

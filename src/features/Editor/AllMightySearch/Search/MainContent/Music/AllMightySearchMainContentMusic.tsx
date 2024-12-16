@@ -3,7 +3,7 @@ import { useInView } from "react-intersection-observer";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { MusicTypes } from "../../../../../../types/StoryData/Music/MusicTypes";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useDeleteMusic from "../../../../PlotField/hooks/Music/useDeleteMusic";
 import useGetAllMusicByStoryId from "../../../../PlotField/hooks/Music/useGetAllMusicByStoryId";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";

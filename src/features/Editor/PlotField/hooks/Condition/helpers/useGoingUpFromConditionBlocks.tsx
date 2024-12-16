@@ -109,7 +109,7 @@ export default function useGoingUpFromConditionBlocks({
               const currentCommandIf = (focusedCommandIf || [])[deepLevel].split("-");
               const currentCommandIfId = currentCommandIf[3];
               const currentCommandCondition = getCommandIfByPlotfieldCommandId({
-                commandIfId: currentCommandIfId,
+                plotfieldCommandIfId: currentCommandIfId,
                 isElse: currentFocusedCommandIsElse === "else",
                 plotfieldCommandId: currentFocusedCommandConditionPlotfieldId,
               });

@@ -6,16 +6,16 @@ import useCreateAppearancePartOptimistic from "../../../../../../../../hooks/Pos
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
-import AsideInformativeOrSuggestion from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
-import InformativeOrSuggestionButton from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
-import InformativeOrSuggestionText from "../../../../../../../shared/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import AsideInformativeOrSuggestion from "../../../../../../../../ui/Aside/AsideInformativeOrSuggestion/AsideInformativeOrSuggestion";
+import InformativeOrSuggestionButton from "../../../../../../../../ui/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionButton";
+import InformativeOrSuggestionText from "../../../../../../../../ui/Aside/AsideInformativeOrSuggestion/InformativeOrSuggestionText";
+import AsideScrollable from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionAppearance from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionAppearance";
 import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
-import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 
 type ConditionBlockVariationAppearanceTypes = {

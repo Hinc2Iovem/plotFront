@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import command from "../../../../../../../../assets/images/Editor/command.png";
 import plus from "../../../../../../../../assets/images/shared/add.png";
 import { generateMongoObjectId } from "../../../../../../../../utils/generateMongoObjectId";
-import ButtonHoverPromptModal from "../../../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import useCreateBlankCommand from "../../../../../hooks/useCreateBlankCommand";
 import PlotFieldMain from "../../../../PlotFieldMain";
 import useChoiceOptions from "../../Context/ChoiceContext";

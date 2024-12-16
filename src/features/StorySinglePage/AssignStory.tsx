@@ -6,7 +6,7 @@ import { MATCHMEDIA } from "../../const/MATCHMEDIA";
 import useGetSingleAssignedStory from "../../hooks/Fetching/Story/useGetSingleAssignedStory";
 import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
 import useMatchMedia from "../../hooks/UI/useMatchMedia";
-import LightBox from "../shared/utilities/LightBox";
+import LightBox from "../../ui/shared/LightBox";
 import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 
 export default function AssignStory() {
@@ -28,10 +28,7 @@ export default function AssignStory() {
 
   const assignStory = useMutation({
     mutationKey: ["assignStory", storyId, staffId],
-    mutationFn: async () =>
-      await axiosCustomized.patch(
-        `/stories/${storyId}/staff/${staffId}/assignWorkers`
-      ),
+    mutationFn: async () => await axiosCustomized.patch(`/stories/${storyId}/staff/${staffId}/assignWorkers`),
     onMutate: () => {
       setIsLightBox(false);
       setNotAssigned(false);
@@ -62,12 +59,7 @@ export default function AssignStory() {
             </button>
           </div>
 
-          <form
-            className={`${
-              showOnDekstop ? "" : "hidden"
-            } ml-auto hover:scale-[1.01]`}
-            onSubmit={handleSubmit}
-          >
+          <form className={`${showOnDekstop ? "" : "hidden"} ml-auto hover:scale-[1.01]`} onSubmit={handleSubmit}>
             <button className="active:scale-[0.98] px-[1rem] py-[.5rem] text-[2.5rem] text-gray-600 rounded-md shadow-sm bg-secondary ">
               Вы уверены?
             </button>
@@ -75,9 +67,7 @@ export default function AssignStory() {
 
           <aside
             className={`${
-              isLightBox
-                ? "top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2"
-                : "hidden -top-1/2 translate-y-1/2"
+              isLightBox ? "top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2" : "hidden -top-1/2 translate-y-1/2"
             } z-[5] absolute bg-secondary rounded-md shadow-sm shadow-secondary  p-[1rem]`}
           >
             <form onSubmit={handleSubmit}>

@@ -3,7 +3,7 @@ import { useInView } from "react-intersection-observer";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationAchievementTypes } from "../../../../../../types/Additional/TranslationTypes";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useDeleteAchievement from "../../../../PlotField/hooks/Achievement/useDeleteAchievement";
 import useGetAllTranslationAchievementByStoryId from "../../../../PlotField/hooks/Achievement/useGetAllTranslationAchievementByStoryId";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";

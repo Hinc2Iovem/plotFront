@@ -9,7 +9,7 @@ import {
 import { MusicTypes } from "../../../../../types/StoryData/Music/MusicTypes";
 import { SoundTypes } from "../../../../../types/StoryData/Sound/SoundTypes";
 import { KeyTypes } from "../../../../../types/StoryEditor/PlotField/Key/KeyTypes";
-import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../AllMightySearch";
 import AllMightyNewElementForm from "../AllMightyNewElementForm";
 import AllMightySearchMainContentAchievement from "./Achievement/AllMightySearchMainContentAchievement";

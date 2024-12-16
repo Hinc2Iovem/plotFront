@@ -67,7 +67,7 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
   }, [commandIf]);
 
   useUpdateSessionStorageGoingDownForIfCommand({
-    commandIfId,
+    plotfieldCommandIfId,
     plotfieldCommandId: plotFieldCommandId,
     setIsBackgroundFocused,
   });
@@ -75,7 +75,7 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
   useUpdateSessionStorageGoingUpForIfCommand({
     plotfieldCommandId: plotFieldCommandId,
     setIsBackgroundFocused,
-    commandIfId,
+    plotfieldCommandIfId,
   });
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
     <div className="flex gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] flex-col">
       <CommandIfNameField
         plotfieldCommandId={plotFieldCommandId}
-        commandIfId={commandIfId}
+        plotfieldCommandIfId={plotfieldCommandIfId}
         createInsideElse={false}
         hideCommands={hideIfCommands}
         isBackgroundFocused={!isBackgroundFocused}
@@ -101,7 +101,7 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
 
       <IfVariationsField
         plotfieldCommandId={plotFieldCommandId}
-        ifId={commandIfId}
+        ifId={plotfieldCommandIfId}
         logicalOperators={getAllLogicalOperators({ plotfieldCommandId: plotFieldCommandId })}
         topologyBlockId={topologyBlockId}
       />

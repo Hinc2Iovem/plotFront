@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import useUpdateKeyText from "../../../../PlotField/hooks/Key/useUpdateKeyText";
 import { TempKeyTypes } from "./AllMightySearchMainContentKey";
 import { AllMightySearchKeyResultTypes } from "../../../hooks/useGetPaginatedKey";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 
 type EditingKeyFormTypes = {

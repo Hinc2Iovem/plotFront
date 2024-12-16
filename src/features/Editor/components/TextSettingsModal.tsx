@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { TextStyleTypes } from "../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import { CommandSideTypes } from "../../../types/StoryEditor/PlotField/Say/SayTypes";
-import AsideScrollable from "../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollable from "../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../ui/shared2/Aside/AsideScrollable/AsideScrollableButton";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import usePlotfieldCommands from "../PlotField/Context/PlotFieldContext";
 

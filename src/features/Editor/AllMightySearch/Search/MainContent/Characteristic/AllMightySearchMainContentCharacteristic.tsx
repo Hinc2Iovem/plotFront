@@ -8,7 +8,7 @@ import useGetPaginatedTranslationCharacteristic, {
   AllMightySearchCharacteristicResultTypes,
 } from "../../../hooks/useGetPaginatedTranslationCharacteristic";
 import useDeleteCharacteristic from "../../../../../../hooks/Deleting/Characteristic/useDeleteCharacteristic";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import { EditingCharacteristicForm } from "./EditingCharacteristic";

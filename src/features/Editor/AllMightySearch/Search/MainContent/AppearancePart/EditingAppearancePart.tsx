@@ -5,13 +5,13 @@ import useUpdateAppearancePartTranslation from "../../../../../../hooks/Patching
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { AppearancePartVariationRusTypes } from "../../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
-import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { AllMightySearchAppearancePartResultTypes } from "../../../hooks/useGetPaginatedTranslationAppearancePart";
 import { TempAppearanceCharacterTypes, TempAppearancePartTypes } from "./AllMightySearchMainContentAppearance";
-import PreviewImage from "../../../../../shared/utilities/PreviewImage";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PreviewImage from "../../../../../../ui/shared/PreviewImage";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import PlotfieldCharacterPromptMain from "../../../../PlotField/PlotFieldMain/Commands/Prompts/Characters/PlotfieldCharacterPromptMain";
 import { DebouncedCheckCharacterTypes } from "../../../../PlotField/PlotFieldMain/Commands/Choice/ChoiceQuestionField";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";

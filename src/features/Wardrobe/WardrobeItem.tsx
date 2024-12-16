@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { TranslationAppearancePartTypes } from "../../types/Additional/TranslationTypes";
-import PreviewImage from "../shared/utilities/PreviewImage";
+import PreviewImage from "../../ui/shared/PreviewImage";
 import useGetAppearancePartById from "../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
 
 export default function WardrobeItem({ appearancePartId, translations }: TranslationAppearancePartTypes) {

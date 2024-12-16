@@ -5,7 +5,7 @@ import commands from "../../../assets/images/Editor/commands.png";
 // import emotion from "../../../assets/images/Story/emotion.png";
 import stats from "../../../assets/images/shared/stats.png";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
-import ButtonHoverPromptModal from "../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import HeaderCreateEmotion from "./HeaderCreateEmotion";
 import HeaderCreateCharacteristic from "./HeaderCreateCharacteristic";
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import wardrobe from "../../assets/images/Story/wardrobe.png";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
-import PreviewImage from "../shared/utilities/PreviewImage";
+import PreviewImage from "../../ui/shared/PreviewImage";
 import "./characterStyle.css";
 
 type CharacterItemMainHeroTypes = {

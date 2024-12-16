@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
 import useCreateNewKeyAsValue from "../../../PlotField/hooks/Key/useCreateNewKeyAsValue";
 import { NewElementTypes } from "../MainContent/AllMightySearchMainContent";
-import PlotfieldInput from "../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
 
 type NewKeyFormTypes = {
   setNewElement: React.Dispatch<React.SetStateAction<NewElementTypes>>;

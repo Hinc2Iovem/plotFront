@@ -23,7 +23,7 @@ import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
 import { PlotfieldOptimisticCommandTypes } from "../../Context/PlotfieldCommandSlice";
 import { useEffect } from "react";
 import usePlotfieldCommands from "../../Context/PlotFieldContext";
-import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
 import { ErrorBoundary } from "react-error-boundary";
 
 function ErrorFallback({
@@ -140,7 +140,7 @@ export default function PlotfieldItem({
         ) : command === "cutscene" ? (
           <CommandCutSceneField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "effect" ? (
-          <CommandEffectField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandEffectField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} /> //here
         ) : command === "key" ? (
           <CommandKeyField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "move" ? (

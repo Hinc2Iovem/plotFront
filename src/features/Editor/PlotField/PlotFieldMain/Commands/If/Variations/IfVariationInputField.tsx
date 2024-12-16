@@ -5,7 +5,7 @@ import useIfVariations, {
   IfVariationTypes,
   LogicalOperatorTypes,
 } from "../Context/IfContext";
-import PlotfieldButton from "../../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import useDeleteIfVariation from "../../../../hooks/If/BlockVariations/useDeleteIfVariation";
 import useDeleteLogicalOperator from "../../../../hooks/If/BlockVariations/logicalOperator/useDeleteLogicalOperator";

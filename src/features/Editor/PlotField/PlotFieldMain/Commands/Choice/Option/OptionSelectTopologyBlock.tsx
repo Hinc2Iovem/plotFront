@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../../../shared/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
 import useUpdateChoiceOptionTopologyBlock from "../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTopologyBlock";
 import useGetAllTopologyBlocksByEpisodeId from "../../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../../../hooks/TopologyBlock/useGetTopologyBlockById";
@@ -31,9 +31,7 @@ export default function OptionSelectTopologyBlock({
   topologyBlockName,
 }: OptionSelecteTopologyBlockTypes) {
   const { updateChoiceOptionTopologyBlockId } = useChoiceOptions();
-  const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState(
-    topologyBlockName || ""
-  );
+  const [currentTopologyBlockName, setCurrentTopologyBlockName] = useState(topologyBlockName || "");
   const { episodeId } = useParams();
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId,

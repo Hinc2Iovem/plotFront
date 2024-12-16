@@ -1,24 +1,23 @@
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import HideCommandsButton from "./HideCommandsButton";
-import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import useCreateBlankCommandInsideIf from "../../../hooks/If/useCreateBlankCommandInsideIf";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import commandImg from "../../../../../../assets/images/Editor/command.png";
 import plus from "../../../../../../assets/images/shared/add.png";
 import { useRef, useState } from "react";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import { AllPossibleConditionBlockVariations } from "../../../../../../const/CONDITION_BLOCK_VARIATIONS";
-import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import useAddNewIfVariation from "../../../hooks/If/BlockVariations/useAddNewIfVariation";
 import useIfVariations from "./Context/IfContext";
 import useAddNewLogicalOperator from "../../../hooks/If/BlockVariations/logicalOperator/useAddNewLogicalOperator";
 
 type CommandIfNameFieldTypes = {
   topologyBlockId: string;
-  commandIfId: string;
+  plotfieldCommandIfId: string;
   plotfieldCommandId: string;
   setHideCommands: React.Dispatch<React.SetStateAction<boolean>>;
   hideCommands: boolean;
@@ -31,7 +30,7 @@ type CommandIfNameFieldTypes = {
 
 export default function CommandIfNameField({
   topologyBlockId,
-  commandIfId,
+  plotfieldCommandIfId,
   plotfieldCommandId,
   nameValue,
   isCommandFocused,
@@ -45,11 +44,11 @@ export default function CommandIfNameField({
 
   const createCommandInsideIf = useCreateBlankCommandInsideIf({
     topologyBlockId,
-    commandIfId,
+    plotfieldCommandIfId,
   });
   const createCommandInsideElse = useCreateBlankCommandInsideIf({
     topologyBlockId,
-    commandIfId,
+    plotfieldCommandIfId,
     isElse: true,
   });
 
@@ -65,7 +64,7 @@ export default function CommandIfNameField({
         command: "" as AllPossiblePlotFieldComamndsTypes,
         isElse: true,
         topologyBlockId,
-        commandIfId,
+        plotfieldCommandIfId,
       });
     } else {
       const ifCommandOrder = getCurrentAmountOfCommands({
@@ -78,7 +77,7 @@ export default function CommandIfNameField({
         command: "" as AllPossiblePlotFieldComamndsTypes,
         isElse,
         topologyBlockId,
-        commandIfId,
+        plotfieldCommandIfId,
       });
     }
   };
@@ -93,7 +92,7 @@ export default function CommandIfNameField({
         >
           {nameValue}
         </PlotfieldCommandNameField>
-        <AddVariationButton nameValue={nameValue} ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />
+        <AddVariationButton nameValue={nameValue} ifId={plotfieldCommandIfId} plotfieldCommandId={plotfieldCommandId} />
         <HideCommandsButton hideCommands={hideCommands} setHideCommands={setHideCommands} />
       </div>
       <ButtonHoverPromptModal

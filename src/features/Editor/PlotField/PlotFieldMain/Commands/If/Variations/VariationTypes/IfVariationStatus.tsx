@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollableButton from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import useIfVariations from "../../Context/IfContext";
 import { StatusTypes } from "../../../../../../../../types/StoryData/Status/StatusTypes";
 import { AllPossibleStatuses } from "../../../../../../../../const/STATUSES";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
-import PreviewImage from "../shared/utilities/PreviewImage";
+import PreviewImage from "../../ui/shared/PreviewImage";
 import { EmotionsTypes } from "../../types/StoryData/Character/CharacterTypes";
-import SyncLoad from "../shared/Loaders/SyncLoader";
+import SyncLoad from "../../ui/Loaders/SyncLoader";
 
 export default function EmotionItem({ emotionName, imgUrl, _id }: EmotionsTypes) {
   const [imgPreview, setPreview] = useState<string | ArrayBuffer | null>(null);

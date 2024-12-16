@@ -7,7 +7,7 @@ import { EditingCharacterTypes, FinedCharacteristicTypes } from "./AllMightySear
 import useGetAllCharacteristicsByStoryId from "../../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
-import PreviewImage from "../../../../../shared/utilities/PreviewImage";
+import PreviewImage from "../../../../../../ui/shared/PreviewImage";
 import { CharacterCardBackSide } from "./CharacterCardBackSide";
 import { SuggestiveModal } from "./SuggestiveModal";
 

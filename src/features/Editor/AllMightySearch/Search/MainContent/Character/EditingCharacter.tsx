@@ -10,12 +10,12 @@ import useUpdateCharacterTranslation from "../../../../../../hooks/Patching/Tran
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldTextarea from "../../../../../shared/Textareas/PlotfieldTextarea";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import PreviewImage from "../../../../../shared/utilities/PreviewImage";
-import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import PreviewImage from "../../../../../../ui/shared/PreviewImage";
+import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 
 type CharacterEditingFormTypes = {
   startEditing: boolean;

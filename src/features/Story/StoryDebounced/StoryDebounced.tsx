@@ -6,8 +6,8 @@ import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
 import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import { CurrentlyAvailableLanguagesTypes } from "../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { TranslationStoryTypes } from "../../../types/Additional/TranslationTypes";
-import SyncLoad from "../../shared/Loaders/SyncLoader";
-import PreviewImage from "../../shared/utilities/PreviewImage";
+import SyncLoad from "../../../ui/Loaders/SyncLoader";
+import PreviewImage from "../../../ui/shared/PreviewImage";
 
 type GetAllTranslationsTypes = {
   id: string;

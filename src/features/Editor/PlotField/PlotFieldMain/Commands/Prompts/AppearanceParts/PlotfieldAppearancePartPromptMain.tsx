@@ -4,8 +4,8 @@ import { PossibleWardrobeAppearancePartVariationsTypes } from "../../Wardrobe/Wa
 import PlotfieldAppearancePartsPrompt from "./PlotfieldAppearancePartPrompt";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import { TranslationAppearancePartTypes } from "../../../../../../../types/Additional/TranslationTypes";
-import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 
 type PlotfieldAppearancePartPromptMainTypes = {
   setAppearancePartName?: React.Dispatch<React.SetStateAction<string>>;
@@ -37,36 +37,22 @@ export default function PlotfieldAppearancePartPromptMain({
     const filterByDebouncedValue = (items: TranslationAppearancePartTypes[]) =>
       appearancePartDebouncedValue?.trim().length
         ? (items || []).filter((r) =>
-            r.translations[0]?.text
-              .toLowerCase()
-              .includes(appearancePartDebouncedValue.toLowerCase())
+            r.translations[0]?.text.toLowerCase().includes(appearancePartDebouncedValue.toLowerCase())
           )
         : items;
 
     if (appearancePartVariationType) {
       if (appearancePartVariationType === "dress") {
-        return filterByDebouncedValue(
-          allAppearanceParts?.filter((r) => r.type === "dress") || []
-        );
+        return filterByDebouncedValue(allAppearanceParts?.filter((r) => r.type === "dress") || []);
       } else if (appearancePartVariationType === "hair") {
-        return filterByDebouncedValue(
-          allAppearanceParts?.filter((r) => r.type === "hair") || []
-        );
+        return filterByDebouncedValue(allAppearanceParts?.filter((r) => r.type === "hair") || []);
       } else {
-        return filterByDebouncedValue(
-          allAppearanceParts?.filter(
-            (r) => r.type !== "dress" && r.type !== "hair"
-          ) || []
-        );
+        return filterByDebouncedValue(allAppearanceParts?.filter((r) => r.type !== "dress" && r.type !== "hair") || []);
       }
     } else {
       return filterByDebouncedValue(allAppearanceParts || []);
     }
-  }, [
-    allAppearanceParts,
-    appearancePartVariationType,
-    appearancePartDebouncedValue,
-  ]);
+  }, [allAppearanceParts, appearancePartVariationType, appearancePartDebouncedValue]);
 
   useOutOfModal({
     showModal: showAppearancePartModal,
@@ -74,12 +60,7 @@ export default function PlotfieldAppearancePartPromptMain({
     modalRef,
   });
   return (
-    <AsideScrollable
-      ref={modalRef}
-      className={`${
-        showAppearancePartModal ? "" : "hidden"
-      } translate-y-[.5rem]`}
-    >
+    <AsideScrollable ref={modalRef} className={`${showAppearancePartModal ? "" : "hidden"} translate-y-[.5rem]`}>
       {memoizedAppearanceParts.length ? (
         memoizedAppearanceParts?.map((c) => (
           <PlotfieldAppearancePartsPrompt
@@ -92,10 +73,7 @@ export default function PlotfieldAppearancePartPromptMain({
           />
         ))
       ) : (
-        <AsideScrollableButton
-          type="button"
-          onClick={() => setShowAppearancePartModal(false)}
-        >
+        <AsideScrollableButton type="button" onClick={() => setShowAppearancePartModal(false)}>
           Пусто
         </AsideScrollableButton>
       )}

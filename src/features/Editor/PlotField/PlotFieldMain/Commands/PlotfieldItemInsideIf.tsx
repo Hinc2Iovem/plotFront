@@ -1,5 +1,4 @@
 import { DraggableProvided } from "@hello-pangea/dnd";
-import { PlotfieldOptimisticCommandInsideIfTypes } from "../../Context/PlotfieldCommandIfSlice";
 import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
 import CommandBackgroundField from "./Background/CommandBackgroundField";
@@ -21,16 +20,17 @@ import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
 import CommandCommentField from "./Comment/CommandCommentField";
+import { PlotfieldOptimisticCommandTypes } from "../../Context/PlotfieldCommandSlice";
 
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
-} & PlotfieldOptimisticCommandInsideIfTypes;
+} & PlotfieldOptimisticCommandTypes;
 
 export default function PlotfieldItemInsideIf({
   _id,
   command,
   topologyBlockId,
-  commandIfId,
+  plotfieldCommandIfId,
   provided,
   isElse,
   characterId,
@@ -50,15 +50,10 @@ export default function PlotfieldItemInsideIf({
       onDrag={(e) => {
         e.stopPropagation();
       }}
-      className={`${commandIfId ? "px-[.5rem]" : ""} w-full flex gap-[1rem] `}
+      className={`${plotfieldCommandIfId ? "px-[.5rem]" : ""} w-full flex gap-[1rem] `}
     >
       {!command ? (
-        <PlotfieldBlank
-          plotFieldCommandId={_id}
-          commandIfId={commandIfId || ""}
-          topologyBlockId={topologyBlockId}
-          isElse={isElse}
-        />
+        <PlotfieldBlank plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
       ) : command === "say" ? (
         <CommandSayField
           topologyBlockId={topologyBlockId}
@@ -66,7 +61,6 @@ export default function PlotfieldItemInsideIf({
           characterId={characterId}
           characterName={characterName}
           sayType={sayType}
-          commandIfId={commandIfId}
           characterImg={characterImg}
           emotionId={emotionId}
           emotionImg={emotionImg}

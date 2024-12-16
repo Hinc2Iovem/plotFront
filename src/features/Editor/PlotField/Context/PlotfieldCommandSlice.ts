@@ -20,7 +20,6 @@ export type PlotfieldOptimisticCommandTypes = {
   emotionId?: string;
   emotionImg?: string;
 
-  commandIfId?: string;
   isElse?: boolean; //typeof boolean, if so, means that this command is inside commandIf
   plotfieldCommandIfId?: string;
 };

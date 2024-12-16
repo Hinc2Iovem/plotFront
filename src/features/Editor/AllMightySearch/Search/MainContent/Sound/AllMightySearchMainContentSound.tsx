@@ -3,7 +3,7 @@ import { useInView } from "react-intersection-observer";
 import { useEffect, useState, useMemo, useRef } from "react";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useGetAllSoundByStoryId from "../../../../PlotField/hooks/Sound/useGetAllSoundsByStoryId";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useDeleteSound from "../../../../PlotField/hooks/Sound/useDeleteSound";
 import useGetPaginatedSound, { AllMightySearchSoundResultTypes } from "../../../hooks/useGetPaginatedSounds";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";

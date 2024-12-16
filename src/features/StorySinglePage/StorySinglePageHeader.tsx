@@ -9,15 +9,14 @@ import { MATCHMEDIA } from "../../const/MATCHMEDIA";
 import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
 import useGetTranslationStoryById from "../../hooks/Fetching/Story/useGetTranslationStoryById";
 import useMatchMedia from "../../hooks/UI/useMatchMedia";
-import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import LightBox from "../shared/utilities/LightBox";
+import ButtonHoverPromptModal from "../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import LightBox from "../../ui/shared/LightBox";
 import StoryInfoModal from "./StoryInfoModal";
 import StorySinglePageHeaderCharacteristicModal from "./StorySinglePageHeaderCharacteristicModal";
 
 export default function StorySinglePageHeader() {
   const isMobile = useMatchMedia(MATCHMEDIA.Mobile);
-  const [showCharacteristicsModal, setShowCharacteristicsModal] =
-    useState(false);
+  const [showCharacteristicsModal, setShowCharacteristicsModal] = useState(false);
   const { userId } = useGetDecodedJWTValues();
   const { storyId } = useParams();
   const [infoModal, setInfoModal] = useState(false);
@@ -29,11 +28,7 @@ export default function StorySinglePageHeader() {
 
   useEffect(() => {
     if (translationStory) {
-      setStoryName(
-        translationStory.translations.find(
-          (t) => t.textFieldName === "storyName"
-        )?.text || ""
-      );
+      setStoryName(translationStory.translations.find((t) => t.textFieldName === "storyName")?.text || "");
     }
   }, [translationStory]);
 
@@ -42,11 +37,7 @@ export default function StorySinglePageHeader() {
       <header className="flex flex-col gap-[2rem]">
         <div className="flex justify-between flex-wrap">
           <Link to={`/profile/${userId}`} className="w-fit outline-none">
-            <img
-              src={arrowBack}
-              alt="GoBack"
-              className="w-[3.5rem] hover:scale-[1.01]"
-            />
+            <img src={arrowBack} alt="GoBack" className="w-[3.5rem] hover:scale-[1.01]" />
           </Link>
           <div className="flex gap-[.5rem]">
             <ButtonHoverPromptModal
@@ -119,9 +110,7 @@ export default function StorySinglePageHeader() {
         </div>
 
         <div className="flex w-full justify-between flex-wrap items-center">
-          <h1 className="text-[3.5rem] bg-secondary text-gray-700 rounded-md shadow-md w-fit px-[1rem]">
-            {storyName}
-          </h1>
+          <h1 className="text-[3.5rem] bg-secondary text-gray-700 rounded-md shadow-md w-fit px-[1rem]">{storyName}</h1>
           <div className="relative">
             <button
               onClick={() => {
@@ -149,9 +138,7 @@ export default function StorySinglePageHeader() {
           className={`fixed w-[30rem] min-h-[30rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2`}
         />
       ) : null}
-      {isMobile && (
-        <LightBox isLightBox={infoModal} setIsLightBox={setInfoModal} />
-      )}
+      {isMobile && <LightBox isLightBox={infoModal} setIsLightBox={setInfoModal} />}
     </>
   );
 }

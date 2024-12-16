@@ -1,24 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
-import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import {
-  CommandSayVariationTypes,
-  CommandSideTypes,
-} from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
-import PlotfieldTextarea from "../../../../../../../shared/Textareas/PlotfieldTextarea";
-import TextSettingsModal from "../../../../../../components/TextSettingsModal";
-import useSearch from "../../../../../../Context/Search/SearchContext";
-import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
+import { CommandSideTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import useAddItemInsideSearch from "../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetTranslationSay from "../../../../../hooks/Say/useGetTranslationSay";
-import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
-import useUpdateCommandSayType from "../../../../../hooks/Say/useUpdateCommandSayType";
-import useUpdateSayTextSide from "../../../../../hooks/Say/useUpdateSayTextSide";
-import useUpdateSayTextStyle from "../../../../../hooks/Say/useUpdateSayTextStyle";
-import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
+import SayFieldItemTextArea from "./SayFieldItemTextArea";
+import SayFieldItemVariationType from "./SayFieldItemVariationType";
 
 type CommandSayFieldItemTypes = {
   nameValue: string;
@@ -28,8 +15,6 @@ type CommandSayFieldItemTypes = {
   textStyle: TextStyleTypes;
   textSide: CommandSideTypes;
 };
-
-const CommandSayPossibleUpdateVariations = ["author", "hint", "notify"];
 
 export default function CommandSayFieldItem({
   nameValue,
@@ -42,13 +27,7 @@ export default function CommandSayFieldItem({
   const { episodeId } = useParams();
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
   const [currentTextSide, setCurrentTextSide] = useState(textSide);
-  const [showTextSettingsModal, setShowTextSettingsModal] = useState(false);
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
 
-  const currentInput = useRef<HTMLTextAreaElement | null>(null);
-  const { updateCommandSide } = usePlotfieldCommands();
   const { data: commandSayText } = useGetTranslationSay({
     commandId: plotFieldCommandId,
     language: "russian",
@@ -56,39 +35,14 @@ export default function CommandSayFieldItem({
 
   const [sayVariationType, setSayVariationType] = useState(nameValue);
   const [textValue, setTextValue] = useState("");
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
-  useEffect(() => {
-    if (nameValue) {
-      setSayVariationType(nameValue);
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          id: plotFieldCommandId,
-          type: "command",
-          value: `${nameValue} ${debouncedValue}`,
-          commandName: nameValue,
-        });
-      }
-    }
-  }, [nameValue, episodeId]);
-
-  const { addItem, updateValue } = useSearch();
-
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue,
-          id: plotFieldCommandId,
-          text: textValue,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue,
+    id: plotFieldCommandId,
+    text: `${nameValue} ${textValue}`,
+    topologyBlockId,
+    type: "command",
+  });
 
   useEffect(() => {
     if (commandSayText && !textValue.trim().length) {
@@ -96,142 +50,30 @@ export default function CommandSayFieldItem({
     }
   }, [commandSayText]);
 
-  const [showUpdateNameModal, setShowUpdateNameModal] = useState(false);
-  const updateNameModalRef = useRef<HTMLDivElement | null>(null);
-
-  const updateCommandSayNameValue = useUpdateCommandSayType({
-    plotFieldCommandId,
-    plotFieldCommandSayId,
-  });
-
-  const updateCommandSayText = useUpdateCommandSayText({
-    commandId: plotFieldCommandId,
-    textValue,
-    topologyBlockId,
-  });
-
-  useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          id: plotFieldCommandId,
-          type: "command",
-          value: `${nameValue} ${debouncedValue}`,
-          commandName: sayVariationType,
-        });
-      }
-      updateCommandSayText.mutate();
-      checkTextStyle({ debouncedValue, setCurrentTextStyle });
-      checkTextSide({
-        debouncedValue,
-        setCurrentTextSide,
-        plotfieldCommandId: plotFieldCommandId,
-        updateCommandSide,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
-
-  const updateCommandSaySide = useUpdateSayTextSide({
-    sayId: plotFieldCommandSayId,
-  });
-
-  useEffect(() => {
-    if (currentTextSide && plotFieldCommandSayId?.trim().length) {
-      updateCommandSaySide.mutate({ textSide: currentTextSide });
-    }
-  }, [currentTextSide]);
-
-  const updateCommandSayStyle = useUpdateSayTextStyle({
-    sayId: plotFieldCommandSayId,
-  });
-
-  useEffect(() => {
-    if (currentTextStyle && plotFieldCommandSayId?.trim().length) {
-      updateCommandSayStyle.mutate({ textStyle: currentTextStyle });
-    }
-  }, [currentTextStyle]);
-
-  useOutOfModal({
-    modalRef: updateNameModalRef,
-    setShowModal: setShowUpdateNameModal,
-    showModal: showUpdateNameModal,
-  });
-
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldButton
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowUpdateNameModal((prev) => !prev);
-            if (showUpdateNameModal) {
-              e.currentTarget.blur();
-            }
-          }}
-          className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"} capitalize text-start`}
-        >
-          {sayVariationType}
-        </PlotfieldButton>
-        <aside
-          ref={updateNameModalRef}
-          className={`${
-            showUpdateNameModal ? "" : "hidden"
-          } bg-secondary w-full translate-y-[.5rem] rounded-md shadow-md absolute z-10 flex flex-col gap-[.5rem] p-[.5rem]`}
-        >
-          {CommandSayPossibleUpdateVariations.map((pv) => {
-            return (
-              <PlotfieldButton
-                key={pv}
-                onClick={() => {
-                  setSayVariationType(pv);
-                  updateCommandSayNameValue.mutate(pv as CommandSayVariationTypes);
-                  setShowUpdateNameModal(false);
-                }}
-                className={`${pv === nameValue ? "hidden" : ""} capitalize`}
-              >
-                {pv}
-              </PlotfieldButton>
-            );
-          })}
-        </aside>
-      </div>
-      <form className="sm:w-[77%] flex-grow w-full relative">
-        <PlotfieldTextarea
-          value={textValue}
-          ref={currentInput}
-          placeholder="Such a lovely day"
-          onContextMenu={(e) => {
-            e.preventDefault();
-            setShowTextSettingsModal((prev) => !prev);
-          }}
-          className={`${
-            currentTextStyle === "underscore"
-              ? "underline"
-              : currentTextStyle === "bold"
-              ? "font-bold"
-              : currentTextStyle === "italic"
-              ? "italic"
-              : ""
-          } ${currentTextSide === "right" ? "text-right" : "text-left"} `}
-          onChange={(e) => setTextValue(e.target.value)}
-        />
+      <SayFieldItemVariationType
+        episodeId={episodeId || ""}
+        plotFieldCommandId={plotFieldCommandId}
+        plotFieldCommandSayId={plotFieldCommandSayId}
+        sayVariationType={sayVariationType}
+        setSayVariationType={setSayVariationType}
+        textValue={textValue}
+      />
 
-        <TextSettingsModal
-          translateY="translate-y-[-13.5rem] right-0"
-          plotfieldCommandId={plotFieldCommandId}
-          setShowModal={setShowTextSettingsModal}
-          currentTextStyle={currentTextStyle}
-          setCurrentTextStyle={setCurrentTextStyle}
-          setTextValue={setTextValue}
-          showModal={showTextSettingsModal}
-          showTextSideRow={false}
-          showTextStyleRow={true}
-          setCurrentTextSide={setCurrentTextSide}
-          currentSide={currentTextSide}
-        />
-      </form>
+      <SayFieldItemTextArea
+        currentTextSide={currentTextSide}
+        currentTextStyle={currentTextStyle}
+        plotFieldCommandSayId={plotFieldCommandSayId}
+        episodeId={episodeId || ""}
+        plotFieldCommandId={plotFieldCommandId}
+        sayVariationType={sayVariationType}
+        setCurrentTextSide={setCurrentTextSide}
+        setCurrentTextStyle={setCurrentTextStyle}
+        setTextValue={setTextValue}
+        textValue={textValue}
+        topologyBlockId={topologyBlockId}
+      />
     </div>
   );
 }

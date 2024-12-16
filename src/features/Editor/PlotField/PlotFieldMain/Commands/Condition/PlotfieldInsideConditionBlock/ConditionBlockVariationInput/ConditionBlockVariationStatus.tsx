@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollableButton from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionStatus from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionStatus";
 import { StatusTypes } from "../../../../../../../../types/StoryData/Status/StatusTypes";
 import { AllPossibleStatuses } from "../../../../../../../../const/STATUSES";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
@@ -173,7 +173,7 @@ export default function ConditionBlockVariationStatus({
           debouncedValue={debouncedConditionName}
           setCharacterImg={setCharacterImg}
           setDebouncedCharacter={setDebouncedCharacter}
-          commandIfId=""
+          plotfieldCommandIfId=""
           isElse={false}
         />
       </div>

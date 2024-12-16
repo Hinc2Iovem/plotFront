@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import { GoingDownInsideIf } from "../../../../../../hooks/helpers/Plotfield/navigationHelpers/functions/ChecksForCommandIf";
 
 type UpdateSessionStorageGoingDownForIfCommandTypes = {
-  commandIfId: string;
+  plotfieldCommandIfId: string;
   plotfieldCommandId: string;
 
   setIsBackgroundFocused: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function useUpdateSessionStorageGoingDownForIfCommand({
-  commandIfId,
+  plotfieldCommandIfId,
   plotfieldCommandId,
   setIsBackgroundFocused,
 }: UpdateSessionStorageGoingDownForIfCommandTypes) {
@@ -34,7 +34,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
 
         const currentFocusedCommandIf = sessionStorage.getItem("focusedCommandIf");
 
-        const newFocusedCommandIf = `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${commandIfId}`;
+        const newFocusedCommandIf = `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${plotfieldCommandIfId}`;
 
         const focusedCommandInsideType = sessionStorage.getItem("focusedCommandInsideType");
 
@@ -73,7 +73,7 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
               event.stopImmediatePropagation();
               // TODO getFirstCommandInsideIf
               GoingDownInsideIf({
-                currentCommandId: commandIfId,
+                currentCommandId: plotfieldCommandIfId,
                 insideIf: focusedCommandIfOrElse === "if",
                 isGoingDown: true,
               });
@@ -107,13 +107,13 @@ export default function useUpdateSessionStorageGoingDownForIfCommand({
 // const currentFocusedCommandIf =
 //           sessionStorage.getItem("focusedCommandIf")
 
-//         const newFocusedCommandIf = `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${commandIfId}?`;
+//         const newFocusedCommandIf = `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${plotfieldCommandIfId}?`;
 
 //         if (currentFocusedCommandIf !== newFocusedCommandIf) {
 //           const combinedFocusedCommandIf =
 //             currentFocusedCommandIf !== "none"
-//               ? `${currentFocusedCommandIf}${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${commandIfId}?`
-//               : `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${commandIfId}?`;
+//               ? `${currentFocusedCommandIf}${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${plotfieldCommandIfId}?`
+//               : `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${plotfieldCommandIfId}?`;
 
 //           sessionStorage.setItem("focusedCommandIf", combinedFocusedCommandIf);
 //           setIsBackgroundFocused(true);

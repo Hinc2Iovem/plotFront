@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import useCreateStory from "../../../../hooks/Posting/Story/useCreateStory";
 import { handleUploadeImg } from "../../../../utils/handleUploadImg";
-import LightBox from "../../../shared/utilities/LightBox";
-import PreviewImage from "../../../shared/utilities/PreviewImage";
-import SyncLoad from "../../../shared/Loaders/SyncLoader";
+import LightBox from "../../../../ui/shared/LightBox";
+import PreviewImage from "../../../../ui/shared/PreviewImage";
+import SyncLoad from "../../../../ui/Loaders/SyncLoader";
 
 export default function CreateStory() {
   const [isLightBox, setIsLightBox] = useState(false);

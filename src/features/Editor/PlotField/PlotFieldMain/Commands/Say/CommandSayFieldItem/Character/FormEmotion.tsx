@@ -1,9 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import "../../../../../../Flowchart/FlowchartStyles.css";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useUpdateNameOrEmotion from "../../../../../hooks/Say/useUpdateNameOrEmotion";
@@ -23,9 +23,6 @@ type FormEmotionTypes = {
   emotionValue: EmotionTypes;
   showAllEmotions: boolean;
   initialEmotionId: string;
-
-  commandIfId: string;
-  isElse: boolean;
 };
 
 export default function FormEmotion({
@@ -40,25 +37,8 @@ export default function FormEmotion({
   emotionValue,
   showAllEmotions,
   emotions,
-
-  commandIfId,
-  isElse,
 }: FormEmotionTypes) {
-  const {
-    updateEmotionProperties,
-    updateEmotionName,
-
-    updateEmotionPropertiesIf,
-    updateEmotionNameIf,
-  } = usePlotfieldCommands();
-
-  // const debouncedValue = useDebounce({
-  //   delay: 700,
-  //   value: emotionValue?.emotionName || "",
-  // });
-  const [focusedSecondTime, setFocusedSecondTime] = useState(false);
-
-  const emotionsRef = useRef<HTMLDivElement>(null);
+  const { updateEmotionProperties, updateEmotionName } = usePlotfieldCommands();
 
   const allEmotions = useMemo(() => {
     const res = [...emotions];
@@ -90,69 +70,25 @@ export default function FormEmotion({
           (em && e.emotionName.toLowerCase() === em.toLowerCase())
       );
 
-      updateNameOrEmotion.mutate({ emotionBodyId: currentEmotion?._id });
       setEmotionValue({
         _id: currentEmotion?._id || null,
         emotionName: currentEmotion?.emotionName || null,
         imgUrl: currentEmotion?.imgUrl || null,
       });
 
-      if (commandIfId?.trim().length) {
-        updateEmotionPropertiesIf({
-          emotionId: currentEmotion?._id || "",
-          emotionImg: currentEmotion?.imgUrl || "",
-          emotionName: currentEmotion?.emotionName || "",
-          id: plotFieldCommandId,
-          isElse,
-        });
-      } else {
-        updateEmotionProperties({
-          emotionId: currentEmotion?._id || "",
-          emotionImg: currentEmotion?.imgUrl || "",
-          emotionName: currentEmotion?.emotionName || "",
-          id: plotFieldCommandId,
-        });
-      }
+      updateEmotionProperties({
+        emotionId: currentEmotion?._id || "",
+        emotionImg: currentEmotion?.imgUrl || "",
+        emotionName: currentEmotion?.emotionName || "",
+        id: plotFieldCommandId,
+      });
+
+      updateNameOrEmotion.mutate({ emotionBodyId: currentEmotion?._id });
     } else {
       setShowCreateEmotionModal(true);
       return;
     }
   };
-
-  // useEffect(() => {
-  //   if (debouncedValue?.trim().length && !showAllEmotions) {
-  //     const existingEmotion = emotions.find(
-  //       (e) =>
-  //         e.emotionName?.trim()?.toLowerCase() ===
-  //         emotionValue?.emotionName?.trim()?.toLowerCase()
-  //     );
-
-  //     if (existingEmotion) {
-  //       setEmotionValue({
-  //         _id: existingEmotion?._id || null,
-  //         emotionName: existingEmotion?.emotionName || null,
-  //         imgUrl: existingEmotion?.imgUrl || null,
-  //       });
-  //       updateEmotionProperties({
-  //         emotionId: existingEmotion?._id || "",
-  //         emotionImg: existingEmotion?.imgUrl || "",
-  //         emotionName: existingEmotion?.emotionName || "",
-  //         id: plotFieldCommandId,
-  //       });
-  //       updateNameOrEmotion.mutate({ emotionBodyId: existingEmotion?._id });
-  //     } else {
-  //       console.log("Such emotion wasn't found, on debounce");
-  //       setShowCreateEmotionModal(true);
-  //       return;
-  //     }
-  //   }
-  // }, [debouncedValue]);
-
-  useOutOfModal({
-    modalRef: emotionsRef,
-    setShowModal: setShowAllEmotions,
-    showModal: showAllEmotions,
-  });
 
   return (
     <>
@@ -174,18 +110,10 @@ export default function FormEmotion({
                 emotionName: e.target.value,
               }));
 
-              if (commandIfId?.trim().length) {
-                updateEmotionNameIf({
-                  emotionName: e.target.value,
-                  id: plotFieldCommandId,
-                  isElse,
-                });
-              } else {
-                updateEmotionName({
-                  emotionName: e.target.value,
-                  id: plotFieldCommandId,
-                });
-              }
+              updateEmotionName({
+                emotionName: e.target.value,
+                id: plotFieldCommandId,
+              });
               setShowAllEmotions(true);
             }}
           />
@@ -198,38 +126,13 @@ export default function FormEmotion({
             />
           ) : null}
 
-          <AsideScrollable ref={emotionsRef} className={`${showAllEmotions ? "" : "hidden"} translate-y-[.5rem]`}>
-            <ul className="flex flex-col gap-[1rem] p-[.2rem]">
-              {allEmotions.length ? (
-                allEmotions.map((em, i) => {
-                  return (
-                    <li key={em + "-" + i} className="flex justify-between">
-                      <AsideScrollableButton
-                        className="relative"
-                        onClick={(event) => {
-                          handleEmotionFormSubmit(event, em?.emotionName);
-                          setShowAllEmotions(false);
-                        }}
-                      >
-                        {em.emotionName}
-                        {em?.imgUrl ? (
-                          <img
-                            src={em.imgUrl || ""}
-                            alt={"EmotionImg"}
-                            className="w-[3rem] rounded-md object-cover absolute right-0 top-[1.5px]"
-                          />
-                        ) : null}
-                      </AsideScrollableButton>
-                    </li>
-                  );
-                })
-              ) : !allEmotions.length && emotionValue?.emotionName?.trim().length ? (
-                <li>
-                  <AsideScrollableButton onClick={() => setShowAllEmotions(false)}>Пусто</AsideScrollableButton>
-                </li>
-              ) : null}
-            </ul>
-          </AsideScrollable>
+          <AllEmotionsModal
+            allEmotions={allEmotions}
+            emotionValue={emotionValue}
+            handleEmotionFormSubmit={handleEmotionFormSubmit}
+            setShowAllEmotions={setShowAllEmotions}
+            showAllEmotions={showAllEmotions}
+          />
         </div>
       </form>
       <CommandSayCreateEmotionFieldModal
@@ -240,9 +143,68 @@ export default function FormEmotion({
         plotFieldCommandId={plotFieldCommandId}
         plotFieldCommandSayId={plotFieldCommandSayId}
         setEmotionValue={setEmotionValue}
-        commandIfId={commandIfId}
-        isElse={isElse}
       />
     </>
   );
+}
+
+type AllEmotionsModalTypes = {
+  showAllEmotions: boolean;
+  allEmotions: EmotionsTypes[];
+  emotionValue: EmotionTypes;
+  handleEmotionFormSubmit: (e: React.FormEvent, em?: string) => void;
+  setShowAllEmotions: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function AllEmotionsModal({
+  allEmotions,
+  emotionValue,
+  setShowAllEmotions,
+  showAllEmotions,
+  handleEmotionFormSubmit,
+}: AllEmotionsModalTypes) {
+  {
+    const emotionsRef = useRef<HTMLDivElement>(null);
+
+    useOutOfModal({
+      modalRef: emotionsRef,
+      setShowModal: setShowAllEmotions,
+      showModal: showAllEmotions,
+    });
+
+    return (
+      <AsideScrollable ref={emotionsRef} className={`${showAllEmotions ? "" : "hidden"} translate-y-[.5rem]`}>
+        <ul className="flex flex-col gap-[1rem] p-[.2rem]">
+          {allEmotions.length ? (
+            allEmotions.map((em, i) => {
+              return (
+                <li key={em + "-" + i} className="flex justify-between">
+                  <AsideScrollableButton
+                    className="relative"
+                    onClick={(event) => {
+                      handleEmotionFormSubmit(event, em?.emotionName);
+                      setShowAllEmotions(false);
+                    }}
+                  >
+                    {em.emotionName}
+                    {em?.imgUrl ? (
+                      <img
+                        src={em.imgUrl || ""}
+                        alt={"EmotionImg"}
+                        className="w-[3rem] rounded-md object-cover absolute right-0 top-[1.5px]"
+                      />
+                    ) : null}
+                  </AsideScrollableButton>
+                </li>
+              );
+            })
+          ) : !allEmotions.length && emotionValue?.emotionName?.trim().length ? (
+            <li>
+              <AsideScrollableButton onClick={() => setShowAllEmotions(false)}>Пусто</AsideScrollableButton>
+            </li>
+          ) : null}
+        </ul>
+      </AsideScrollable>
+    );
+  }
 }

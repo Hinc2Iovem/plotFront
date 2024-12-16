@@ -34,7 +34,7 @@ type HandleDuplicationOptimisticOnMutationTypes = {
   topologyBlockId: string;
   commandName: AllPossiblePlotFieldComamndsTypes;
   sayType: CommandSayVariationTypes;
-  commandIfId: string;
+  plotfieldCommandIfId: string;
   characterName: string;
   emotionName: string;
   characterId: string;
@@ -60,7 +60,7 @@ export async function handleDuplicationOptimisticOnMutation({
   commandOrder,
   plotfieldCommandId,
   episodeId,
-  commandIfId,
+  plotfieldCommandIfId,
   commandSide,
   characterImg,
   emotionId,
@@ -89,7 +89,7 @@ export async function handleDuplicationOptimisticOnMutation({
       characterId: characterId,
       characterImg: characterImg,
       characterName: characterName,
-      commandIfId: commandIfId,
+      plotfieldCommandIfId: plotfieldCommandIfId,
       emotionId: emotionId,
       emotionImg: emotionImg,
       emotionName: emotionName,

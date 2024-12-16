@@ -12,7 +12,7 @@ export type CreateDuplicateWithStoryTypes = {
 
 export type CreateDuplicateOnMutation = {
   commandOrder: number;
-  commandIfId?: string;
+  plotfieldCommandIfId?: string;
   isElse?: boolean;
   topologyBlockId: string;
   commandName?: AllPossiblePlotFieldComamndsTypes;
@@ -24,7 +24,7 @@ export type CreateDuplicateOnMutation = {
 };
 
 export type CreateDuplicateSayOnMutationTypes = {
-  commandIfId?: string;
+  plotfieldCommandIfId?: string;
   characterImg?: string;
   commandSide?: "left" | "right";
   emotionId?: string;

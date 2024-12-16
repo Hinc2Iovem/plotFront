@@ -4,9 +4,9 @@ import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useUpdateBackgroundMusicText from "../../../hooks/Background/useUpdateBackgroundMusicText";
 import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
 import useGetMusicById from "../../../hooks/Music/useGetMusicById";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 
 type BackgroundMusicFormTypes = {
   backgroundId: string;

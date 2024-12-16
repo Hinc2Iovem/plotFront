@@ -1,5 +1,5 @@
 import { ChoiceOptionVariationsTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import ButtonHoverPromptModal from "../../../../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import amethyst from "../../../../../../assets/images/Editor/amethyst.png";
 import common from "../../../../../../assets/images/Editor/blank.png";
 import relationship from "../../../../../../assets/images/Editor/relationship.png";
@@ -10,9 +10,7 @@ type ShowOptionVariationsModalTypes = {
   showOptionVariations: boolean;
   currentDefaultChoiceOption: string;
   optionVariations: ChoiceOptionVariationsTypes[];
-  setOptionVariations: React.Dispatch<
-    React.SetStateAction<ChoiceOptionVariationsTypes[]>
-  >;
+  setOptionVariations: React.Dispatch<React.SetStateAction<ChoiceOptionVariationsTypes[]>>;
 };
 
 export default function ShowOptionVariationsModal({
@@ -82,9 +80,7 @@ type OptionVariationItemTypes = {
   alt: ChoiceOptionVariationsTypes;
   positionByAbscissa: "right" | "left";
   optionVariations: ChoiceOptionVariationsTypes[];
-  setOptionVariations: React.Dispatch<
-    React.SetStateAction<ChoiceOptionVariationsTypes[]>
-  >;
+  setOptionVariations: React.Dispatch<React.SetStateAction<ChoiceOptionVariationsTypes[]>>;
 };
 
 function OptionVariationItem({
@@ -103,13 +99,8 @@ function OptionVariationItem({
         return [...prev, alt];
       });
       if (currentDefaultChoiceOption?.trim().length) {
-        const defaultOptions = localStorage.getItem(
-          `${userId},choiceOption,${currentDefaultChoiceOption}`
-        );
-        localStorage.setItem(
-          `${userId},choiceOption,${currentDefaultChoiceOption}`,
-          `${defaultOptions},${alt}`
-        );
+        const defaultOptions = localStorage.getItem(`${userId},choiceOption,${currentDefaultChoiceOption}`);
+        localStorage.setItem(`${userId},choiceOption,${currentDefaultChoiceOption}`, `${defaultOptions},${alt}`);
       }
     } else {
       console.log("Не более 7 ответов");

@@ -1,14 +1,12 @@
 import { useState } from "react";
 import createCharacter from "../../../assets/images/Character/createCharacter.png";
-import ButtonHoverPromptModal from "../../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import ButtonHoverPromptModal from "../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import CharacterHeaderCreateCharacterModal from "./CharacterHeaderCreateCharacterModal";
 import CharacterHeaderSearchTypeBtns from "./CharacterHeaderSearchTypeBtns";
 import { SearchCharacterVariationTypes } from "../CharacterListPage";
 
 type CharacterHeaderTypes = {
-  setSearchCharacterType: React.Dispatch<
-    React.SetStateAction<SearchCharacterVariationTypes>
-  >;
+  setSearchCharacterType: React.Dispatch<React.SetStateAction<SearchCharacterVariationTypes>>;
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
   searchCharacterType: SearchCharacterVariationTypes;
   searchValue: string;
@@ -45,11 +43,7 @@ export default function CharacterHeader({
             asideClasses="text-[1.3rem] top-[4.5rem] bottom-[-3.3rem] text-text-light"
             className="active:scale-[0.99] hover:scale-[1.01] bg-secondary"
           >
-            <img
-              src={createCharacter}
-              alt="CreateCharacter"
-              className="w-[4rem]"
-            />
+            <img src={createCharacter} alt="CreateCharacter" className="w-[4rem]" />
           </ButtonHoverPromptModal>
         </div>
         <CharacterHeaderSearchTypeBtns

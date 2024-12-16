@@ -7,7 +7,7 @@ import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
 import CommandWardrobeCreateCharacter from "./CommandWardrobeCreateCharacter";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 
 type CommandWardrobeCharacterTypes = {
   setShowAppearancePartVariationModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -131,7 +131,7 @@ export default function CommandWardrobeCharacter({
           setShowCharacterModal={setShowCharacterModal}
           showCharacterModal={showCharacterModal}
           setCharacterImg={setCharacterImg}
-          commandIfId=""
+          plotfieldCommandIfId=""
           isElse={false}
         />
       </form>

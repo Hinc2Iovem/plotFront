@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import PlotfieldInput from "../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../ui/Inputs/PlotfieldInput";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
 import plus from "../../../../assets/images/shared/plus.png";
 import reject from "../../../../assets/images/shared/rejectBlue.png";

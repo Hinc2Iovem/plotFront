@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useIfVariations from "../../Context/IfContext";
 import IfSignField from "../IfSignField";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import IfFieldName from "./shared/IfFieldName";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";

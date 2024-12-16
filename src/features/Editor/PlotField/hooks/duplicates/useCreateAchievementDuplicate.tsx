@@ -28,7 +28,7 @@ export default function useCreateAchievementDuplicate({
     mutationFn: async ({
       plotfieldCommandId,
       commandOrder,
-      commandIfId,
+      plotfieldCommandIfId,
       isElse,
       topologyBlockId: bodyTopologyBlockId,
     }: CreateDuplicateOnMutation) => {
@@ -38,7 +38,7 @@ export default function useCreateAchievementDuplicate({
           storyId,
           commandOrder,
           plotfieldCommandId,
-          commandIfId,
+          plotfieldCommandIfId,
           isElse,
         })
         .then((r) => r.data);
@@ -58,7 +58,7 @@ export default function useCreateAchievementDuplicate({
         addCommand,
         characterId: newCommand.characterId || "",
         characterName: newCommand.characterName || "",
-        commandIfId: newCommand.commandIfId || "",
+        plotfieldCommandIfId: newCommand.plotfieldCommandIfId || "",
         commandName: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
         commandOrder: newCommand.commandOrder,
         emotionName: newCommand.emotionName || "",

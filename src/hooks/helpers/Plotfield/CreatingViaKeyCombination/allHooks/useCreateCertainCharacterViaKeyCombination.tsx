@@ -64,7 +64,7 @@ export default function useCreateCertainCharacterViaKeyCombination({
         const focusedTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
 
         const newPlotfieldCommandId = generateMongoObjectId();
-        const commandIfId =
+        const plotfieldCommandIfId =
           typeof currentlyFocusedCommandId.isElse === "boolean" ? currentlyFocusedCommandId.parentId : "";
 
         const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;
@@ -83,7 +83,7 @@ export default function useCreateCertainCharacterViaKeyCombination({
           _id: newPlotfieldCommandId,
           commandName: "say",
           sayType: "character",
-          commandIfId,
+          plotfieldCommandIfId,
           isElse: currentlyFocusedCommandId.isElse,
           commandOrder:
             typeof currentlyFocusedCommandId.commandOrder === "number"

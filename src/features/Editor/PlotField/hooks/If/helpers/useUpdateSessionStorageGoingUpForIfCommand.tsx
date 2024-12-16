@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 
 type UpdateSessionStorageGoingUpForIfCommandTypes = {
-  commandIfId: string;
+  plotfieldCommandIfId: string;
   plotfieldCommandId: string;
 
   setIsBackgroundFocused: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function useUpdateSessionStorageGoingUpForIfCommand({
-  commandIfId,
+  plotfieldCommandIfId,
   plotfieldCommandId,
   setIsBackgroundFocused,
 }: UpdateSessionStorageGoingUpForIfCommandTypes) {
@@ -115,13 +115,13 @@ export default function useUpdateSessionStorageGoingUpForIfCommand({
 // const currentFocusedCommandIf =
 //           sessionStorage.getItem("focusedCommandIf")
 
-//         const newFocusedCommandIf = `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${commandIfId}?`;
+//         const newFocusedCommandIf = `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${plotfieldCommandIfId}?`;
 
 //         if (currentFocusedCommandIf !== newFocusedCommandIf) {
 //           const combinedFocusedCommandIf =
 //             currentFocusedCommandIf !== "none"
-//               ? `${currentFocusedCommandIf}${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${commandIfId}?`
-//               : `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${commandIfId}?`;
+//               ? `${currentFocusedCommandIf}${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${plotfieldCommandIfId}?`
+//               : `${focusedCommandIfOrElse}-${focusedCommandPlotfieldId}-ifId-${plotfieldCommandIfId}?`;
 
 //           sessionStorage.setItem("focusedCommandIf", combinedFocusedCommandIf);
 //           setIsBackgroundFocused(true);

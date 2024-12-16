@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import AssignScriptwriterModal from "./AssignScriptwriterModal";
-import PreviewImage from "../../shared/utilities/PreviewImage";
+import PreviewImage from "../../../ui/shared/PreviewImage";
 import { useEffect, useState } from "react";
 import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";

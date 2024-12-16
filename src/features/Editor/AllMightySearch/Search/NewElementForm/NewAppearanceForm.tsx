@@ -6,10 +6,10 @@ import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../typ
 import { TranslationAppearancePartTypes } from "../../../../../types/Additional/TranslationTypes";
 import { AppearancePartVariationRusTypes } from "../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
-import AsideScrollable from "../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
-import PlotfieldInput from "../../../../shared/Inputs/PlotfieldInput";
-import PreviewImage from "../../../../shared/utilities/PreviewImage";
+import AsideScrollable from "../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
+import PreviewImage from "../../../../../ui/shared/PreviewImage";
 import { AppearanceAsideButton, AppearanceCharacterField } from "../MainContent/AppearancePart/EditingAppearancePart";
 
 type NewAppearanceFormTypes = {

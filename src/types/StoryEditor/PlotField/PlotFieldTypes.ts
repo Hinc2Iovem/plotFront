@@ -1,6 +1,6 @@
 export type PlotFieldTypes = {
   _id: string;
-  commandIfId?: string;
+  plotfieldCommandIfId?: string;
   isElse?: boolean;
   topologyBlockId: string;
   command: AllPossiblePlotFieldComamndsTypes;
@@ -11,7 +11,7 @@ export type PlotFieldCommandIfTypes = {
   _id: string;
   topologyBlockId: string;
   isElse: boolean;
-  commandIfId?: string;
+  plotfieldCommandIfId?: string;
   command: AllPossiblePlotFieldComamndsTypes;
   commandOrder: number;
 };

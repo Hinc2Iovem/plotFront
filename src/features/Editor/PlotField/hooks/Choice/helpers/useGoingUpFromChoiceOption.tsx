@@ -107,7 +107,7 @@ export default function useGoingUpFromChoiceOptions({
               const currentCommandIf = (focusedCommandIf || [])[deepLevel].split("-");
               const currentCommandIfId = currentCommandIf[3];
               const currentCommandChoice = getCommandIfByPlotfieldCommandId({
-                commandIfId: currentCommandIfId,
+                plotfieldCommandIfId: currentCommandIfId,
                 isElse: currentFocusedCommandIsElse === "else",
                 plotfieldCommandId: currentFocusedCommandPlotfieldCommandId,
               });

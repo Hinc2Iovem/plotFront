@@ -24,7 +24,7 @@ export default function useCreateConditionDuplicate({ topologyBlockId, episodeId
     mutationFn: async ({
       commandOrder,
       plotfieldCommandId,
-      commandIfId,
+      plotfieldCommandIfId,
       isElse,
       topologyBlockId: bodyTopologyBlockId,
     }: CreateDuplicateOnMutation) => {
@@ -33,7 +33,7 @@ export default function useCreateConditionDuplicate({ topologyBlockId, episodeId
         .post(`/plotFieldCommands/conditions/topologyBlocks/${currentTopologyBlockId}/copy`, {
           commandOrder,
           plotfieldCommandId,
-          commandIfId,
+          plotfieldCommandIfId,
           isElse,
         })
         .then((r) => r.data);
@@ -53,7 +53,7 @@ export default function useCreateConditionDuplicate({ topologyBlockId, episodeId
         addCommand,
         characterId: newCommand.characterId || "",
         characterName: newCommand.characterName || "",
-        commandIfId: newCommand.commandIfId || "",
+        plotfieldCommandIfId: newCommand.plotfieldCommandIfId || "",
         commandName: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
         commandOrder: newCommand.commandOrder,
         emotionName: newCommand.emotionName || "",

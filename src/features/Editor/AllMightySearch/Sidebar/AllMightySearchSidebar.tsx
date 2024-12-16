@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { useParams } from "react-router-dom";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
-import PlotfieldButton from "../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../ui/Buttons/PlotfieldButton";
 import {
   AllPossibleAllMightySearchCategoriesRusTypes,
   AllPossibleAllMightySearchCategoriesTypes,

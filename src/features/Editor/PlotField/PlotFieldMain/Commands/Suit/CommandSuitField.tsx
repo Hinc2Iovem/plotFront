@@ -3,8 +3,8 @@ import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useG
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
 import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
@@ -161,7 +161,7 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
           setShowCharacterModal={setShowCharacterList}
           showCharacterModal={showCharacterList}
           setCharacterImg={setCurrentCharacterImg}
-          commandIfId=""
+          plotfieldCommandIfId=""
           isElse={false}
         />
       </form>

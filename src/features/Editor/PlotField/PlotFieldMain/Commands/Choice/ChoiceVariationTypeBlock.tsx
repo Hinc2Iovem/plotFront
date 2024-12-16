@@ -9,8 +9,8 @@ import useGetChoiceOptionById from "../../../hooks/Choice/ChoiceOption/useGetCho
 import useUpdateChoice from "../../../hooks/Choice/useUpdateChoice";
 import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 
 type ChoiceVariationTypeBlockTypes = {
   exitBlockId: string;

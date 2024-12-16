@@ -7,12 +7,12 @@ import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotF
 type CreateSayCommandTypes = {
   plotFieldCommandId?: string;
   topologyBlockId: string;
-  commandIfId?: string;
+  plotfieldCommandIfId?: string;
 };
 
 type NewCommandTypes = {
   _id: string;
-  commandIfId?: string;
+  plotfieldCommandIfId?: string;
   isElse?: boolean;
   topologyBlockId: string;
   commandName?: AllPossiblePlotFieldComamndsTypes;
@@ -36,7 +36,7 @@ export default function useCreateSayWithCertainCharacter({
       characterName,
       commandName,
       isElse,
-      commandIfId,
+      plotfieldCommandIfId,
       commandOrder,
       topologyBlockId: bodyTopologyBlockId,
     }) => {
@@ -47,7 +47,7 @@ export default function useCreateSayWithCertainCharacter({
         characterName,
         commandName,
         commandOrder,
-        commandIfId,
+        plotfieldCommandIfId,
         isElse,
       });
     },

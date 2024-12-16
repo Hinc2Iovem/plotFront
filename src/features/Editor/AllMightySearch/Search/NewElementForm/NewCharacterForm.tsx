@@ -5,12 +5,12 @@ import useCreateCharacter from "../../../../../hooks/Posting/Character/useCreate
 import { TranslationCharacterObjectTypes } from "../../../../../types/Additional/TranslationTypes";
 import { CharacterTypes } from "../../../../../types/StoryData/Character/CharacterTypes";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
-import AsideScrollable from "../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
-import PlotfieldInput from "../../../../shared/Inputs/PlotfieldInput";
-import PlotfieldTextarea from "../../../../shared/Textareas/PlotfieldTextarea";
-import PreviewImage from "../../../../shared/utilities/PreviewImage";
+import AsideScrollable from "../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldTextarea from "../../../../../ui/Textareas/PlotfieldTextarea";
+import PreviewImage from "../../../../../ui/shared/PreviewImage";
 import { NewElementTypes } from "../MainContent/AllMightySearchMainContent";
 import { ALL_CHARACTER_TYPES_RUS, CharacterRusTypes } from "../MainContent/Character/EditingCharacter";
 

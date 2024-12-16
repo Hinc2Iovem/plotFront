@@ -24,7 +24,7 @@ export default function useCreateIfDuplicate({ topologyBlockId, episodeId }: Cre
     mutationFn: async ({
       commandOrder,
       plotfieldCommandId,
-      commandIfId,
+      plotfieldCommandIfId,
       isElse,
       topologyBlockId: bodyTopologyBlockId,
     }: CreateDuplicateOnMutation) => {
@@ -33,7 +33,7 @@ export default function useCreateIfDuplicate({ topologyBlockId, episodeId }: Cre
         .post(`/plotFieldCommands/ifs/topologyBlocks/${currentTopologyBlockId}/copy`, {
           commandOrder,
           plotfieldCommandId,
-          commandIfId,
+          plotfieldCommandIfId,
           isElse,
         })
         .then((r) => r.data);
@@ -55,7 +55,7 @@ export default function useCreateIfDuplicate({ topologyBlockId, episodeId }: Cre
         addCommand,
         characterId: newCommand.characterId || "",
         characterName: newCommand.characterName || "",
-        commandIfId: newCommand.commandIfId || "",
+        plotfieldCommandIfId: newCommand.plotfieldCommandIfId || "",
         commandName: newCommand.commandName || ("" as AllPossiblePlotFieldComamndsTypes),
         commandOrder: newCommand.commandOrder,
         emotionName: newCommand.emotionName || "",

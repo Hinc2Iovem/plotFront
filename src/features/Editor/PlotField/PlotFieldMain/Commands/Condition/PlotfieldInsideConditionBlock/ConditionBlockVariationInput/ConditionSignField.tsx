@@ -6,8 +6,8 @@ import {
 } from "../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import { PlotfieldConditionSingsPrompt } from "../../ConditionValueItem";
 import useConditionBlocks from "../../Context/ConditionContext";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
 
 type ConditionSignFieldTypes = {
   conditionBlockId: string;

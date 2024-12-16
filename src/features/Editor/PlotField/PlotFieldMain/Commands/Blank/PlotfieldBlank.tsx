@@ -10,8 +10,8 @@ import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useCreateAmbient from "../../../hooks/Ambient/useCreateAmbient";
@@ -266,84 +266,6 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
       }
     }
   };
-
-  // const handleCreatingOptimisticCommandIf = ({
-  //   commandName,
-  //   valueForSay,
-  //   characterId,
-  //   sayType,
-  //   characterName,
-  //   isElse,
-  // }: {
-  //   valueForSay: boolean;
-  //   commandName: AllPossiblePlotFieldComamndsTypes;
-  //   sayType?: CommandSayVariationTypes;
-  //   characterId?: string;
-  //   characterName?: string;
-  //   isElse: boolean;
-  // }) => {
-  //   if (valueForSay) {
-  //     if (characterId?.trim().length) {
-  //       updateCommandIfNameOptimistic({
-  //         id: plotFieldCommandId,
-  //         newCommand: "say",
-  //         characterId,
-  //         characterName,
-  //         sayType: "character",
-  //         isElse,
-  //       });
-  //       if (episodeId) {
-  //         addItem({
-  //           episodeId,
-  //           item: {
-  //             commandName: "character",
-  //             type: "command",
-  //             id: plotFieldCommandId,
-  //             text: "",
-  //             topologyBlockId,
-  //           },
-  //         });
-  //       }
-  //     } else {
-  //       updateCommandIfNameOptimistic({
-  //         id: plotFieldCommandId,
-  //         newCommand: "say",
-  //         sayType,
-  //         isElse,
-  //       });
-  //       if (episodeId) {
-  //         addItem({
-  //           episodeId,
-  //           item: {
-  //             commandName: sayType || "say",
-  //             type: "command",
-  //             id: plotFieldCommandId,
-  //             text: `${sayType || "author"}`,
-  //             topologyBlockId,
-  //           },
-  //         });
-  //       }
-  //     }
-  //   } else {
-  //     updateCommandIfNameOptimistic({
-  //       id: plotFieldCommandId,
-  //       newCommand: commandName,
-  //       isElse,
-  //     });
-  //     if (episodeId) {
-  //       addItem({
-  //         episodeId,
-  //         item: {
-  //           commandName: commandName,
-  //           type: "command",
-  //           id: plotFieldCommandId,
-  //           text: "",
-  //           topologyBlockId,
-  //         },
-  //       });
-  //     }
-  //   }
-  // };
 
   const handleSubmit = ({
     submittedByCharacter,

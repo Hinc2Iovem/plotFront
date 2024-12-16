@@ -3,7 +3,7 @@ import { StateCreator } from "zustand";
 type CommandsIfInfo = {
   amountOfCommandsInsideIf: number;
   amountOfCommandsInsideElse: number;
-  commandIfId: string;
+  plotfieldCommandIfId: string;
 };
 
 type UpdateCommandInfoSignType = "add" | "minus";
@@ -14,18 +14,18 @@ export type PlotfieldCommandIfInfoSliceTypes = {
   setCurrentAmountOfIfCommands: ({
     amountOfCommandsInsideElse,
     amountOfCommandsInsideIf,
-    commandIfId,
+   plotfieldCommandIfId,
   }: {
-    commandIfId: string;
+    plotfieldCommandIfId: string;
     amountOfCommandsInsideIf: number;
     amountOfCommandsInsideElse: number;
   }) => void;
   updateCommandIfInfo: ({
     addOrMinus,
-    commandIfId,
+   plotfieldCommandIfId,
     isElse,
   }: {
-    commandIfId: string;
+    plotfieldCommandIfId: string;
     isElse: boolean;
     addOrMinus: UpdateCommandInfoSignType;
   }) => void;
@@ -38,14 +38,14 @@ export const createPlotfieldSearchSlice: StateCreator<
   PlotfieldCommandIfInfoSliceTypes
 > = (set) => ({
   commandsIfInfo: [],
-  setCurrentAmountOfIfCommands: ({ commandIfId, amountOfCommandsInsideElse, amountOfCommandsInsideIf }) =>
+  setCurrentAmountOfIfCommands: ({plotfieldCommandIfId, amountOfCommandsInsideElse, amountOfCommandsInsideIf }) =>
     set((state) => {
-      const existingInfo = state.commandsIfInfo.find((c) => c.commandIfId === commandIfId);
+      const existingInfo = state.commandsIfInfo.find((c) => cplotfieldCommandIfId: ===plotfieldCommandIfId);
 
       if (existingInfo) {
         return {
           commandsIfInfo: state.commandsIfInfo.map((c) =>
-            c.commandIfId === commandIfId ? { ...c, amountOfCommandsInsideElse, amountOfCommandsInsideIf } : c
+            cplotfieldCommandIfId: ===plotfieldCommandIfId ? { ...c, amountOfCommandsInsideElse, amountOfCommandsInsideIf } : c
           ),
         };
       }
@@ -53,14 +53,14 @@ export const createPlotfieldSearchSlice: StateCreator<
       return {
         commandsIfInfo: [
           ...state.commandsIfInfo,
-          { commandIfId, amountOfCommandsInsideElse, amountOfCommandsInsideIf },
+          {plotfieldCommandIfId, amountOfCommandsInsideElse, amountOfCommandsInsideIf },
         ],
       };
     }),
-  updateCommandIfInfo: ({ commandIfId, addOrMinus, isElse }) =>
+  updateCommandIfInfo: ({plotfieldCommandIfId, addOrMinus, isElse }) =>
     set((state) => ({
       commandsIfInfo: state.commandsIfInfo.map((c) =>
-        c.commandIfId === commandIfId && isElse
+        cplotfieldCommandIfId: ===plotfieldCommandIfId && isElse
           ? {
               ...c,
               amountOfCommandsInsideElse:
@@ -70,7 +70,7 @@ export const createPlotfieldSearchSlice: StateCreator<
                   ? 0
                   : c.amountOfCommandsInsideElse - 1,
             }
-          : c.commandIfId === commandIfId && !isElse
+          : cplotfieldCommandIfId: ===plotfieldCommandIfId && !isElse
           ? {
               ...c,
               amountOfCommandsInsideIf:

@@ -3,7 +3,7 @@ import { ConditionSignTypes } from "../../../../../../../../types/StoryEditor/Pl
 import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionRetry from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionRetry";
 import ConditionSignField from "./ConditionSignField";
-import PlotfieldInput from "../../../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import ConditionBlockFieldName from "./shared/ConditionBlockFieldName";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";

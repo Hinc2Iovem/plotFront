@@ -90,7 +90,7 @@ export default function useHandleDuplicationProcess({
           characterName: currentCommand?.characterName,
           commandName: currentCommand?.command,
           emotionName: currentCommand?.emotionName,
-          commandIfId: currentCommand?.commandIfId,
+          plotfieldCommandIfId: currentCommand?.plotfieldCommandIfId,
           isElse: currentCommand?.isElse,
           sayType: currentCommand?.sayType,
           commandOrder:

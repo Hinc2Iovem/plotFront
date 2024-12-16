@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { SoundTypes } from "../../../../../types/StoryData/Sound/SoundTypes";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
-import PlotfieldButton from "../../../../shared/Buttons/PlotfieldButton";
-import PlotfieldInput from "../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
 import useCreateSound from "../../../PlotField/hooks/Sound/useCreateSound";
 
 type NewSoundFormTypes = {

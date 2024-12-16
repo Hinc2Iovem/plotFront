@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useCreateCharacter from "../../../hooks/Posting/Character/useCreateCharacter";
-import LightBox from "../../shared/utilities/LightBox";
+import LightBox from "../../../ui/shared/LightBox";
 import { SearchCharacterVariationTypes } from "../CharacterListPage";
 import { CharacterTypes } from "../../../types/StoryData/Character/CharacterTypes";
 import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";

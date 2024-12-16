@@ -153,12 +153,12 @@ export default function useHandleNavigationThroughCommands() {
                 key === "arrowup"
                   ? getPreviousCommandIfByPlotfieldId({
                       plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                      commandIfId: (currentFocusedCommandIf || [])[3] || "",
+                      plotfieldCommandIfId: (currentFocusedCommandIf || [])[3] || "",
                       isElse: false,
                     })
                   : getNextCommandIfByPlotfieldId({
                       plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                      commandIfId: (currentFocusedCommandIf || [])[3] || "",
+                      plotfieldCommandIfId: (currentFocusedCommandIf || [])[3] || "",
                       isElse: false,
                     });
             } else {
@@ -166,12 +166,12 @@ export default function useHandleNavigationThroughCommands() {
                 key === "arrowup"
                   ? getPreviousCommandIfByPlotfieldId({
                       plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                      commandIfId: (currentFocusedCommandIf || [])[3] || "",
+                      plotfieldCommandIfId: (currentFocusedCommandIf || [])[3] || "",
                       isElse: true,
                     })
                   : getNextCommandIfByPlotfieldId({
                       plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                      commandIfId: (currentFocusedCommandIf || [])[3] || "",
+                      plotfieldCommandIfId: (currentFocusedCommandIf || [])[3] || "",
                       isElse: true,
                     });
             }

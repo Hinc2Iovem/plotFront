@@ -4,7 +4,7 @@ import useCreateWardrobeAppearanceTypeBlock from "../../../hooks/Wardrobe/Wardro
 import PlotfieldAppearancePartPromptMain from "../Prompts/AppearanceParts/PlotfieldAppearancePartPromptMain";
 import CommandWardrobeChoosingAppearanceType from "./CommandWardrobeChoosingAppearanceType";
 import CommandWardrobeCharacter from "./CommandWardrobeCharacter";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 
 type WardrobeCharacterAppearancePartFormTypes = {
   characterId: string;

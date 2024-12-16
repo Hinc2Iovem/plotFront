@@ -6,8 +6,8 @@ import { useParams } from "react-router-dom";
 import useDeleteCharacteristic from "../../../../../../hooks/Deleting/Characteristic/useDeleteCharacteristic";
 import useUpdateCharacteristicTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacteristicTranslation";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import useCreateCharacteristicOptimistic from "../../../../../../hooks/Posting/Characteristic/useCreateCharacteristicOptimistic";
 

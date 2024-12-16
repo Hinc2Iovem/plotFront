@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import useGetAllCharactersByStoryIdAndType from "../../../../../../../hooks/Fetching/Character/useGetAllCharactersByStoryIdAndType";
 import useGetTranslationCharactersByStoryIdAndType from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByStoryIdAndType";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import PlotfieldUnknownCharactersPrompt from "./PlotfieldUnknownCharactersPrompt";
 
 export type UnknownCharacterValueTypes = {

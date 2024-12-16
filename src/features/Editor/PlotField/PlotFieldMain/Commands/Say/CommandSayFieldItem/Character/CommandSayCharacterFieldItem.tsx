@@ -1,23 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
-import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
 import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import { CommandSideTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import PlotfieldTextarea from "../../../../../../../shared/Textareas/PlotfieldTextarea";
-import TextSettingsModal from "../../../../../../components/TextSettingsModal";
 import "../../../../../../Flowchart/FlowchartStyles.css";
-import useGetTranslationSayEnabled from "../../../../../hooks/Say/useGetTranslationSayEnabled";
-import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
-import useUpdateSayTextSide from "../../../../../hooks/Say/useUpdateSayTextSide";
-import useUpdateSayTextStyle from "../../../../../hooks/Say/useUpdateSayTextStyle";
-import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
 import FormCharacter from "./FormCharacter";
 import FormEmotion from "./FormEmotion";
-import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
-import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
-import useSearch from "../../../../../../Context/Search/SearchContext";
-import { useParams } from "react-router-dom";
+import SayCharacterFieldItemTextArea from "./SayCharacterFieldItemTextArea";
+import usePrepareInitialStateCommandSay from "./usePrepareInitialStateCommandSay";
 
 type CommandSayCharacterFieldItemTypes = {
   plotFieldCommandSayId: string;
@@ -31,9 +21,6 @@ type CommandSayCharacterFieldItemTypes = {
   textStyle: TextStyleTypes;
   textSide: CommandSideTypes;
   characterName: string;
-
-  commandIfId?: string;
-  isElse?: boolean;
 };
 
 export type EmotionTypes = {
@@ -60,26 +47,11 @@ export default function CommandSayCharacterFieldItem({
   currentCharacterId,
   currentEmotionId,
   characterName,
-
-  commandIfId,
-  isElse,
 }: CommandSayCharacterFieldItemTypes) {
   const { episodeId } = useParams();
-  const {
-    updateCharacterProperties,
-    updateEmotionProperties,
-    getCommandByPlotfieldCommandId,
-    updateCommandSide,
-
-    updateCommandIfSide,
-    updateCharacterPropertiesIf,
-    updateEmotionPropertiesIf,
-    getCommandIfByPlotfieldCommandId,
-  } = usePlotfieldCommands();
 
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
   const [currentTextSide, setCurrentTextSide] = useState(textSide);
-  const [showTextSettingsModal, setShowTextSettingsModal] = useState(false);
 
   const [emotionValue, setEmotionValue] = useState<EmotionTypes>({
     _id: currentEmotionId || null,
@@ -88,130 +60,34 @@ export default function CommandSayCharacterFieldItem({
   });
 
   const [characterValue, setCharacterValue] = useState<CharacterValueTypes>({
-    _id: currentCharacterId,
-    characterName: null,
-    imgUrl: null,
+    _id: currentCharacterId || null,
+    characterName: characterName || null,
+    imgUrl: characterImg || null,
   });
-
-  const { data: currentCharacter } = useGetCharacterById({
-    characterId: characterValue?._id ? characterValue._id : currentCharacterId,
-  });
-
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
-
-  const currentInput = useRef<HTMLTextAreaElement | null>(null);
 
   const [showCreateCharacterModal, setShowCreateCharacterModal] = useState(false);
   const [showCreateEmotionModal, setShowCreateEmotionModal] = useState(false);
 
   const [textValue, setTextValue] = useState("");
 
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
-
-  const { data: translatedSayText } = useGetTranslationSayEnabled({
-    commandId: plotFieldCommandId,
-  });
   const [allEmotions, setAllEmotions] = useState<EmotionsTypes[]>([]);
 
-  const { addItem, updateValue } = useSearch();
-
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: "character",
-          id: plotFieldCommandId,
-          text: `${characterValue.characterName} ${emotionValue.emotionName} ${debouncedValue}`,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
-
-  useEffect(() => {
-    if (translatedSayText && !textValue.trim().length) {
-      setTextValue((translatedSayText.translations || []).find((ts) => ts.textFieldName === "sayText")?.text || "");
-    }
-  }, [translatedSayText]);
-
-  useEffect(() => {
-    if (currentCharacter) {
-      if (commandIfId?.trim().length) {
-        updateCharacterPropertiesIf({
-          characterId: currentCharacterId,
-          characterName:
-            getCommandIfByPlotfieldCommandId({
-              plotfieldCommandId: plotFieldCommandId,
-              commandIfId,
-              isElse: isElse || false,
-            })?.characterName || "",
-          id: plotFieldCommandId,
-          characterImg: currentCharacter?.img || characterImg || "",
-          isElse: isElse || false,
-        });
-      } else {
-        updateCharacterProperties({
-          characterId: currentCharacterId,
-          characterName:
-            getCommandByPlotfieldCommandId({
-              plotfieldCommandId: plotFieldCommandId,
-              topologyBlockId,
-            })?.characterName || "",
-          id: plotFieldCommandId,
-          characterImg: currentCharacter?.img || characterImg || "",
-        });
-      }
-
-      setCharacterValue((prev) => ({
-        _id: prev._id,
-        characterName: prev.characterName ? prev.characterName : characterName,
-        imgUrl: currentCharacter?.img || characterImg || "",
-      }));
-
-      const currentEmotion = currentCharacter.emotions.find((e) => e._id === emotionValue._id);
-
-      setAllEmotions(currentCharacter?.emotions);
-
-      if (currentEmotion) {
-        setEmotionValue({
-          _id: currentEmotion._id,
-          emotionName: currentEmotion?.emotionName || null,
-          imgUrl: currentEmotion?.imgUrl || null,
-        });
-
-        if (commandIfId?.trim().length) {
-          updateEmotionPropertiesIf({
-            emotionId: emotionValue._id || "",
-            emotionName: currentEmotion?.emotionName || emotionName || "",
-            emotionImg: currentEmotion?.imgUrl || emotionImg || "",
-            id: plotFieldCommandId,
-            isElse: isElse || false,
-          });
-        } else {
-          updateEmotionProperties({
-            emotionId: emotionValue._id || "",
-            emotionName: currentEmotion?.emotionName || emotionName || "",
-            emotionImg: currentEmotion?.imgUrl || emotionImg || "",
-            id: plotFieldCommandId,
-          });
-        }
-      }
-
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          commandName: "character",
-          id: plotFieldCommandId,
-          type: "command",
-          value: `${characterValue.characterName} ${emotionValue.emotionName} ${debouncedValue}`,
-        });
-      }
-    }
-  }, [currentCharacter]);
+  usePrepareInitialStateCommandSay({
+    characterId: characterValue?._id ? characterValue._id : currentCharacterId,
+    characterName: characterValue.characterName || "",
+    emotionId: emotionValue._id || "",
+    emotionName: emotionValue.emotionName || "",
+    episodeId: episodeId || "",
+    plotFieldCommandId,
+    setAllEmotions,
+    setCharacterValue,
+    setEmotionValue,
+    setTextValue,
+    textValue,
+    topologyBlockId,
+    characterImg,
+    emotionImg,
+  });
 
   useEffect(() => {
     if (showCreateCharacterModal) {
@@ -221,60 +97,8 @@ export default function CommandSayCharacterFieldItem({
     }
   }, [showCreateEmotionModal, showCreateCharacterModal]);
 
-  const updateCommandSayText = useUpdateCommandSayText({
-    commandId: plotFieldCommandId,
-    textValue,
-    topologyBlockId,
-  });
-
-  useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          commandName: "character",
-          id: plotFieldCommandId,
-          type: "command",
-          value: `${characterValue.characterName} ${emotionValue.emotionName} ${debouncedValue}`,
-        });
-      }
-      updateCommandSayText.mutate();
-      checkTextStyle({ debouncedValue, setCurrentTextStyle });
-      checkTextSide({
-        debouncedValue,
-        setCurrentTextSide,
-        plotfieldCommandId: plotFieldCommandId,
-        updateCommandSide,
-        commandIfId: commandIfId || "",
-        isElse: isElse || false,
-        updateCommandIfSide,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
-
   const [showCharacters, setShowCharacters] = useState(false);
   const [showAllEmotions, setShowAllEmotions] = useState(false);
-
-  const updateCommandSaySide = useUpdateSayTextSide({
-    sayId: plotFieldCommandSayId,
-  });
-
-  useEffect(() => {
-    if (currentTextSide && plotFieldCommandSayId?.trim().length) {
-      updateCommandSaySide.mutate({ textSide: currentTextSide });
-    }
-  }, [currentTextSide]);
-
-  const updateCommandSayStyle = useUpdateSayTextStyle({
-    sayId: plotFieldCommandSayId,
-  });
-
-  useEffect(() => {
-    if (currentTextStyle && plotFieldCommandSayId?.trim().length) {
-      updateCommandSayStyle.mutate({ textStyle: currentTextStyle });
-    }
-  }, [currentTextStyle]);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full h-fit bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
@@ -292,8 +116,6 @@ export default function CommandSayCharacterFieldItem({
           setEmotionValue={setEmotionValue}
           characterValue={characterValue}
           setCharacterValue={setCharacterValue}
-          commandIfId={commandIfId || ""}
-          isElse={isElse || false}
         />
         <FormEmotion
           emotionValue={emotionValue}
@@ -308,46 +130,23 @@ export default function CommandSayCharacterFieldItem({
           setShowCharacters={setShowCharacters}
           showAllEmotions={showAllEmotions}
           characterId={characterValue._id || ""}
-          commandIfId={commandIfId || ""}
-          isElse={isElse || false}
         />
       </div>
-      <form className="sm:w-[57%] flex-grow w-full h-full relative">
-        <PlotfieldTextarea
-          value={textValue}
-          ref={currentInput}
-          placeholder="Such a lovely day"
-          onContextMenu={(e) => {
-            e.preventDefault();
-            setShowTextSettingsModal((prev) => !prev);
-          }}
-          className={`${
-            currentTextStyle === "underscore"
-              ? "underline"
-              : currentTextStyle === "bold"
-              ? "font-bold"
-              : currentTextStyle === "italic"
-              ? "italic"
-              : ""
-          } ${currentTextSide === "right" ? "text-right" : "text-left"} h-full min-h-[7.5rem]`}
-          onChange={(e) => setTextValue(e.target.value)}
-        />
 
-        <TextSettingsModal
-          translateY="translate-y-[-15rem]"
-          setShowModal={setShowTextSettingsModal}
-          currentTextStyle={currentTextStyle}
-          setCurrentTextStyle={setCurrentTextStyle}
-          showModal={showTextSettingsModal}
-          showTextSideRow={true}
-          showTextStyleRow={true}
-          setTextValue={setTextValue}
-          plotfieldCommandId={plotFieldCommandId}
-          setCurrentTextSide={setCurrentTextSide}
-          currentSide={currentTextSide}
-          isElse={isElse}
-        />
-      </form>
+      <SayCharacterFieldItemTextArea
+        characterName={typeof characterValue.characterName === "string" ? characterValue.characterName : ""}
+        currentTextSide={currentTextSide}
+        currentTextStyle={currentTextStyle}
+        emotionName={typeof emotionValue.emotionName === "string" ? emotionValue.emotionName : ""}
+        episodeId={episodeId || ""}
+        plotFieldCommandSayId={plotFieldCommandSayId}
+        plotFieldCommandId={plotFieldCommandId}
+        setCurrentTextSide={setCurrentTextSide}
+        setCurrentTextStyle={setCurrentTextStyle}
+        setTextValue={setTextValue}
+        textValue={textValue}
+        topologyBlockId={topologyBlockId}
+      />
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import { useParams } from "react-router-dom";
 import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";

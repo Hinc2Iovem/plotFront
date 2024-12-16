@@ -3,10 +3,10 @@ import {
   ALL_LANGUAGES,
   CurrentlyAvailableLanguagesTypes,
 } from "../../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import PlotfieldButton from "../../../../../../../shared/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollableButton from "../../../../../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import AsideScrollableButton from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import useConditionBlocks from "../../Context/ConditionContext";
 import useUpdateConditionLanguage from "../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionLanguage";
 import useSearch from "../../../../../../Context/Search/SearchContext";

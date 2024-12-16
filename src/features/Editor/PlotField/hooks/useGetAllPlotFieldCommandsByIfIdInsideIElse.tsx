@@ -3,17 +3,15 @@ import { axiosCustomized } from "../../../../api/axios";
 import { PlotFieldCommandIfTypes } from "../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 
 export default function useGetAllPlotFieldCommandsByIfIdInsideElse({
-  commandIfId,
+  plotfieldCommandIfId,
 }: {
-  commandIfId: string;
+  plotfieldCommandIfId: string;
 }) {
   return useQuery({
-    queryKey: ["plotfield", "commandIf", commandIfId, "insideElse"],
+    queryKey: ["plotfield", "commandIf", plotfieldCommandIfId, "insideElse"],
     queryFn: async () =>
       await axiosCustomized
-        .get<PlotFieldCommandIfTypes[]>(
-          `/plotField/commandIfs/${commandIfId}/insideElse`
-        )
+        .get<PlotFieldCommandIfTypes[]>(`/plotField/commandIfs/${plotfieldCommandIfId}/insideElse`)
         .then((r) => r.data),
     select: (data) => data.sort((a, b) => a.commandOrder - b.commandOrder),
     enabled: !!commandIfId,

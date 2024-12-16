@@ -4,8 +4,8 @@ import useOutOfModal from "../../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../../hooks/utilities/useDebounce";
 import CheckForCompletenessAppearancePart from "./CheckForCompletenessAppearancePart";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import AsideScrollable from "../../../../shared/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldInput from "../../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
 
 type CharacterPromptTypes = {
   setCharacterId: React.Dispatch<React.SetStateAction<string>>;

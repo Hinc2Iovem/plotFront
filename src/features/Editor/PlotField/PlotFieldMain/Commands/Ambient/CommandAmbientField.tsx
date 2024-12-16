@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import useGetCommandAmbient from "../../../hooks/Ambient/useGetCommandAmbient";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateAmbientText from "../../../hooks/Ambient/useUpdateAmbientText";
-import PlotfieldCommandNameField from "../../../../../shared/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../shared/Inputs/PlotfieldInput";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetCommandAmbient from "../../../hooks/Ambient/useGetCommandAmbient";
+import useUpdateAmbientText from "../../../hooks/Ambient/useUpdateAmbientText";
 
 type CommandAmbientFieldTypes = {
   plotFieldCommandId: string;
@@ -44,45 +44,35 @@ export default function CommandAmbientField({
     }
   }, [commandAmbient]);
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "ambient",
-          id: plotFieldCommandId,
-          text: textValue,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
-
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
+  useAddItemInsideSearch({
+    commandName: nameValue || "ambient",
+    id: plotFieldCommandId,
+    text: textValue,
+    topologyBlockId,
+    type: "command",
+  });
 
   const updateAmbientText = useUpdateAmbientText({
     ambientId: commandAmbientId,
-    ambientName: debouncedValue,
+    ambientName: textValue,
   });
 
-  useEffect(() => {
-    if (commandAmbient?.ambientName !== debouncedValue && debouncedValue?.trim().length) {
+  const onBlur = () => {
+    if (commandAmbient?.ambientName !== textValue) {
       if (episodeId) {
         updateValue({
           episodeId,
           commandName: "ambient",
           id: plotFieldCommandId,
           type: "command",
-          value: debouncedValue,
+          value: textValue,
         });
       }
       updateAmbientText.mutate();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  };
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
@@ -94,6 +84,7 @@ export default function CommandAmbientField({
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
           type="text"
+          onBlur={onBlur}
           value={textValue}
           ref={currentInput}
           placeholder="Such a lovely day"

@@ -16,7 +16,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import ProfileLayout from "./layouts/ProfileLayout";
 import StoryLayout from "./layouts/StoryLayout";
 import KeyBinds from "./features/StorySinglePage/KeyBinds/KeyBinds";
-import useHandleTheme from "./hooks/helpers/useHandleTheme";
+import useHandleTheme from "./hooks/helpers/shared/useHandleTheme";
 
 export default function App() {
   useHandleTheme();
@@ -30,46 +30,18 @@ export default function App() {
         </Route>
 
         <Route element={<PersistLogin />}>
-          <Route
-            element={
-              <RequireAuth
-                allowedRoles={[
-                  "scriptwriter",
-                  "editor",
-                  "headscriptwriter",
-                  "translator",
-                ]}
-              />
-            }
-          >
+          <Route element={<RequireAuth allowedRoles={["scriptwriter", "editor", "headscriptwriter", "translator"]} />}>
             <Route element={<StoryLayout />}>
               <Route path="stories/:storyId" element={<StorySinglePage />} />
               <Route path="stories/:storyId/emotions" element={<Emotion />} />
               <Route path="stories/:storyId/wardrobes" element={<Wardrobe />} />
               <Route path="stories/:storyId/keyBinds" element={<KeyBinds />} />
-              <Route
-                path="stories/:storyId/characters"
-                element={<CharacterListPage />}
-              />
-              <Route
-                path="stories/:storyId/editor/episodes/:episodeId"
-                element={<EpisodeEditor />}
-              />
+              <Route path="stories/:storyId/characters" element={<CharacterListPage />} />
+              <Route path="stories/:storyId/editor/episodes/:episodeId" element={<EpisodeEditor />} />
             </Route>
           </Route>
 
-          <Route
-            element={
-              <RequireAuth
-                allowedRoles={[
-                  "translator",
-                  "editor",
-                  "headscriptwriter",
-                  "scriptwriter",
-                ]}
-              />
-            }
-          >
+          <Route element={<RequireAuth allowedRoles={["translator", "editor", "headscriptwriter", "scriptwriter"]} />}>
             <Route element={<ProfileLayout />} path="profile/:staffId">
               <Route index element={<Profile />} />
             </Route>

@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useUpdateConditionBlockOrderOfExecution from "../../../hooks/Condition/ConditionBlock/useUpdateConditionBlockOrderOfExecution";
 import useConditionBlocks from "./Context/ConditionContext";
-import PlotfieldButton from "../../../../../shared/Buttons/PlotfieldButton";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 
 type DisplayOrderOfIfsModalTypes = {
   currentOrder: number | null;

@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import useGetAllCharactersByStoryId from "../../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
 import useGetTranslationCharacters from "../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
-import PlotfieldInput from "../../../shared/Inputs/PlotfieldInput";
-import AsideScrollable from "../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../shared/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../ui/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 
 type KeyBindsCharacterModalTypes = {

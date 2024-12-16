@@ -3,22 +3,19 @@ import { axiosCustomized } from "../../../../api/axios";
 
 type CreatePlotFieldCommandInsideIfBlockTypes = {
   topologyBlockId: string;
-  commandIfId: string;
+  plotfieldCommandIfId: string;
   isElse?: boolean;
 };
 
 export default function useCreatePlotFieldCommandInsideIfBlock({
-  commandIfId,
+  plotfieldCommandIfId,
   topologyBlockId,
   isElse,
 }: CreatePlotFieldCommandInsideIfBlockTypes) {
   return useMutation({
     mutationFn: async () =>
-      await axiosCustomized.post(
-        `/plotField/topologyBlocks/${topologyBlockId}/commandIfs/${commandIfId}`,
-        {
-          isElse,
-        }
-      ),
+      await axiosCustomized.post(`/plotField/topologyBlocks/${topologyBlockId}/commandIfs/${plotfieldCommandIfId}`, {
+        isElse,
+      }),
   });
 }

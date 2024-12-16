@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import CharacterPrompt from "../../Profile/Translator/InputPrompts/CharacterPrompt/CharacterPrompt";
 import useOutOfModal from "../../../hooks/UI/useOutOfModal";
 import useCreateEmotion from "../../../hooks/Posting/Emotion/useCreateEmotion";
-import PlotfieldInput from "../../shared/Inputs/PlotfieldInput";
+import PlotfieldInput from "../../../ui/Inputs/PlotfieldInput";
 import { generateMongoObjectId } from "../../../utils/generateMongoObjectId";
 
 type HeaderCreateEmotionTypes = {

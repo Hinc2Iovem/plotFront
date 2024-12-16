@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { axiosCustomized } from "../../api/axios";
 import createStory from "../../assets/images/Story/createStory.png";
 import profile from "../../assets/images/Story/profile.png";
-import ButtonHoverPromptModal from "../shared/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import LightBox from "../shared/utilities/LightBox";
+import ButtonHoverPromptModal from "../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import LightBox from "../../ui/shared/LightBox";
 import { StoryTypes } from "../../types/StoryData/Story/StoryTypes";
 import { CurrentlyAvailableLanguagesTypes } from "../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
@@ -38,10 +38,7 @@ const handleCreatingStory = async ({
     .then((r) => r.data);
 };
 
-export default function StoryHeader({
-  setSearchValue,
-  searchValue,
-}: StoryHeaderTypes) {
+export default function StoryHeader({ setSearchValue, searchValue }: StoryHeaderTypes) {
   const { userId } = useGetDecodedJWTValues();
   const [showCreatingModal, setShowCreatingModal] = useState(false);
   const [title, setTitle] = useState("");
@@ -63,11 +60,7 @@ export default function StoryHeader({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      !title?.trim() ||
-      !description?.trim().length ||
-      !genres?.trim().length
-    ) {
+    if (!title?.trim() || !description?.trim().length || !genres?.trim().length) {
       console.error("Title, description and genres should be filled");
       return;
     }
@@ -100,11 +93,7 @@ export default function StoryHeader({
           >
             <img src={createStory} alt="CreateStory" className="w-[3.5rem]" />
           </ButtonHoverPromptModal>
-          <ButtonHoverPromptModal
-            contentName="Профиль"
-            positionByAbscissa="right"
-            asideClasses="text-[1.5rem]"
-          >
+          <ButtonHoverPromptModal contentName="Профиль" positionByAbscissa="right" asideClasses="text-[1.5rem]">
             <Link to={`/profile/${userId}`}>
               <img src={profile} alt="Profile" className="w-[3.5rem]" />
             </Link>
@@ -116,10 +105,7 @@ export default function StoryHeader({
           showCreatingModal ? "top-[10rem]" : "-top-[100%]"
         } bg-secondary md:w-[40rem] w-[30rem] transition-all md:h-[40rem] min-h-[30rem] h-fit rounded-md fixed z-[10] left-1/2 -translate-x-1/2`}
       >
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-[1rem] p-[1.5rem] h-full"
-        >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-[1rem] p-[1.5rem] h-full">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -150,10 +136,7 @@ export default function StoryHeader({
           </button>
         </form>
       </aside>
-      <LightBox
-        isLightBox={showCreatingModal}
-        setIsLightBox={setShowCreatingModal}
-      />
+      <LightBox isLightBox={showCreatingModal} setIsLightBox={setShowCreatingModal} />
     </>
   );
 }

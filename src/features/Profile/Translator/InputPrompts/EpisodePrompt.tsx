@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import useGetEpisodesTranslationsBySeasonId from "../../../../hooks/Fetching/Translation/Episode/useGetEpisodesTranslationsBySeasonId";
 import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
 import useDebounce from "../../../../hooks/utilities/useDebounce";
-import AsideScrollable from "../../../shared/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../shared/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldInput from "../../../shared/Inputs/PlotfieldInput";
+import AsideScrollable from "../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import PlotfieldInput from "../../../../ui/Inputs/PlotfieldInput";
 
 type EpisodePromptTypes = {
   setEpisodeId: React.Dispatch<React.SetStateAction<string>>;

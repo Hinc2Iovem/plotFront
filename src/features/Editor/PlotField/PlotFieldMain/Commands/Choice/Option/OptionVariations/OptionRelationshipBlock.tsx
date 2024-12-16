@@ -134,7 +134,7 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
           showCharacterModal={showAllCharacters}
           setCharacterImg={setCharacterImg}
           translateAsideValue="translate-y-[3.5rem]"
-          commandIfId=""
+          plotfieldCommandIfId=""
           isElse={false}
         />
       </form>

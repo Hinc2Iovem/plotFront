@@ -1,13 +1,10 @@
 import { ComponentProps, forwardRef, useRef } from "react";
 import { twMerge } from "tailwind-merge";
-import useBlurOutline from "../../../hooks/UI/useBlurOutline";
+import useBlurOutline from "../../hooks/UI/useBlurOutline";
 
 type PlotFieldTextareaTypes = ComponentProps<"textarea">;
 
-const PlotfieldTextarea = forwardRef<
-  HTMLTextAreaElement,
-  PlotFieldTextareaTypes
->(({ className, ...props }, ref) => {
+const PlotfieldTextarea = forwardRef<HTMLTextAreaElement, PlotFieldTextareaTypes>(({ className, ...props }, ref) => {
   const theme = localStorage.getItem("theme");
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
