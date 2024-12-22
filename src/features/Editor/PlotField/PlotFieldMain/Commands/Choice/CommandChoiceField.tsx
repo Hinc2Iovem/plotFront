@@ -8,8 +8,8 @@ import useGoingUpFromChoiceOptions from "../../../hooks/Choice/helpers/useGoingU
 import useHandleNavigationThroughOptionsInsideChoice from "../../../hooks/Choice/helpers/useHandleNavigationThroughOptionsInsideChoice";
 import useGetCommandChoice from "../../../hooks/Choice/useGetCommandChoice";
 import useUpdateChoiceIsAuthor from "../../../hooks/Choice/useUpdateChoiceIsAuthor";
-import ChoiceQuestionField from "./ChoiceQuestionField";
-import ChoiceVariationTypeBlock from "./ChoiceVariationTypeBlock";
+import ChoiceQuestionField from "./QuestionField/ChoiceQuestionField";
+import ChoiceVariationTypeBlock from "./VariationTypeBlock/ChoiceVariationTypeBlock";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
 
 type CommandChoiceFieldTypes = {
@@ -21,7 +21,6 @@ type CommandChoiceFieldTypes = {
 export default function CommandChoiceField({ plotFieldCommandId, command, topologyBlockId }: CommandChoiceFieldTypes) {
   const [timeLimit, setTimeLimit] = useState<number>(0);
   const [exitBlockId, setExitBlockId] = useState("");
-  const theme = localStorage.getItem("theme");
   const [nameValue] = useState<string>(command ?? "Choice");
   const [commandChoiceId, setCommandChoiceId] = useState("");
   const [amountOfOptions, setAmountOfOptions] = useState<number>();
@@ -29,6 +28,7 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
   const [characterId, setCharacterId] = useState("");
   const [isAuthor, setIsAuthor] = useState<boolean>();
   const [choiceVariationTypes, setChoiceVariationTypes] = useState<ChoiceVariationsTypes>("" as ChoiceVariationsTypes);
+
   const { data: commandChoice } = useGetCommandChoice({
     plotFieldCommandId,
   });
@@ -86,18 +86,6 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
     }
   }, [commandChoice]);
 
-  const updateChoiceIsAuthor = useUpdateChoiceIsAuthor({
-    choiceId: commandChoiceId,
-  });
-
-  const [disabledBtn, setDisabledBtn] = useState(false);
-
-  useEffect(() => {
-    if (updateChoiceIsAuthor.isSuccess) {
-      setDisabledBtn(false);
-    }
-  }, [updateChoiceIsAuthor]);
-
   return (
     <div className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-start">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -119,23 +107,7 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
         insidePlotfield={true}
       />
 
-      <button
-        onClick={() => {
-          setIsAuthor((prev) => !prev);
-          setDisabledBtn(true);
-          updateChoiceIsAuthor.mutate({ isAuthor: !isAuthor });
-        }}
-        disabled={disabledBtn}
-        className={`rounded-md ${
-          isAuthor
-            ? `${theme === "light" ? "bg-green-300" : "bg-green-400"} text-text-dark`
-            : "bg-secondary text-gray-700"
-        } ${disabledBtn ? "cursor-not-allowed" : ""} ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-text-light flex-grow shadow-md text-[1.3rem] px-[1rem] py-[.5rem] outline-gray-300`}
-      >
-        Автор
-      </button>
+      <UpdateIsAuthorButton commandChoiceId={commandChoiceId} isAuthor={isAuthor} setIsAuthor={setIsAuthor} />
 
       <ChoiceQuestionField
         textStyle={commandChoice?.textStyle || "default"}
@@ -143,7 +115,6 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
         plotFieldCommandId={plotFieldCommandId}
         characterEmotionId={commandChoice?.characterEmotionId || ""}
         characterId={characterId}
-        setCharacterId={setCharacterId}
         isAuthor={isAuthor || false}
         choiceId={commandChoice?._id || ""}
       />
@@ -161,5 +132,46 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
         />
       ) : null}
     </div>
+  );
+}
+
+type UpdateIsAuthorButtonTypes = {
+  commandChoiceId: string;
+  isAuthor: boolean | undefined;
+  setIsAuthor: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+};
+
+function UpdateIsAuthorButton({ commandChoiceId, isAuthor, setIsAuthor }: UpdateIsAuthorButtonTypes) {
+  const theme = localStorage.getItem("theme");
+
+  const updateChoiceIsAuthor = useUpdateChoiceIsAuthor({
+    choiceId: commandChoiceId,
+  });
+
+  const [disabledBtn, setDisabledBtn] = useState(false);
+
+  useEffect(() => {
+    if (updateChoiceIsAuthor.isSuccess) {
+      setDisabledBtn(false);
+    }
+  }, [updateChoiceIsAuthor]);
+  return (
+    <button
+      onClick={() => {
+        setIsAuthor((prev) => !prev);
+        setDisabledBtn(true);
+        updateChoiceIsAuthor.mutate({ isAuthor: !isAuthor });
+      }}
+      disabled={disabledBtn}
+      className={`rounded-md ${
+        isAuthor
+          ? `${theme === "light" ? "bg-green-300" : "bg-green-400"} text-text-dark`
+          : "bg-secondary text-gray-700"
+      } ${disabledBtn ? "cursor-not-allowed" : ""} ${
+        theme === "light" ? "outline-gray-300" : "outline-gray-600"
+      } text-text-light flex-grow shadow-md text-[1.3rem] px-[1rem] py-[.5rem] outline-gray-300`}
+    >
+      Автор
+    </button>
   );
 }

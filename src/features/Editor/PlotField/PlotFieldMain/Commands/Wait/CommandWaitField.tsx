@@ -6,6 +6,7 @@ import useGetCommandWait from "../../../hooks/Wait/useGetCommandWait";
 import useUpdateWaitText from "../../../hooks/Wait/useUpdateWaitText";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandWaitFieldTypes = {
   plotFieldCommandId: string;
@@ -29,37 +30,25 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
   useEffect(() => {
     if (commandWait && !commandWaitId?.trim().length) {
       setCommandWaitId(commandWait._id);
+      setWaitValue(commandWait?.waitValue?.toString());
     }
-  }, [commandWait]);
+  }, [commandWait, commandWaitId]);
 
-  useEffect(() => {
-    if (commandWait?.waitValue) {
-      setWaitValue(commandWait.waitValue.toString());
-    }
-  }, [commandWait]);
+  const { updateValue } = useSearch();
 
-  const { addItem, updateValue } = useSearch();
-
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "wait",
-          id: plotFieldCommandId,
-          text: waitValue,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "wait",
+    id: plotFieldCommandId,
+    text: waitValue,
+    topologyBlockId,
+    type: "command",
+  });
 
   const updateWaitText = useUpdateWaitText({
     waitValue: Number(waitValue),
   });
 
-  useEffect(() => {
+  const onBlur = () => {
     if (waitValue) {
       if (episodeId) {
         updateValue({ episodeId, commandName: "wait", id: plotFieldCommandId, type: "command", value: waitValue });
@@ -68,8 +57,7 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
         waitId: commandWaitId || commandWait?._id || "",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [waitValue]);
+  };
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
@@ -80,6 +68,7 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
       </div>
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
+          onBlur={onBlur}
           value={waitValue || ""}
           type="number"
           placeholder="Ожидание"

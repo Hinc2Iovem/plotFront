@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetPremiumOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetPremiumOption";
-import useSearch from "../../../../../../Context/Search/SearchContext";
-import { useParams } from "react-router-dom";
 
 type OptionPremiumBlockTypes = {
   choiceOptionId: string;
@@ -27,16 +27,9 @@ export default function OptionPremiumBlock({ choiceOptionId, debouncedValue }: O
     choiceOptionId,
   });
 
-  useEffect(() => {
-    if (priceAmethysts) {
-      updateOptionPremium.mutate({ priceAmethysts: +priceAmethysts });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [priceAmethysts]);
-
   const { updateValue } = useSearch();
 
-  useEffect(() => {
+  const updateValues = () => {
     if (episodeId) {
       updateValue({
         episodeId,
@@ -46,7 +39,20 @@ export default function OptionPremiumBlock({ choiceOptionId, debouncedValue }: O
         type: "choiceOption",
       });
     }
-  }, [priceAmethysts, debouncedValue, episodeId]);
+  };
+
+  const onBlur = () => {
+    updateValues();
+    if (priceAmethysts) {
+      updateOptionPremium.mutate({ priceAmethysts: +priceAmethysts });
+    }
+  };
+
+  useEffect(() => {
+    if (episodeId) {
+      updateValues();
+    }
+  }, [episodeId]);
 
   return (
     <div className="self-end flex-grow w-full px-[.5rem]">
@@ -57,6 +63,7 @@ export default function OptionPremiumBlock({ choiceOptionId, debouncedValue }: O
           theme === "light" ? "outline-gray-300" : "outline-gray-600"
         } rounded-md shadow-md`}
         value={priceAmethysts || ""}
+        onBlur={onBlur}
         onChange={(e) => setPriceAmethysts(+e.target.value)}
       />
     </div>

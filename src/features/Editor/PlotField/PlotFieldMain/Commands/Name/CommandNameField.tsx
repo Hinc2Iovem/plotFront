@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
@@ -12,6 +12,7 @@ import PlotfieldUnknownCharacterPromptMain, {
   UnknownCharacterValueTypes,
 } from "../Prompts/Characters/PlotfieldUnknownCharacterPromptMain";
 import { useParams } from "react-router-dom";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandNameFieldTypes = {
   plotFieldCommandId: string;
@@ -37,7 +38,6 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
-  const [focusedSecondTimeFirst, setFocusedSecondTimeFirst] = useState(false);
 
   const [commandNameId, setCommandNameId] = useState("");
 
@@ -70,22 +70,15 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
     }
   }, [translatedCharacter]);
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "name",
-          id: plotFieldCommandId,
-          text: `${characterValue.characterUnknownName} ${characterValue.characterName}`,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "name",
+    id: plotFieldCommandId,
+    text: `${characterValue.characterUnknownName} ${characterValue.characterName}`,
+    topologyBlockId,
+    type: "command",
+  });
 
   useEffect(() => {
     if (commandName) {
@@ -96,6 +89,13 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
       }));
     }
   }, [commandName]);
+
+  const currentInput = useRef<{ updateCharacterOnBlur: () => void }>(null);
+  const handleOnBlur = () => {
+    if (currentInput.current) {
+      currentInput.current.updateCharacterOnBlur();
+    }
+  };
 
   const updateNameText = useUpdateNameText({
     nameId: commandNameId,
@@ -116,8 +116,8 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
     delay: 500,
   });
 
-  useEffect(() => {
-    if (characterDebouncedValue && characterValue.characterUnknownName !== characterDebouncedValue && episodeId) {
+  const onBlurUpdateSearchValue = () => {
+    if (episodeId) {
       updateValue({
         episodeId,
         commandName: "name",
@@ -126,7 +126,7 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
         value: `${characterValue.characterUnknownName} ${characterValue.characterName}`,
       });
     }
-  }, [characterDebouncedValue, episodeId]);
+  };
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
@@ -144,11 +144,13 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
       >
         <div className="flex-grow min-w-[20rem] sm:w-[calc(50%-2rem)] relative flex gap-[.5rem]">
           <PlotfieldInput
-            focusedSecondTime={focusedSecondTimeFirst}
-            setFocusedSecondTime={setFocusedSecondTimeFirst}
             onClick={(e) => {
               e.stopPropagation();
               setShowCharacterList(true);
+            }}
+            onBlur={() => {
+              handleOnBlur();
+              onBlurUpdateSearchValue();
             }}
             value={characterValue.characterUnknownName}
             onChange={(e) => {

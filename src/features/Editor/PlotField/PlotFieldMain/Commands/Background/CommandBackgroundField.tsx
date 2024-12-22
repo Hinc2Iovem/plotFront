@@ -9,6 +9,7 @@ import useUpdateBackgroundText from "../../../hooks/Background/useUpdateBackgrou
 import BackgroundMusicForm from "./BackgroundMusicForm";
 import BackgroundNameAndImage from "./BackgroundNameAndImage";
 import BackgroundPointOfMovement from "./BackgroundPointOfMovement";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandBackgroundFieldTypes = {
   plotFieldCommandId: string;
@@ -44,12 +45,7 @@ export default function CommandBackgroundField({
       setCommandBackgroundId(commandBackground._id);
       setPreview(commandBackground?.imgUrl ?? "");
       setPointOfMovement(commandBackground?.pointOfMovement ?? "");
-    }
-  }, [commandBackground]);
-
-  useEffect(() => {
-    if (commandBackground?.backgroundName) {
-      setBackgroundName(commandBackground.backgroundName);
+      setBackgroundName(commandBackground?.backgroundName || "");
     }
   }, [commandBackground]);
 
@@ -61,22 +57,15 @@ export default function CommandBackgroundField({
     backgroundId: commandBackgroundId,
   });
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "background",
-          id: plotFieldCommandId,
-          text: `${debouncedNameValue} ${currentMusicName} ${pointOfMovement}`,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "background",
+    id: plotFieldCommandId,
+    text: `${debouncedNameValue} ${currentMusicName} ${pointOfMovement}`,
+    topologyBlockId,
+    type: "command",
+  });
 
   useEffect(() => {
     if (commandBackground?.backgroundName !== debouncedNameValue && debouncedNameValue?.trim().length) {

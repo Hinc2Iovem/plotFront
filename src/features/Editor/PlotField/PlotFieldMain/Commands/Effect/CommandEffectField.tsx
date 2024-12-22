@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import useGetCommandEffect from "../../../hooks/Effect/useGetCommandEffect";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateEffectText from "../../../hooks/Effect/useUpdateEffectText";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetCommandEffect from "../../../hooks/Effect/useGetCommandEffect";
+import useUpdateEffectText from "../../../hooks/Effect/useUpdateEffectText";
 
 type CommandEffectFieldTypes = {
   plotFieldCommandId: string;
@@ -32,54 +32,37 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
   useEffect(() => {
     if (commandEffect) {
       setCommandEffectId(commandEffect._id);
+      setTextValue(commandEffect?.effectName);
     }
   }, [commandEffect]);
-
-  useEffect(() => {
-    if (commandEffect?.effectName) {
-      setTextValue(commandEffect.effectName);
-    }
-  }, [commandEffect]);
-
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateEffectText = useUpdateEffectText({
     effectId: commandEffectId,
-    effectName: debouncedValue,
+    effectName: textValue,
   });
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
+  useAddItemInsideSearch({
+    commandName: nameValue || "effect",
+    id: plotFieldCommandId,
+    text: textValue,
+    topologyBlockId,
+    type: "command",
+  });
+
+  const onBlur = () => {
     if (episodeId) {
-      addItem({
+      updateValue({
         episodeId,
-        item: {
-          commandName: nameValue || "effect",
-          id: plotFieldCommandId,
-          text: textValue,
-          topologyBlockId,
-          type: "command",
-        },
+        commandName: "effect",
+        id: plotFieldCommandId,
+        type: "command",
+        value: textValue,
       });
     }
-  }, [episodeId]);
-
-  useEffect(() => {
-    if (commandEffect?.effectName !== debouncedValue && debouncedValue?.trim().length) {
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          commandName: "effect",
-          id: plotFieldCommandId,
-          type: "command",
-          value: debouncedValue,
-        });
-      }
-      updateEffectText.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+    updateEffectText.mutate();
+  };
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
@@ -91,6 +74,7 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
           ref={currentInput}
+          onBlur={onBlur}
           value={textValue}
           type="text"
           placeholder="Such a lovely day"

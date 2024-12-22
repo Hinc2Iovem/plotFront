@@ -10,6 +10,8 @@ import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import { CharacterValueTypes } from "../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 type CommandSuitFieldTypes = {
   plotFieldCommandId: string;
@@ -21,9 +23,11 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Suit");
   const [textValue, setTextValue] = useState("");
-  const [currentCharacterId, setCurrentCharacterId] = useState("");
-  const [currentCharacterImg, setCurrentCharacterImg] = useState("");
-  const [currentCharacterName, setCurrentCharacterName] = useState("");
+  const [characterValue, setCharacterValue] = useState<CharacterValueTypes>({
+    _id: null,
+    characterName: null,
+    imgUrl: null,
+  });
   const [showCharacterList, setShowCharacterList] = useState(false);
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
@@ -31,8 +35,6 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
   const { data: commandSuit } = useGetCommandSuit({
     plotFieldCommandId,
   });
-  const [focusedSecondTimeFirst, setFocusedSecondTimeFirst] = useState(false);
-  const [focusedSecondTimeSecond, setFocusedSecondTimeSecond] = useState(false);
 
   const [commandSuitId, setCommandSuitId] = useState("");
 
@@ -46,7 +48,10 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
 
   useEffect(() => {
     if (character) {
-      setCurrentCharacterImg(character?.img as string);
+      setCharacterValue((prev) => ({
+        ...prev,
+        imgUrl: character?.img || "",
+      }));
     }
   }, [character]);
 
@@ -54,7 +59,10 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
     if (translatedCharacter) {
       translatedCharacter.translations?.map((tc) => {
         if (tc.textFieldName === "characterName") {
-          setCurrentCharacterName(tc.text ?? "");
+          setCharacterValue((prev) => ({
+            ...prev,
+            characterName: tc?.text || "",
+          }));
         }
       });
     }
@@ -63,61 +71,47 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
   useEffect(() => {
     if (commandSuit) {
       setCommandSuitId(commandSuit._id);
-      setCurrentCharacterId(commandSuit?.characterId ?? "");
+      setCharacterValue((prev) => ({
+        ...prev,
+        _id: commandSuit?.characterId || "",
+      }));
+      setTextValue(commandSuit?.suitName);
     }
   }, [commandSuit]);
 
-  useEffect(() => {
-    if (commandSuit?.suitName) {
-      setTextValue(commandSuit.suitName);
-    }
-  }, [commandSuit]);
+  const { updateValue } = useSearch();
 
-  const { addItem, updateValue } = useSearch();
-
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "suit",
-          id: plotFieldCommandId,
-          text: textValue,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "suit",
+    id: plotFieldCommandId,
+    text: textValue,
+    topologyBlockId,
+    type: "command",
+  });
 
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateSuitText = useUpdateSuitText({
-    characterId: currentCharacterId,
+    characterId: characterValue._id || "",
     suitId: commandSuitId,
     suitName: debouncedValue,
   });
 
-  useEffect(() => {
-    if (debouncedValue?.trim().length || currentCharacterImg?.trim().length) {
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          commandName: "suit",
-          id: plotFieldCommandId,
-          type: "command",
-          value: `${currentCharacterName} ${debouncedValue}`,
-        });
-      }
-      updateSuitText.mutate();
+  const onBlur = () => {
+    if (episodeId) {
+      updateValue({
+        episodeId,
+        commandName: "suit",
+        id: plotFieldCommandId,
+        type: "command",
+        value: `${
+          typeof characterValue.characterName === "string" ? characterValue.characterName : ""
+        } ${debouncedValue}`,
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue, currentCharacterImg]);
+    updateSuitText.mutate();
+  };
 
-  const characterDebouncedValue = useDebounce({
-    value: currentCharacterName,
-    delay: 500,
-  });
   return (
     <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -133,43 +127,41 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
         className="w-full relative flex gap-[.5rem]"
       >
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTimeFirst}
-          setFocusedSecondTime={setFocusedSecondTimeFirst}
           onClick={(e) => {
             e.stopPropagation();
             setShowCharacterList(true);
           }}
-          value={currentCharacterName}
+          onBlur={onBlur}
+          value={characterValue.characterName || ""}
           onChange={(e) => {
             setShowCharacterList(true);
-            setCurrentCharacterName(e.target.value);
+            setCharacterValue((prev) => ({
+              ...prev,
+              characterName: e.target.value,
+            }));
           }}
           placeholder="Имя Персонажа"
         />
 
         <img
-          src={currentCharacterImg}
+          src={characterValue?.imgUrl || ""}
           alt="CharacterImg"
-          className={`${currentCharacterImg?.trim().length ? "" : "hidden"} w-[3rem] object-cover rounded-md self-end`}
+          className={`${
+            characterValue?.imgUrl?.trim().length ? "" : "hidden"
+          } w-[3rem] object-cover rounded-md self-end`}
         />
         <PlotfieldCharacterPromptMain
-          debouncedValue={characterDebouncedValue}
-          characterValue={currentCharacterName}
+          characterName={characterValue.characterName || ""}
           translateAsideValue="translate-y-[3.5rem]"
-          setCharacterId={setCurrentCharacterId}
-          setCharacterName={setCurrentCharacterName}
           setShowCharacterModal={setShowCharacterList}
           showCharacterModal={showCharacterList}
-          setCharacterImg={setCurrentCharacterImg}
-          plotfieldCommandIfId=""
-          isElse={false}
+          currentCharacterId={characterValue._id || ""}
+          setCharacterValue={setCharacterValue}
         />
       </form>
 
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
-          focusedSecondTime={focusedSecondTimeSecond}
-          setFocusedSecondTime={setFocusedSecondTimeSecond}
           value={textValue}
           type="text"
           placeholder="Костюм"

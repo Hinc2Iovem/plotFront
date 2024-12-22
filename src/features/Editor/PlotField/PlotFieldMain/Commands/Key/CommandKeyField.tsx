@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import useGetKeyByPlotfieldCommandId from "../../../hooks/Key/useGetKeyByPlotfieldCommandId";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateKeyText from "../../../hooks/Key/useUpdateKeyText";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetKeyByPlotfieldCommandId from "../../../hooks/Key/useGetKeyByPlotfieldCommandId";
+import useUpdateKeyText from "../../../hooks/Key/useUpdateKeyText";
 
 type CommandKeyFieldTypes = {
   plotFieldCommandId: string;
@@ -31,48 +31,31 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
   useEffect(() => {
     if (commandKey) {
       setCommandKeyId(commandKey._id);
+      setTextValue(commandKey?.text);
     }
   }, [commandKey]);
 
-  useEffect(() => {
-    if (commandKey?.text) {
-      setTextValue(commandKey.text);
-    }
-  }, [commandKey]);
+  const { updateValue } = useSearch();
 
-  const { addItem, updateValue } = useSearch();
-
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "key",
-          id: plotFieldCommandId,
-          text: textValue,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
-
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
+  useAddItemInsideSearch({
+    commandName: nameValue || "key",
+    id: plotFieldCommandId,
+    text: textValue,
+    topologyBlockId,
+    type: "command",
+  });
 
   const updateKeyText = useUpdateKeyText({
     keyId: commandKeyId,
-    text: debouncedValue,
+    text: textValue,
   });
 
-  useEffect(() => {
-    if (commandKey?.text !== debouncedValue && debouncedValue?.trim().length) {
-      if (episodeId) {
-        updateValue({ episodeId, commandName: "key", id: plotFieldCommandId, type: "command", value: debouncedValue });
-      }
-      updateKeyText.mutate();
+  const onBlur = () => {
+    if (episodeId) {
+      updateValue({ episodeId, commandName: "key", id: plotFieldCommandId, type: "command", value: textValue });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+    updateKeyText.mutate();
+  };
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
@@ -84,6 +67,7 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
           ref={currentInput}
+          onBlur={onBlur}
           value={textValue}
           type="text"
           placeholder="Such a lovely day"

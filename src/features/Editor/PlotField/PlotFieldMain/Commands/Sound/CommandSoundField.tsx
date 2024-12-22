@@ -1,19 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import useGetAllSoundByStoryIdAndIsGlobal from "../../../hooks/Sound/useGetAllSoundsByStoryIdAndIsGlobal";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandSound from "../../../hooks/Sound/useGetCommandSound";
 import useGetSoundById from "../../../hooks/Sound/useGetSoundById";
-import useUpdateSoundText from "../../../hooks/Sound/useUpdateSoundText";
 import "../Prompts/promptStyles.css";
 import CreateSoundField from "./CreateSoundField";
-import useSearch from "../../../../Context/Search/SearchContext";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
+import AllSoundsModal from "./AllSoundsModal";
 
 type CommandSoundFieldTypes = {
   plotFieldCommandId: string;
@@ -27,29 +24,12 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
   const [showCreateSoundModal, setShowCreateSoundModal] = useState(false);
   const [nameValue] = useState<string>(command ?? "Sound");
   const [soundName, setSoundName] = useState<string>("");
-  const { data: allSound } = useGetAllSoundByStoryIdAndIsGlobal({
-    storyId: storyId ?? "",
-  });
+
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
 
   const debouncedValue = useDebounce({ value: soundName, delay: 600 });
-
-  const modalRef = useRef<HTMLDivElement>(null);
-  const allSoundFilteredMemoized = useMemo(() => {
-    const res = [...(allSound || [])];
-    if (soundName) {
-      const filtered = res?.filter((a) => a.soundName?.toLowerCase().includes(soundName?.toLowerCase())) || [];
-      return filtered.map((f) => f.soundName?.toLowerCase());
-    } else {
-      return res.map((r) => r.soundName?.toLowerCase());
-    }
-  }, [allSound, soundName]);
-
-  const allSoundMemoized = useMemo(() => {
-    return allSound?.map((a) => a.soundName?.toLowerCase()) || [];
-  }, [allSound]);
 
   const { data: commandSound } = useGetCommandSound({
     plotFieldCommandId,
@@ -71,60 +51,31 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
     }
   }, [sound]);
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "sound",
-          id: plotFieldCommandId,
-          text: soundName,
-          topologyBlockId,
-          type: "command",
-        },
+  useAddItemInsideSearch({
+    commandName: nameValue || "sound",
+    id: plotFieldCommandId,
+    text: soundName,
+    topologyBlockId,
+    type: "command",
+  });
+
+  const soundRef = useRef<{ handleUpdatingSoundState: () => void }>(null);
+
+  const updateSoundState = () => {
+    if (soundRef) {
+      soundRef.current?.handleUpdatingSoundState();
+      updateValue({
+        episodeId: episodeId || "",
+        commandName: "sound",
+        id: plotFieldCommandId,
+        type: "command",
+        value: soundName,
       });
     }
-  }, [episodeId]);
-
-  const updateSoundText = useUpdateSoundText({
-    storyId: storyId ?? "",
-    soundId: commandSound?.soundId || "",
-  });
-
-  const handleNewSoundSubmit = (e: React.FormEvent, mm?: string) => {
-    e.preventDefault();
-    if (!soundName?.trim().length && !mm?.trim().length) {
-      console.log("Заполните поле");
-      return;
-    }
-    if (mm?.trim().length) {
-      updateSoundText.mutate({ soundName: mm });
-    } else if (soundName?.trim().length) {
-      if (!allSoundMemoized?.includes(soundName?.toLowerCase() || "")) {
-        // suggest to create new sound
-        setShowCreateSoundModal(true);
-      } else {
-        // just updated sound command
-        updateSoundText.mutate({ soundName });
-      }
-    }
-
-    setShowSoundDropDown(false);
   };
 
-  useEffect(() => {
-    if (debouncedValue?.trim().length && debouncedValue !== soundName && episodeId) {
-      updateValue({ episodeId, commandName: "sound", id: plotFieldCommandId, type: "command", value: debouncedValue });
-    }
-  }, [debouncedValue, soundName, episodeId]);
-
-  useOutOfModal({
-    setShowModal: setShowSoundDropDown,
-    showModal: showSoundDropDown,
-    modalRef,
-  });
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -133,9 +84,15 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
         </PlotfieldCommandNameField>
       </div>
       <div className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}>
-        <form onSubmit={handleNewSoundSubmit} className="w-full">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            updateSoundState();
+          }}
+          className="w-full"
+        >
           <PlotfieldInput
-            onBlur={() => {}}
+            onBlur={updateSoundState}
             onClick={(e) => {
               e.stopPropagation();
               setShowSoundDropDown((prev) => !prev);
@@ -148,45 +105,19 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
             }}
             placeholder="Звук"
           />
-        </form>
 
-        <AsideScrollable
-          ref={modalRef}
-          className={`${showSoundDropDown ? "" : "hidden"} ${
-            !allSoundFilteredMemoized.length && soundName ? "hidden" : ""
-          } translate-y-[3.5rem]`}
-        >
-          <ul className={`flex flex-col gap-[.5rem]`}>
-            {allSoundFilteredMemoized.length ? (
-              allSoundFilteredMemoized.map((mm, i) => (
-                <li key={mm + plotFieldCommandId + i}>
-                  <AsideScrollableButton
-                    onClick={(e) => {
-                      setSoundName(mm);
-                      handleNewSoundSubmit(e, mm);
-                      setShowSoundDropDown(false);
-                    }}
-                    className={`${
-                      soundName === mm ? "bg-primary-darker text-text-dark" : "bg-secondary text-gray-600"
-                    } `}
-                  >
-                    {mm}
-                  </AsideScrollableButton>
-                </li>
-              ))
-            ) : (
-              <li>
-                <AsideScrollableButton
-                  onClick={() => {
-                    setShowSoundDropDown(false);
-                  }}
-                >
-                  Пусто
-                </AsideScrollableButton>
-              </li>
-            )}
-          </ul>
-        </AsideScrollable>
+          <AllSoundsModal
+            debouncedValue={debouncedValue}
+            setShowCreateSoundModal={setShowCreateSoundModal}
+            setShowSoundDropDown={setShowSoundDropDown}
+            setSoundName={setSoundName}
+            showSoundDropDown={showSoundDropDown}
+            soundId={commandSound?.soundId || ""}
+            soundName={soundName}
+            storyId={storyId || ""}
+            ref={soundRef}
+          />
+        </form>
       </div>
 
       <CreateSoundField

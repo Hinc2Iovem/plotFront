@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandComment from "../../../hooks/Comment/useGetCommandComment";
 import useUpdateCommentText from "../../../hooks/Comment/useUpdateCommentText";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useSearch from "../../../../Context/Search/SearchContext";
-import { useParams } from "react-router-dom";
 
 type CommandCommentFieldTypes = {
   plotFieldCommandId: string;
@@ -40,45 +40,33 @@ export default function CommandCommentField({
     plotFieldCommandId,
   });
 
-  const debouncedValue = useDebounce({ value: command, delay: 700 });
-
   const updateCommentText = useUpdateCommentText({
     commentId: commandCommentId,
-    comment: debouncedValue,
+    comment,
   });
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
+  useAddItemInsideSearch({
+    commandName: nameValue || "comment",
+    id: plotFieldCommandId,
+    text: comment,
+    topologyBlockId,
+    type: "command",
+  });
+
+  const onBlur = () => {
     if (episodeId) {
-      addItem({
+      updateValue({
         episodeId,
-        item: {
-          commandName: nameValue || "comment",
-          id: plotFieldCommandId,
-          text: debouncedValue,
-          topologyBlockId,
-          type: "command",
-        },
+        commandName: "comment",
+        id: plotFieldCommandId,
+        type: "command",
+        value: comment,
       });
     }
-  }, [episodeId]);
-
-  useEffect(() => {
-    if (commandComment?.comment !== debouncedValue && debouncedValue?.trim().length && commandCommentId) {
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          commandName: "comment",
-          id: plotFieldCommandId,
-          type: "command",
-          value: debouncedValue,
-        });
-      }
-      updateCommentText.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+    updateCommentText.mutate();
+  };
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
@@ -94,7 +82,12 @@ export default function CommandCommentField({
         }}
         className="min-w-[10rem] flex-grow relative"
       >
-        <PlotfieldTextarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Коммент" />
+        <PlotfieldTextarea
+          onBlur={onBlur}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Коммент"
+        />
       </form>
     </div>
   );

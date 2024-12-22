@@ -3,26 +3,28 @@ import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import { EmotionsTypes } from "../../../../../../../types/StoryData/Character/CharacterTypes";
 import PlotfieldEmotionsPrompt from "./PlotfieldEmotionsPrompt";
 
+export type EmotionValueTypes = {
+  emotionId: string | null;
+  emotionName: string | null;
+  emotionImg: string | null;
+};
+
 type PlotfieldEmotionPromptMainTypes = {
-  setEmotionName: React.Dispatch<React.SetStateAction<string>>;
-  setEmotionId: React.Dispatch<React.SetStateAction<string>>;
   setShowEmotionModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setEmotionImg?: React.Dispatch<React.SetStateAction<string>>;
+  setEmotionValue: React.Dispatch<React.SetStateAction<EmotionValueTypes>>;
+  emotionValue: EmotionValueTypes;
   showEmotionModal: boolean;
   allEmotions: EmotionsTypes[] | undefined;
-  emotionName: string;
   modalPosition?: "right-0" | "left-0";
 };
 
 export default function PlotfieldEmotionPromptMain({
-  setEmotionName,
-  setEmotionId,
-  setEmotionImg,
   setShowEmotionModal,
   showEmotionModal,
   allEmotions,
-  emotionName,
   modalPosition,
+  emotionValue,
+  setEmotionValue,
 }: PlotfieldEmotionPromptMainTypes) {
   const emotionsRef = useRef<HTMLDivElement>(null);
   const theme = localStorage.getItem("theme");
@@ -42,14 +44,12 @@ export default function PlotfieldEmotionPromptMain({
         allEmotions?.map((c) => (
           <PlotfieldEmotionsPrompt
             key={c._id}
-            setEmotionName={setEmotionName}
-            setEmotionId={setEmotionId}
-            setEmotionImg={setEmotionImg}
+            setEmotionValue={setEmotionValue}
             setShowEmotionModal={setShowEmotionModal}
             {...c}
           />
         ))
-      ) : !allEmotions?.length && !emotionName?.trim().length ? (
+      ) : !allEmotions?.length && !emotionValue.emotionName?.trim().length ? (
         <button
           type="button"
           onClick={() => {

@@ -6,6 +6,7 @@ import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandMoveFieldTypes = {
   plotFieldCommandId: string;
@@ -34,12 +35,7 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
   useEffect(() => {
     if (commandMove) {
       setCommandMoveId(commandMove._id);
-    }
-  }, [commandMove]);
-
-  useEffect(() => {
-    if (commandMove?.moveValue) {
-      setMoveValue(commandMove.moveValue);
+      setMoveValue(commandMove?.moveValue || "");
     }
   }, [commandMove]);
 
@@ -48,22 +44,15 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
     moveId: commandMoveId,
   });
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "move",
-          id: plotFieldCommandId,
-          text: moveValue,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "move",
+    id: plotFieldCommandId,
+    text: moveValue,
+    topologyBlockId,
+    type: "command",
+  });
 
   const handleBlur = () => {
     if (moveValue.trim().length && currentInput.current && document.activeElement !== currentInput.current) {

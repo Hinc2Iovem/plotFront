@@ -140,7 +140,7 @@ export default function PlotfieldItem({
         ) : command === "cutscene" ? (
           <CommandCutSceneField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "effect" ? (
-          <CommandEffectField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} /> //here
+          <CommandEffectField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "key" ? (
           <CommandKeyField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "move" ? (
@@ -160,7 +160,7 @@ export default function PlotfieldItem({
         ) : command === "getitem" ? (
           <CommandGetItemField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
         ) : command === "if" ? (
-          <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+          <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} /> //left for a better time
         ) : command === "wardrobe" ? (
           <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
         ) : command === "choice" ? (

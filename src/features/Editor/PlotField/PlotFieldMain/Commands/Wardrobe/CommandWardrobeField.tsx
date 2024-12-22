@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import rejectImg from "../../../../../../assets/images/shared/rejectWhite.png";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandWardrobe from "../../../hooks/Wardrobe/useGetCommandWardrobe";
 import useGetCommandWardrobeTranslation from "../../../hooks/Wardrobe/useGetCommandWardrobeTranslation";
 import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
@@ -13,8 +15,6 @@ import useGetAllWardrobeAppearancePartBlocks from "../../../hooks/Wardrobe/Wardr
 import "../Prompts/promptStyles.css";
 import WardrobeAppearancePartBlock from "./WardrobeAppearancePartBlock";
 import WardrobeCharacterAppearancePartForm from "./WardrobeCharacterAppearancePartForm";
-import useSearch from "../../../../Context/Search/SearchContext";
-import { useParams } from "react-router-dom";
 
 type CommandWardrobeFieldTypes = {
   plotFieldCommandId: string;
@@ -71,22 +71,15 @@ export default function CommandWardrobeField({
     }
   }, [translatedWardrobe]);
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "wardrobe",
-          id: plotFieldCommandId,
-          text: `${wardrobeTitle}`,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "wardrobe",
+    id: plotFieldCommandId,
+    text: `${wardrobeTitle}`,
+    topologyBlockId,
+    type: "command",
+  });
 
   const updateWardrobeTranslatedTitle = useUpdateWardrobeTranslationText({
     commandId: plotFieldCommandId,
@@ -94,15 +87,6 @@ export default function CommandWardrobeField({
     topologyBlockId,
     language: "russian",
   });
-
-  const debouncedValue = useDebounce({ value: wardrobeTitle, delay: 500 });
-
-  useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      updateWardrobeTranslatedTitle.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
 
   const updateWardrobeIsCurrentlyDressed = useUpdateWardrobeCurrentDressedAndCharacterId({
     commandWardrobeId,
@@ -114,7 +98,7 @@ export default function CommandWardrobeField({
     setShowModal: setShowAllAppearancePartBlocks,
   });
 
-  useEffect(() => {
+  const updateValues = ({ onBlur }: { onBlur: boolean }) => {
     if (episodeId) {
       updateValue({
         episodeId,
@@ -123,8 +107,15 @@ export default function CommandWardrobeField({
         type: "command",
         value: `${wardrobeTitle} ${allAppearanceNames.map((an) => `${an}`).join(" ")}`,
       });
+      if (onBlur) {
+        updateWardrobeTranslatedTitle.mutate();
+      }
     }
-  }, [allAppearanceNames, episodeId, wardrobeTitle]);
+  };
+
+  useEffect(() => {
+    updateValues({ onBlur: false });
+  }, [allAppearanceNames, episodeId]);
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
@@ -137,6 +128,7 @@ export default function CommandWardrobeField({
         <PlotfieldInput
           value={wardrobeTitle}
           type="text"
+          onBlur={() => updateValues({ onBlur: true })}
           placeholder="Название гардероба"
           onChange={(e) => setWardrobeTitle(e.target.value)}
         />

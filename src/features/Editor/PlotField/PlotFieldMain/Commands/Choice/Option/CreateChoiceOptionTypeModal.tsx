@@ -8,8 +8,8 @@ import {
 import { generateMongoObjectId } from "../../../../../../../utils/generateMongoObjectId";
 import useCreateChoiceOption from "../../../../hooks/Choice/ChoiceOption/useCreateChoiceOption";
 import useChoiceOptions from "../Context/ChoiceContext";
-import useTopologyBlocks from "../../../../../Flowchart/Context/TopologyBlockContext";
 import { makeTopologyBlockName } from "../../../../../Flowchart/utils/makeTopologyBlockName";
+import useNavigation from "../../../../../Context/Navigation/NavigationContext";
 
 type CreateChoiceOptionTypeModalTypes = {
   plotFieldCommandId: string;
@@ -26,7 +26,7 @@ export default function CreateChoiceOptionTypeModal({
   topologyBlockId,
   setShowCreateChoiceOptionModal,
 }: CreateChoiceOptionTypeModalTypes) {
-  const { getTopologyBlock, updateAmountOfChildBlocks } = useTopologyBlocks();
+  const { currentTopologyBlock, updateAmountOfChildBlocks } = useNavigation();
   const { addChoiceOption, getAmountOfChoiceOptions } = useChoiceOptions();
   const { episodeId } = useParams();
   const modalRef = useRef<HTMLDivElement>(null);
@@ -37,12 +37,11 @@ export default function CreateChoiceOptionTypeModal({
     plotFieldCommandId,
     episodeId: episodeId || "",
     topologyBlockId,
-    coordinatesX: getTopologyBlock()?.coordinatesX,
-    coordinatesY: getTopologyBlock()?.coordinatesY,
+    coordinatesX: currentTopologyBlock?.coordinatesX,
+    coordinatesY: currentTopologyBlock?.coordinatesY,
     sourceBlockName: makeTopologyBlockName({
-      name: getTopologyBlock()?.name || "",
-      amountOfOptions:
-        getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+      name: currentTopologyBlock?.name || "",
+      amountOfOptions: currentTopologyBlock?.topologyBlockInfo?.amountOfChildBlocks || 1,
     }),
   });
 
@@ -63,9 +62,8 @@ export default function CreateChoiceOptionTypeModal({
         topologyBlockId: targetBlockId,
         optionOrder: amountOfChoiceOptions,
         topologyBlockName: makeTopologyBlockName({
-          name: getTopologyBlock()?.name || "",
-          amountOfOptions:
-            getTopologyBlock()?.topologyBlockInfo?.amountOfChildBlocks || 1,
+          name: currentTopologyBlock?.name || "",
+          amountOfOptions: currentTopologyBlock?.topologyBlockInfo?.amountOfChildBlocks || 1,
         }),
       },
     });

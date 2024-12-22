@@ -45,6 +45,7 @@ export default function useCreateBlankCommand({
       const currentTopologyBlockId = newCommand?.topologyBlockId?.trim().length
         ? newCommand.topologyBlockId
         : topologyBlockId;
+
       return await axiosCustomized
         .post<PlotFieldTypes>(`/plotField/topologyBlocks/${currentTopologyBlockId}`, {
           commandOrder: currentCommandOrder,

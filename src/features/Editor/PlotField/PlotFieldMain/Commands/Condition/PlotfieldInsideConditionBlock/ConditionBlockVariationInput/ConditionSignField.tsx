@@ -2,10 +2,10 @@ import { useRef, useState } from "react";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import {
   AllConditionSigns,
+  ConditionSignTypes,
   ConditionValueVariationType,
 } from "../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import { PlotfieldConditionSingsPrompt } from "../../ConditionValueItem";
-import useConditionBlocks from "../../Context/ConditionContext";
+import { PlotfieldConditionSingsPrompt } from "../../ConditionBlockItem/ConditionValueItem";
 import AsideScrollable from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
 
@@ -14,6 +14,8 @@ type ConditionSignFieldTypes = {
   plotfieldCommandId: string;
   conditionBlockVariationId: string;
   type: ConditionValueVariationType;
+  setCurrentSign: React.Dispatch<React.SetStateAction<ConditionSignTypes>>;
+  currentSign: ConditionSignTypes;
 };
 
 export default function ConditionSignField({
@@ -21,9 +23,10 @@ export default function ConditionSignField({
   plotfieldCommandId,
   conditionBlockVariationId,
   type,
+  currentSign,
+  setCurrentSign,
 }: ConditionSignFieldTypes) {
   const modalRef = useRef<HTMLDivElement>(null);
-  const { getConditionBlockVariationById } = useConditionBlocks();
 
   const [showSignModal, setShowSignModal] = useState(false);
 
@@ -42,9 +45,7 @@ export default function ConditionSignField({
         type="button"
         className="bg-primary-darker h-full"
       >
-        {getConditionBlockVariationById({ conditionBlockId, plotfieldCommandId, conditionBlockVariationId })?.sign
-          ? getConditionBlockVariationById({ conditionBlockId, plotfieldCommandId, conditionBlockVariationId })?.sign
-          : "Знак"}
+        {currentSign || "Знак"}
       </PlotfieldButton>
       <AsideScrollable
         ref={modalRef}
@@ -55,6 +56,7 @@ export default function ConditionSignField({
             <PlotfieldConditionSingsPrompt
               key={c}
               signName={c}
+              setCurrentSign={setCurrentSign}
               setShowSignModal={setShowSignModal}
               conditionBlockId={conditionBlockId}
               plotfieldCommandId={plotfieldCommandId}

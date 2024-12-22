@@ -1,24 +1,30 @@
 import { useRef, useState } from "react";
-
-import useIfVariations from "../Context/IfContext";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import {
   AllConditionSigns,
+  ConditionSignTypes,
   ConditionValueVariationType,
 } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
 import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
 import { PlotfieldIfSingsPrompt } from "./IfVariationsField";
 
 type IfSignFieldTypes = {
   plotfieldCommandId: string;
   ifVariationId: string;
   type: ConditionValueVariationType;
+  currentSign: ConditionSignTypes;
+  setCurrentSign: React.Dispatch<React.SetStateAction<ConditionSignTypes>>;
 };
 
-export default function IfSignField({ plotfieldCommandId, ifVariationId, type }: IfSignFieldTypes) {
+export default function IfSignField({
+  plotfieldCommandId,
+  ifVariationId,
+  type,
+  currentSign,
+  setCurrentSign,
+}: IfSignFieldTypes) {
   const modalRef = useRef<HTMLDivElement>(null);
-  const { getIfVariationById } = useIfVariations();
 
   const [showSignModal, setShowSignModal] = useState(false);
 
@@ -37,9 +43,7 @@ export default function IfSignField({ plotfieldCommandId, ifVariationId, type }:
         type="button"
         className="bg-secondary hover:bg-primary transition-all h-full"
       >
-        {getIfVariationById({ plotfieldCommandId, ifVariationId })?.sign
-          ? getIfVariationById({ plotfieldCommandId, ifVariationId })?.sign
-          : "Знак"}
+        {currentSign || "Знак"}
       </PlotfieldButton>
       <AsideScrollable
         ref={modalRef}
@@ -50,6 +54,7 @@ export default function IfSignField({ plotfieldCommandId, ifVariationId, type }:
             <PlotfieldIfSingsPrompt
               key={c}
               signName={c}
+              setCurrentSign={setCurrentSign}
               setShowSignModal={setShowSignModal}
               plotfieldCommandId={plotfieldCommandId}
               ifVariationId={ifVariationId}

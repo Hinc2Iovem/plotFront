@@ -31,12 +31,7 @@ export default function useCreateChoiceOption({
 }: CreateChoiceOptionTypes) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      type,
-      choiceOptionId,
-      targetBlockId,
-      optionOrder,
-    }: CreateChoiceOptionOnMutationTypes) =>
+    mutationFn: async ({ type, choiceOptionId, targetBlockId, optionOrder }: CreateChoiceOptionOnMutationTypes) =>
       await axiosCustomized.post(
         `/plotFieldCommands/${plotFieldCommandId}/choices/${plotFieldCommandChoiceId}/options`,
         {
@@ -52,23 +47,9 @@ export default function useCreateChoiceOption({
         }
       ),
     onSettled: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: [
-      //     "choice",
-      //     plotFieldCommandId,
-      //     "translation",
-      //     language,
-      //     "option",
-      //   ],
-      // });
       queryClient.invalidateQueries({
         queryKey: ["connection", "episode", episodeId],
       });
-      // queryClient.invalidateQueries({
-      //   queryKey: ["plotfieldCommand", plotFieldCommandId, "choice"],
-      //   exact: true,
-      //   type: "active",
-      // });
     },
   });
 }

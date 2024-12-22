@@ -49,6 +49,7 @@ type PlotfieldSingsPromptTypes = {
   plotfieldCommandId: string;
   type: ConditionValueVariationType;
   ifVariationId: string;
+  setCurrentSign: React.Dispatch<React.SetStateAction<ConditionSignTypes>>;
 };
 
 export function PlotfieldIfSingsPrompt({
@@ -57,6 +58,7 @@ export function PlotfieldIfSingsPrompt({
   plotfieldCommandId,
   ifVariationId,
   type,
+  setCurrentSign,
 }: PlotfieldSingsPromptTypes) {
   const { updateIfVariationSign } = useIfVariations();
   const updateValueCharacter = useUpdateIfCharacter({ ifCharacterId: ifVariationId });
@@ -69,6 +71,8 @@ export function PlotfieldIfSingsPrompt({
     <AsideScrollableButton
       type="button"
       onClick={() => {
+        setCurrentSign(signName);
+
         if (type === "character") {
           updateValueCharacter.mutate({ sign: signName });
         } else if (type === "characteristic") {

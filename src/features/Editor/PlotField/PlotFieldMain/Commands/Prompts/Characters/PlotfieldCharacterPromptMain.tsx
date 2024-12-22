@@ -12,7 +12,7 @@ import {
 import PlotfieldCharactersPrompt from "./PlotfieldCharactersPrompt";
 import useDebounce from "../../../../../../../hooks/utilities/useDebounce";
 
-type ExposedMethods = {
+export type ExposedMethods = {
   updateCharacterNameOnBlur: () => void;
 };
 

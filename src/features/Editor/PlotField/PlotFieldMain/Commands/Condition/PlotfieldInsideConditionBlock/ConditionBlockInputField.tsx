@@ -1,24 +1,21 @@
-import { useEffect, useRef, useState } from "react";
-import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import { useState } from "react";
 import { ConditionValueVariationType } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
 import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
-import useDeleteLogicalOperator from "../../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useDeleteLogicalOperator";
-import useUpdateLogicalOperator from "../../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useUpdateLogicalOperator";
-import useDeleteConditionBlockVariation from "../../../../hooks/Condition/ConditionBlock/BlockVariations/useDeleteConditionBlockVariation";
 import useConditionBlocks, {
   AllConditionValueVariationByLogicalOperatorIndexTypes,
   ConditionBlockItemTypes,
   ConditionBlockVariationTypes,
-  LogicalOperatorTypes,
 } from "../Context/ConditionContext";
-import ConditionBlockVariationAppearance from "./ConditionBlockVariationInput/ConditionBlockVariationAppearance";
-import ConditionBlockVariationCharacter from "./ConditionBlockVariationInput/ConditionBlockVariationCharacter";
-import ConditionBlockVariationCharacteristic from "./ConditionBlockVariationInput/ConditionBlockVariationCharacteristic";
-import ConditionBlockVariationKey from "./ConditionBlockVariationInput/ConditionBlockVariationKey";
-import ConditionBlockVariationLanguage from "./ConditionBlockVariationInput/ConditionBlockVariationLanguage";
-import ConditionBlockVariationRandom from "./ConditionBlockVariationInput/ConditionBlockVariationRandom";
-import ConditionBlockVariationRetry from "./ConditionBlockVariationInput/ConditionBlockVariationRetry";
-import ConditionBlockVariationStatus from "./ConditionBlockVariationInput/ConditionBlockVariationStatus";
+import ConditionBlockVariationAppearance from "./ConditionBlockVariationInput/Appearance/ConditionBlockVariationAppearance";
+import ConditionBlockVariationCharacter from "./ConditionBlockVariationInput/Character/ConditionBlockVariationCharacter";
+import ConditionBlockVariationCharacteristic from "./ConditionBlockVariationInput/Characteristic/ConditionBlockVariationCharacteristic";
+import ConditionBlockVariationKey from "./ConditionBlockVariationInput/Key/ConditionBlockVariationKey";
+import ConditionBlockVariationLanguage from "./ConditionBlockVariationInput/Language/ConditionBlockVariationLanguage";
+import ConditionBlockVariationRandom from "./ConditionBlockVariationInput/Random/ConditionBlockVariationRandom";
+import ConditionBlockVariationRetry from "./ConditionBlockVariationInput/Retry/ConditionBlockVariationRetry";
+import ConditionBlockVariationStatus from "./ConditionBlockVariationInput/Status/ConditionBlockVariationStatus";
+import DeleteVariationModal from "./DeleteVariationModal";
+import { ChangeLogicalOperatorModal, DeleteLogicalOperatorModal } from "./LogicalOperatorModals";
 
 type ConditionBlockInputFieldTypes = {
   plotfieldCommandId: string;
@@ -72,8 +69,6 @@ type ConditionBlockInputFieldItemTypes = {
   insidePlotfield: boolean;
   topologyBlockId: string;
 } & ConditionBlockVariationTypes;
-
-const AllLogicalOperators = ["&&", "||"];
 
 export function ConditionBlockInputFieldItem({
   type,
@@ -234,277 +229,5 @@ export function ConditionBlockInputFieldItem({
         variationType={type}
       />
     </div>
-  );
-}
-
-type DeleteVariationModalTypes = {
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  index: number;
-  suggestToDeleteVariation: boolean;
-  setSuggestToDeleteVariation: React.Dispatch<React.SetStateAction<boolean>>;
-  variationType: ConditionValueVariationType;
-  conditionBlockVariationId: string;
-};
-
-function DeleteVariationModal({
-  index,
-  conditionBlockId,
-  plotfieldCommandId,
-  variationType,
-  suggestToDeleteVariation,
-  conditionBlockVariationId,
-  setSuggestToDeleteVariation,
-}: DeleteVariationModalTypes) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setSuggestToDeleteVariation,
-    showModal: suggestToDeleteVariation,
-  });
-
-  return (
-    <aside
-      ref={modalRef}
-      className={`absolute ${
-        suggestToDeleteVariation ? "" : "hidden"
-      } right-0 z-[10] bg-primary-darker min-w-fit w-full rounded-md p-[.5rem] flex flex-col gap-[1rem] top-0 translate-y-[4rem]`}
-    >
-      <DeleteVariationButton
-        index={index}
-        plotfieldCommandId={plotfieldCommandId}
-        conditionBlockId={conditionBlockId}
-        variationType={variationType}
-        suggestToDeleteVariation={suggestToDeleteVariation}
-        conditionBlockVariationId={conditionBlockVariationId}
-        setSuggestToDeleteVariation={setSuggestToDeleteVariation}
-      />
-    </aside>
-  );
-}
-
-type DeleteVariationButtonTypes = {
-  index: number;
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  conditionBlockVariationId: string;
-  suggestToDeleteVariation: boolean;
-  variationType: ConditionValueVariationType;
-  setSuggestToDeleteVariation: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function DeleteVariationButton({
-  index,
-  conditionBlockId,
-  plotfieldCommandId,
-  conditionBlockVariationId,
-  variationType,
-  suggestToDeleteVariation,
-  setSuggestToDeleteVariation,
-}: DeleteVariationButtonTypes) {
-  const { removeConditionBlockVariation, getAmountOfConditionBlockVariations } = useConditionBlocks();
-  const deleteVariationAsync = useDeleteConditionBlockVariation({
-    conditionBlockVariationIdParams: conditionBlockVariationId,
-  });
-
-  const focusBtn = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (suggestToDeleteVariation && focusBtn.current) {
-      focusBtn.current?.focus();
-    }
-  }, [suggestToDeleteVariation]);
-
-  return (
-    <PlotfieldButton
-      type="button"
-      ref={focusBtn}
-      onClick={() => {
-        setSuggestToDeleteVariation(false);
-        const currentIndex =
-          index > 0 && getAmountOfConditionBlockVariations({ conditionBlockId, plotfieldCommandId }) - 1 === index
-            ? index - 1
-            : index;
-
-        removeConditionBlockVariation({
-          conditionBlockId,
-          conditionBlockVariationId,
-          plotfieldCommandId,
-          index: currentIndex,
-        });
-        // currentIndex will allow to remove logicalOperator of a previous variation, when there are no other variation to replace current one to be compared with the logicalOperator of the previous variation
-
-        deleteVariationAsync.mutate({ type: variationType, conditionBlockId, index: currentIndex });
-      }}
-    >
-      Удалить
-    </PlotfieldButton>
-  );
-}
-
-type DeleteLogicalOperatorModalTypes = {
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  index: number;
-  suggestToDeleteLogicalOperator: boolean;
-  setSuggestToDeleteLogicalOperator: React.Dispatch<React.SetStateAction<boolean>>;
-  allConditionBlockVariations: AllConditionValueVariationByLogicalOperatorIndexTypes[];
-};
-
-function DeleteLogicalOperatorModal({
-  index,
-  conditionBlockId,
-  plotfieldCommandId,
-  allConditionBlockVariations,
-  suggestToDeleteLogicalOperator,
-  setSuggestToDeleteLogicalOperator,
-}: DeleteLogicalOperatorModalTypes) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setSuggestToDeleteLogicalOperator,
-    showModal: suggestToDeleteLogicalOperator,
-  });
-
-  return (
-    <aside
-      ref={modalRef}
-      className={`absolute ${
-        suggestToDeleteLogicalOperator ? "" : "hidden"
-      } right-0 z-[10] bg-primary-darker min-w-fit w-full rounded-md p-[.5rem] flex flex-col gap-[1rem] top-0 translate-y-[4rem]`}
-    >
-      <DeleteLogicalOperatorButton
-        index={index}
-        plotfieldCommandId={plotfieldCommandId}
-        conditionBlockId={conditionBlockId}
-        allConditionBlockVariations={allConditionBlockVariations}
-        setSuggestToDeleteLogicalOperator={setSuggestToDeleteLogicalOperator}
-      />
-    </aside>
-  );
-}
-
-type DeleteLogicalOperatorButtonTypes = {
-  index: number;
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  allConditionBlockVariations: AllConditionValueVariationByLogicalOperatorIndexTypes[];
-  setSuggestToDeleteLogicalOperator: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function DeleteLogicalOperatorButton({
-  index,
-  conditionBlockId,
-  plotfieldCommandId,
-  allConditionBlockVariations,
-  setSuggestToDeleteLogicalOperator,
-}: DeleteLogicalOperatorButtonTypes) {
-  const { removeLogicalOperator, removeConditionBlockVariation } = useConditionBlocks();
-  const deleteLogicalOperatorAsync = useDeleteLogicalOperator({ conditionBlockId });
-  const deleteConditionValueVariationsAsync = useDeleteConditionBlockVariation({});
-
-  return (
-    <PlotfieldButton
-      type="button"
-      onClick={() => {
-        setSuggestToDeleteLogicalOperator(false);
-        removeLogicalOperator({ conditionBlockId, index, plotfieldCommandId });
-        deleteLogicalOperatorAsync.mutate({ index });
-
-        if (allConditionBlockVariations?.length > 0) {
-          for (const variation of allConditionBlockVariations) {
-            removeConditionBlockVariation({
-              conditionBlockId,
-              conditionBlockVariationId: variation.conditionBlockVariationId,
-              plotfieldCommandId,
-            });
-            deleteConditionValueVariationsAsync.mutate({
-              conditionBlockVariationIdBody: variation.conditionBlockVariationId,
-              type: variation.type,
-            });
-          }
-        }
-      }}
-    >
-      Удалить
-    </PlotfieldButton>
-  );
-}
-
-type ChangeLogicalOperatorModalTypes = {
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  index: number;
-  suggestToChangeLogicalOperator: boolean;
-  setSuggestToChangeLogicalOperator: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function ChangeLogicalOperatorModal({
-  conditionBlockId,
-  index,
-  plotfieldCommandId,
-  setSuggestToChangeLogicalOperator,
-  suggestToChangeLogicalOperator,
-}: ChangeLogicalOperatorModalTypes) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setSuggestToChangeLogicalOperator,
-    showModal: suggestToChangeLogicalOperator,
-  });
-
-  return (
-    <aside
-      ref={modalRef}
-      className={`absolute ${
-        suggestToChangeLogicalOperator ? "" : "hidden"
-      } right-0 z-[10] bg-primary-darker min-w-fit rounded-md p-[.5rem] flex flex-col gap-[1rem] top-0 translate-y-[4rem]`}
-    >
-      {AllLogicalOperators.map((lo) => (
-        <ChangeLogicalOperatorButton
-          key={lo}
-          value={lo as LogicalOperatorTypes}
-          index={index}
-          plotfieldCommandId={plotfieldCommandId}
-          conditionBlockId={conditionBlockId}
-          setSuggestToChangeLogicalOperator={setSuggestToChangeLogicalOperator}
-        />
-      ))}
-    </aside>
-  );
-}
-
-type ChangeLogicalOperatorButtonTypes = {
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  index: number;
-  value: LogicalOperatorTypes;
-  setSuggestToChangeLogicalOperator: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function ChangeLogicalOperatorButton({
-  index,
-  value,
-  conditionBlockId,
-  plotfieldCommandId,
-  setSuggestToChangeLogicalOperator,
-}: ChangeLogicalOperatorButtonTypes) {
-  const { updateLogicalOperator } = useConditionBlocks();
-  const updateLogicalOperatorAsync = useUpdateLogicalOperator({ conditionBlockId });
-
-  return (
-    <PlotfieldButton
-      type="button"
-      onClick={() => {
-        updateLogicalOperator({ conditionBlockId, index, logicalOperator: value, plotfieldCommandId });
-        setSuggestToChangeLogicalOperator(false);
-        updateLogicalOperatorAsync.mutate({ index, logicalOperator: value });
-      }}
-    >
-      {value}
-    </PlotfieldButton>
   );
 }

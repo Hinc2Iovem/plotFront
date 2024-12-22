@@ -1,19 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandMusic from "../../../hooks/Music/useGetCommandMusic";
 import useGetMusicById from "../../../hooks/Music/useGetMusicById";
-import useUpdateMusicText from "../../../hooks/Music/useUpdateMusicText";
 import "../Prompts/promptStyles.css";
+import AllMusicModal from "./AllMusicModal";
 import CreateMusicField from "./CreateMusicField";
-import useSearch from "../../../../Context/Search/SearchContext";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 
 type CommandMusicFieldTypes = {
   plotFieldCommandId: string;
@@ -27,30 +24,12 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
   const [musicName, setMusicName] = useState<string>("");
   const [showMusicDropDown, setShowMusicDropDown] = useState(false);
   const [showCreateMusicModal, setShowCreateMusicModal] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
+
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
   });
 
   const debouncedValue = useDebounce({ value: musicName, delay: 600 });
-
-  const { data: allMusic } = useGetAllMusicByStoryId({
-    storyId: storyId ?? "",
-  });
-
-  const allMusicFilteredMemoized = useMemo(() => {
-    const res = [...(allMusic || [])];
-    if (musicName) {
-      const filtered = res?.filter((a) => a.musicName.toLowerCase().includes(musicName.toLowerCase())) || [];
-      return filtered.map((f) => f.musicName.toLowerCase());
-    } else {
-      return res.map((r) => r.musicName.toLowerCase());
-    }
-  }, [allMusic, musicName]);
-
-  const allMusicMemoized = useMemo(() => {
-    return allMusic?.map((a) => a.musicName.toLowerCase()) || [];
-  }, [allMusic]);
 
   const { data: commandMusic } = useGetCommandMusic({
     plotFieldCommandId,
@@ -61,22 +40,15 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
     musicId: commandMusic?.musicId || "",
   });
 
-  const { addItem, updateValue } = useSearch();
+  const { updateValue } = useSearch();
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "music",
-          id: plotFieldCommandId,
-          text: musicName,
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "music",
+    id: plotFieldCommandId,
+    text: musicName,
+    topologyBlockId,
+    type: "command",
+  });
 
   useEffect(() => {
     if (commandMusic) {
@@ -90,44 +62,20 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
     }
   }, [music]);
 
-  const updateMusicText = useUpdateMusicText({
-    storyId: storyId || "",
-    musicId: commandMusic?.musicId || "",
-  });
+  const musicRef = useRef<{ handleUpdatingMusicState: () => void }>(null);
 
-  const handleNewMusicSubmit = (e: React.FormEvent, mm?: string) => {
-    e.preventDefault();
-    if (!musicName?.trim().length && !mm?.trim().length) {
-      console.log("Заполните поле");
-      return;
+  const updateMusicState = () => {
+    if (musicRef) {
+      musicRef.current?.handleUpdatingMusicState();
+      updateValue({
+        episodeId: episodeId || "",
+        commandName: "music",
+        id: plotFieldCommandId,
+        type: "command",
+        value: musicName,
+      });
     }
-
-    if (mm?.trim().length) {
-      updateMusicText.mutate({ musicName: mm });
-    } else if (musicName?.trim().length) {
-      if (!allMusicMemoized?.includes(musicName.toLowerCase())) {
-        // suggest to create new music
-        setShowCreateMusicModal(true);
-      } else {
-        // just updated music command
-        updateMusicText.mutate({ musicName });
-      }
-    }
-
-    setShowMusicDropDown(false);
   };
-
-  useEffect(() => {
-    if (debouncedValue?.trim().length && debouncedValue !== musicName && episodeId) {
-      updateValue({ episodeId, commandName: "music", id: plotFieldCommandId, type: "command", value: debouncedValue });
-    }
-  }, [debouncedValue, musicName, episodeId]);
-
-  useOutOfModal({
-    setShowModal: setShowMusicDropDown,
-    showModal: showMusicDropDown,
-    modalRef,
-  });
 
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
@@ -137,9 +85,15 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
         </PlotfieldCommandNameField>
       </div>
       <div className={`sm:w-[77%] flex-grow w-full flex-col flex-wrap flex items-center gap-[1rem] relative`}>
-        <form onSubmit={handleNewMusicSubmit} className="w-full">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            updateMusicState();
+          }}
+          className="w-full"
+        >
           <PlotfieldInput
-            onBlur={() => {}}
+            onBlur={updateMusicState}
             onClick={(e) => {
               e.stopPropagation();
               setShowMusicDropDown((prev) => !prev);
@@ -153,43 +107,17 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
           />
         </form>
 
-        <AsideScrollable
-          ref={modalRef}
-          className={`${showMusicDropDown ? "" : "hidden"} translate-y-[3.5rem] ${
-            !allMusicFilteredMemoized.length && musicName ? "hidden" : ""
-          }`}
-        >
-          <ul className={`flex flex-col gap-[.5rem]`}>
-            {allMusicFilteredMemoized.length ? (
-              allMusicFilteredMemoized.map((mm, i) => (
-                <li key={mm + i}>
-                  <AsideScrollableButton
-                    onClick={(e) => {
-                      setMusicName(mm);
-                      handleNewMusicSubmit(e, mm);
-                      setShowMusicDropDown(false);
-                    }}
-                    className={`${
-                      musicName === mm ? "bg-primary-darker text-text-light" : "bg-secondary text-text-dark"
-                    }`}
-                  >
-                    {mm}
-                  </AsideScrollableButton>
-                </li>
-              ))
-            ) : !musicName?.trim().length ? (
-              <li>
-                <AsideScrollableButton
-                  onClick={() => {
-                    setShowMusicDropDown(false);
-                  }}
-                >
-                  Пусто
-                </AsideScrollableButton>
-              </li>
-            ) : null}
-          </ul>
-        </AsideScrollable>
+        <AllMusicModal
+          debouncedValue={debouncedValue}
+          musicId={commandMusic?.musicId || ""}
+          musicName={musicName}
+          setMusicName={setMusicName}
+          setShowCreateMusicModal={setShowCreateMusicModal}
+          setShowMusicDropDown={setShowMusicDropDown}
+          showMusicDropDown={showMusicDropDown}
+          storyId={storyId || ""}
+          ref={musicRef}
+        />
       </div>
 
       <CreateMusicField

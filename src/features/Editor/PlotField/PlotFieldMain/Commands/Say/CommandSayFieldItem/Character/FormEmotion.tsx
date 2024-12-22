@@ -156,7 +156,7 @@ type AllEmotionsModalTypes = {
   setShowAllEmotions: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function AllEmotionsModal({
+export function AllEmotionsModal({
   allEmotions,
   emotionValue,
   setShowAllEmotions,

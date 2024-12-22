@@ -98,32 +98,21 @@ export default function PlotfieldInsideConditionBlock({
 
       <main className="flex flex-col gap-[.5rem] w-full ">
         <div className="flex w-full bg-secondary rounded-md shadow-sm items-center px-[1rem] py-[.5rem]">
-          <div className="flex gap-[1rem]">
-            <ButtonHoverPromptModal
-              contentName="Все команды"
-              positionByAbscissa="left"
-              asideClasses="text-text-light text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
-              className="bg-primary-darker shadow-sm shadow-gray-400 active:scale-[.99]"
-              variant="rectangle"
-            >
-              <img src={command} alt="Commands" className="w-[3rem]" />
-            </ButtonHoverPromptModal>
-            <ButtonHoverPromptModal
-              contentName="Создать строку"
-              positionByAbscissa="left"
-              className="bg-primary  shadow-sm shadow-gray-400 active:scale-[.99] relative "
-              asideClasses="text-text-light text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
-              onClick={handleCreateCommand}
-              variant="rectangle"
-            >
-              <img
-                src={plus}
-                alt="+"
-                className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0"
-              />
-              <img src={command} alt="Commands" className="w-[3rem]" />
-            </ButtonHoverPromptModal>
-          </div>
+          <ButtonHoverPromptModal
+            contentName="Создать комманду"
+            positionByAbscissa="left"
+            className="bg-primary  shadow-sm shadow-gray-400 active:scale-[.99] relative "
+            asideClasses="text-text-light text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
+            onClick={handleCreateCommand}
+            variant="rectangle"
+          >
+            <img
+              src={plus}
+              alt="+"
+              className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0"
+            />
+            <img src={command} alt="Commands" className="w-[3rem]" />
+          </ButtonHoverPromptModal>
         </div>
         <PlotFieldMain
           showAllCommands={false}

@@ -13,7 +13,7 @@ import { TempAppearanceCharacterTypes, TempAppearancePartTypes } from "./AllMigh
 import PreviewImage from "../../../../../../ui/shared/PreviewImage";
 import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import PlotfieldCharacterPromptMain from "../../../../PlotField/PlotFieldMain/Commands/Prompts/Characters/PlotfieldCharacterPromptMain";
-import { DebouncedCheckCharacterTypes } from "../../../../PlotField/PlotFieldMain/Commands/Choice/ChoiceQuestionField";
+import { DebouncedCheckCharacterTypes } from "../../../../PlotField/PlotFieldMain/Commands/Choice/QuestionField/ChoiceQuestionField";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 

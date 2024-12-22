@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
-import useGetTranslationCharacterById from "../../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetRelationshipOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetRelationshipOption";
-import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
-import useSearch from "../../../../../../Context/Search/SearchContext";
-import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import { useParams } from "react-router-dom";
+import PlotfieldCharacterPromptMain, { ExposedMethods } from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
+import { CharacterValueTypes } from "../../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
+import usePrepareCharacterDataOptionRelationship from "./usePrepareCharacterDataOptionRelationship";
 
 type OptionRelationshipBlockTypes = {
   choiceOptionId: string;
@@ -18,37 +17,15 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
   const { data: optionRelationship } = useGetRelationshipOption({
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
-  const [characterId, setCharacterId] = useState("");
-  const [characterImg, setCharacterImg] = useState("");
-  const [characterName, setCharacterName] = useState("");
-  const theme = localStorage.getItem("theme");
-  const { data: character } = useGetCharacterById({ characterId });
-
-  useEffect(() => {
-    if (character) {
-      setCharacterImg(character?.img || "");
-    }
-  }, [character]);
-  const { data: translatedCharacter } = useGetTranslationCharacterById({
-    characterId,
-    language: "russian",
+  const [characterValue, setCharacterValue] = useState<CharacterValueTypes>({
+    _id: null,
+    characterName: null,
+    imgUrl: null,
   });
 
-  useEffect(() => {
-    if (translatedCharacter) {
-      translatedCharacter.translations?.map((tc) => {
-        if (tc.textFieldName === "characterName") {
-          setCharacterName(tc?.text || "");
-        }
-      });
-    }
-  }, [translatedCharacter]);
+  const theme = localStorage.getItem("theme");
 
-  useEffect(() => {
-    if (optionRelationship) {
-      setCharacterId(optionRelationship.characterId);
-    }
-  }, [optionRelationship]);
+  usePrepareCharacterDataOptionRelationship({ characterValue, setCharacterValue });
 
   const [showAllCharacters, setShowAllCharacters] = useState(false);
 
@@ -56,6 +33,10 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
 
   useEffect(() => {
     if (optionRelationship) {
+      setCharacterValue((prev) => ({
+        ...prev,
+        _id: optionRelationship.characterId,
+      }));
       setAmountOfPoints(optionRelationship.amountOfPoints);
     }
   }, [optionRelationship]);
@@ -64,37 +45,53 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
     choiceOptionId,
   });
 
+  const inputRef = useRef<ExposedMethods>(null);
+
+  const onBlurCharacter = () => {
+    if (inputRef.current) {
+      inputRef.current.updateCharacterNameOnBlur();
+    }
+  };
+
+  const preventRerender = useRef(false);
+
   useEffect(() => {
+    if (characterValue._id?.trim().length && preventRerender.current) {
+      updateOptionRelationship.mutate({
+        characterId: characterValue._id,
+      });
+    }
+    return () => {
+      preventRerender.current = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [characterValue._id]);
+
+  const onBlur = () => {
     if (amountOfPoints) {
       updateOptionRelationship.mutate({ amountOfPoints: +amountOfPoints });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amountOfPoints]);
-
-  useEffect(() => {
-    if (characterId?.trim().length) {
-      updateOptionRelationship.mutate({
-        characterId,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterId]);
+  };
 
   const { updateValue } = useSearch();
 
-  const debouncedCharacter = useDebounce({ value: characterName, delay: 600 });
-
-  useEffect(() => {
+  const updateValues = () => {
     if (episodeId) {
       updateValue({
         episodeId,
         commandName: `Choice - Relationship`,
         id: choiceOptionId,
-        value: `${debouncedValue} ${debouncedCharacter} ${amountOfPoints}`,
+        value: `${debouncedValue} ${
+          typeof characterValue.characterName === "string" ? characterValue.characterName : ""
+        } ${amountOfPoints}`,
         type: "choiceOption",
       });
     }
-  }, [amountOfPoints, episodeId, debouncedCharacter, debouncedValue]);
+  };
+
+  useEffect(() => {
+    updateValues;
+  }, [episodeId]);
 
   return (
     <div className="self-end w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap mt-[.5rem]">
@@ -110,11 +107,15 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
             e.stopPropagation();
             setShowAllCharacters(true);
           }}
-          value={characterName}
+          value={characterValue.characterName || ""}
           onChange={(e) => {
             setShowAllCharacters(true);
-            setCharacterName(e.target.value);
+            setCharacterValue((prev) => ({
+              ...prev,
+              characterName: e.target.value,
+            }));
           }}
+          onBlur={onBlurCharacter}
           placeholder="Имя Персонажа"
           className={`w-full text-[1.4rem] ${
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
@@ -122,20 +123,20 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
         />
 
         <img
-          src={characterImg}
+          src={characterValue.imgUrl || ""}
           alt="CharacterImg"
-          className={`${characterImg?.trim().length ? "" : "hidden"} w-[3rem] absolute object-cover rounded-md right-0`}
+          className={`${
+            characterValue.imgUrl?.trim().length ? "" : "hidden"
+          } w-[3rem] absolute object-cover rounded-md right-0`}
         />
         <PlotfieldCharacterPromptMain
-          characterValue={characterName}
-          setCharacterId={setCharacterId}
-          setCharacterName={setCharacterName}
           setShowCharacterModal={setShowAllCharacters}
           showCharacterModal={showAllCharacters}
-          setCharacterImg={setCharacterImg}
           translateAsideValue="translate-y-[3.5rem]"
-          plotfieldCommandIfId=""
-          isElse={false}
+          characterName={characterValue.characterName || ""}
+          currentCharacterId={characterValue._id || ""}
+          setCharacterValue={setCharacterValue}
+          ref={inputRef}
         />
       </form>
       <input
@@ -145,6 +146,7 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
           theme === "light" ? "outline-gray-300" : "outline-gray-600"
         } rounded-md shadow-md`}
         value={amountOfPoints || ""}
+        onBlur={onBlur}
         onChange={(e) => setAmountOfPoints(+e.target.value)}
       />
     </div>

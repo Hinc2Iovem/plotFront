@@ -12,6 +12,7 @@ import useUpdateCallText from "../../../hooks/Call/useUpdateCallText";
 import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
 import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandCallFieldTypes = {
   plotFieldCommandId: string;
@@ -20,7 +21,6 @@ type CommandCallFieldTypes = {
 };
 
 export default function CommandCallField({ plotFieldCommandId, topologyBlockId, command }: CommandCallFieldTypes) {
-  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Call");
 
   const { data: commandCall } = useGetCommandCall({
@@ -41,22 +41,13 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
     topologyBlockId: targetBlockId,
   });
 
-  const { addItem, updateValue } = useSearch();
-
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId,
-        item: {
-          commandName: nameValue || "call",
-          id: plotFieldCommandId,
-          text: "",
-          topologyBlockId,
-          type: "command",
-        },
-      });
-    }
-  }, [episodeId]);
+  useAddItemInsideSearch({
+    commandName: nameValue || "call",
+    id: plotFieldCommandId,
+    text: "",
+    topologyBlockId,
+    type: "command",
+  });
 
   useEffect(() => {
     if (currentTopologyBlock) {
@@ -74,18 +65,6 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
     }
   }, [commandCall]);
 
-  useEffect(() => {
-    if (typeof currentReferencedCommandIndex === "number" && episodeId) {
-      updateValue({
-        episodeId,
-        commandName: "call",
-        id: plotFieldCommandId,
-        type: "command",
-        value: `${currentReferencedCommandIndex}`,
-      });
-    }
-  }, [currentReferencedCommandIndex, episodeId]);
-
   return (
     <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -99,6 +78,7 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
           currentReferencedCommandIndex={currentReferencedCommandIndex}
           amountOfCommands={currentTopologyBlock?.topologyBlockInfo.amountOfCommands || 0}
           callId={commandCallId}
+          plotFieldCommandId={plotFieldCommandId}
         />
         <ChooseTopologyBlock
           callId={commandCallId}
@@ -117,6 +97,7 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
 
 type ChooseReferencedCommandIndexTypes = {
   callId: string;
+  plotFieldCommandId: string;
   amountOfCommands: number;
   currentReferencedCommandIndex: number | null;
   setCurrentReferencedCommandIndex: React.Dispatch<React.SetStateAction<number | null>>;
@@ -126,11 +107,28 @@ function ChooseReferencedCommandIndex({
   callId,
   amountOfCommands,
   currentReferencedCommandIndex,
+  plotFieldCommandId,
   setCurrentReferencedCommandIndex,
 }: ChooseReferencedCommandIndexTypes) {
+  const { episodeId } = useParams();
+  const { updateValue } = useSearch();
+
   const updateCommandIndex = useUpdateCallCommandIndex({ callId });
   const modalRef = useRef<HTMLDivElement>(null);
   const [showAllCommandIndexes, setShowAllCommandIndexes] = useState(false);
+
+  const updateValues = (index: number) => {
+    if (typeof index === "number" && episodeId) {
+      updateValue({
+        episodeId,
+        commandName: "call",
+        id: plotFieldCommandId,
+        type: "command",
+        value: `${index}`,
+      });
+    }
+  };
+
   useOutOfModal({
     modalRef,
     setShowModal: setShowAllCommandIndexes,
@@ -159,6 +157,7 @@ function ChooseReferencedCommandIndex({
                 type="button"
                 onClick={() => {
                   setShowAllCommandIndexes(false);
+                  updateValues(i);
                   setCurrentReferencedCommandIndex(i);
                   updateCommandIndex.mutate({ commandIndex: i });
                 }}

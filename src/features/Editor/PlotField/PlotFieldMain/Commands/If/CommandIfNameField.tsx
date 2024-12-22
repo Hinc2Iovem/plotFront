@@ -14,10 +14,12 @@ import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/As
 import useAddNewIfVariation from "../../../hooks/If/BlockVariations/useAddNewIfVariation";
 import useIfVariations from "./Context/IfContext";
 import useAddNewLogicalOperator from "../../../hooks/If/BlockVariations/logicalOperator/useAddNewLogicalOperator";
+import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
+import { useParams } from "react-router-dom";
 
 type CommandIfNameFieldTypes = {
   topologyBlockId: string;
-  plotfieldCommandIfId: string;
+  commandIfId: string;
   plotfieldCommandId: string;
   setHideCommands: React.Dispatch<React.SetStateAction<boolean>>;
   hideCommands: boolean;
@@ -30,7 +32,7 @@ type CommandIfNameFieldTypes = {
 
 export default function CommandIfNameField({
   topologyBlockId,
-  plotfieldCommandIfId,
+  commandIfId,
   plotfieldCommandId,
   nameValue,
   isCommandFocused,
@@ -40,46 +42,29 @@ export default function CommandIfNameField({
   createInsideElse,
   setHideCommands,
 }: CommandIfNameFieldTypes) {
+  const { episodeId } = useParams();
   const { getCurrentAmountOfCommands } = usePlotfieldCommands();
 
-  const createCommandInsideIf = useCreateBlankCommandInsideIf({
+  const createBlankCommand = useCreateBlankCommand({
     topologyBlockId,
-    plotfieldCommandIfId,
-  });
-  const createCommandInsideElse = useCreateBlankCommandInsideIf({
-    topologyBlockId,
-    plotfieldCommandIfId,
-    isElse: true,
+    episodeId: episodeId || "",
   });
 
   const handleCreateCommand = (isElse: boolean) => {
     const _id = generateMongoObjectId();
-    if (isElse) {
-      const elseCommandOrder = getCurrentAmountOfCommands({
-        topologyBlockId,
-      });
-      createCommandInsideElse.mutate({
-        commandOrder: elseCommandOrder,
-        _id,
-        command: "" as AllPossiblePlotFieldComamndsTypes,
-        isElse: true,
-        topologyBlockId,
-        plotfieldCommandIfId,
-      });
-    } else {
-      const ifCommandOrder = getCurrentAmountOfCommands({
-        topologyBlockId,
-      });
 
-      createCommandInsideIf.mutate({
-        commandOrder: ifCommandOrder,
-        _id,
-        command: "" as AllPossiblePlotFieldComamndsTypes,
-        isElse,
-        topologyBlockId,
-        plotfieldCommandIfId,
-      });
-    }
+    const commandOrder = getCurrentAmountOfCommands({
+      topologyBlockId,
+    });
+
+    createBlankCommand.mutate({
+      commandOrder: commandOrder,
+      _id,
+      commandName: "" as AllPossiblePlotFieldComamndsTypes,
+      isElse: isElse,
+      topologyBlockId,
+      plotfieldCommandIfId: commandIfId,
+    });
   };
 
   return (
@@ -92,7 +77,7 @@ export default function CommandIfNameField({
         >
           {nameValue}
         </PlotfieldCommandNameField>
-        <AddVariationButton nameValue={nameValue} ifId={plotfieldCommandIfId} plotfieldCommandId={plotfieldCommandId} />
+        <AddVariationButton nameValue={nameValue} ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />
         <HideCommandsButton hideCommands={hideCommands} setHideCommands={setHideCommands} />
       </div>
       <ButtonHoverPromptModal

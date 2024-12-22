@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import useGetTranslationCharacteristic from "../../../../../../../../hooks/Fetching/Translation/useGetTranslationCharacteristic";
+import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
+import useSearch from "../../../../../../Context/Search/SearchContext";
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetCharacteristicOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetCharacteristicOption";
 import PlotfieldCharacteristicPromptMain from "../../../Prompts/Characteristics/PlotfieldCharacteristicPromptMain";
-import useSearch from "../../../../../../Context/Search/SearchContext";
-import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
-import { useParams } from "react-router-dom";
 
 type OptionCharacteristicBlockTypes = {
   choiceOptionId: string;
@@ -55,14 +55,31 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
     choiceOptionId,
   });
 
-  useEffect(() => {
+  const { updateValue } = useSearch();
+
+  const debouncedCharacteristic = useDebounce({ value: characteristicName, delay: 600 });
+
+  const updateValues = () => {
+    if (episodeId) {
+      updateValue({
+        episodeId,
+        commandName: `Choice - Premium`,
+        id: choiceOptionId,
+        value: `${debouncedValue} ${debouncedCharacteristic} ${amountOfPoints}`,
+        type: "choiceOption",
+      });
+    }
+  };
+
+  const onBlur = () => {
+    updateValues();
     if (amountOfPoints) {
       updateOptionCharacteristic.mutate({ amountOfPoints: +amountOfPoints });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amountOfPoints]);
+  };
 
   useEffect(() => {
+    updateValues();
     if (characteristicId?.trim().length) {
       updateOptionCharacteristic.mutate({
         characterCharacteristicId: characteristicId,
@@ -71,21 +88,11 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characteristicId]);
 
-  const { updateValue } = useSearch();
-
-  const debouncedCharacteristic = useDebounce({ value: characteristicName, delay: 600 });
-
   useEffect(() => {
     if (episodeId) {
-      updateValue({
-        episodeId,
-        commandName: `Choice - Characteristic`,
-        id: choiceOptionId,
-        value: `${debouncedValue} ${debouncedCharacteristic} ${amountOfPoints}`,
-        type: "choiceOption",
-      });
+      updateValues();
     }
-  }, [amountOfPoints, debouncedCharacteristic, episodeId, debouncedValue]);
+  }, [episodeId]);
 
   return (
     <div className="self-end sm:w-fit w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap">
@@ -116,6 +123,7 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
           theme === "light" ? "outline-gray-300" : "outline-gray-600"
         } rounded-md shadow-md`}
         value={amountOfPoints || ""}
+        onBlur={onBlur}
         onChange={(e) => setAmountOfPoints(+e.target.value)}
       />
     </div>

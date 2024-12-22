@@ -10,14 +10,14 @@ import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import useDeleteIfVariation from "../../../../hooks/If/BlockVariations/useDeleteIfVariation";
 import useDeleteLogicalOperator from "../../../../hooks/If/BlockVariations/logicalOperator/useDeleteLogicalOperator";
 import useUpdateLogicalOperator from "../../../../hooks/If/BlockVariations/logicalOperator/useUpdateLogicalOperator";
-import IfVariationKey from "./VariationTypes/IfVariationKey";
-import IfVariationCharacter from "./VariationTypes/IfVariationCharacter";
-import IfVariationCharacteristic from "./VariationTypes/IfVariationCharacteristic";
-import IfVariationAppearance from "./VariationTypes/IfVariationAppearance";
-import IfVariationRandom from "./VariationTypes/IfVariationRandom";
-import IfVariationRetry from "./VariationTypes/IfVariationRetry";
-import IfVariationLanguage from "./VariationTypes/IfVariationLanguage";
-import IfVariationStatus from "./VariationTypes/IfVariationStatus";
+import IfVariationKey from "./VariationTypes/Key/IfVariationKey";
+import IfVariationCharacter from "./VariationTypes/Character/IfVariationCharacter";
+import IfVariationCharacteristic from "./VariationTypes/Characteristic/IfVariationCharacteristic";
+import IfVariationAppearance from "./VariationTypes/Appearance/IfVariationAppearance";
+import IfVariationRandom from "./VariationTypes/Random/IfVariationRandom";
+import IfVariationRetry from "./VariationTypes/Retry/IfVariationRetry";
+import IfVariationLanguage from "./VariationTypes/Language/IfVariationLanguage";
+import IfVariationStatus from "./VariationTypes/Status/IfVariationStatus";
 
 type IfInputFieldItemTypes = {
   type: ConditionValueVariationType;

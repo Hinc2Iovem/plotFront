@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import useDebounce from "../../../../../../../hooks/utilities/useDebounce";
+import useAddItemInsideSearch from "../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useDeleteChoiceOption from "../../../../hooks/Choice/ChoiceOption/useDeleteChoiceOption";
 import useGetChoiceOptionById from "../../../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
 import useUpdateChoiceOptionTranslationText from "../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
@@ -13,7 +13,6 @@ import OptionSelectTopologyBlock from "./OptionSelectTopologyBlock";
 import OptionCharacteristicBlock from "./OptionVariations/OptionCharacteristicBlock";
 import OptionPremiumBlock from "./OptionVariations/OptionPremiumBlock";
 import OptionRelationshipBlock from "./OptionVariations/OptionRelationshipBlock";
-import useSearch from "../../../../../Context/Search/SearchContext";
 
 type ChoiceOptionBlockTypes = {
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
@@ -85,11 +84,6 @@ export default function ChoiceOptionBlock({
     }
   }, [choiceOption, updated]);
 
-  const debouncedValue = useDebounce({
-    value: getChoiceOptionText({ choiceId, choiceOptionId }),
-    delay: 700,
-  });
-
   const deleteOption = useDeleteChoiceOption({
     choiceId,
     choiceOptionId,
@@ -100,37 +94,23 @@ export default function ChoiceOptionBlock({
 
   const updateOptionTextTranslation = useUpdateChoiceOptionTranslationText({
     choiceOptionId,
-    option: debouncedValue,
+    option: getChoiceOptionText({ choiceId, choiceOptionId }),
     type: optionType,
     choiceId: plotFieldCommandId,
     language: "russian",
   });
 
-  const { addItem } = useSearch();
+  useAddItemInsideSearch({
+    commandName: `Choice - ${optionType}`,
+    id: choiceOptionId,
+    text: getChoiceOptionText({ choiceId, choiceOptionId }),
+    topologyBlockId: currentTopologyBlockId,
+    type: "choiceOption",
+  });
 
-  useEffect(() => {
-    if (episodeId) {
-      addItem({
-        episodeId: episodeId || "",
-        item: {
-          commandName: `Choice - ${optionType}`,
-          id: choiceOptionId,
-          text: getChoiceOptionText({ choiceId, choiceOptionId }),
-          topologyBlockId: currentTopologyBlockId,
-          type: "choiceOption",
-        },
-      });
-    }
-  }, [episodeId]);
-
-  useEffect(() => {
-    if (debouncedValue?.trim().length) {
-      updateOptionTextTranslation.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
-
-  console.log("debouncedValue: ", debouncedValue);
+  const onBlur = () => {
+    updateOptionTextTranslation.mutate();
+  };
 
   useOutOfModal({
     modalRef: deleteRef,
@@ -159,6 +139,7 @@ export default function ChoiceOptionBlock({
               optionText: e.target.value,
             });
           }}
+          onBlur={onBlur}
           placeholder="Ответ"
           className={`w-full text-[1.4rem] text-text-light rounded-md ${
             theme === "light" ? "outline-gray-300" : "outline-gray-600"
@@ -167,11 +148,20 @@ export default function ChoiceOptionBlock({
 
         <div className="p-[.2rem] flex flex-col gap-[1rem]">
           {optionType === "premium" ? (
-            <OptionPremiumBlock choiceOptionId={choiceOptionId} debouncedValue={debouncedValue} />
+            <OptionPremiumBlock
+              choiceOptionId={choiceOptionId}
+              debouncedValue={getChoiceOptionText({ choiceId, choiceOptionId })}
+            />
           ) : optionType === "characteristic" ? (
-            <OptionCharacteristicBlock choiceOptionId={choiceOptionId} debouncedValue={debouncedValue} />
+            <OptionCharacteristicBlock
+              choiceOptionId={choiceOptionId}
+              debouncedValue={getChoiceOptionText({ choiceId, choiceOptionId })}
+            />
           ) : optionType === "relationship" ? (
-            <OptionRelationshipBlock choiceOptionId={choiceOptionId} debouncedValue={debouncedValue} />
+            <OptionRelationshipBlock
+              choiceOptionId={choiceOptionId}
+              debouncedValue={getChoiceOptionText({ choiceId, choiceOptionId })}
+            />
           ) : null}
           <div className="flex justify-between w-full">
             <div className={`${showAllSexualOrientationBlocks ? "" : "overflow-hidden"} w-[calc(50%+.5rem)] self-end`}>
