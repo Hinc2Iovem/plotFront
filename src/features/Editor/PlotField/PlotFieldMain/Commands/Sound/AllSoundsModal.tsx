@@ -12,10 +12,12 @@ type ExposedMethods = {
 type AllSoundsModalTypes = {
   showSoundDropDown: boolean;
   soundName: string;
+  initValue: string;
   storyId: string;
   debouncedValue: string;
   soundId: string;
   setSoundName: React.Dispatch<React.SetStateAction<string>>;
+  setInitValue: React.Dispatch<React.SetStateAction<string>>;
   setShowSoundDropDown: React.Dispatch<React.SetStateAction<boolean>>;
   setShowCreateSoundModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -31,6 +33,8 @@ const AllSoundsModal = forwardRef<ExposedMethods, AllSoundsModalTypes>(
       soundId,
       soundName,
       storyId,
+      initValue,
+      setInitValue,
     },
     ref
   ) => {
@@ -69,6 +73,11 @@ const AllSoundsModal = forwardRef<ExposedMethods, AllSoundsModalTypes>(
         return;
       }
 
+      if (initValue === soundName) {
+        return;
+      }
+
+      setInitValue(soundName);
       if (mm?.trim().length) {
         // on button click
         updateSoundText.mutate({ soundName: mm });

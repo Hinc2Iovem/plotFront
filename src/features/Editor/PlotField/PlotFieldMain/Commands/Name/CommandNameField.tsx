@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
@@ -9,6 +9,7 @@ import useGetCommandName from "../../../hooks/Name/useGetCommandName";
 import useUpdateNameText from "../../../hooks/Name/useUpdateNameText";
 import useSearch from "../../../../Context/Search/SearchContext";
 import PlotfieldUnknownCharacterPromptMain, {
+  ExposedMethodsUnknownCharacter,
   UnknownCharacterValueTypes,
 } from "../Prompts/Characters/PlotfieldUnknownCharacterPromptMain";
 import { useParams } from "react-router-dom";
@@ -24,6 +25,7 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Name");
 
+  const [initCharacterId, setInitCharacterId] = useState("");
   const [characterValue, setCharacterValue] = useState<UnknownCharacterValueTypes>({
     characterUnknownName: "",
     characterName: "",
@@ -87,10 +89,11 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
         ...prev,
         characterId: commandName.characterId,
       }));
+      setInitCharacterId(commandName.characterId);
     }
   }, [commandName]);
 
-  const currentInput = useRef<{ updateCharacterOnBlur: () => void }>(null);
+  const currentInput = useRef<ExposedMethodsUnknownCharacter>(null);
   const handleOnBlur = () => {
     if (currentInput.current) {
       currentInput.current.updateCharacterOnBlur();
@@ -103,10 +106,11 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
   });
 
   useEffect(() => {
-    if (commandName?.characterId !== characterValue.characterId && characterValue.characterId?.trim().length) {
+    if (initCharacterId !== characterValue.characterId && characterValue.characterId?.trim().length) {
       updateNameText.mutate({
         characterId: characterValue.characterId,
       });
+      setInitCharacterId(characterValue.characterId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [characterValue]);
@@ -178,6 +182,7 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
             translateAsideValue="translate-y-[3rem]"
             debouncedValue={characterDebouncedValue}
             setCharacterValue={setCharacterValue}
+            ref={currentInput}
           />
         </div>
         <div className="flex-grow min-w-[20rem] sm:w-[calc(50%-2rem)] flex gap-[.5rem] relative">

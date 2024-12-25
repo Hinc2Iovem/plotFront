@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
@@ -21,6 +21,7 @@ export default function CommandAmbientField({
 }: CommandAmbientFieldTypes) {
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Ambient");
+  const [initTextValue, setInitTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
   const { data: commandAmbient } = useGetCommandAmbient({
     plotFieldCommandId,
@@ -35,12 +36,8 @@ export default function CommandAmbientField({
   useEffect(() => {
     if (commandAmbient) {
       setCommandAmbientId(commandAmbient._id);
-    }
-  }, [commandAmbient]);
-
-  useEffect(() => {
-    if (commandAmbient?.ambientName) {
-      setTextValue(commandAmbient.ambientName);
+      setTextValue(commandAmbient?.ambientName || "");
+      setInitTextValue(commandAmbient?.ambientName || "");
     }
   }, [commandAmbient]);
 
@@ -60,7 +57,7 @@ export default function CommandAmbientField({
   });
 
   const onBlur = () => {
-    if (commandAmbient?.ambientName !== textValue) {
+    if (initTextValue !== textValue) {
       if (episodeId) {
         updateValue({
           episodeId,
@@ -71,6 +68,7 @@ export default function CommandAmbientField({
         });
       }
       updateAmbientText.mutate();
+      setInitTextValue(textValue);
     }
   };
 

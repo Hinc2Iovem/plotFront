@@ -1,4 +1,7 @@
 import { DraggableProvided } from "@hello-pangea/dnd";
+import { ErrorBoundary } from "react-error-boundary";
+import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
+import { PlotfieldOptimisticCommandTypes } from "../../Context/PlotfieldCommandSlice";
 import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
 import CommandBackgroundField from "./Background/CommandBackgroundField";
@@ -20,11 +23,6 @@ import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
-import { PlotfieldOptimisticCommandTypes } from "../../Context/PlotfieldCommandSlice";
-import { useEffect } from "react";
-import usePlotfieldCommands from "../../Context/PlotFieldContext";
-import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
-import { ErrorBoundary } from "react-error-boundary";
 
 function ErrorFallback({
   error,
@@ -64,52 +62,6 @@ export default function PlotfieldItem({
   emotionName,
   commandOrder,
 }: PlotFieldItemTypes) {
-  const { getCommandOnlyByPlotfieldCommandId } = usePlotfieldCommands();
-
-  useEffect(() => {
-    const handleUpdatingChoiceSession = () => {
-      const currentCommandChoice = sessionStorage.getItem("focusedCommandChoice")?.split("?").filter(Boolean);
-
-      const deepLevelChoice = currentCommandChoice?.includes("none")
-        ? null
-        : (currentCommandChoice?.length || 0) > 0
-        ? (currentCommandChoice?.length || 0) - 1
-        : null;
-
-      if (typeof deepLevelChoice !== "number") {
-        console.error("Extremely wierd staff");
-        return;
-      }
-
-      if (deepLevelChoice === 0) {
-        console.log("Went only inside the first level");
-        return;
-      }
-
-      const lastCommandChoice = (currentCommandChoice || [])[deepLevelChoice]?.split("-");
-      const secondToLastCommandChoice = (currentCommandChoice || [])[deepLevelChoice - 1]?.split("-");
-
-      const lastChoicePlotfieldId = lastCommandChoice[0];
-      const secondToLastChoicePlotfieldId = secondToLastCommandChoice[0];
-
-      const lastChoicePlotfieldCommand = getCommandOnlyByPlotfieldCommandId({
-        plotfieldCommandId: lastChoicePlotfieldId,
-      });
-      const secondToLastChoicePlotfieldCommand = getCommandOnlyByPlotfieldCommandId({
-        plotfieldCommandId: secondToLastChoicePlotfieldId,
-      });
-
-      if (lastChoicePlotfieldCommand?.topologyBlockId !== secondToLastChoicePlotfieldCommand?.topologyBlockId) {
-        // basically if last command choice is not inside the secondToLast
-      }
-    };
-
-    window.addEventListener("storage", handleUpdatingChoiceSession);
-    return () => {
-      window.removeEventListener("storage", handleUpdatingChoiceSession);
-    };
-  }, [getCommandOnlyByPlotfieldCommandId]);
-
   return (
     <li
       {...provided.draggableProps}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
@@ -17,6 +17,7 @@ type CommandKeyFieldTypes = {
 export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, command }: CommandKeyFieldTypes) {
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Key");
+  const [initTextValue, setInitTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
   const { data: commandKey } = useGetKeyByPlotfieldCommandId({
     plotFieldCommandId,
@@ -31,7 +32,8 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
   useEffect(() => {
     if (commandKey) {
       setCommandKeyId(commandKey._id);
-      setTextValue(commandKey?.text);
+      setTextValue(commandKey?.text || "");
+      setInitTextValue(commandKey?.text || "");
     }
   }, [commandKey]);
 
@@ -51,10 +53,14 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
   });
 
   const onBlur = () => {
+    if (initTextValue === textValue) {
+      return;
+    }
     if (episodeId) {
       updateValue({ episodeId, commandName: "key", id: plotFieldCommandId, type: "command", value: textValue });
     }
     updateKeyText.mutate();
+    setInitTextValue(textValue);
   };
 
   return (

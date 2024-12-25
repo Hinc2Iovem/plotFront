@@ -56,8 +56,11 @@ type TopLevelNavigationStateTypes = {
     isElse,
     type,
     commandName,
+    commandOrder,
+    parentId,
   }: {
     currentlyFocusedCommandId: string;
+    parentId?: string;
     isElse?: boolean;
     type: CurrentlyFocusedVariationTypes;
     commandName: OmittedCommandNames;
@@ -92,7 +95,14 @@ const useNavigation = create<TopLevelNavigationStateTypes>()(
           },
         });
       },
-      setCurrentlyFocusedCommandId: ({ currentlyFocusedCommandId, isElse, type, commandName, commandOrder }) => {
+      setCurrentlyFocusedCommandId: ({
+        currentlyFocusedCommandId,
+        isElse,
+        type,
+        commandName,
+        commandOrder,
+        parentId,
+      }) => {
         if (currentlyFocusedCommandId?.trim().length) {
           set({
             currentlyFocusedCommandId: {
@@ -101,6 +111,7 @@ const useNavigation = create<TopLevelNavigationStateTypes>()(
               type,
               commandName,
               commandOrder,
+              parentId,
             },
           });
         }

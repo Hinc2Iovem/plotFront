@@ -1,17 +1,15 @@
-import { useEffect, useState } from "react";
-import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
-import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetCharacterWithTranslation from "../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
 import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
 import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
-import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
-import useSearch from "../../../../Context/Search/SearchContext";
-import { useParams } from "react-router-dom";
-import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
-import { CharacterValueTypes } from "../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
+import PlotfieldCharacterPromptMain, { ExposedMethods } from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 
 type CommandSuitFieldTypes = {
   plotFieldCommandId: string;
@@ -22,12 +20,9 @@ type CommandSuitFieldTypes = {
 export default function CommandSuitField({ plotFieldCommandId, command, topologyBlockId }: CommandSuitFieldTypes) {
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Suit");
+  const [initTextValue, setInitTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
-  const [characterValue, setCharacterValue] = useState<CharacterValueTypes>({
-    _id: null,
-    characterName: null,
-    imgUrl: null,
-  });
+
   const [showCharacterList, setShowCharacterList] = useState(false);
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,
@@ -38,35 +33,10 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
 
   const [commandSuitId, setCommandSuitId] = useState("");
 
-  const { data: character } = useGetCharacterById({
-    characterId: commandSuit?.characterId ?? "",
+  const [initCharacterId, steInitCharacterId] = useState("");
+  const { characterValue, setCharacterValue } = useGetCharacterWithTranslation({
+    currentCharacterId: commandSuit?.characterId,
   });
-  const { data: translatedCharacter } = useGetTranslationCharacterById({
-    characterId: commandSuit?.characterId ?? "",
-    language: "russian",
-  });
-
-  useEffect(() => {
-    if (character) {
-      setCharacterValue((prev) => ({
-        ...prev,
-        imgUrl: character?.img || "",
-      }));
-    }
-  }, [character]);
-
-  useEffect(() => {
-    if (translatedCharacter) {
-      translatedCharacter.translations?.map((tc) => {
-        if (tc.textFieldName === "characterName") {
-          setCharacterValue((prev) => ({
-            ...prev,
-            characterName: tc?.text || "",
-          }));
-        }
-      });
-    }
-  }, [translatedCharacter]);
 
   useEffect(() => {
     if (commandSuit) {
@@ -75,7 +45,9 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
         ...prev,
         _id: commandSuit?.characterId || "",
       }));
+      steInitCharacterId(commandSuit?.characterId || "");
       setTextValue(commandSuit?.suitName);
+      setInitTextValue(commandSuit?.suitName);
     }
   }, [commandSuit]);
 
@@ -89,6 +61,7 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
     type: "command",
   });
 
+  const inputRef = useRef<ExposedMethods>(null);
   const debouncedValue = useDebounce({ value: textValue, delay: 500 });
 
   const updateSuitText = useUpdateSuitText({
@@ -97,7 +70,7 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
     suitName: debouncedValue,
   });
 
-  const onBlur = () => {
+  const updateValues = () => {
     if (episodeId) {
       updateValue({
         episodeId,
@@ -109,8 +82,31 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
         } ${debouncedValue}`,
       });
     }
-    updateSuitText.mutate();
   };
+
+  const onBlur = () => {
+    if (inputRef.current) {
+      inputRef.current.updateCharacterNameOnBlur();
+    }
+
+    updateValues();
+  };
+
+  const onBlurSuitName = () => {
+    if (initTextValue !== textValue) {
+      updateSuitText.mutate();
+      setInitTextValue(textValue);
+
+      updateValues();
+    }
+  };
+
+  useEffect(() => {
+    if (characterValue._id && initCharacterId !== characterValue._id) {
+      updateSuitText.mutate();
+      steInitCharacterId(characterValue._id);
+    }
+  }, [characterValue]);
 
   return (
     <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
@@ -157,12 +153,14 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
           showCharacterModal={showCharacterList}
           currentCharacterId={characterValue._id || ""}
           setCharacterValue={setCharacterValue}
+          ref={inputRef}
         />
       </form>
 
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
         <PlotfieldInput
           value={textValue}
+          onBlur={onBlurSuitName}
           type="text"
           placeholder="Костюм"
           onChange={(e) => setTextValue(e.target.value)}

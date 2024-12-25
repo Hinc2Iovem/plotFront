@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
@@ -21,6 +21,7 @@ type CommandMusicFieldTypes = {
 export default function CommandMusicField({ plotFieldCommandId, command, topologyBlockId }: CommandMusicFieldTypes) {
   const { storyId, episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Music");
+  const [initValue, setInitValue] = useState<string>("");
   const [musicName, setMusicName] = useState<string>("");
   const [showMusicDropDown, setShowMusicDropDown] = useState(false);
   const [showCreateMusicModal, setShowCreateMusicModal] = useState(false);
@@ -58,7 +59,8 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
 
   useEffect(() => {
     if (music) {
-      setMusicName(music.musicName);
+      setMusicName(music.musicName || "");
+      setInitValue(music.musicName || "");
     }
   }, [music]);
 
@@ -116,6 +118,8 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
           setShowMusicDropDown={setShowMusicDropDown}
           showMusicDropDown={showMusicDropDown}
           storyId={storyId || ""}
+          initValue={initValue}
+          setInitValue={setInitValue}
           ref={musicRef}
         />
       </div>

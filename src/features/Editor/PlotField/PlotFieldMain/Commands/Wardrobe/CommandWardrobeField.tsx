@@ -1,20 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import rejectImg from "../../../../../../assets/images/shared/rejectWhite.png";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandWardrobe from "../../../hooks/Wardrobe/useGetCommandWardrobe";
 import useGetCommandWardrobeTranslation from "../../../hooks/Wardrobe/useGetCommandWardrobeTranslation";
-import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
-import useUpdateWardrobeTranslationText from "../../../hooks/Wardrobe/useUpdateWardrobeTranslationText";
 import useGetAllWardrobeAppearancePartBlocks from "../../../hooks/Wardrobe/WardrobeAppearancePartBlock/useGetAllWardrobeAppearancePartBlocks";
 import "../Prompts/promptStyles.css";
 import WardrobeAppearancePartBlock from "./WardrobeAppearancePartBlock";
 import WardrobeCharacterAppearancePartForm from "./WardrobeCharacterAppearancePartForm";
+import WardrobeTitle from "./WardrobeTitle/WardrobeTitle";
+import WardrobeAppearanceNames from "./WardrobeAppearanceNames/WardrobeAppearanceNames";
 
 type CommandWardrobeFieldTypes = {
   plotFieldCommandId: string;
@@ -27,14 +24,12 @@ export default function CommandWardrobeField({
   command,
   topologyBlockId,
 }: CommandWardrobeFieldTypes) {
-  const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Wardrobe");
   const [wardrobeTitle, setWardrobeTitle] = useState("");
   const [commandWardrobeId, setCommandWardrobeId] = useState("");
   const [characterId, setCharacterId] = useState("");
   const [isCurrentlyDressed, setIsCurrentlyDressed] = useState<boolean>(false);
   const [showAllAppearancePartBlocks, setShowAllAppearancePartBlocks] = useState(false);
-  const theme = localStorage.getItem("theme");
   const { data: commandWardrobe } = useGetCommandWardrobe({
     plotFieldCommandId,
   });
@@ -71,25 +66,12 @@ export default function CommandWardrobeField({
     }
   }, [translatedWardrobe]);
 
-  const { updateValue } = useSearch();
-
   useAddItemInsideSearch({
     commandName: nameValue || "wardrobe",
     id: plotFieldCommandId,
-    text: `${wardrobeTitle}`,
+    text: `${wardrobeTitle} ${allAppearanceNames.map((an) => `${an}`).join(" ")}`,
     topologyBlockId,
     type: "command",
-  });
-
-  const updateWardrobeTranslatedTitle = useUpdateWardrobeTranslationText({
-    commandId: plotFieldCommandId,
-    title: wardrobeTitle,
-    topologyBlockId,
-    language: "russian",
-  });
-
-  const updateWardrobeIsCurrentlyDressed = useUpdateWardrobeCurrentDressedAndCharacterId({
-    commandWardrobeId,
   });
 
   useOutOfModal({
@@ -98,25 +80,6 @@ export default function CommandWardrobeField({
     setShowModal: setShowAllAppearancePartBlocks,
   });
 
-  const updateValues = ({ onBlur }: { onBlur: boolean }) => {
-    if (episodeId) {
-      updateValue({
-        episodeId,
-        commandName: "wardrobe",
-        id: plotFieldCommandId,
-        type: "command",
-        value: `${wardrobeTitle} ${allAppearanceNames.map((an) => `${an}`).join(" ")}`,
-      });
-      if (onBlur) {
-        updateWardrobeTranslatedTitle.mutate();
-      }
-    }
-  };
-
-  useEffect(() => {
-    updateValues({ onBlur: false });
-  }, [allAppearanceNames, episodeId]);
-
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
@@ -124,72 +87,24 @@ export default function CommandWardrobeField({
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full flex gap-[1rem]">
-        <PlotfieldInput
-          value={wardrobeTitle}
-          type="text"
-          onBlur={() => updateValues({ onBlur: true })}
-          placeholder="Название гардероба"
-          onChange={(e) => setWardrobeTitle(e.target.value)}
-        />
-        <button
-          type="button"
-          onClick={(e) => {
-            setIsCurrentlyDressed((prev) => !prev);
-            updateWardrobeIsCurrentlyDressed.mutate({
-              isCurrentDressed: !isCurrentlyDressed,
-            });
-            e.currentTarget.blur();
-          }}
-          className={`text-[1.4rem] rounded-md shadow-md ${
-            isCurrentlyDressed
-              ? `${
-                  theme === "light"
-                    ? "bg-green-300 text-text-dark"
-                    : "bg-green-400 text-text-light hover:bg-secondary hover:text-text-light focus-within:bg-secondary focus-within:text-text-light"
-                }`
-              : `${
-                  theme === "light"
-                    ? "bg-secondary text-black"
-                    : "hover:bg-green-400 hover:text-text-light bg-secondary text-text-light focus-within:bg-green-400 focus-within:text-text-light"
-                }`
-          } px-[1rem] whitespace-nowrap ${theme === "light" ? "outline-gray-300" : "outline-gray-600"}`}
-        >
-          {isCurrentlyDressed ? "Надето" : "Не надето"}
-        </button>
-      </form>
-
-      <WardrobeCharacterAppearancePartForm
+      <WardrobeTitle
+        allAppearanceNames={allAppearanceNames}
         commandWardrobeId={commandWardrobeId}
-        setCharacterId={setCharacterId}
-        characterId={characterId}
+        isCurrentlyDressed={isCurrentlyDressed}
+        plotFieldCommandId={plotFieldCommandId}
+        setIsCurrentlyDressed={setIsCurrentlyDressed}
+        setWardrobeTitle={setWardrobeTitle}
+        topologyBlockId={topologyBlockId}
+        wardrobeTitle={wardrobeTitle}
       />
 
-      <div className="w-full flex sm:flex-row flex-col gap-[1rem]">
-        <div className="flex flex-wrap w-[70%] gap-[.5rem]">
-          {allAppearanceNames.length
-            ? allAppearanceNames.map((n, i) => (
-                <button
-                  className="uppercase border-secondary border-[.1rem] hover:bg-secondary self-center flex-grow rounded-md px-[1rem] py-[.5rem] opacity-80 hover:opacity-100 transition-all text-text-light text-[1.3rem]"
-                  key={n + i}
-                >
-                  {n}
-                </button>
-              ))
-            : null}
-        </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowAllAppearancePartBlocks(true);
-          }}
-          className={`w-fit  ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } self-start  flex-grow text-[1.4rem] text-text-dark hover:text-text-light px-[1rem] bg-secondary rounded-md shadow-md py-[.5rem]`}
-        >
-          Посмотреть Одежду
-        </button>
-      </div>
+      <WardrobeCharacterAppearancePartForm commandWardrobeId={commandWardrobeId} characterId={characterId} />
+
+      <WardrobeAppearanceNames
+        allAppearanceNames={allAppearanceNames}
+        setShowAllAppearancePartBlocks={setShowAllAppearancePartBlocks}
+      />
+
       <div
         ref={appearancePartsRef}
         className={`${

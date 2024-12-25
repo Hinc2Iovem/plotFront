@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useGetCommandWait from "../../../hooks/Wait/useGetCommandWait";
@@ -17,6 +17,7 @@ type CommandWaitFieldTypes = {
 export default function CommandWaitField({ plotFieldCommandId, command, topologyBlockId }: CommandWaitFieldTypes) {
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Wait");
+  const [initValue, setInitValue] = useState("");
   const [waitValue, setWaitValue] = useState("");
   const { data: commandWait } = useGetCommandWait({
     plotFieldCommandId,
@@ -31,6 +32,7 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
     if (commandWait && !commandWaitId?.trim().length) {
       setCommandWaitId(commandWait._id);
       setWaitValue(commandWait?.waitValue?.toString());
+      setInitValue(commandWait?.waitValue?.toString());
     }
   }, [commandWait, commandWaitId]);
 
@@ -49,13 +51,14 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
   });
 
   const onBlur = () => {
-    if (waitValue) {
-      if (episodeId) {
-        updateValue({ episodeId, commandName: "wait", id: plotFieldCommandId, type: "command", value: waitValue });
-      }
+    if (episodeId) {
+      updateValue({ episodeId, commandName: "wait", id: plotFieldCommandId, type: "command", value: waitValue });
+    }
+    if (waitValue && waitValue !== initValue) {
       updateWaitText.mutate({
         waitId: commandWaitId || commandWait?._id || "",
       });
+      setInitValue(waitValue);
     }
   };
 

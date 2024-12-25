@@ -22,6 +22,7 @@ export default function CommandWardrobeCreateCharacter({
   const cursorRef = useRef<HTMLButtonElement | null>(null);
   const [characterId, setCharacterId] = useState("");
 
+  // TODO why the hell do I need to have all this similar create character modals, if I can create one and reuse it
   useEffect(() => {
     if (showModal) {
       cursorRef.current?.focus();
@@ -34,10 +35,9 @@ export default function CommandWardrobeCreateCharacter({
     storyId: storyId ?? "",
   });
 
-  const updateCommandWardrobeCharacter =
-    useUpdateWardrobeCurrentDressedAndCharacterId({
-      commandWardrobeId,
-    });
+  const updateCommandWardrobeCharacter = useUpdateWardrobeCurrentDressedAndCharacterId({
+    commandWardrobeId,
+  });
 
   useEffect(() => {
     if (characterId?.trim().length) {

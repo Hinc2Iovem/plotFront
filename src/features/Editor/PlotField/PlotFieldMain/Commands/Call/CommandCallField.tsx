@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";

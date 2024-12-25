@@ -1,16 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import { CommandSideTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import PlotfieldTextarea from "../../../../../../../../ui/Textareas/PlotfieldTextarea";
 import TextSettingsModal from "../../../../../../components/TextSettingsModal";
-import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
 import useSearch from "../../../../../../Context/Search/SearchContext";
-import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
+import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
+import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
 import useUpdateTextSideStyle from "../shared/useUpdateTextSideStyle";
 
 type SayCharacterFieldItemTextAreaTypes = {
   textValue: string;
+  initTextValue: string;
   plotFieldCommandId: string;
   topologyBlockId: string;
   episodeId: string;
@@ -20,6 +21,7 @@ type SayCharacterFieldItemTextAreaTypes = {
   characterName: string;
   plotFieldCommandSayId: string;
 
+  setInitTextValue: React.Dispatch<React.SetStateAction<string>>;
   setTextValue: React.Dispatch<React.SetStateAction<string>>;
   setCurrentTextStyle: React.Dispatch<React.SetStateAction<TextStyleTypes>>;
   setCurrentTextSide: React.Dispatch<React.SetStateAction<CommandSideTypes>>;
@@ -38,6 +40,8 @@ export default function SayCharacterFieldItemTextArea({
   topologyBlockId,
   characterName,
   emotionName,
+  initTextValue,
+  setInitTextValue,
 }: SayCharacterFieldItemTextAreaTypes) {
   const { updateCommandSide } = usePlotfieldCommands();
   const { updateValue } = useSearch();
@@ -51,8 +55,8 @@ export default function SayCharacterFieldItemTextArea({
     topologyBlockId,
   });
 
-  useEffect(() => {
-    if (textValue?.trim().length) {
+  const onBlur = () => {
+    if (textValue?.trim().length && initTextValue !== textValue) {
       if (episodeId) {
         updateValue({
           episodeId,
@@ -70,9 +74,10 @@ export default function SayCharacterFieldItemTextArea({
         plotfieldCommandId: plotFieldCommandId,
         updateCommandSide,
       });
+
+      setInitTextValue(textValue);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [textValue]);
+  };
 
   useUpdateTextSideStyle({ currentTextSide, currentTextStyle, plotFieldCommandSayId });
 
@@ -82,6 +87,7 @@ export default function SayCharacterFieldItemTextArea({
         value={textValue}
         ref={currentInput}
         placeholder="Such a lovely day"
+        onBlur={onBlur}
         onContextMenu={(e) => {
           e.preventDefault();
           setShowTextSettingsModal((prev) => !prev);

@@ -3,7 +3,7 @@ import useGetCommandMove from "../../../hooks/Move/useGetCommandMove";
 import useUpdateMoveText from "../../../hooks/Move/useUpdateMoveText";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
@@ -19,6 +19,7 @@ const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
 export default function CommandMoveField({ plotFieldCommandId, command, topologyBlockId }: CommandMoveFieldTypes) {
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Move");
+  const [initValue, setInitValue] = useState<string>("");
   const [moveValue, setMoveValue] = useState<string>("");
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const { data: commandMove } = useGetCommandMove({
@@ -36,6 +37,7 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
     if (commandMove) {
       setCommandMoveId(commandMove._id);
       setMoveValue(commandMove?.moveValue || "");
+      setInitValue(commandMove?.moveValue || "");
     }
   }, [commandMove]);
 
@@ -63,9 +65,10 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
         updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: fixIfZeroOrOne });
       }
 
-      if (regexCheckDecimalNumberBetweenZeroAndOne.test(fixIfZeroOrOne)) {
+      if (regexCheckDecimalNumberBetweenZeroAndOne.test(fixIfZeroOrOne) && initValue !== moveValue) {
         setShowNotificationModal(false);
         updateMoveText.mutate();
+        setInitValue(moveValue);
       } else {
         setShowNotificationModal(true);
       }

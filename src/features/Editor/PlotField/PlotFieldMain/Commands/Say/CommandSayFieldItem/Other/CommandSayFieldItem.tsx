@@ -35,6 +35,7 @@ export default function CommandSayFieldItem({
 
   const [sayVariationType, setSayVariationType] = useState(nameValue);
   const [textValue, setTextValue] = useState("");
+  const [initTextValue, setInitTextValue] = useState("");
 
   useAddItemInsideSearch({
     commandName: nameValue,
@@ -47,6 +48,7 @@ export default function CommandSayFieldItem({
   useEffect(() => {
     if (commandSayText && !textValue.trim().length) {
       setTextValue((commandSayText.translations || [])[0]?.text || "");
+      setInitTextValue((commandSayText.translations || [])[0]?.text || "");
     }
   }, [commandSayText]);
 
@@ -72,6 +74,8 @@ export default function CommandSayFieldItem({
         setCurrentTextStyle={setCurrentTextStyle}
         setTextValue={setTextValue}
         textValue={textValue}
+        initTextValue={initTextValue}
+        setInitTextValue={setInitTextValue}
         topologyBlockId={topologyBlockId}
       />
     </div>

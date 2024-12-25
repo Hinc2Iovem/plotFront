@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import { ChoiceVariationsTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useCheckIfShowingPlotfieldInsideChoiceOnMount from "../../../hooks/Choice/helpers/useCheckIfShowingPlotfieldInsideChoiceOnMount";

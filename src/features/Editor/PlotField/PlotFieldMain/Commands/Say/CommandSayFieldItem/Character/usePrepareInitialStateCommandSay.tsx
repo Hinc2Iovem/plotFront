@@ -18,6 +18,7 @@ type PrepareInitialStateCommandSayTypes = {
   emotionId: string;
   emotionImg?: string;
   characterImg?: string;
+  setInitTextValue: React.Dispatch<React.SetStateAction<string>>;
   setTextValue: React.Dispatch<React.SetStateAction<string>>;
   setAllEmotions: React.Dispatch<React.SetStateAction<EmotionsTypes[]>>;
   setEmotionValue: React.Dispatch<React.SetStateAction<EmotionTypes>>;
@@ -32,6 +33,7 @@ export default function usePrepareInitialStateCommandSay({
   emotionName,
   plotFieldCommandId,
   setAllEmotions,
+  setInitTextValue,
   setTextValue,
   setCharacterValue,
   setEmotionValue,
@@ -63,6 +65,7 @@ export default function usePrepareInitialStateCommandSay({
   useEffect(() => {
     if (translatedSayText && !textValue.trim().length) {
       setTextValue((translatedSayText.translations || []).find((ts) => ts.textFieldName === "sayText")?.text || "");
+      setInitTextValue((translatedSayText.translations || []).find((ts) => ts.textFieldName === "sayText")?.text || "");
     }
   }, [translatedSayText]);
 

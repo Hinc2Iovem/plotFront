@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
 import useSearch from "../../../../../../Context/Search/SearchContext";

@@ -69,6 +69,7 @@ export default function CommandSayCharacterFieldItem({
   const [showCreateEmotionModal, setShowCreateEmotionModal] = useState(false);
 
   const [textValue, setTextValue] = useState("");
+  const [initTextValue, setInitTextValue] = useState("");
 
   const [allEmotions, setAllEmotions] = useState<EmotionsTypes[]>([]);
 
@@ -87,6 +88,7 @@ export default function CommandSayCharacterFieldItem({
     topologyBlockId,
     characterImg,
     emotionImg,
+    setInitTextValue,
   });
 
   useEffect(() => {
@@ -143,8 +145,10 @@ export default function CommandSayCharacterFieldItem({
         plotFieldCommandId={plotFieldCommandId}
         setCurrentTextSide={setCurrentTextSide}
         setCurrentTextStyle={setCurrentTextStyle}
+        setInitTextValue={setInitTextValue}
         setTextValue={setTextValue}
         textValue={textValue}
+        initTextValue={initTextValue}
         topologyBlockId={topologyBlockId}
       />
     </div>

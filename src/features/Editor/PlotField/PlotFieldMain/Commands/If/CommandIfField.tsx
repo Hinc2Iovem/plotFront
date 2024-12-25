@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import { useEffect, useState } from "react";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useUpdateSessionStorageGoingDownForIfCommand from "../../../hooks/If/helpers/useUpdateSessionStorageGoingDownForIfCommand";
 import useUpdateSessionStorageGoingUpForIfCommand from "../../../hooks/If/helpers/useUpdateSessionStorageGoingUpForIfCommand";
 import useGetCommandIf from "../../../hooks/If/useGetCommandIf";
@@ -21,32 +21,6 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
 
   const [isFocusedIf, setIsFocusedIf] = useState(true);
   const [isBackgroundFocused, setIsBackgroundFocused] = useState(false);
-  const onlyFirstRerender = useRef(true);
-
-  useEffect(() => {
-    if (onlyFirstRerender.current) {
-      const focusedCommand = sessionStorage.getItem("focusedCommand")?.split("-");
-      const focusedCommandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
-
-      const deepLevelCommandIf = focusedCommandIf?.includes("none")
-        ? null
-        : (focusedCommandIf?.length || 0) > 0
-        ? (focusedCommandIf?.length || 0) - 1
-        : null;
-      if (typeof deepLevelCommandIf === "number") {
-        const currentIfCommand = (focusedCommandIf || [])[deepLevelCommandIf].split("-");
-        const currentPlotfieldCommandId = currentIfCommand[1];
-
-        if ((focusedCommand || [])[1] === plotFieldCommandId && currentPlotfieldCommandId === plotFieldCommandId) {
-          setIsBackgroundFocused(true);
-        }
-      }
-    }
-
-    return () => {
-      onlyFirstRerender.current = false;
-    };
-  }, [plotFieldCommandId]);
 
   const isCommandFocused = useCheckIsCurrentFieldFocused({
     plotFieldCommandId,

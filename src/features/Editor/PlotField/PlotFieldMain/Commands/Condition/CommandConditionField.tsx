@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import plus from "../../../../../../assets/images/shared/add.png";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import ButtonHoverPromptModal from "../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useCheckIfShowingPlotfieldInsideConditionOnMount from "../../../hooks/Condition/helpers/useCheckIfShowingPlotfieldInsideConditionOnMount";

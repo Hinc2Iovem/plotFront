@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
@@ -23,6 +23,7 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
   const [showSoundDropDown, setShowSoundDropDown] = useState(false);
   const [showCreateSoundModal, setShowCreateSoundModal] = useState(false);
   const [nameValue] = useState<string>(command ?? "Sound");
+  const [initValue, setInitValue] = useState<string>("");
   const [soundName, setSoundName] = useState<string>("");
 
   const isCommandFocused = useCheckIsCurrentFieldFocused({
@@ -48,6 +49,7 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
   useEffect(() => {
     if (sound) {
       setSoundName(sound.soundName);
+      setInitValue(sound.soundName);
     }
   }, [sound]);
 
@@ -116,6 +118,8 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
             soundName={soundName}
             storyId={storyId || ""}
             ref={soundRef}
+            setInitValue={setInitValue}
+            initValue={initValue}
           />
         </form>
       </div>

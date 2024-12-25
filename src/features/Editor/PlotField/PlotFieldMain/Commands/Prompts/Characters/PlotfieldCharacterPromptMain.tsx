@@ -101,6 +101,7 @@ const PlotfieldCharacterPromptMain = forwardRef<ExposedMethods, PlotfieldCharact
         )
       );
       if (!tranlsatedCharacter) {
+        // TODO give possibility to create a new character here
         console.log("Non-existing character");
         return;
       }

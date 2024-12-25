@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";

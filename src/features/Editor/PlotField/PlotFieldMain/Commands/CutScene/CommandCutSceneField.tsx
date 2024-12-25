@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
@@ -21,6 +21,7 @@ export default function CommandCutSceneField({
 }: CommandCutSceneFieldTypes) {
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "CutScene");
+  const [initTextValue, setInitTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
   const { data: commandCutScene } = useGetCommandCutScene({
     plotFieldCommandId,
@@ -45,12 +46,8 @@ export default function CommandCutSceneField({
   useEffect(() => {
     if (commandCutScene) {
       setCommandCutSceneId(commandCutScene._id);
-    }
-  }, [commandCutScene]);
-
-  useEffect(() => {
-    if (commandCutScene?.cutSceneName) {
-      setTextValue(commandCutScene.cutSceneName);
+      setTextValue(commandCutScene?.cutSceneName || "");
+      setInitTextValue(commandCutScene?.cutSceneName || "");
     }
   }, [commandCutScene]);
 
@@ -60,7 +57,7 @@ export default function CommandCutSceneField({
   });
 
   const onBlur = () => {
-    if (commandCutScene?.cutSceneName !== textValue) {
+    if (initTextValue !== textValue) {
       if (episodeId) {
         updateValue({
           episodeId,
@@ -71,6 +68,7 @@ export default function CommandCutSceneField({
         });
       }
       updateCutSceneText.mutate();
+      setInitTextValue(textValue);
     }
   };
 

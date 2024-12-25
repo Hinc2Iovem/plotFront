@@ -4,6 +4,11 @@ import usePlotfieldCommands from "../Context/PlotFieldContext";
 import PlotfieldItem from "./Commands/PlotfieldItem";
 import useGetAllPlotFieldCommands from "../hooks/useGetAllPlotFieldCommands";
 import useUpdateCommandOrder from "../hooks/useUpdateCommandOrder";
+import useHandleAllCommandsCreatedViaKeyCombination from "../../../../hooks/helpers/Plotfield/CreatingViaKeyCombination/useHandleAllCommandsCreatedViaKeyCombination";
+import useHandleDuplicationOfAllCommands from "../../../../hooks/helpers/Plotfield/Duplication/useHandleDuplicationOfAllCommands";
+import useHandleNavigationThroughCommands from "../../../../hooks/helpers/Plotfield/navigationHelpers/hooks/useHandleNavigationThroughCommands";
+import useHandleDeletionOfCommand from "../hooks/helpers/useHandleDeletionOfCommand";
+import useNavigation from "../../Context/Navigation/NavigationContext";
 
 type PlotFieldMainTypes = {
   topologyBlockId: string;
@@ -16,11 +21,14 @@ export default function PlotFieldMain({
   showAllCommands,
   renderedAsSubPlotfield = false,
 }: PlotFieldMainTypes) {
+  const { currentTopologyBlock } = useNavigation();
+
   const {
     getCommandsByTopologyBlockId,
     setAllCommands,
     updateCommandOrder: updateCommandOrderOptimistic,
   } = usePlotfieldCommands();
+
   const { data: plotfieldCommands } = useGetAllPlotFieldCommands({
     topologyBlockId,
   });
@@ -50,6 +58,15 @@ export default function PlotFieldMain({
     });
     setAllCommands({ commands: orderedCommands, topologyBlockId });
   };
+
+  useHandleAllCommandsCreatedViaKeyCombination({
+    topologyBlockId: currentTopologyBlock._id,
+  });
+  useHandleDuplicationOfAllCommands({
+    topologyBlockId: currentTopologyBlock._id,
+  });
+  useHandleNavigationThroughCommands();
+  useHandleDeletionOfCommand();
 
   return (
     <main

@@ -3,22 +3,45 @@ import useNavigation from "../../../../../features/Editor/Context/Navigation/Nav
 import usePlotfieldCommands from "../../../../../features/Editor/PlotField/Context/PlotFieldContext";
 import useChoiceOptions from "../../../../../features/Editor/PlotField/PlotFieldMain/Commands/Choice/Context/ChoiceContext";
 import useConditionBlocks from "../../../../../features/Editor/PlotField/PlotFieldMain/Commands/Condition/Context/ConditionContext";
-import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import {
-  handleNavigationToNextAndPrevCommand,
-  navigateBackAndForthInsideConditionCommand,
-  navigateBackAndForthInsideIfCommand,
-} from "../functions/ChecksForUpAndDown";
-import { preventMovingInsideIfElseCommands } from "../functions/preventMovingInsideIfElseCommands";
+import useTypedSessionStorage, { SessionStorageKeys } from "../../../shared/useTypedSessionStorage";
+import { preventCreatingCommandsWhenFocus } from "../../preventCreatingCommandsWhenFocus";
+import dashInsideCommandIf from "../functions/dashInsideCommandIf";
+import navigationBackAndForth from "../functions/navigationBackAndForth";
+import setFocusedCommandInsideType from "../functions/sessionStorage/FocusedCommandInsideType/setFocusedCommandInsideType";
+import getPrevPlotfieldCommandIdInsideTypes from "../functions/sessionStorage/FocusedCommandInsideType/getPrevPlotfieldCommandIdInsideType";
+import getCurrentPlotfieldCommandIdInsideTypes from "../functions/sessionStorage/FocusedCommandInsideType/getCurrentPlotfieldCommandIdInsideType";
+
+// - focuse inside commands such as condition and choice happens in 2 levels, when shift + arrowDown pressed first time, focus will be directed
+// - on the according block(which means, now creating of commands will work as creating commands on primary field, they will be created at the end of the plot)
+// - on the second click focus will be directed on the first command of that block/option and now he can freely move
+// - when focused on block/option using arrowDown and arrowUp navigation between blocks/options will happen!!!!
+// - the same when going up, will happen in 2 steps
+// - for commandIf the same key combination will cause a dash to happen(basically navigation from if to else)
+
+// 1)navigation back and forth
+// 2)navigation inside and outside
+// 2.1)navigation inside commandIf - happens naturally(as back and forth), will need to add a check if focuseded command is inside ifCommand or not,
+// 2.2)commandIf should have a dash ability, which basically teleports user to the commandElse and vice versa only difference is in pressedKeys
+// 2.3)navigation inside condition, should be able to navigate inside condition(if) and condition(else) using arrowUp and arrowDown,
+// ----- in order to go inside conditionBlock need to use arrowDown + shift, if currently focused on else, will focus on else block,
+// ----- otherwise will focus on first block with topologyBlockId and which is not else
+// 2.4)navigation inside choice, the same as with condition but without commandElse
+
+// Focus changes when:
+// ---using arrowDown or arrowUp
+// ---on input focus(default focus not this one)
+// ---and on contextMenu when chosen
 
 export default function useHandleNavigationThroughCommands() {
   const { setCurrentlyFocusedCommandId, currentlyFocusedCommandId } = useNavigation();
+  const { setItem, getItem, hasItem, removeItem } = useTypedSessionStorage<SessionStorageKeys>();
   const {
     getCommandsByTopologyBlockId,
     getPreviousCommandByPlotfieldId,
     getNextCommandByPlotfieldId,
     getCommandByPlotfieldCommandId,
     getCommandOnlyByPlotfieldCommandId,
+    getCommandByPlotfieldCommandIfId,
   } = usePlotfieldCommands();
 
   const {
@@ -37,286 +60,147 @@ export default function useHandleNavigationThroughCommands() {
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
 
-      if ((key === "arrowup" || key === "arrowdown") && !pressedKeys.has("control") && !pressedKeys.has("shift")) {
+      if (!preventCreatingCommandsWhenFocus()) {
+        console.log("Not allowed to move on focus");
+        return;
+      }
+
+      const focusedCommandType = getItem("focusedCommandType");
+
+      if (
+        (key === "arrowup" || key === "arrowdown") &&
+        !pressedKeys.has("control") &&
+        !pressedKeys.has("shift") &&
+        focusedCommandType === "command"
+      ) {
         event.preventDefault();
 
-        const currentTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
+        if (
+          (!currentlyFocusedCommandId._id && key === "arrowup") ||
+          (currentlyFocusedCommandId.commandOrder === 0 && key === "arrowup")
+        ) {
+          console.log("IT'S THE FIRST COMMAND DUDE");
+          return;
+        }
 
-        // Going Down To The First Command Fro The Start
-        if (!currentlyFocusedCommandId._id) {
-          if (key === "arrowup") {
-            console.log("IT'S THE FIRST COMMAND DUDE");
-            return;
-          }
+        navigationBackAndForth({
+          currentlyFocusedCommandId,
+          key,
+          getCommandsByTopologyBlockId,
+          getItem,
+          getNextCommandByPlotfieldId,
+          getPreviousCommandByPlotfieldId,
+          hasItem,
+          removeItem,
+          setCurrentlyFocusedCommandId,
+          setItem,
+          getCommandOnlyByPlotfieldCommandId,
+        });
+      } else if ((key === "arrowup" || key === "arrowdown") && pressedKeys.has("shift")) {
+        // going inside and outside such commands as condition/choice, and doing dash for commandIf
+        const focusedCommand = getItem("focusedCommand") || "";
+        const focusedCommandParentId = getItem("focusedCommandParentId") || "";
+        const currentCommand = getCommandOnlyByPlotfieldCommandId({
+          plotfieldCommandId: focusedCommand,
+        });
 
-          const nextCommand = getCommandsByTopologyBlockId({
-            topologyBlockId: currentTopologyBlock || "",
-          })[0];
+        if (
+          currentCommand?.command !== "condition" &&
+          currentCommand?.command !== "choice" &&
+          currentCommand?.command !== "if" &&
+          currentCommand?.command !== "else" &&
+          currentCommand?.command !== "end"
+        ) {
+          console.log("such command doesn't support nestedness or dash");
+          return;
+        }
 
-          setCurrentlyFocusedCommandId({ currentlyFocusedCommandId: nextCommand._id, type: "command" });
-          sessionStorage.setItem("focusedCommandIf", `none`);
-          sessionStorage.setItem("focusedCommandCondition", `none`);
-          sessionStorage.setItem("focusedCommandChoice", `none`);
-        } else {
-          const focusedCommandIf = sessionStorage.getItem("focusedCommandIf")?.split("?").filter(Boolean);
+        dashInsideCommandIf({
+          currentCommand,
+          focusedCommand,
+          focusedCommandParentId,
+          key,
+          getCommandByPlotfieldCommandIfId,
+          getCommandOnlyByPlotfieldCommandId,
+          setCurrentlyFocusedCommandId,
+          setItem,
+        });
 
-          const focusedCommandCondition = sessionStorage.getItem("focusedCommandCondition")?.split("?").filter(Boolean);
+        // TODO when will be updating focused block/option need to make sure to not forget about updateCurrentlyOpen(ConditionBlock)/(ChoiceOption)
+        if (currentCommand.command === "condition") {
+          const isElse = getItem("focusedConditionIsElse") || false;
+          const focusedCommand = getItem("focusedCommand") || "";
 
-          const deepLevelCommandIf = focusedCommandIf?.includes("none")
-            ? null
-            : (focusedCommandIf?.length || 0) > 0
-            ? (focusedCommandIf?.length || 0) - 1
-            : null;
-
-          const deepLevelCommandCondition = focusedCommandCondition?.includes("none")
-            ? null
-            : (focusedCommandCondition?.length || 0) > 0
-            ? (focusedCommandCondition?.length || 0) - 1
-            : null;
-
-          const currentNestedCommandIf =
-            typeof deepLevelCommandIf === "number" ? (focusedCommandIf || [])[deepLevelCommandIf]?.split("-") : null;
-          const currentNestedCommandIfPlotfieldCommnadId = currentNestedCommandIf ? currentNestedCommandIf[1] : null;
-          const currentNestedCommandCondition =
-            typeof deepLevelCommandCondition === "number"
-              ? (focusedCommandCondition || [])[deepLevelCommandCondition]?.split("-")
-              : null;
-          const currentNestedCommandConditionPlotfieldCommnadId = currentNestedCommandCondition
-            ? currentNestedCommandCondition[1]
-            : null;
-
-          // When focused on the if command(inside), preventing moving from if to else and vice versa
-          // probablit don't need to prevent navigation, anymore
-          // if (typeof currentlyFocusedCommandId.isElse === "boolean" && currentNestedCommandIfPlotfieldCommnadId === currentlyFocusedCommandId._id) {
-          //   preventMovingInsideIfElseCommands({
-          //     currentCommandId: currentlyFocusedCommandId._id,
-          //     deepLevelCommandIf,
-          //     focusedCommandIf,
-          //   });
-          //   return;
-          // }
-          //  else if (
-          //   currentCommandName === "condition" &&
-          //   currentNestedCommandConditionPlotfieldCommnadId === currentCommandId
-          // ) {
-          //   preventMovingInsideIfElseCommands({
-          //     currentCommandId,
-          //     deepLevelCommandIf: deepLevelCommandCondition,
-          //     focusedCommandIf: focusedCommandCondition,
-          //   });
-          //   return;
-          // }
-
-          // Navigation back and forth
-          // TODO here need to add dash ability
-          // if (
-          //   (currentCommandName === "if" && isCommandIf === "if" && key === "arrowdown") ||
-          //   (currentCommandName === "if" && isCommandIf === "else" && key === "arrowup")
-          // ) {
-          //   navigateBackAndForthInsideIfCommand({
-          //     currentCommandId,
-          //     currentCommandName,
-          //     isCommandIf,
-          //     key,
-          //     setCurrentlyFocusedCommandId,
-          //   });
-
-          //   return;
-          // }
-
-          // TODO need to do something here
-          // if (
-          //   currentlyFocusedCommandId._id !== currentNestedCommandConditionPlotfieldCommnadId &&
-          //   ((typeof currentlyFocusedCommandId.isElse === "boolean" && currentlyFocusedCommandId.isElse && key === "arrowdown") ||
-          //     (typeof currentlyFocusedCommandId.isElse === "boolean" && !currentlyFocusedCommandId.isElse && key === "arrowup"))
-          // ) {
-          //   navigateBackAndForthInsideConditionCommand({
-          //     currentCommandId: currentlyFocusedCommandId._id,
-          //     currentCommandName,
-          //     isCommandIf: currentlyFocusedCommandId.isElse,
-          //     key,
-          //     setCurrentlyFocusedCommandId,
-          //   });
-
-          //   return;
-          // }
-
-          let newCommand;
-
-          if (typeof deepLevelCommandIf === "number") {
-            const currentFocusedCommandIf = (focusedCommandIf || [])[deepLevelCommandIf]?.split("-");
-
-            const isInsideIfCommandIf = currentFocusedCommandIf[0];
-
-            if (isInsideIfCommandIf === "if") {
-              newCommand =
-                key === "arrowup"
-                  ? getPreviousCommandIfByPlotfieldId({
-                      plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                      plotfieldCommandIfId: (currentFocusedCommandIf || [])[3] || "",
-                      isElse: false,
-                    })
-                  : getNextCommandIfByPlotfieldId({
-                      plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                      plotfieldCommandIfId: (currentFocusedCommandIf || [])[3] || "",
-                      isElse: false,
-                    });
-            } else {
-              newCommand =
-                key === "arrowup"
-                  ? getPreviousCommandIfByPlotfieldId({
-                      plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                      plotfieldCommandIfId: (currentFocusedCommandIf || [])[3] || "",
-                      isElse: true,
-                    })
-                  : getNextCommandIfByPlotfieldId({
-                      plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                      plotfieldCommandIfId: (currentFocusedCommandIf || [])[3] || "",
-                      isElse: true,
-                    });
-            }
-          } else {
-            newCommand =
-              key === "arrowup"
-                ? getPreviousCommandByPlotfieldId({
-                    plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                    topologyBlockId: currentTopologyBlock || "",
-                  })
-                : getNextCommandByPlotfieldId({
-                    plotfieldCommandId: currentlyFocusedCommandId._id || "",
-                    topologyBlockId: currentTopologyBlock || "",
-                  });
-          }
-
-          if (newCommand) {
-            handleNavigationToNextAndPrevCommand({
-              _id: newCommand._id,
-              command: newCommand.command,
-              key,
-              sayType: newCommand.sayType || ("" as CommandSayVariationTypes),
-              topologyBlockId: newCommand.topologyBlockId,
-              topologyBlockIdFromPrevCommand: currentTopologyBlock || "",
-              setCurrentlyFocusedCommandId,
+          if (key === "arrowdown") {
+            const block = getFirstConditionBlockWithTopologyBlockId({
+              insideElse: isElse,
+              plotfieldCommandId: focusedCommand,
             });
-          } else {
-            console.log("I wonder why it goes here");
-            console.log("No such command was found");
-            return;
+
+            updateCurrentlyOpenConditionBlock({
+              conditionBlockId: block?.conditionBlockId || "",
+              plotfieldCommandId: focusedCommand,
+            });
+
+            setCurrentlyFocusedCommandId({
+              commandName: "condition",
+              commandOrder: currentlyFocusedCommandId.commandOrder || 0,
+              currentlyFocusedCommandId: block?.conditionBlockId || "",
+              parentId: focusedCommand,
+              type: "conditionBlock",
+              isElse: isElse,
+            });
+
+            setItem("focusedCommandParentId", focusedCommand);
+            setItem("focusedTopologyBlock", block?.targetBlockId || "");
+            setFocusedCommandInsideType({
+              getItem,
+              newType: "condition",
+              parentId: focusedCommand || "",
+              setItem,
+            });
+          } else if (key === "arrowup") {
+            if (currentlyFocusedCommandId.type === "conditionBlock") {
+              const currentCommandCondition = getCommandOnlyByPlotfieldCommandId({
+                plotfieldCommandId: focusedCommand,
+              });
+              // when focused on some conditionBlock
+              setCurrentlyFocusedCommandId({
+                commandName: "condition",
+                commandOrder: currentCommandCondition?.commandOrder || 0,
+                currentlyFocusedCommandId: focusedCommand || "",
+                type: "command",
+                isElse: isElse,
+              });
+
+              getPrevPlotfieldCommandIdInsideTypes({ getItem, setItem }); //removes last element of focusedCommandInsideType(sessionStorage)
+              setItem("focusedTopologyBlock", currentCommand?.topologyBlockId || "");
+              return;
+            } else {
+              // when focused on some command inside ConditionBlock and going up to ConditionBlock
+              const currentConditionPlotfieldCommandId = getCurrentPlotfieldCommandIdInsideTypes({ getItem });
+              const block = getCurrentlyOpenConditionBlock({ plotfieldCommandId: currentConditionPlotfieldCommandId });
+              const currentCommandCondition = getCommandOnlyByPlotfieldCommandId({
+                plotfieldCommandId: currentConditionPlotfieldCommandId,
+              });
+
+              if (!block) {
+                console.log("Should have a condition plotfieldCommandId");
+                return;
+              }
+
+              setCurrentlyFocusedCommandId({
+                commandName: "condition",
+                commandOrder: currentCommandCondition?.commandOrder || 0,
+                currentlyFocusedCommandId: currentConditionPlotfieldCommandId || "",
+                type: "conditionBlock",
+                isElse: isElse,
+                parentId: currentConditionPlotfieldCommandId,
+              });
+            }
           }
         }
       }
-      // else if (
-      //   // this if statement maybe will be removed lately
-      //   ((key === "arrowup" || key === "arrowdown") &&
-      //     pressedKeys.has("control")) ||
-      //   pressedKeys.has("shift")
-      // ) {
-      //   if (
-      //     (pressedKeys.has("shift") && key === "arrowdown") ||
-      //     (pressedKeys.has("control") && key === "arrowup")
-      //   ) {
-      //     event.preventDefault();
-      //   }
-
-      //   const isGoingDown = key === "arrowdown" && pressedKeys.has("shift");
-      //   const isGoingUp = key === "arrowup" && pressedKeys.has("control");
-
-      //   const currentFocusedCommand = sessionStorage
-      //     .getItem("focusedCommand")
-      //     ?.split("-");
-      //   if (
-      //     isGoingDown &&
-      //     ((currentFocusedCommand || [])[0] !== "if" ||
-      //       (currentFocusedCommand || [])[0] !== "choice" ||
-      //       (currentFocusedCommand || [])[0] !== "condition")
-      //   ) {
-      //     console.log(
-      //       "Going down is only possible inside commands such as choice, condition or if"
-      //     );
-      //     return;
-      //   }
-
-      //   const plotfieldCommandCondition = sessionStorage
-      //     .getItem("focusedCommandCondition")
-      //     ?.split("-");
-      //   const plotfieldCommandChoice = sessionStorage
-      //     .getItem("focusedCommandChoice")
-      //     ?.split("-");
-
-      //   // if (typeof deepLevelCommandIf !== "number" && isGoingDown) {
-      //   //   console.log(
-      //   //     "You can go one level down only inside if, condition or choice"
-      //   //   );
-      //   //   return;
-      //   // }
-      //   if (
-      //     plotfieldCommandCondition &&
-      //     (plotfieldCommandCondition || [])[0] !== "none"
-      //   ) {
-      //     const plotfieldCommandId = plotfieldCommandCondition[1];
-      //     const insideIf = plotfieldCommandCondition[0] === "if";
-
-      //     GoingDownInsideCondition({
-      //       insideIf,
-      //       getFirstConditionBlockWithTopologyBlockId,
-      //       isGoingDown,
-      //       plotfieldCommandId,
-      //       updateCurrentlyOpenConditionBlock,
-      //     });
-
-      //     GoingUpFromCondition({
-      //       getCommandOnlyByPlotfieldCommandId,
-      //       getCurrentlyOpenConditionBlock,
-      //       isGoingUp,
-      //       plotfieldCommandId,
-      //       updateCurrentlyOpenConditionBlock,
-      //     });
-      //       ({ value: false });
-      //   } else if (
-      //     plotfieldCommandChoice &&
-      //     (plotfieldCommandChoice || [])[0] !== "none"
-      //   ) {
-      //     const plotfieldCommandId = plotfieldCommandChoice[0];
-
-      //     GoingDownInsideChoice({
-      //       getFirstChoiceOptionWithTopologyBlockId,
-      //       isGoingDown,
-      //       plotfieldCommandId,
-      //       updateCurrentlyOpenChoiceOption,
-      //     });
-      //     GoingUpFromChoice({
-      //       getCommandOnlyByPlotfieldCommandId,
-      //       getFirstChoiceOptionWithTopologyBlockId,
-      //       isGoingUp,
-      //       plotfieldCommandId,
-      //       updateCurrentlyOpenChoiceOption,
-      //     });
-
-      //       ({ value: false });
-      //   } else {
-      //     if (isGoingUp) {
-      //       const focusedCommand = sessionStorage.getItem("focusedCommand");
-      //       const currentCommandId = focusedCommand?.split("-")[1];
-      //       if (!currentCommandId) {
-      //         console.log("You are already focused on topology block");
-      //         return;
-      //       }
-      //       const focusedTopologyBlock = sessionStorage.getItem(
-      //         "focusedTopologyBlock"
-      //       );
-      //       sessionStorage.setItem(
-      //         "focusedCommand",
-      //         `none-${focusedTopologyBlock}`
-      //       );
-
-      //       sessionStorage.setItem("focusedCommandIf", "none");
-      //       sessionStorage.setItem("focusedCommandChoice", "none");
-      //       sessionStorage.setItem("focusedCommandCondition", "none");
-
-      //         ({ value: false });
-      //     }
-      //   }
-      // }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
@@ -343,6 +227,11 @@ export default function useHandleNavigationThroughCommands() {
     getFirstChoiceOptionWithTopologyBlockId,
     updateCurrentlyOpenChoiceOption,
     setCurrentlyFocusedCommandId,
+    getItem,
+    setItem,
+    hasItem,
+    removeItem,
+    getCommandByPlotfieldCommandIfId,
     currentlyFocusedCommandId,
   ]);
 }

@@ -42,21 +42,6 @@ export default function PlotField({
     topologyBlockId: currentTopologyBlock._id,
   });
 
-  // TODO this zalupa dolshna bit somewhere else
-  // useEffect(() => {
-  //   const handleUpdatingCommandsInfo = () => {
-  //     const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
-  //     if (currentTopologyBlockId?.trim().length && currentTopologyBlockId !== currentTopologyBlock._id) {
-
-  //     }
-  //   };
-
-  //   window.addEventListener("storage", handleUpdatingCommandsInfo);
-  //   return () => {
-  //     window.removeEventListener("storage", handleUpdatingCommandsInfo);
-  //   };
-  // }, [currentTopologyBlock]);
-
   useEffect(() => {
     if (topologyBlockData) {
       setCurrentAmountOfCommands({
@@ -74,13 +59,6 @@ export default function PlotField({
         command === "expandPlotField" || !command ? "" : "hidden"
       } flex-grow flex-shrink-0 bg-secondary rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
     >
-      {/* <ShowAllCommandsPlotfield
-        command={command}
-        topologyBlockId={currentTopologyBlock._id}
-        showAllCommands={showAllCommands}
-        plotfieldExpanded={command === "expandPlotField"}
-        setShowAllCommands={setShowAllCommands}
-      /> */}
       {rootTopologyBlock ? (
         <PlotfieldHeader
           setShowAllCommands={setShowAllCommands}

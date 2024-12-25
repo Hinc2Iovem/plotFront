@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useCheckIsCurrentFieldFocused";
+import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateGetItemTranslation";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
@@ -23,6 +23,11 @@ export default function CommandGetItemField({
 }: CommandGetItemFieldTypes) {
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "GetItem");
+  const [initValues, setInitValues] = useState({
+    name: "",
+    description: "",
+    text: "",
+  });
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
@@ -47,10 +52,22 @@ export default function CommandGetItemField({
       (getItem.translations || [])?.map((tgi) => {
         if (tgi.textFieldName === "itemDescription") {
           setItemDescription(tgi.text);
+          setInitValues((prev) => ({
+            ...prev,
+            description: tgi.text,
+          }));
         } else if (tgi.textFieldName === "itemName") {
           setItemName(tgi.text);
+          setInitValues((prev) => ({
+            ...prev,
+            name: tgi.text,
+          }));
         } else if (tgi.textFieldName === "buttonText") {
           setButtonText(tgi.text);
+          setInitValues((prev) => ({
+            ...prev,
+            text: tgi.text,
+          }));
         }
       });
     }
@@ -67,6 +84,19 @@ export default function CommandGetItemField({
   });
 
   const onBlur = (text: string, textFieldName: string) => {
+    // ButtonText: "buttonText",
+    // ItemDescription: "itemDescription",
+    // ItemName: "itemName",
+
+    // could just change keys, but feeling extra today
+    const dynamicKey =
+      textFieldName === "buttonText" ? "text" : textFieldName === "itemDescription" ? "description" : "name";
+
+    setInitValues((prev) => ({
+      ...prev,
+      [dynamicKey]: text,
+    }));
+
     updateGetItemTranslationTexts.mutate({
       text: text,
       textFieldName: textFieldName,
@@ -95,20 +125,32 @@ export default function CommandGetItemField({
           value={itemName}
           type="text"
           placeholder="Название"
-          onBlur={() => onBlur(itemName, TranslationTextFieldName.ItemName)}
+          onBlur={() => {
+            if (itemName !== initValues.name) {
+              onBlur(itemName, TranslationTextFieldName.ItemName);
+            }
+          }}
           onChange={(e) => setItemName(e.target.value)}
         />
         <PlotfieldTextarea
           value={itemDescription}
           placeholder="Описание"
-          onBlur={() => onBlur(itemDescription, TranslationTextFieldName.ItemDescription)}
+          onBlur={() => {
+            if (itemDescription !== initValues.description) {
+              onBlur(itemDescription, TranslationTextFieldName.ItemDescription);
+            }
+          }}
           onChange={(e) => setItemDescription(e.target.value)}
         />
         <PlotfieldInput
           value={buttonText}
           type="text"
           placeholder="Текст Кнопки"
-          onBlur={() => onBlur(buttonText, TranslationTextFieldName.ButtonText)}
+          onBlur={() => {
+            if (buttonText !== initValues.text) {
+              onBlur(buttonText, TranslationTextFieldName.ButtonText);
+            }
+          }}
           onChange={(e) => setButtonText(e.target.value)}
         />
       </form>

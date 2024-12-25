@@ -13,7 +13,7 @@ export type UnknownCharacterValueTypes = {
   characterName: string;
 };
 
-type ExposedMethods = {
+export type ExposedMethodsUnknownCharacter = {
   updateCharacterOnBlur: () => void;
 };
 
@@ -25,122 +25,122 @@ type PlotfieldUnknownCharacterPromptMainTypes = {
   setCharacterValue?: React.Dispatch<React.SetStateAction<UnknownCharacterValueTypes>>;
 };
 
-const PlotfieldUnknownCharacterPromptMain = forwardRef<ExposedMethods, PlotfieldUnknownCharacterPromptMainTypes>(
-  ({ setCharacterValue, setShowCharacterModal, debouncedValue, showCharacterModal, translateAsideValue }, ref) => {
-    const { storyId } = useParams();
-    const modalRef = useRef<HTMLDivElement>(null);
-    const theme = localStorage.getItem("theme");
+const PlotfieldUnknownCharacterPromptMain = forwardRef<
+  ExposedMethodsUnknownCharacter,
+  PlotfieldUnknownCharacterPromptMainTypes
+>(({ setCharacterValue, setShowCharacterModal, debouncedValue, showCharacterModal, translateAsideValue }, ref) => {
+  const { storyId } = useParams();
+  const modalRef = useRef<HTMLDivElement>(null);
+  const theme = localStorage.getItem("theme");
 
-    const { data: allTranslatedCharacters } = useGetTranslationCharactersByStoryIdAndType({
-      storyId: storyId || "",
-      language: "russian",
-      type: "minorcharacter",
-    });
+  const { data: allTranslatedCharacters } = useGetTranslationCharactersByStoryIdAndType({
+    storyId: storyId || "",
+    language: "russian",
+    type: "minorcharacter",
+  });
 
-    const { data: allCharacters } = useGetAllCharactersByStoryIdAndType({
-      storyId: storyId || "",
-      searchCharacterType: "minorcharacter",
-    });
+  const { data: allCharacters } = useGetAllCharactersByStoryIdAndType({
+    storyId: storyId || "",
+    searchCharacterType: "minorcharacter",
+  });
 
-    const combinedCharacters = useMemo(() => {
-      if (allTranslatedCharacters && allCharacters) {
-        return allCharacters.map((c) => {
-          const currentTranslatedCharacter = allTranslatedCharacters.find((tc) => tc.characterId === c._id);
-          return {
-            characterImg: c?.img || "",
-            characterId: c._id,
-            characterUnknownName:
-              currentTranslatedCharacter?.translations?.find((tc) => tc.textFieldName === "characterUnknownName")
-                ?.text || "",
-            characterName:
-              currentTranslatedCharacter?.translations?.find((tc) => tc.textFieldName === "characterName")?.text || "",
-          };
-        });
-      } else {
-        return [];
-      }
-    }, [allTranslatedCharacters, allCharacters]);
-
-    const filteredCharacters = useMemo(() => {
-      if (combinedCharacters) {
-        if (debouncedValue?.trim().length) {
-          return combinedCharacters.filter((cc) =>
-            cc?.characterUnknownName?.toLowerCase().includes(debouncedValue?.toLowerCase())
-          );
-        } else {
-          return combinedCharacters;
-        }
-      } else {
-        return [];
-      }
-    }, [combinedCharacters, debouncedValue]);
-
-    useImperativeHandle(ref, () => ({
-      updateCharacterOnBlur,
-    }));
-
-    const updateCharacterOnBlur = () => {
-      const tranlsatedCharacter = allTranslatedCharacters?.find((tc) =>
-        tc.translations?.find(
-          (tct) =>
-            tct.textFieldName === "characterUnknownName" && tct.text?.toLowerCase() === debouncedValue?.toLowerCase()
-        )
-      );
-      if (!tranlsatedCharacter) {
-        console.log("Non-existing character");
-        return;
-      }
-
-      const character = allCharacters?.find((c) => c._id === tranlsatedCharacter?.characterId);
-
-      if (setCharacterValue) {
-        setCharacterValue({
-          characterId: character?._id || "",
+  const combinedCharacters = useMemo(() => {
+    if (allTranslatedCharacters && allCharacters) {
+      return allCharacters.map((c) => {
+        const currentTranslatedCharacter = allTranslatedCharacters.find((tc) => tc.characterId === c._id);
+        return {
+          characterImg: c?.img || "",
+          characterId: c._id,
           characterUnknownName:
-            tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterUnknownName")?.text || "",
-          characterImg: character?.img || "",
+            currentTranslatedCharacter?.translations?.find((tc) => tc.textFieldName === "characterUnknownName")?.text ||
+            "",
           characterName:
-            tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || "",
-        });
+            currentTranslatedCharacter?.translations?.find((tc) => tc.textFieldName === "characterName")?.text || "",
+        };
+      });
+    } else {
+      return [];
+    }
+  }, [allTranslatedCharacters, allCharacters]);
+
+  const filteredCharacters = useMemo(() => {
+    if (combinedCharacters) {
+      if (debouncedValue?.trim().length) {
+        return combinedCharacters.filter((cc) =>
+          cc?.characterUnknownName?.toLowerCase().includes(debouncedValue?.toLowerCase())
+        );
+      } else {
+        return combinedCharacters;
       }
-    };
+    } else {
+      return [];
+    }
+  }, [combinedCharacters, debouncedValue]);
 
-    useOutOfModal({
-      modalRef,
-      setShowModal: setShowCharacterModal,
-      showModal: showCharacterModal,
-    });
+  useImperativeHandle(ref, () => ({
+    updateCharacterOnBlur,
+  }));
 
-    return (
-      <AsideScrollable
-        ref={modalRef}
-        className={`${showCharacterModal ? "" : "hidden"} ${
-          !allCharacters?.length && debouncedValue ? "hidden" : ""
-        } ${translateAsideValue}`}
-      >
-        {filteredCharacters?.length ? (
-          filteredCharacters?.map((c, i) => (
-            <PlotfieldUnknownCharactersPrompt
-              key={`${c.characterId}-${i}`}
-              setShowCharacterModal={setShowCharacterModal}
-              setCharacterValue={setCharacterValue}
-              {...c}
-            />
-          ))
-        ) : !filteredCharacters?.length ? (
-          <button
-            type="button"
-            className={`text-start ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } focus-within:bg-primary-darker focus-within:text-text-light text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all rounded-md`}
-          >
-            Пусто
-          </button>
-        ) : null}
-      </AsideScrollable>
+  const updateCharacterOnBlur = () => {
+    const tranlsatedCharacter = allTranslatedCharacters?.find((tc) =>
+      tc.translations?.find(
+        (tct) =>
+          tct.textFieldName === "characterUnknownName" && tct.text?.toLowerCase() === debouncedValue?.toLowerCase()
+      )
     );
-  }
-);
+    if (!tranlsatedCharacter) {
+      console.log("Non-existing character");
+      return;
+    }
+
+    const character = allCharacters?.find((c) => c._id === tranlsatedCharacter?.characterId);
+
+    if (setCharacterValue) {
+      setCharacterValue({
+        characterId: character?._id || "",
+        characterUnknownName:
+          tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterUnknownName")?.text || "",
+        characterImg: character?.img || "",
+        characterName: tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || "",
+      });
+    }
+  };
+
+  useOutOfModal({
+    modalRef,
+    setShowModal: setShowCharacterModal,
+    showModal: showCharacterModal,
+  });
+
+  return (
+    <AsideScrollable
+      ref={modalRef}
+      className={`${showCharacterModal ? "" : "hidden"} ${
+        !allCharacters?.length && debouncedValue ? "hidden" : ""
+      } ${translateAsideValue}`}
+    >
+      {filteredCharacters?.length ? (
+        filteredCharacters?.map((c, i) => (
+          <PlotfieldUnknownCharactersPrompt
+            key={`${c.characterId}-${i}`}
+            setShowCharacterModal={setShowCharacterModal}
+            setCharacterValue={setCharacterValue}
+            {...c}
+          />
+        ))
+      ) : !filteredCharacters?.length ? (
+        <button
+          type="button"
+          className={`text-start ${
+            theme === "light" ? "outline-gray-300" : "outline-gray-600"
+          } focus-within:bg-primary-darker focus-within:text-text-light text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all rounded-md`}
+        >
+          Пусто
+        </button>
+      ) : null}
+    </AsideScrollable>
+  );
+});
 
 PlotfieldUnknownCharacterPromptMain.displayName = "PlotfieldUnknownCharacterPromptMain";
 

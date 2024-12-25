@@ -9,7 +9,6 @@ import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 type WardrobeCharacterAppearancePartFormTypes = {
   characterId: string;
   commandWardrobeId: string;
-  setCharacterId: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export type PossibleWardrobeAppearancePartVariationsTypes = "hair" | "dress" | "temp";
@@ -17,7 +16,6 @@ export type PossibleWardrobeAppearancePartVariationsTypes = "hair" | "dress" | "
 export default function WardrobeCharacterAppearancePartForm({
   commandWardrobeId,
   characterId,
-  setCharacterId,
 }: WardrobeCharacterAppearancePartFormTypes) {
   const [showCharacterModal, setShowCharacterModal] = useState(false);
 
@@ -57,7 +55,6 @@ export default function WardrobeCharacterAppearancePartForm({
       <CommandWardrobeCharacter
         characterId={characterId}
         commandWardrobeId={commandWardrobeId}
-        setCharacterId={setCharacterId}
         setShowAppearancePartModal={setShowAppearancePartModal}
         setShowAppearancePartVariationModal={setShowAppearancePartVariationModal}
         setShowCharacterModal={setShowCharacterModal}
@@ -77,6 +74,7 @@ export default function WardrobeCharacterAppearancePartForm({
           }}
           className="w-full relative"
         >
+          {/* TODO can be better, I mean sending request to backend, */}
           <PlotfieldInput
             onBlur={() => {}}
             onClick={(e) => {

@@ -11,6 +11,7 @@ import useUpdateTextSideStyle from "../shared/useUpdateTextSideStyle";
 
 type SayFieldItemTextAreaTypes = {
   textValue: string;
+  initTextValue: string;
   plotFieldCommandId: string;
   topologyBlockId: string;
   sayVariationType: string;
@@ -19,6 +20,7 @@ type SayFieldItemTextAreaTypes = {
   currentTextStyle: TextStyleTypes;
   currentTextSide: CommandSideTypes;
 
+  setInitTextValue: React.Dispatch<React.SetStateAction<string>>;
   setTextValue: React.Dispatch<React.SetStateAction<string>>;
   setCurrentTextStyle: React.Dispatch<React.SetStateAction<TextStyleTypes>>;
   setCurrentTextSide: React.Dispatch<React.SetStateAction<CommandSideTypes>>;
@@ -30,12 +32,14 @@ export default function SayFieldItemTextArea({
   currentTextSide,
   currentTextStyle,
   textValue,
+  initTextValue,
   topologyBlockId,
   episodeId,
   plotFieldCommandSayId,
   setCurrentTextSide,
   setCurrentTextStyle,
   setTextValue,
+  setInitTextValue,
 }: SayFieldItemTextAreaTypes) {
   const { updateValue } = useSearch();
 
@@ -57,6 +61,10 @@ export default function SayFieldItemTextArea({
       console.log("Not loaded yet");
       return;
     }
+
+    if (textValue === initTextValue) {
+      return;
+    }
     if (episodeId) {
       updateValue({
         episodeId,
@@ -66,6 +74,8 @@ export default function SayFieldItemTextArea({
         commandName: sayVariationType,
       });
     }
+
+    setInitTextValue(textValue);
     updateCommandSayText.mutate();
     checkTextStyle({ debouncedValue: textValue, setCurrentTextStyle });
     checkTextSide({

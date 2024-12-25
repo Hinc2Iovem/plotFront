@@ -61,6 +61,13 @@ export type CreatePlotfieldCommandSliceTypes = {
   }: {
     plotfieldCommandId: string;
   }) => PlotfieldOptimisticCommandTypes | null;
+  getCommandByPlotfieldCommandIfId: ({
+    plotfieldCommandIfId,
+    elseOrEnd,
+  }: {
+    plotfieldCommandIfId: string;
+    elseOrEnd: "else" | "end";
+  }) => PlotfieldOptimisticCommandTypes | null;
   getCommandsByTopologyBlockId: ({ topologyBlockId }: { topologyBlockId: string }) => PlotfieldOptimisticCommandTypes[];
   getPreviousCommandByPlotfieldId: ({
     plotfieldCommandId,
@@ -183,6 +190,13 @@ export const createPlotfieldCommandSlice: StateCreator<
       get()
         .commands.flatMap((c) => c.commands)
         .find((cc) => cc._id === plotfieldCommandId) || null
+    );
+  },
+  getCommandByPlotfieldCommandIfId: ({ plotfieldCommandIfId, elseOrEnd }) => {
+    return (
+      get()
+        .commands.flatMap((c) => c.commands)
+        .find((cc) => cc.plotfieldCommandIfId === plotfieldCommandIfId && cc.command === elseOrEnd) || null
     );
   },
   getCommandsByTopologyBlockId: ({ topologyBlockId }) => {

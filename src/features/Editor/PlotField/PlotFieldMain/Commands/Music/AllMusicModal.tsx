@@ -15,9 +15,11 @@ type AllMusicModalTypes = {
   storyId: string;
   debouncedValue: string;
   musicId: string;
+  initValue: string;
   setMusicName: React.Dispatch<React.SetStateAction<string>>;
   setShowMusicDropDown: React.Dispatch<React.SetStateAction<boolean>>;
   setShowCreateMusicModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setInitValue: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const AllMusicModal = forwardRef<ExposedMethods, AllMusicModalTypes>(
@@ -27,10 +29,12 @@ const AllMusicModal = forwardRef<ExposedMethods, AllMusicModalTypes>(
       debouncedValue,
       musicName,
       musicId,
+      initValue,
       showMusicDropDown,
       setShowMusicDropDown,
       setMusicName,
       setShowCreateMusicModal,
+      setInitValue,
     },
     ref
   ) => {
@@ -69,8 +73,13 @@ const AllMusicModal = forwardRef<ExposedMethods, AllMusicModalTypes>(
         return;
       }
 
+      if (initValue === musicName) {
+        return;
+      }
+
       setShowMusicDropDown(false);
 
+      setInitValue(musicName);
       if (mm?.trim().length) {
         // on button click
         updateMusicText.mutate({ musicName: mm });
