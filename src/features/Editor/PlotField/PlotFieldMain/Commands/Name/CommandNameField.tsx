@@ -1,19 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
-import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
+import { useParams } from "react-router-dom";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandName from "../../../hooks/Name/useGetCommandName";
 import useUpdateNameText from "../../../hooks/Name/useUpdateNameText";
-import useSearch from "../../../../Context/Search/SearchContext";
 import PlotfieldUnknownCharacterPromptMain, {
   ExposedMethodsUnknownCharacter,
-  UnknownCharacterValueTypes,
 } from "../Prompts/Characters/PlotfieldUnknownCharacterPromptMain";
-import { useParams } from "react-router-dom";
-import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import usePrepareCharacterValuesForNameCommand from "./hooks/usePrepareCharacterValuesForNameCommand";
 
 type CommandNameFieldTypes = {
   plotFieldCommandId: string;
@@ -26,51 +24,18 @@ export default function CommandNameField({ plotFieldCommandId, command, topology
   const [nameValue] = useState<string>(command ?? "Name");
 
   const [initCharacterId, setInitCharacterId] = useState("");
-  const [characterValue, setCharacterValue] = useState<UnknownCharacterValueTypes>({
-    characterUnknownName: "",
-    characterName: "",
-    characterImg: "",
-    characterId: "",
-  });
 
   const [showCharacterList, setShowCharacterList] = useState(false);
   const { data: commandName } = useGetCommandName({
     plotFieldCommandId,
   });
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const [commandNameId, setCommandNameId] = useState("");
 
-  const { data: character } = useGetCharacterById({
-    characterId: commandName?.characterId ?? "",
+  const { characterValue, setCharacterValue } = usePrepareCharacterValuesForNameCommand({
+    characterId: commandName?.characterId || "",
   });
-  const { data: translatedCharacter } = useGetTranslationCharacterById({
-    characterId: commandName?.characterId ?? "",
-    language: "russian",
-  });
-
-  useEffect(() => {
-    if (character && character.img) {
-      setCharacterValue((prev) => ({
-        ...prev,
-        characterImg: character.img || "",
-      }));
-    }
-  }, [character]);
-
-  useEffect(() => {
-    if (translatedCharacter) {
-      translatedCharacter.translations?.map((tc) => {
-        setCharacterValue((prev) => ({
-          ...prev,
-          characterName: tc.textFieldName === "characterName" ? tc.text : prev.characterName,
-          characterUnknownName: tc.textFieldName === "characterUnknownName" ? tc.text : prev.characterUnknownName,
-        }));
-      });
-    }
-  }, [translatedCharacter]);
 
   const { updateValue } = useSearch();
 

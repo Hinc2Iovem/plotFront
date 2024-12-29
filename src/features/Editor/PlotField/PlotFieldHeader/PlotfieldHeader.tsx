@@ -8,6 +8,9 @@ import ButtonHoverPromptModal from "../../../../ui/ButtonAsideHoverPromptModal/B
 import useNavigation from "../../Context/Navigation/NavigationContext";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 import useCreateBlankCommand from "../hooks/useCreateBlankCommand";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 
 type PlotFieldHeaderTypes = {
   topologyBlockId: string;
@@ -29,12 +32,14 @@ export default function PlotfieldHeader({
 }: PlotFieldHeaderTypes) {
   // TODO this is zalupa
   const { episodeId } = useParams();
+  const { setItem, getItem, removeItem } = useTypedSessionStorage<SessionStorageKeys>();
+
   const { currentlyFocusedCommandId } = useNavigation();
   const { getCurrentAmountOfCommands } = usePlotfieldCommands();
   const [increaseFocusModalHeight, setIncreaseFocusModalHeight] = useState(false);
   const theme = localStorage.getItem("theme");
 
-  const currentTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`) || topologyBlockId;
+  const currentTopologyBlockId = getItem(`focusedTopologyBlock`) || topologyBlockId;
 
   const createCommand = useCreateBlankCommand({
     topologyBlockId: currentTopologyBlockId,
@@ -84,31 +89,19 @@ export default function PlotfieldHeader({
         }}
         onClick={() => {
           setIncreaseFocusModalHeight(false);
-          sessionStorage.setItem(`focusedTopologyBlock`, `${topologyBlockId}`);
-          sessionStorage.setItem(`focusedCommand`, `none-${topologyBlockId}`);
-          sessionStorage.setItem("focusedCommandIf", `none`);
-          sessionStorage.setItem("focusedCommandChoice", `none`);
-          sessionStorage.setItem("focusedCommandCondition", `none`);
-          sessionStorage.setItem("focusedConditionBlock", `none`);
-          sessionStorage.setItem("focusedCommandInsideType", `default?`);
-          sessionStorage.setItem("focusedChoiceOption", `none`);
-          ({ value: true });
+          setItem(`focusedTopologyBlock`, topologyBlockId);
+          setItem(`focusedCommand`, ``);
+          setItem("focusedCommandInsideType", ``);
+          setItem("focusedCommandType", "command");
+          setItem("focusedCommandParentId", "");
+          setItem(`focusedCommandParentType`, `` as "if");
+          removeItem("focusedConditionIsElse");
         }}
         className={`absolute hover:bg-dark-blue bg-dark-dark-blue text-center w-[15rem] text-text-light text-[1.4rem] overflow-hidden transition-all rounded-md left-1/2 -translate-x-1/2 top-0`}
       >
         Сбросить Фокус
       </button>
       <div className="flex gap-[1rem]">
-        {/* <ButtonHoverPromptModal
-          onClick={() => setShowAllCommands(true)}
-          contentName="Все команды"
-          positionByAbscissa="left"
-          asideClasses="text-[1.3rem] top-[3.5rem] bottom-[-3.5rem] z-[1000] text-text-light"
-          className="bg-primary-darker shadow-sm shadow-gray-400 active:scale-[.99]"
-          variant="rectangle"
-        >
-          <img src={command} alt="Commands" className="w-[3rem]" />
-        </ButtonHoverPromptModal> */}
         <ButtonHoverPromptModal
           contentName="Создать строку"
           positionByAbscissa="left"

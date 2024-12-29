@@ -16,5 +16,6 @@ export default function useCreateSuitViaKeyCombination({ topologyBlockId }: Crea
     firstRusLetter: "ы",
     secondRusLetter: "г",
     topologyBlockId,
+    commandName: "suit",
   });
 }

@@ -6,6 +6,9 @@ import useNavigation from "../Context/Navigation/NavigationContext";
 import useUpdateTopologyBlockCoordinates from "../PlotField/hooks/TopologyBlock/useUpdateTopologyBlockCoordinates";
 import { getAllPlotfieldCommands } from "../PlotField/hooks/useGetAllPlotFieldCommands";
 import useCoordinates from "./Context/useCoordinates";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 import "./FlowchartStyles.css";
 
 export default function FlowchartTopologyBlock({
@@ -18,6 +21,7 @@ export default function FlowchartTopologyBlock({
   topologyBlockInfo,
 }: TopologyBlockTypes) {
   const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
+  const { setItem } = useTypedSessionStorage<SessionStorageKeys>();
 
   const { coordinates, setCoordinates } = useCoordinates();
   const theme = localStorage.getItem("theme");
@@ -89,18 +93,16 @@ export default function FlowchartTopologyBlock({
               prefetchCommands();
               if (clicked) {
                 localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
-                sessionStorage.setItem(`focusedTopologyBlock`, _id);
-                sessionStorage.setItem(`focusedCommand`, `none-${_id}`);
+                setItem(`focusedTopologyBlock`, _id);
+                setItem(`focusedCommand`, ``);
                 setCurrentTopologyBlock({
-                  topologyBlock: {
-                    _id,
-                    coordinatesX,
-                    coordinatesY,
-                    episodeId,
-                    isStartingTopologyBlock,
-                    topologyBlockInfo,
-                    name,
-                  },
+                  _id,
+                  coordinatesX,
+                  coordinatesY,
+                  episodeId,
+                  isStartingTopologyBlock,
+                  topologyBlockInfo,
+                  name,
                 });
                 setClicked(false);
                 ({ value: true });

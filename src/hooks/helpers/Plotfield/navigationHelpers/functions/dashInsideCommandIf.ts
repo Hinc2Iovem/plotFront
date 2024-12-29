@@ -1,7 +1,7 @@
 import { CurrentlyFocusedVariationTypes } from "../../../../../features/Editor/Context/Navigation/NavigationContext";
 import { PlotfieldOptimisticCommandTypes } from "../../../../../features/Editor/PlotField/Context/PlotfieldCommandSlice";
 import { OmittedCommandNames } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import { SessionStorageKeys } from "../../../shared/useTypedSessionStorage";
+import { SessionStorageKeys } from "../../../shared/SessionStorage/useTypedSessionStorage";
 
 type DashInsideCommandIfTypes = {
   focusedCommandParentId: string;
@@ -70,6 +70,8 @@ export default function dashInsideCommandIf({
       setItem("focusedCommand", commandElse._id);
       setItem("focusedCommandType", "command");
       setItem("focusedCommandParentId", focusedCommand);
+      setItem("focusedCommandName", "else");
+      setItem("focusedCommandOrder", commandElse.commandOrder);
     } else {
       console.log("you can't do dash up when focused on if, only down");
       return;
@@ -94,6 +96,8 @@ export default function dashInsideCommandIf({
       });
       setItem("focusedCommand", commandIf._id);
       setItem("focusedCommandType", "command");
+      setItem("focusedCommandName", "if");
+      setItem("focusedCommandOrder", commandIf.commandOrder);
     } else if (key === "arrowdown") {
       const commandEnd = getCommandByPlotfieldCommandIfId({
         plotfieldCommandIfId: focusedCommandParentId,
@@ -115,6 +119,8 @@ export default function dashInsideCommandIf({
       });
       setItem("focusedCommand", commandEnd._id);
       setItem("focusedCommandType", "command");
+      setItem("focusedCommandName", "end");
+      setItem("focusedCommandOrder", commandEnd.commandOrder);
     }
   } else if (currentCommand.command === "end") {
     if (key === "arrowup") {
@@ -137,6 +143,8 @@ export default function dashInsideCommandIf({
       });
       setItem("focusedCommand", commandElse._id);
       setItem("focusedCommandType", "command");
+      setItem("focusedCommandName", "else");
+      setItem("focusedCommandOrder", commandElse.commandOrder);
     } else {
       console.log("you can't do dash up when focused on if, only down");
       return;

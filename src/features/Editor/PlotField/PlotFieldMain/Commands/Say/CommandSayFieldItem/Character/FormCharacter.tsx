@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import PlotfieldInput from "../../../../../../../../ui/Inputs/PlotfieldInput";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
+import useGetCurrentFocusedElement from "../../../../../hooks/helpers/useGetCurrentFocusedElement";
 import useUpdateNameOrEmotion from "../../../../../hooks/Say/useUpdateNameOrEmotion";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import { CharacterValueTypes, EmotionTypes } from "./CommandSayCharacterFieldItem";
@@ -41,9 +41,7 @@ export default function FormCharacter({
 
   const { updateCharacterName } = usePlotfieldCommands();
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const currentInput = useRef<{ updateCharacterNameOnBlur: () => void }>(null);
 

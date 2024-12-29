@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useCreateWardrobeAppearanceTypeBlock from "../../../hooks/Wardrobe/WardrobeAppearancePartBlock/useCreateWardrobeAppearanceTypeBlock";
-import PlotfieldAppearancePartPromptMain from "../Prompts/AppearanceParts/PlotfieldAppearancePartPromptMain";
+import useDebounce from "../../../../../../../hooks/utilities/useDebounce";
+import useCreateWardrobeAppearanceTypeBlock from "../../../../hooks/Wardrobe/WardrobeAppearancePartBlock/useCreateWardrobeAppearanceTypeBlock";
 import CommandWardrobeChoosingAppearanceType from "./CommandWardrobeChoosingAppearanceType";
-import CommandWardrobeCharacter from "./CommandWardrobeCharacter";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import CommandWardrobeCharacter from "../Character/CommandWardrobeCharacter";
+import PlotfieldInput from "../../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldAppearancePartPromptMain from "../../Prompts/AppearanceParts/PlotfieldAppearancePartPromptMain";
 
 type WardrobeCharacterAppearancePartFormTypes = {
   characterId: string;

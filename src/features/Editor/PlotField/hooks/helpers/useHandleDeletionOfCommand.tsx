@@ -1,6 +1,10 @@
 import { useEffect } from "react";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 
 export default function useHandleDeletionOfCommand() {
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
   useEffect(() => {
     const pressedKeys = new Set();
 
@@ -11,7 +15,7 @@ export default function useHandleDeletionOfCommand() {
 
       if (pressedKeys.has("control") && key === "backspace") {
         event.preventDefault();
-        const currentCommand = sessionStorage.getItem("focusedCommand")?.split("-");
+        const currentCommand = getItem("focusedCommand")?.split("-");
 
         if (currentCommand?.includes("none")) {
           console.log("And what are you deleting?");
@@ -19,8 +23,8 @@ export default function useHandleDeletionOfCommand() {
         }
 
         const currentCommandPlotfieldId = (currentCommand || [])[1];
-        const focusedCommandChoice = sessionStorage.getItem("focusedCommandChoice")?.split("?").filter(Boolean);
-        const focusedCommandCondition = sessionStorage.getItem("focusedCommandCondition")?.split("?").filter(Boolean);
+        const focusedCommandChoice = [""];
+        const focusedCommandCondition = [""];
 
         if (
           focusedCommandChoice?.includes(currentCommandPlotfieldId) ||

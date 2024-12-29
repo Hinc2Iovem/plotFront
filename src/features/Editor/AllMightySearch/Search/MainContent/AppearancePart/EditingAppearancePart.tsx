@@ -2,20 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import { AllAppearancePartRusVariations, appearancePartColors } from "../../../../../../const/APPEARACE_PARTS";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useUpdateAppearancePartTranslation from "../../../../../../hooks/Patching/Translation/useUpdateAppearancePartTranslation";
+import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { AppearancePartVariationRusTypes } from "../../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
 import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PreviewImage from "../../../../../../ui/shared/PreviewImage";
+import PlotfieldCharacterPromptMain, {
+  ExposedMethods,
+} from "../../../../PlotField/PlotFieldMain/Commands/Prompts/Characters/PlotfieldCharacterPromptMain";
+import { CharacterValueTypes } from "../../../../PlotField/PlotFieldMain/Commands/Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { AllMightySearchAppearancePartResultTypes } from "../../../hooks/useGetPaginatedTranslationAppearancePart";
 import { TempAppearanceCharacterTypes, TempAppearancePartTypes } from "./AllMightySearchMainContentAppearance";
-import PreviewImage from "../../../../../../ui/shared/PreviewImage";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import PlotfieldCharacterPromptMain from "../../../../PlotField/PlotFieldMain/Commands/Prompts/Characters/PlotfieldCharacterPromptMain";
-import { DebouncedCheckCharacterTypes } from "../../../../PlotField/PlotFieldMain/Commands/Choice/QuestionField/ChoiceQuestionField";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
-import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 
 type EditingAppearancePartFormTypes = {
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
@@ -58,10 +59,10 @@ export function EditingAppearancePartForm({
   );
 
   const { data: character } = useGetCharacterById({ characterId: editingAppearancePart?.characterId || "" });
-  const [currentCharacter, setCurrentCharacter] = useState({
-    characterId: editingAppearancePart?.characterId,
-    characterName: editingAppearancePart?.characterName,
-    characterImg: character?.img || "",
+  const [characterValue, setCharacterValue] = useState<CharacterValueTypes>({
+    _id: "",
+    characterName: "",
+    imgUrl: "",
   });
   const [currentType, setCurrentType] = useState<TranslationTextFieldNameAppearancePartsTypes | "temp">(
     editingAppearancePart?.type ? editingAppearancePart.type : "temp"
@@ -70,7 +71,7 @@ export function EditingAppearancePartForm({
   const updateAppearancePart = useUpdateAppearancePartTranslation({
     appearancePartId: editingAppearancePart?.appearancePartId || "",
     language: "russian",
-    characterId: currentCharacter?.characterId || "",
+    characterId: characterValue?._id || "",
   });
 
   const updateAppearancePartImg = useUpdateImg({
@@ -81,9 +82,9 @@ export function EditingAppearancePartForm({
 
   useEffect(() => {
     if (character) {
-      setCurrentCharacter((prev) => ({
+      setCharacterValue((prev) => ({
         ...prev,
-        characterImg: character?.img || "",
+        imgUrl: character?.img || "",
       }));
     }
   }, [character]);
@@ -96,19 +97,19 @@ export function EditingAppearancePartForm({
     }
 
     setUpdatedCharacter({
-      characterId: currentCharacter.characterId || "",
-      characterName: currentCharacter.characterName || "",
-      characterImg: currentCharacter.characterImg,
+      characterId: characterValue._id || "",
+      characterName: characterValue.characterName || "",
+      characterImg: characterValue.imgUrl || "",
     });
 
     setUpdatedAppearancePart({
       appearancePartId: editingAppearancePart?.appearancePartId || "",
       text: currentText,
       translatedAppearancePartId: editingAppearancePart?.translatedAppearancePartId || "",
-      characterId: currentCharacter.characterId || "",
+      characterId: characterValue._id || "",
       type: currentType || "temp",
       img: typeof imagePreview === "string" ? imagePreview : "",
-      characterName: currentCharacter?.characterName || "",
+      characterName: characterValue?.characterName || "",
     });
 
     setAllPaginatedResults((prev) =>
@@ -147,16 +148,16 @@ export function EditingAppearancePartForm({
       setCurrentText(editingAppearancePart.text);
     }
     if (editingAppearancePart?.characterId) {
-      setCurrentCharacter((prev) => ({
+      setCharacterValue((prev) => ({
         ...prev,
-        characterId: editingAppearancePart.characterId,
+        _id: editingAppearancePart.characterId,
       }));
     }
     if (editingAppearancePart?.img) {
       setImagePreview(editingAppearancePart.img);
     }
     if (editingAppearancePart?.characterName) {
-      setCurrentCharacter((prev) => ({
+      setCharacterValue((prev) => ({
         ...prev,
         characterName: editingAppearancePart.characterName,
       }));
@@ -210,12 +211,7 @@ export function EditingAppearancePartForm({
             placeholder="Внешний вид"
           />
 
-          <AppearanceCharacterField
-            characterId={currentCharacter.characterId || ""}
-            characterName={currentCharacter.characterName || ""}
-            characterImg={currentCharacter.characterImg || ""}
-            setCurrentCharacter={setCurrentCharacter}
-          />
+          <AppearanceCharacterField setCharacterValue={setCharacterValue} characterValue={characterValue} />
           <div className="flex-grow flex items-center gap-[1rem] p-[.5rem]">
             <div className="relative min-w-[20rem] flex-grow">
               <button
@@ -310,27 +306,13 @@ export function AppearanceAsideButton({
 }
 
 type AppearanceCharacterFieldTypes = {
-  setCurrentCharacter: React.Dispatch<
-    React.SetStateAction<{
-      characterId: string | undefined;
-      characterName: string | undefined;
-      characterImg: string;
-    }>
-  >;
-  characterName: string;
-  characterImg: string;
-  characterId: string;
+  setCharacterValue: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
+  characterValue: CharacterValueTypes;
 };
 
-export function AppearanceCharacterField({
-  characterId,
-  characterImg,
-  characterName,
-  setCurrentCharacter,
-}: AppearanceCharacterFieldTypes) {
+export function AppearanceCharacterField({ characterValue, setCharacterValue }: AppearanceCharacterFieldTypes) {
   const [showCharacterModal, setShowCharacterModal] = useState(false);
 
-  const debouncedValue = useDebounce({ value: characterName, delay: 600 });
   const preventClickRef = useRef(false);
 
   const handleInputClick = (e: React.MouseEvent) => {
@@ -342,6 +324,14 @@ export function AppearanceCharacterField({
     }
 
     setShowCharacterModal((prev) => !prev);
+  };
+
+  const inputRef = useRef<ExposedMethods>(null);
+
+  const onBlur = () => {
+    if (inputRef.current) {
+      inputRef.current.updateCharacterNameOnBlur();
+    }
   };
 
   const handleInputDoubleClick = (e: React.MouseEvent) => {
@@ -361,9 +351,10 @@ export function AppearanceCharacterField({
       <PlotfieldInput
         onClick={handleInputClick}
         onDoubleClick={handleInputDoubleClick}
-        value={characterName}
+        value={characterValue.characterName || ""}
+        onBlur={onBlur}
         onChange={(e) => {
-          setCurrentCharacter((prev) => ({
+          setCharacterValue((prev) => ({
             ...prev,
             characterName: e.target.value,
           }));
@@ -372,25 +363,21 @@ export function AppearanceCharacterField({
         placeholder="Персонаж"
         className="text-[2rem] pr-[4rem]"
       />
-      {characterImg ? (
+      {characterValue.imgUrl?.trim().length ? (
         <img
-          src={characterImg}
+          src={characterValue.imgUrl}
           alt="CharacterImg"
           className="w-[3.5rem] rounded-md object-contain absolute right-[.2rem]"
         />
       ) : null}
 
       <PlotfieldCharacterPromptMain
-        characterValue={characterName}
-        commandIfId=""
-        isElse={false}
+        characterName={characterValue.characterName || ""}
+        currentCharacterId={characterValue._id || ""}
+        setCharacterValue={setCharacterValue}
+        ref={inputRef}
         setShowCharacterModal={setShowCharacterModal}
         showCharacterModal={showCharacterModal}
-        debouncedValue={debouncedValue}
-        currentCharacterId={characterId}
-        setDebouncedCharacter={
-          setCurrentCharacter as React.Dispatch<React.SetStateAction<DebouncedCheckCharacterTypes | null>>
-        }
         translateAsideValue="translate-y-[10rem]"
       />
     </div>

@@ -23,6 +23,8 @@ import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
+import CommandElseField from "./Else/CommandElseField";
+import CommandEndField from "./End/CommandEndField";
 
 function ErrorFallback({
   error,
@@ -61,13 +63,16 @@ export default function PlotfieldItem({
   emotionImg,
   emotionName,
   commandOrder,
+  plotfieldCommandIfId,
 }: PlotFieldItemTypes) {
   return (
     <li
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      className={`w-full flex gap-[1rem] ${command?.trim().length ? "outline-gray-300" : `outline-gray-600`}`}
+      className={`w-full flex gap-[1rem] ${
+        plotfieldCommandIfId?.trim().length && command !== "else" && command !== "end" ? "pl-[1rem]" : ""
+      } ${command?.trim().length ? "outline-gray-300" : `outline-gray-600`}`}
     >
       <ErrorBoundary FallbackComponent={(error) => <ErrorFallback commandName={command} {...error} />}>
         {!command ? (
@@ -112,7 +117,15 @@ export default function PlotfieldItem({
         ) : command === "getitem" ? (
           <CommandGetItemField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
         ) : command === "if" ? (
-          <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} /> //left for a better time
+          <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+        ) : command === "else" ? (
+          <CommandElseField
+            topologyBlockId={topologyBlockId}
+            plotfieldCommandIfId={plotfieldCommandIfId || ""}
+            plotFieldCommandId={_id}
+          />
+        ) : command === "end" ? (
+          <CommandEndField plotFieldCommandId={_id} />
         ) : command === "wardrobe" ? (
           <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
         ) : command === "choice" ? (

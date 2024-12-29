@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandBackground from "../../../hooks/Background/useGetCommandBackground";
 import useUpdateBackgroundText from "../../../hooks/Background/useUpdateBackgroundText";
-import BackgroundMusicForm from "./BackgroundMusicForm";
-import BackgroundNameAndImage from "./BackgroundNameAndImage";
-import BackgroundPointOfMovement from "./BackgroundPointOfMovement";
-import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import BackgroundMusicForm from "./SubFields/BackgroundMusicForm";
+import BackgroundNameAndImage from "./SubFields/BackgroundNameAndImage";
+import BackgroundPointOfMovement from "./SubFields/BackgroundPointOfMovement";
 
 type CommandBackgroundFieldTypes = {
   plotFieldCommandId: string;
@@ -32,9 +32,7 @@ export default function CommandBackgroundField({
   const { data: commandBackground } = useGetCommandBackground({
     plotFieldCommandId,
   });
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>("");
   const [commandBackgroundId, setCommandBackgroundId] = useState("");

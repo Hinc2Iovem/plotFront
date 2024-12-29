@@ -16,5 +16,6 @@ export default function useCreateCutSceneViaKeyCombination({ topologyBlockId }: 
     firstRusLetter: "с",
     secondRusLetter: "г",
     topologyBlockId,
+    commandName: "cutscene",
   });
 }

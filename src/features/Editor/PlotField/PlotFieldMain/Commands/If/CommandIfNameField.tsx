@@ -23,8 +23,6 @@ type CommandIfNameFieldTypes = {
   plotfieldCommandId: string;
   setHideCommands: React.Dispatch<React.SetStateAction<boolean>>;
   hideCommands: boolean;
-  isFocusedIf: boolean;
-  isBackgroundFocused: boolean;
   isCommandFocused: boolean;
   createInsideElse: boolean;
   nameValue: "if" | "else";
@@ -36,8 +34,6 @@ export default function CommandIfNameField({
   plotfieldCommandId,
   nameValue,
   isCommandFocused,
-  isBackgroundFocused,
-  isFocusedIf,
   hideCommands,
   createInsideElse,
   setHideCommands,
@@ -68,13 +64,9 @@ export default function CommandIfNameField({
   };
 
   return (
-    <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem] p-[.5rem]">
+    <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem]">
       <div className="flex gap-[.5rem] w-full">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused && !isBackgroundFocused && isFocusedIf ? "bg-dark-dark-blue" : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
         <AddVariationButton nameValue={nameValue} ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />

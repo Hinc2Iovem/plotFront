@@ -16,5 +16,6 @@ export default function useCreateAmbientViaKeyCombination({ topologyBlockId }: C
     firstRusLetter: "ф",
     secondRusLetter: "ь",
     topologyBlockId,
+    commandName: "ambient",
   });
 }

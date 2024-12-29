@@ -16,5 +16,6 @@ export default function useCreateWardrobeViaKeyCombination({ topologyBlockId }: 
     firstRusLetter: "ц",
     secondRusLetter: "в",
     topologyBlockId,
+    commandName: "wardrobe",
   });
 }

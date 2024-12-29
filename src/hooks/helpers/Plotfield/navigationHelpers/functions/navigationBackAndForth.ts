@@ -4,7 +4,7 @@ import {
 } from "../../../../../features/Editor/Context/Navigation/NavigationContext";
 import { PlotfieldOptimisticCommandTypes } from "../../../../../features/Editor/PlotField/Context/PlotfieldCommandSlice";
 import { OmittedCommandNames } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import { SessionStorageKeys } from "../../../shared/useTypedSessionStorage";
+import { SessionStorageKeys } from "../../../shared/SessionStorage/useTypedSessionStorage";
 
 type NavigationBackAndForthTypes = {
   key: string;
@@ -65,6 +65,7 @@ export default function navigationBackAndForth({
 }: NavigationBackAndForthTypes) {
   const focusedCommand = getItem("focusedCommand") || "";
   const currentTopologyBlock = getItem("focusedTopologyBlock") || "";
+  const parentId = getItem("focusedCommandParentId") || "";
 
   if (key === "arrowup") {
     const prevCommand = getPreviousCommandByPlotfieldId({
@@ -83,13 +84,15 @@ export default function navigationBackAndForth({
       commandName: prevCommand.command as OmittedCommandNames,
       commandOrder: prevCommand.commandOrder,
       isElse: prevCommand.isElse,
-      parentId: prevCommand.plotfieldCommandIfId,
+      parentId: prevCommand.plotfieldCommandIfId || parentId,
     });
 
     setItem("focusedCommand", `${prevCommand._id}`);
     setItem("focusedCommandType", `command`);
+    setItem("focusedCommandOrder", prevCommand.commandOrder);
+    setItem("focusedCommandName", prevCommand.command);
     if (typeof prevCommand.isElse === "boolean" || prevCommand.command === "end") {
-      setItem("focusedCommandParentId", prevCommand.plotfieldCommandIfId || "");
+      setItem("focusedCommandParentId", prevCommand.plotfieldCommandIfId || parentId);
     } else if (hasItem("focusedCommandParentId")) {
       removeItem("focusedCommandParentId");
     }
@@ -106,10 +109,14 @@ export default function navigationBackAndForth({
     }
   } else if (key === "arrowdown") {
     // Going Down To The First Command From The Start
+    console.log("currentlyFocusedCommandId: ", currentlyFocusedCommandId);
     if (!currentlyFocusedCommandId._id) {
+      console.log("down to the first command");
       const currentCommand = getCommandsByTopologyBlockId({
         topologyBlockId: currentTopologyBlock || "",
       })[0];
+
+      console.log("commandsTop: ", getCommandsByTopologyBlockId({ topologyBlockId: currentTopologyBlock || "" }));
 
       setCurrentlyFocusedCommandId({
         currentlyFocusedCommandId: currentCommand._id,
@@ -120,6 +127,8 @@ export default function navigationBackAndForth({
 
       setItem("focusedCommand", `${currentCommand._id}`);
       setItem("focusedCommandType", `command`);
+      setItem("focusedCommandOrder", currentCommand.commandOrder);
+      setItem("focusedCommandName", currentCommand.command);
       if (currentCommand.command === "condition") {
         setItem("focusedConditionIsElse", false);
       }
@@ -162,13 +171,15 @@ export default function navigationBackAndForth({
         commandName: nextCommand.command as OmittedCommandNames,
         commandOrder: nextCommand.commandOrder,
         isElse: nextCommand.isElse,
-        parentId: nextCommand.plotfieldCommandIfId,
+        parentId: nextCommand.plotfieldCommandIfId || parentId,
       });
 
       setItem("focusedCommand", `${nextCommand._id}`);
       setItem("focusedCommandType", `command`);
+      setItem("focusedCommandOrder", nextCommand.commandOrder);
+      setItem("focusedCommandName", nextCommand.command);
       if (typeof nextCommand.isElse === "boolean") {
-        setItem("focusedCommandParentId", nextCommand.plotfieldCommandIfId || "");
+        setItem("focusedCommandParentId", nextCommand.plotfieldCommandIfId || parentId);
       } else if (hasItem("focusedCommandParentId")) {
         removeItem("focusedCommandParentId");
       }

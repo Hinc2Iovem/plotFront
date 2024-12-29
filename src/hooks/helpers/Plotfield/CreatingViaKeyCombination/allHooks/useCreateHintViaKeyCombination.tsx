@@ -19,5 +19,6 @@ export default function useCreateHintViaKeyCombination({ topologyBlockId }: Crea
     topologyBlockId,
     sayType: "hint",
     createCommandData: { type: "hint" },
+    commandName: "say",
   });
 }

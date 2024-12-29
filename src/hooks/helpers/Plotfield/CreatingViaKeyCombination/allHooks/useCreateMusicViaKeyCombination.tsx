@@ -16,5 +16,6 @@ export default function useCreateMusicViaKeyCombination({ topologyBlockId }: Cre
     firstRusLetter: "ь",
     secondRusLetter: "г",
     topologyBlockId,
+    commandName: "music",
   });
 }

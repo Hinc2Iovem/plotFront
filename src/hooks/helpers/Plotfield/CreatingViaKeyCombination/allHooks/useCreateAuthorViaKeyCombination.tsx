@@ -19,5 +19,6 @@ export default function useCreateAuthorViaKeyCombination({ topologyBlockId }: Cr
     topologyBlockId,
     sayType: "author",
     createCommandData: { type: "author" },
+    commandName: "say",
   });
 }

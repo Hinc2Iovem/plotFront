@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCharacterWithTranslation from "../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
 import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
 import PlotfieldCharacterPromptMain, { ExposedMethods } from "../Prompts/Characters/PlotfieldCharacterPromptMain";
@@ -24,9 +24,8 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
   const [textValue, setTextValue] = useState("");
 
   const [showCharacterList, setShowCharacterList] = useState(false);
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
+
   const { data: commandSuit } = useGetCommandSuit({
     plotFieldCommandId,
   });

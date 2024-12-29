@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
@@ -9,8 +8,9 @@ import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/us
 import useGetCommandSound from "../../../hooks/Sound/useGetCommandSound";
 import useGetSoundById from "../../../hooks/Sound/useGetSoundById";
 import "../Prompts/promptStyles.css";
-import CreateSoundField from "./CreateSoundField";
 import AllSoundsModal from "./AllSoundsModal";
+import CreateSoundField from "./CreateSoundField";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 
 type CommandSoundFieldTypes = {
   plotFieldCommandId: string;
@@ -26,9 +26,7 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
   const [initValue, setInitValue] = useState<string>("");
   const [soundName, setSoundName] = useState<string>("");
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const debouncedValue = useDebounce({ value: soundName, delay: 600 });
 

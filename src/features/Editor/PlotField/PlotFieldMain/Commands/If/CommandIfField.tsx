@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
-import useUpdateSessionStorageGoingDownForIfCommand from "../../../hooks/If/helpers/useUpdateSessionStorageGoingDownForIfCommand";
-import useUpdateSessionStorageGoingUpForIfCommand from "../../../hooks/If/helpers/useUpdateSessionStorageGoingUpForIfCommand";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandIf from "../../../hooks/If/useGetCommandIf";
 import CommandIfNameField from "./CommandIfNameField";
 import useIfVariations from "./Context/IfContext";
@@ -19,13 +17,7 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
     plotFieldCommandId,
   });
 
-  const [isFocusedIf, setIsFocusedIf] = useState(true);
-  const [isBackgroundFocused, setIsBackgroundFocused] = useState(false);
-
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-    setIsFocusedIf,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const [commandIfId, setCommandIfId] = useState("");
   const { setCommandIf, getAllLogicalOperators } = useIfVariations();
@@ -41,18 +33,6 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
     }
   }, [commandIf]);
 
-  useUpdateSessionStorageGoingDownForIfCommand({
-    plotfieldCommandIfId: commandIfId,
-    plotfieldCommandId: plotFieldCommandId,
-    setIsBackgroundFocused,
-  });
-
-  useUpdateSessionStorageGoingUpForIfCommand({
-    plotfieldCommandId: plotFieldCommandId,
-    setIsBackgroundFocused,
-    plotfieldCommandIfId: commandIfId,
-  });
-
   return (
     <div className="flex gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] flex-col">
       <CommandIfNameField
@@ -60,9 +40,7 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
         createInsideElse={false}
         commandIfId={commandIfId}
         hideCommands={hideIfCommands}
-        isBackgroundFocused={!isBackgroundFocused}
         isCommandFocused={isCommandFocused}
-        isFocusedIf={isFocusedIf}
         nameValue="if"
         setHideCommands={setHideIfCommands}
         topologyBlockId={topologyBlockId}

@@ -16,5 +16,6 @@ export default function useCreateCommentViaKeyCombination({ topologyBlockId }: C
     firstRusLetter: "с",
     secondRusLetter: "ь",
     topologyBlockId,
+    commandName: "comment",
   });
 }

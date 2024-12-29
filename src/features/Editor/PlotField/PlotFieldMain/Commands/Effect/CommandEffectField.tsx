@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandEffect from "../../../hooks/Effect/useGetCommandEffect";
 import useUpdateEffectText from "../../../hooks/Effect/useUpdateEffectText";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 
 type CommandEffectFieldTypes = {
   plotFieldCommandId: string;
@@ -23,9 +23,8 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
     plotFieldCommandId,
   });
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
+
   const currentInput = useRef<HTMLInputElement | null>(null);
 
   const [commandEffectId, setCommandEffectId] = useState("");

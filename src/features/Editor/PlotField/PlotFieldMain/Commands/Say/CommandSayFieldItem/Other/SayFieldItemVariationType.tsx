@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
+import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
 import useSearch from "../../../../../../Context/Search/SearchContext";
+import useGetCurrentFocusedElement from "../../../../../hooks/helpers/useGetCurrentFocusedElement";
 import useUpdateCommandSayType from "../../../../../hooks/Say/useUpdateCommandSayType";
-import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 
 const CommandSayPossibleUpdateVariations = ["author", "hint", "notify"];
 
@@ -28,9 +28,7 @@ export default function SayFieldItemVariationType({
   const [showUpdateNameModal, setShowUpdateNameModal] = useState(false);
   const updateNameModalRef = useRef<HTMLDivElement | null>(null);
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const { updateValue } = useSearch();
 

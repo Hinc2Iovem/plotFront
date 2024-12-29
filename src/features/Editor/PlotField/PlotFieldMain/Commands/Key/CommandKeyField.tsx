@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetKeyByPlotfieldCommandId from "../../../hooks/Key/useGetKeyByPlotfieldCommandId";
 import useUpdateKeyText from "../../../hooks/Key/useUpdateKeyText";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 
 type CommandKeyFieldTypes = {
   plotFieldCommandId: string;
@@ -22,9 +22,8 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
   const { data: commandKey } = useGetKeyByPlotfieldCommandId({
     plotFieldCommandId,
   });
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
+
   const currentInput = useRef<HTMLInputElement | null>(null);
 
   const [commandKeyId, setCommandKeyId] = useState("");

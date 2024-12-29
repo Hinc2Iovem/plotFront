@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
@@ -11,6 +10,7 @@ import useGetMusicById from "../../../hooks/Music/useGetMusicById";
 import "../Prompts/promptStyles.css";
 import AllMusicModal from "./AllMusicModal";
 import CreateMusicField from "./CreateMusicField";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 
 type CommandMusicFieldTypes = {
   plotFieldCommandId: string;
@@ -26,9 +26,7 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
   const [showMusicDropDown, setShowMusicDropDown] = useState(false);
   const [showCreateMusicModal, setShowCreateMusicModal] = useState(false);
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const debouncedValue = useDebounce({ value: musicName, delay: 600 });
 

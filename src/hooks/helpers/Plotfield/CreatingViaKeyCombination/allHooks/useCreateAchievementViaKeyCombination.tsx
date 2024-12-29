@@ -24,5 +24,6 @@ export default function useCreateAchievementViaKeyCombination({
     firstRusLetter: "ф",
     secondRusLetter: "с",
     topologyBlockId,
+    commandName: "achievement",
   });
 }

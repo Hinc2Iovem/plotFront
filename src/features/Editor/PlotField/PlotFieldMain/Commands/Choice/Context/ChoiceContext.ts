@@ -66,9 +66,13 @@ type CommandChoiceStoreTypes = {
     plotfieldCommandId: string;
     choiceOptionId: string;
   }) => void;
-  getAmountOfChoiceOptions: ({ choiceId }: { choiceId: string }) => number;
-  getCurrentlyOpenChoiceOptionPlotId: ({ choiceId }: { choiceId: string }) => string;
-  getAllChoiceOptionsByChoiceId: ({ choiceId }: { choiceId: string }) => ChoiceOptionItemTypes[];
+  getAmountOfChoiceOptions: ({ plotfieldCommandId }: { plotfieldCommandId: string }) => number;
+  getCurrentlyOpenChoiceOptionPlotId: ({ plotfieldCommandId }: { plotfieldCommandId: string }) => string;
+  getAllChoiceOptionsByPlotfieldCommandId: ({
+    plotfieldCommandId,
+  }: {
+    plotfieldCommandId: string;
+  }) => ChoiceOptionItemTypes[];
   getFirstChoiceOptionWithTopologyBlockId: ({
     plotfieldCommandId,
   }: {
@@ -96,7 +100,11 @@ type CommandChoiceStoreTypes = {
     choiceId: string;
   }) => ChoiceOptionItemTypes | null;
   getChoiceOptionText: ({ choiceId, choiceOptionId }: { choiceId: string; choiceOptionId: string }) => string;
-  getCurrentlyOpenChoiceOption: ({ choiceId }: { choiceId: string }) => ChoiceOptionItemTypes | null;
+  getCurrentlyOpenChoiceOption: ({
+    plotfieldCommandId,
+  }: {
+    plotfieldCommandId: string;
+  }) => ChoiceOptionItemTypes | null;
   removeChoiceOption: ({
     plotfieldCommandId,
     choiceOptionId,
@@ -110,8 +118,8 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
   devtools(
     (set, get) => ({
       choices: [],
-      getAmountOfChoiceOptions: ({ choiceId }) => {
-        const currentChoice = get().choices.find((c) => c.choiceId === choiceId);
+      getAmountOfChoiceOptions: ({ plotfieldCommandId }) => {
+        const currentChoice = get().choices.find((c) => c.plotfieldCommandId === plotfieldCommandId);
         if (currentChoice) {
           return currentChoice.choiceOptions.length;
         } else {
@@ -129,9 +137,9 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
           return "";
         }
       },
-      getCurrentlyOpenChoiceOptionPlotId: ({ choiceId }) => {
+      getCurrentlyOpenChoiceOptionPlotId: ({ plotfieldCommandId }) => {
         const currentlyOpenChoiceOptionPlotId = get().choices.find(
-          (c) => c.choiceId === choiceId
+          (c) => c.plotfieldCommandId === plotfieldCommandId
         )?.currentlyOpenChoiceOptionPlotId;
         if (currentlyOpenChoiceOptionPlotId) {
           return currentlyOpenChoiceOptionPlotId;
@@ -170,21 +178,21 @@ const useChoiceOptions = create<CommandChoiceStoreTypes>()(
           return null;
         }
       },
-      getAllChoiceOptionsByChoiceId: ({ choiceId }) => {
-        const choiceOptions = get().choices.find((c) => c.choiceId === choiceId)?.choiceOptions;
+      getAllChoiceOptionsByPlotfieldCommandId: ({ plotfieldCommandId }) => {
+        const choiceOptions = get().choices.find((c) => c.plotfieldCommandId === plotfieldCommandId)?.choiceOptions;
         if (choiceOptions) {
           return choiceOptions;
         } else {
           return [];
         }
       },
-      getCurrentlyOpenChoiceOption: ({ choiceId }) => {
+      getCurrentlyOpenChoiceOption: ({ plotfieldCommandId }) => {
+        const currentlyOpenChoiceOptionId = get().choices.find(
+          (c) => c.plotfieldCommandId === plotfieldCommandId
+        )?.currentlyOpenChoiceOptionPlotId;
         const choiceOption = get()
-          .choices.find((c) => c.choiceId === choiceId)
-          ?.choiceOptions.find(
-            (c) =>
-              c.choiceOptionId === get().choices.find((c) => c.choiceId === choiceId)?.currentlyOpenChoiceOptionPlotId
-          );
+          .choices.find((c) => c.plotfieldCommandId === plotfieldCommandId)
+          ?.choiceOptions.find((c) => c.choiceOptionId === currentlyOpenChoiceOptionId);
         if (choiceOption) {
           return choiceOption;
         } else {

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateGetItemTranslation";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
@@ -9,6 +8,7 @@ import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldComma
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetSingleGetItemTranslation from "../../../hooks/GetItem/useGetSingleGetItemTranslation";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 
 type CommandGetItemFieldTypes = {
   plotFieldCommandId: string;
@@ -32,9 +32,7 @@ export default function CommandGetItemField({
   const [itemDescription, setItemDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const { data: getItem } = useGetSingleGetItemTranslation({
     plotFieldCommandId,

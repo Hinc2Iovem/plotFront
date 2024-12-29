@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 import { TopologyBlockTypes } from "../../../types/TopologyBlock/TopologyBlockTypes";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 
 type UpdateValuesOnPageReloadTypes = {
   firstTopologyBlock: TopologyBlockTypes | undefined;
@@ -10,28 +13,25 @@ export default function useUpdateValuesOnPageReload({
   firstTopologyBlock,
   localTopologyBlockId,
 }: UpdateValuesOnPageReloadTypes) {
+  const { setItem } = useTypedSessionStorage<SessionStorageKeys>();
   useEffect(() => {
     const isReload = performance.getEntriesByType("navigation")[0]?.entryType === "reload";
 
     if (isReload && (firstTopologyBlock || localTopologyBlockId)) {
-      sessionStorage.setItem(
+      setItem(
         "focusedTopologyBlock",
         localTopologyBlockId?.trim().length ? localTopologyBlockId : firstTopologyBlock?._id || ""
       );
-      sessionStorage.setItem(
+      setItem(
         "focusedCommand",
         `none-${localTopologyBlockId?.trim().length ? localTopologyBlockId : firstTopologyBlock?._id}`
       );
-      sessionStorage.setItem("focusedCommandIf", "none");
-      sessionStorage.setItem("focusedCommandCondition", "none");
-      sessionStorage.setItem("focusedCommandChoice", "none");
-      sessionStorage.setItem("focusedConditionBlock", "none");
-      sessionStorage.setItem("focusedChoiceOption", "none");
-      sessionStorage.setItem("focusedCommandInsideType", "default?");
+
+      setItem("focusedCommandInsideType", "default?");
       // for search
-      sessionStorage.setItem("altArrowLeft", "");
-      sessionStorage.setItem("altArrowRight", "");
-      sessionStorage.setItem("altCurrent", "");
+      setItem("altArrowLeft", "");
+      setItem("altArrowRight", "");
+      setItem("altCurrent", "");
     }
   }, [firstTopologyBlock, localTopologyBlockId]);
 }

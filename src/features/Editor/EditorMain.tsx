@@ -37,7 +37,6 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
   const [scaleDivPosition, setScaleDivPosition] = useState(0);
 
   useResizeEditorWindow({ command, containerRef, setScaleDivPosition });
-
   return (
     <>
       {typeof hideFlowchartFromScriptwriter === "boolean" && (

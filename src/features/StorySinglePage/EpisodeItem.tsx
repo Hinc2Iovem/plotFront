@@ -1,33 +1,32 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import useGetTranslationEpisode from "../../hooks/Fetching/Translation/useGetTranslationEpisode";
-import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
-import { EpisodeTypes } from "../../types/StoryData/Episode/EpisodeTypes";
 import { DraggableProvided } from "@hello-pangea/dnd";
 import { useQueryClient } from "@tanstack/react-query";
-import { getAllTopologyBlocksByEpisodeId } from "../Editor/PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
-import { getAllTopologyBlocksConnectionsByEpisodeId } from "../Editor/PlotField/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
-import { getAllPlotfieldCommands } from "../Editor/PlotField/hooks/useGetAllPlotFieldCommands";
-import useGetSingleStory from "../../hooks/Fetching/Story/useGetSingleStory";
-import useGetStaffMember from "../../hooks/Fetching/Staff/useGetStaffMember";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import character from "../../assets/images/shared/characters.png";
+import useGetStaffMember from "../../hooks/Fetching/Staff/useGetStaffMember";
+import useGetSingleStory from "../../hooks/Fetching/Story/useGetSingleStory";
+import useGetTranslationEpisode from "../../hooks/Fetching/Translation/useGetTranslationEpisode";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
+import useEscapeOfModal from "../../hooks/UI/useEscapeOfModal";
+import { EpisodeTypes } from "../../types/StoryData/Episode/EpisodeTypes";
+import { AllPossiblePlotFieldComamndsTypes } from "../../types/StoryEditor/PlotField/PlotFieldTypes";
+import useNavigation from "../Editor/Context/Navigation/NavigationContext";
+import { getAllTopologyBlocksConnectionsByEpisodeId } from "../Editor/PlotField/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
+import { getAllTopologyBlocksByEpisodeId } from "../Editor/PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import { getAllPlotfieldCommands } from "../Editor/PlotField/hooks/useGetAllPlotFieldCommands";
 
 type EpisodeItemTypes = {
   provided: DraggableProvided;
 } & EpisodeTypes;
 
-export default function EpisodeItem({
-  _id,
-  episodeOrder,
-  episodeStatus,
-  provided,
-}: EpisodeItemTypes) {
+export default function EpisodeItem({ _id, episodeOrder, episodeStatus, provided }: EpisodeItemTypes) {
   const { storyId } = useParams();
-  const [localTopologyBlockId] = useState(
-    localStorage.getItem(`${_id}-topologyBlockId`)
-  );
+  const { setItem, removeItem, getItem } = useTypedSessionStorage<SessionStorageKeys>();
+  const { clearFocusedCommand, setCurrentTopologyBlock } = useNavigation();
+  const [localTopologyBlockId] = useState(localStorage.getItem(`${_id}-topologyBlockId`));
   const [isEpisodeInfoOpen, setIsEpisodeInfoOpen] = useState(false);
-
   const { data: episode } = useGetTranslationEpisode({
     episodeId: _id,
     language: "russian",
@@ -57,14 +56,12 @@ export default function EpisodeItem({
     });
     queryClient.prefetchQuery({
       queryKey: ["connection", "episode", _id],
-      queryFn: () =>
-        getAllTopologyBlocksConnectionsByEpisodeId({ episodeId: _id }),
+      queryFn: () => getAllTopologyBlocksConnectionsByEpisodeId({ episodeId: _id }),
     });
     if (localTopologyBlockId) {
       queryClient.prefetchQuery({
         queryKey: ["plotfield", "topologyBlock", localTopologyBlockId],
-        queryFn: () =>
-          getAllPlotfieldCommands({ topologyBlockId: localTopologyBlockId }),
+        queryFn: () => getAllPlotfieldCommands({ topologyBlockId: localTopologyBlockId }),
       });
     }
   };
@@ -73,6 +70,29 @@ export default function EpisodeItem({
     setValue: setIsEpisodeInfoOpen,
     value: isEpisodeInfoOpen,
   });
+
+  const updateSessionStorageValues = () => {
+    const storedEpisodeId = getItem("episodeId") || "";
+    if (_id !== storedEpisodeId) {
+      setItem("altArrowLeft", "");
+      setItem("altArrowRight", "");
+      setItem("altCurrent", "");
+
+      setItem(`focusedCommand`, "");
+      setItem("focusedCommandInsideType", `default?`);
+      setItem(`focusedCommandType`, "command");
+      setItem(`focusedCommandParentId`, "");
+      setItem(`focusedCommandParentType`, "" as "if");
+      setItem("focusedCommandOrder", 0);
+      setItem("focusedCommandName", "" as AllPossiblePlotFieldComamndsTypes);
+      removeItem("focusedConditionIsElse");
+
+      clearFocusedCommand();
+      setItem("episodeId", _id);
+    } else {
+      setCurrentTopologyBlock(localTopologyBlockId ? { _id: localTopologyBlockId } : { _id: "" });
+    }
+  };
 
   return (
     <li
@@ -87,9 +107,7 @@ export default function EpisodeItem({
           setIsEpisodeInfoOpen((prev) => !prev);
         }}
         className={` ${
-          isEpisodeInfoOpen
-            ? "shadow-none border-[.1rem] border-b-0 rounded-b-none"
-            : " hover:scale-[1.01]"
+          isEpisodeInfoOpen ? "shadow-none border-[.1rem] border-b-0 rounded-b-none" : " hover:scale-[1.01]"
         } outline-gray-400 text-start bg-secondary w-full rounded-md shadow-sm shadow-gray-300 p-[1rem]`}
       >
         <h3 className="text-[1.5rem] text-text-light">
@@ -103,11 +121,7 @@ export default function EpisodeItem({
       >
         <p className="text-[1.5rem] self-end pt-[.5rem] pr-[.5rem] text-text-dark">
           Статус:{" "}
-          <span
-            className={`text-[1.4rem] ${
-              episodeStatus === "doing" ? "text-orange-400" : "text-green-400"
-            }`}
-          >
+          <span className={`text-[1.4rem] ${episodeStatus === "doing" ? "text-orange-400" : "text-green-400"}`}>
             {episodeStatus === "doing" ? "В процессе" : "Завершена"}
           </span>
         </p>
@@ -121,12 +135,11 @@ export default function EpisodeItem({
             } flex gap-[.5rem] flex-wrap bg-secondary shadow-md px-[1rem] py-[.5rem]`}
           >
             {currentStory?.storyStaffInfo?.length
-              ? currentStory.storyStaffInfo.map((ss) => (
-                  <WorkersItems key={ss.staffId} staffId={ss.staffId} />
-                ))
+              ? currentStory.storyStaffInfo.map((ss) => <WorkersItems key={ss.staffId} staffId={ss.staffId} />)
               : null}
           </div>
           <Link
+            onClick={updateSessionStorageValues}
             className="ml-auto w-fit text-[1.5rem] text-text-dark hover:text-text-light pr-[.5rem] transition-all"
             to={`/stories/${storyId}/editor/episodes/${_id}`}
           >

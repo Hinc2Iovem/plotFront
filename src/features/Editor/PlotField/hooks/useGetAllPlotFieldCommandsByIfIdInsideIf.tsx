@@ -14,7 +14,7 @@ export default function useGetAllPlotFieldCommandsByIfIdInsideIf({
         .get<PlotFieldCommandIfTypes[]>(`/plotField/commandIfs/${plotfieldCommandIfId}/insideIf`)
         .then((r) => r.data),
     select: (data) => data.sort((a, b) => a.commandOrder - b.commandOrder),
-    enabled: !!commandIfId,
+    enabled: !!plotfieldCommandIfId,
     refetchOnWindowFocus: false,
   });
 }

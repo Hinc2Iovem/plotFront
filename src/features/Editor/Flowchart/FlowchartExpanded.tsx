@@ -16,21 +16,14 @@ type FlowChartTypes = {
 
 export const SCROLLBAR_WIDTH = 17;
 
-export default function FlowchartExpanded({
-  scale,
-  setScale,
-  setCurrentTopologyBlockId,
-  currentTopologyBlockId,
-}: FlowChartTypes) {
+export default function FlowchartExpanded({ scale, setScale }: FlowChartTypes) {
   const { episodeId } = useParams();
 
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
     episodeId: episodeId ?? "",
   });
 
-  const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId(
-    { episodeId: episodeId ?? "" }
-  );
+  const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId({ episodeId: episodeId ?? "" });
 
   const boundsRef = useRef<HTMLDivElement>(null);
 
@@ -62,19 +55,8 @@ export default function FlowchartExpanded({
       ref={boundsRef}
       className={`w-full rounded-md min-w-[500rem] min-h-[500rem] border-secondary border-[4px] border-dashed shadow-md relative bg-primary-darker`}
     >
-      {allTopologyBlocks
-        ? allTopologyBlocks.map((tb) => (
-            <FlowchartTopologyBlockRemake
-              currentTopologyBlockId={currentTopologyBlockId}
-              setCurrentTopologyBlockId={setCurrentTopologyBlockId}
-              key={tb._id}
-              {...tb}
-            />
-          ))
-        : null}
-      {allConnections
-        ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />)
-        : null}
+      {allTopologyBlocks ? allTopologyBlocks.map((tb) => <FlowchartTopologyBlockRemake key={tb._id} {...tb} />) : null}
+      {allConnections ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />) : null}
     </section>
   );
 }

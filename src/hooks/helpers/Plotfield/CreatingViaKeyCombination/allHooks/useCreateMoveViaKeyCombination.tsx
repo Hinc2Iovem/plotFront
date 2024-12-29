@@ -16,5 +16,6 @@ export default function useCreateMoveViaKeyCombination({ topologyBlockId }: Crea
     firstRusLetter: "ь",
     secondRusLetter: "щ",
     topologyBlockId,
+    commandName: "move",
   });
 }

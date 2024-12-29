@@ -23,12 +23,16 @@ const defaultValueTopologyBlock: TopologyBlockTypes = {
 };
 
 export type CurrentlyFocusedCommandTypes = {
-  _id: string;
+  _id: string; //for commands it's a plotfieldCommandId, for conditionBlocks its conditionBlockId, for choiceOptions its choiceOptionId
   commandName: OmittedCommandNames;
   isElse?: boolean;
-  parentId?: string;
+  parentId?: string; //it's for conditionBlocks, ifs and choiceOptions basically plotfieldCommandId of them when focusing on commands inside of them
   type: CurrentlyFocusedVariationTypes;
   commandOrder?: number;
+};
+
+export type SetCurrentlyFocusedCommandTypes = Omit<CurrentlyFocusedCommandTypes, "_id"> & {
+  currentlyFocusedCommandId: string;
 };
 
 const defaultValueFocusedCommand: CurrentlyFocusedCommandTypes = {
@@ -58,14 +62,9 @@ type TopLevelNavigationStateTypes = {
     commandName,
     commandOrder,
     parentId,
-  }: {
-    currentlyFocusedCommandId: string;
-    parentId?: string;
-    isElse?: boolean;
-    type: CurrentlyFocusedVariationTypes;
-    commandName: OmittedCommandNames;
-    commandOrder: number;
-  }) => void;
+  }: SetCurrentlyFocusedCommandTypes) => void;
+  clearTopologyBlock: () => void;
+  clearFocusedCommand: () => void;
   updateAmountOfChildBlocks: (sign: "add" | "minus") => void;
 };
 
@@ -93,6 +92,16 @@ const useNavigation = create<TopLevelNavigationStateTypes>()(
             name: name || defaultValueTopologyBlock.name,
             topologyBlockInfo: topologyBlockInfo || defaultValueTopologyBlock.topologyBlockInfo,
           },
+        });
+      },
+      clearFocusedCommand: () => {
+        set({
+          currentlyFocusedCommandId: {} as CurrentlyFocusedCommandTypes,
+        });
+      },
+      clearTopologyBlock: () => {
+        set({
+          currentTopologyBlock: {} as TopologyBlockTypes,
         });
       },
       setCurrentlyFocusedCommandId: ({

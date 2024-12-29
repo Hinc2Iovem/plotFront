@@ -87,11 +87,11 @@ export default function OptionVariationButton({
         }}
         className={`${
           topologyBlockId === showedOptionPlotTopologyBlockId ||
-          getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
+          getCurrentlyOpenChoiceOptionPlotId({ plotfieldCommandId }) === choiceOptionId
             ? "bg-primary-darker text-text-light focus-within:outline-secondary"
             : "bg-secondary"
         } ${
-          isFocusedBackground && getCurrentlyOpenChoiceOptionPlotId({ choiceId }) === choiceOptionId
+          isFocusedBackground && getCurrentlyOpenChoiceOptionPlotId({ plotfieldCommandId }) === choiceOptionId
             ? "border-dark-blue border-dashed border-[2px]"
             : ""
         } ${
@@ -113,7 +113,7 @@ export default function OptionVariationButton({
           ref={buttonDeleteRef}
           className="hover:bg-primary-darker transition-all w-full rounded-md p-[1rem] outline-light-gray focus-within:border-light-gray focus-within:border-[2px]"
           onClick={() => {
-            const amount = getAmountOfChoiceOptions({ choiceId });
+            const amount = getAmountOfChoiceOptions({ plotfieldCommandId });
             if (amount - 1 === 0) {
               setIsFocusedBackground(false);
               setShowOptionPlot(false);

@@ -16,5 +16,6 @@ export default function useCreateCallViaKeyCombination({ topologyBlockId }: Crea
     firstRusLetter: "с",
     secondRusLetter: "д",
     topologyBlockId,
+    commandName: "call",
   });
 }

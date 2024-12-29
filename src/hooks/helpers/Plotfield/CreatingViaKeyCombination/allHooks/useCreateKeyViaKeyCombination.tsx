@@ -19,5 +19,6 @@ export default function useCreateKeyViaKeyCombination({ topologyBlockId }: Creat
     firstRusLetter: "л",
     secondRusLetter: "у",
     topologyBlockId,
+    commandName: "key",
   });
 }

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { PlotfieldOptimisticCommandInsideIfTypes } from "../../../Context/PlotfieldCommandIfSlice";
 import useFixCommandOrder from "../../../hooks/useFixCommandOrder";
+import { PlotfieldOptimisticCommandTypes } from "../../../Context/PlotfieldCommandSlice";
 
 type ReorderIfCommandsTypes = {
   currentCommandOrdersIf:
@@ -9,21 +9,21 @@ type ReorderIfCommandsTypes = {
         commandOrder: number;
       }[]
     | undefined;
-  currentCommandsState: PlotfieldOptimisticCommandInsideIfTypes[];
+  currentCommandsState: PlotfieldOptimisticCommandTypes[];
   plotfieldCommandIfId: string;
   newlyFetchedIfCommands: boolean;
 };
 
 export default function useReorderIfCommands({
   currentCommandOrdersIf,
-  commandIfId,
+  plotfieldCommandIfId,
   currentCommandsState,
   newlyFetchedIfCommands,
 }: ReorderIfCommandsTypes) {
   const updateCommandOrder = useFixCommandOrder();
   useEffect(() => {
     if (newlyFetchedIfCommands) {
-      if (!currentCommandOrdersIf?.length || !commandIfId) {
+      if (!currentCommandOrdersIf?.length || !plotfieldCommandIfId) {
         return;
       }
 
@@ -40,5 +40,5 @@ export default function useReorderIfCommands({
         });
       });
     }
-  }, [currentCommandOrdersIf, commandIfId, currentCommandsState, newlyFetchedIfCommands]);
+  }, [currentCommandOrdersIf, plotfieldCommandIfId, currentCommandsState, newlyFetchedIfCommands]);
 }

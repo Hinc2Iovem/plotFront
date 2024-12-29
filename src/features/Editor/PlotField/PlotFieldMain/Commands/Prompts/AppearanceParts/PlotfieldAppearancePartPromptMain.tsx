@@ -1,11 +1,11 @@
 import { useMemo, useRef } from "react";
 import useGetTranslationAppearanceParts from "../../../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearanceParts";
-import { PossibleWardrobeAppearancePartVariationsTypes } from "../../Wardrobe/WardrobeCharacterAppearancePartForm";
 import PlotfieldAppearancePartsPrompt from "./PlotfieldAppearancePartPrompt";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import { TranslationAppearancePartTypes } from "../../../../../../../types/Additional/TranslationTypes";
 import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import { PossibleWardrobeAppearancePartVariationsTypes } from "../../Wardrobe/AppearanceParts/WardrobeCharacterAppearancePartForm";
 
 type PlotfieldAppearancePartPromptMainTypes = {
   setAppearancePartName?: React.Dispatch<React.SetStateAction<string>>;

@@ -7,6 +7,7 @@ import { generateMongoObjectId } from "../../../../../../utils/generateMongoObje
 import { addItemInUndoSessionStorage } from "../../../../UndoRedo/addItemInUndoSessionStorage";
 import { CreateDuplicateSayOnMutationTypes } from "../../createDuplicateTypes";
 import { preventCreatingCommandsWhenFocus } from "../../../preventCreatingCommandsWhenFocus";
+import useTypedSessionStorage, { SessionStorageKeys } from "../../../../shared/SessionStorage/useTypedSessionStorage";
 
 type HandleDuplicationProcessTypes = {
   topologyBlockId: string;
@@ -31,6 +32,7 @@ export default function useHandleDuplicationProcess({
   commandName,
 }: HandleDuplicationProcessTypes) {
   const { currentlyFocusedCommandId } = useNavigation();
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
   const { getCommandByPlotfieldCommandId, getCurrentAmountOfCommands } = usePlotfieldCommands();
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function useHandleDuplicationProcess({
           return;
         }
 
-        const currentFocusedTopologyBlockId = sessionStorage.getItem(`focusedTopologyBlock`);
+        const currentFocusedTopologyBlockId = getItem(`focusedTopologyBlock`);
 
         const currentCommand = getCommandByPlotfieldCommandId({
           plotfieldCommandId: currentlyFocusedCommandId._id,
@@ -125,5 +127,6 @@ export default function useHandleDuplicationProcess({
     getCommandByPlotfieldCommandId,
     getCurrentAmountOfCommands,
     topologyBlockId,
+    getItem,
   ]);
 }

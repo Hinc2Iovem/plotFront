@@ -7,6 +7,9 @@ import useGetTopologyBlockById from "../../PlotField/hooks/TopologyBlock/useGetT
 import { getAllPlotfieldCommands } from "../../PlotField/hooks/useGetAllPlotFieldCommands";
 import { useQueryClient } from "@tanstack/react-query";
 import useNavigation from "../../Context/Navigation/NavigationContext";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 
 type PlotfieldSearchTypes = {
   setShowAllMightySearch: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,7 +17,8 @@ type PlotfieldSearchTypes = {
 
 export default function PlotfieldSearch({ setShowAllMightySearch }: PlotfieldSearchTypes) {
   const { episodeId } = useParams();
-  const [searchValue, setSearchValue] = useState(sessionStorage.getItem("plotfieldSearch") || "");
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
+  const [searchValue, setSearchValue] = useState(getItem("plotfieldSearch") || "");
 
   const { getSearchResults } = useSearch();
   const debouncedValue = useDebounce({ value: searchValue, delay: 500 });
@@ -45,7 +49,8 @@ function PlotfieldSearchResultsItem({
   setShowAllMightySearch,
 }: PlotfieldSearchResultsItemTypes) {
   const queryClient = useQueryClient();
-  const { currentTopologyBlockId, setCurrentTopologyBlockId } = useNavigation();
+  const { setItem } = useTypedSessionStorage<SessionStorageKeys>();
+  const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
   const { data } = useGetTopologyBlockById({ topologyBlockId });
 
   const handlePrefetchPlotfieldCommands = () => {
@@ -63,9 +68,9 @@ function PlotfieldSearchResultsItem({
           onFocus={handlePrefetchPlotfieldCommands}
           onClick={() => {
             setShowAllMightySearch(false);
-            sessionStorage.setItem("altCurrent", topologyBlockId);
-            sessionStorage.setItem("altArrowLeft", currentTopologyBlockId);
-            setCurrentTopologyBlockId({ topologyBlockId });
+            setItem("altCurrent", topologyBlockId);
+            setItem("altArrowLeft", currentTopologyBlock._id);
+            setCurrentTopologyBlock({ _id: topologyBlockId });
           }}
           className="capitalize cursor-pointer text-[1.6rem] text-text-light bg-secondary py-[.3rem] px-[1rem] rounded-md"
         >
@@ -82,9 +87,9 @@ function PlotfieldSearchResultsItem({
           onFocus={handlePrefetchPlotfieldCommands}
           onClick={() => {
             setShowAllMightySearch(false);
-            sessionStorage.setItem("altCurrent", topologyBlockId);
-            sessionStorage.setItem("altArrowLeft", currentTopologyBlockId);
-            setCurrentTopologyBlockId({ topologyBlockId });
+            setItem("altCurrent", topologyBlockId);
+            setItem("altArrowLeft", currentTopologyBlock._id);
+            setCurrentTopologyBlock({ _id: topologyBlockId });
           }}
         >
           <p className="text-text-light text-[1.4rem] w-full text-ellipsis text-start hover:opacity-90 transition-all">
@@ -103,6 +108,7 @@ type PlotfieldSearchFormTypes = {
 
 function PlotfieldSearchForm({ searchValue, setSearchValue }: PlotfieldSearchFormTypes) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { setItem } = useTypedSessionStorage<SessionStorageKeys>();
 
   useEffect(() => {
     if (inputRef.current) {
@@ -122,7 +128,7 @@ function PlotfieldSearchForm({ searchValue, setSearchValue }: PlotfieldSearchFor
         value={searchValue}
         onChange={(e) => {
           setSearchValue(e.target.value);
-          sessionStorage.setItem("plotfieldSearch", e.target.value);
+          setItem("plotfieldSearch", e.target.value);
         }}
         className="flex-grow px-[1rem] py-[.5rem] rounded-md text-[1.5rem] shadow-inner shadow-dark-mid-gray focus-within:shadow-gray-500"
       />

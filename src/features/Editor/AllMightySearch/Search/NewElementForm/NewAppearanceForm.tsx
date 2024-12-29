@@ -11,6 +11,7 @@ import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
 import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
 import PreviewImage from "../../../../../ui/shared/PreviewImage";
 import { AppearanceAsideButton, AppearanceCharacterField } from "../MainContent/AppearancePart/EditingAppearancePart";
+import { CharacterValueTypes } from "../../../PlotField/PlotFieldMain/Commands/Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 type NewAppearanceFormTypes = {
   showCreatingNewElement: boolean;
@@ -40,10 +41,10 @@ export default function NewAppearanceForm({
 
   const [typeToRus, setTypeToRus] = useState<AppearancePartVariationRusTypes>("" as AppearancePartVariationRusTypes);
 
-  const [currentCharacter, setCurrentCharacter] = useState({
-    characterId: "",
+  const [characterValue, setCharacterValue] = useState<CharacterValueTypes>({
+    _id: "",
     characterName: "",
-    characterImg: "",
+    imgUrl: "",
   });
   const [currentType, setCurrentType] = useState<TranslationTextFieldNameAppearancePartsTypes | "temp">(
     "" as TranslationTextFieldNameAppearancePartsTypes
@@ -65,7 +66,7 @@ export default function NewAppearanceForm({
     setNewElement({
       _id: "",
       appearancePartId,
-      characterId: currentCharacter.characterId,
+      characterId: characterValue._id || "",
       createdAt: new Date(new Date().getTime()),
       updatedAt: new Date(new Date().getTime()),
       language: "russian",
@@ -84,7 +85,7 @@ export default function NewAppearanceForm({
 
     createAppearance.mutate({
       type: currentType as TranslationTextFieldNameAppearancePartsTypes,
-      characterId: currentCharacter.characterId,
+      characterId: characterValue._id || "",
       currentLanguage: "russian",
       appearancePartId,
       img: typeof imagePreview === "string" ? imagePreview : "",
@@ -113,20 +114,7 @@ export default function NewAppearanceForm({
           placeholder="Внешний вид"
         />
 
-        <AppearanceCharacterField
-          characterId={currentCharacter.characterId || ""}
-          characterName={currentCharacter.characterName || ""}
-          characterImg={currentCharacter.characterImg || ""}
-          setCurrentCharacter={
-            setCurrentCharacter as React.Dispatch<
-              React.SetStateAction<{
-                characterId: string | undefined;
-                characterName: string | undefined;
-                characterImg: string;
-              }>
-            >
-          }
-        />
+        <AppearanceCharacterField characterValue={characterValue} setCharacterValue={setCharacterValue} />
         <div className="flex-grow flex items-center gap-[1rem] p-[.5rem]">
           <div className="relative min-w-[20rem] flex-grow">
             <button

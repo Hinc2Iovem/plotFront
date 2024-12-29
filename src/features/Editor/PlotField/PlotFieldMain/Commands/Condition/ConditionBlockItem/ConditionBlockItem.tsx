@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import plus from "../../../../../../assets/images/shared/plus.png";
+import plus from "../../../../../../../assets/images/shared/plus.png";
 import { AllPossibleConditionBlockVariations } from "../../../../../../../const/CONDITION_BLOCK_VARIATIONS";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
 import { generateMongoObjectId } from "../../../../../../../utils/generateMongoObjectId";

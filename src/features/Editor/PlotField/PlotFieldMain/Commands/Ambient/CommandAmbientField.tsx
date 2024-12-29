@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandAmbient from "../../../hooks/Ambient/useGetCommandAmbient";
 import useUpdateAmbientText from "../../../hooks/Ambient/useUpdateAmbientText";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 
 type CommandAmbientFieldTypes = {
   plotFieldCommandId: string;
@@ -27,9 +27,7 @@ export default function CommandAmbientField({
     plotFieldCommandId,
   });
   const [commandAmbientId, setCommandAmbientId] = useState("");
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const currentInput = useRef<HTMLInputElement | null>(null);
 

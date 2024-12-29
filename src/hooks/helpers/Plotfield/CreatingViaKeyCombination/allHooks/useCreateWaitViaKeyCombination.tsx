@@ -16,5 +16,6 @@ export default function useCreateWaitViaKeyCombination({ topologyBlockId }: Crea
     firstRusLetter: "ц",
     secondRusLetter: "ф",
     topologyBlockId,
+    commandName: "wait",
   });
 }

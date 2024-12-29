@@ -1,8 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../api/axios";
-import useChoiceOptions from "../../../PlotFieldMain/Commands/Choice/Context/ChoiceContext";
 import { removeElementAtIndex } from "../../../../../../helpers/removeElementAtIndex";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
+import useChoiceOptions from "../../../PlotFieldMain/Commands/Choice/Context/ChoiceContext";
 
 type DeleteChoiceOptionTypes = {
   choiceOptionId: string;
@@ -30,6 +33,8 @@ export default function useDeleteChoiceOption({
     updateCurrentlyOpenChoiceOption,
   } = useChoiceOptions();
 
+  const { setItem, getItem } = useTypedSessionStorage<SessionStorageKeys>();
+
   const { getCommandOnlyByPlotfieldCommandId } = usePlotfieldCommands();
 
   return useMutation({
@@ -39,18 +44,18 @@ export default function useDeleteChoiceOption({
       );
     },
     onMutate: () => {
-      const focusedCommandChoice = sessionStorage.getItem("focusedCommandChoice")?.split("?").filter(Boolean);
-      const focusedCommandInsideType = sessionStorage.getItem("focusedCommandInsideType")?.split("?").filter(Boolean);
+      const focusedCommandChoice = [""];
+      const focusedCommandInsideType = getItem("focusedCommandInsideType")?.split("?").filter(Boolean);
 
       const focusedCommandInsideTypeChoiceIndex = focusedCommandInsideType?.findIndex((i) =>
         i.includes(plotfieldCommandId)
       );
       const focusedCommandChoiceIndex = focusedCommandChoice?.findIndex((i) => i.includes(choiceId));
 
-      const currentlyOpen = getCurrentlyOpenChoiceOption({ choiceId });
+      const currentlyOpen = getCurrentlyOpenChoiceOption({ plotfieldCommandId });
       const currentChoice = getCommandOnlyByPlotfieldCommandId({ plotfieldCommandId });
 
-      const focusedChoiceOptions = sessionStorage.getItem("focusedChoiceOption")?.split("?").filter(Boolean);
+      const focusedChoiceOptions = [""];
       const deepLevel = focusedChoiceOptions?.includes("none")
         ? null
         : (focusedChoiceOptions?.length || 0) > 1
@@ -91,11 +96,11 @@ export default function useDeleteChoiceOption({
           const currentChoiceOptionPlotfieldId = currentChoiceOptionSplitted[3];
 
           if (typeof currentOptionIndex === "number") {
-            const amount = getAmountOfChoiceOptions({ choiceId });
+            const amount = getAmountOfChoiceOptions({ plotfieldCommandId });
             const currentPlotfieldCommand = getCommandOnlyByPlotfieldCommandId({ plotfieldCommandId });
 
             if (!currentPlotfieldCommand || currentPlotfieldCommand.topologyBlockId === topologyBlockId) {
-              sessionStorage.setItem("focusedCommand", `choice-${plotfieldCommandId}`);
+              setItem("focusedCommand", `choice-${plotfieldCommandId}`);
             }
 
             const newFocusedCommandInsideType = (focusedCommandInsideType || [])?.slice(
@@ -108,21 +113,7 @@ export default function useDeleteChoiceOption({
               (focusedCommandChoiceIndex || 0) + 1
             );
 
-            console.log("newFocusedCommandInsideType: ", newFocusedCommandInsideType);
-            console.log("focusedCommandInsideTypeChoiceIndex: ", focusedCommandInsideTypeChoiceIndex);
-            console.log("focusedCommandInsideType: ", focusedCommandInsideType);
-
-            console.log("newFocusedCommandChoice: ", newFocusedCommandChoice);
-            console.log("focusedCommandChoiceIndex: ", focusedCommandChoiceIndex);
-            console.log("focusedCommandChoice: ", focusedCommandChoice);
-
-            sessionStorage.setItem(
-              "focusedCommandChoice",
-              (focusedCommandChoiceIndex || 0) + 1 > 0 && newFocusedCommandChoice.length
-                ? `${newFocusedCommandChoice.join("?")}?`
-                : "none"
-            );
-            sessionStorage.setItem(
+            setItem(
               "focusedCommandInsideType",
               (focusedCommandInsideTypeChoiceIndex || 1) + 1 > 1 && newFocusedCommandInsideType.length
                 ? `${newFocusedCommandInsideType.join("?")}?`
@@ -137,19 +128,13 @@ export default function useDeleteChoiceOption({
                   plotfieldCommandId,
                 });
 
-                sessionStorage.setItem("focusedTopologyBlock", nextOption?.topologyBlockId || "");
+                setItem("focusedTopologyBlock", nextOption?.topologyBlockId || "");
 
                 if (deepLevel === 0) {
-                  sessionStorage.setItem(
-                    "focusedChoiceOption",
-                    `${nextOption?.optionType}-${nextOption?.choiceOptionId}-plotfieldCommandId-${currentChoiceOptionPlotfieldId}?`
-                  );
+                  //
                 } else {
                   if (focusedChoiceOptionIndex === 0) {
-                    sessionStorage.setItem(
-                      "focusedChoiceOption",
-                      `${nextOption?.optionType}-${nextOption?.choiceOptionId}-plotfieldCommandId-${currentChoiceOptionPlotfieldId}?`
-                    );
+                    //
                   } else {
                     const newFocusedChoiceOptions = removeElementAtIndex({
                       array: focusedChoiceOptions || [],
@@ -157,13 +142,6 @@ export default function useDeleteChoiceOption({
                     });
 
                     console.log("newFocusedChoiceOptions: ", newFocusedChoiceOptions);
-
-                    sessionStorage.setItem(
-                      "focusedChoiceOption",
-                      `${newFocusedChoiceOptions?.join("?")}?${nextOption?.optionType}-${
-                        nextOption?.choiceOptionId
-                      }-plotfieldCommandId-${currentChoiceOptionPlotfieldId}?`
-                    );
                   }
                 }
 
@@ -181,19 +159,13 @@ export default function useDeleteChoiceOption({
                   plotfieldCommandId,
                 });
 
-                sessionStorage.setItem("focusedTopologyBlock", prevOption?.topologyBlockId || "");
+                setItem("focusedTopologyBlock", prevOption?.topologyBlockId || "");
 
                 if (deepLevel === 0) {
-                  sessionStorage.setItem(
-                    "focusedChoiceOption",
-                    `${prevOption?.optionType}-${prevOption?.choiceOptionId}-plotfieldCommandId-${currentChoiceOptionPlotfieldId}?`
-                  );
+                  //
                 } else {
                   if (focusedChoiceOptionIndex === 0) {
-                    sessionStorage.setItem(
-                      "focusedChoiceOption",
-                      `${prevOption?.optionType}-${prevOption?.choiceOptionId}-plotfieldCommandId-${currentChoiceOptionPlotfieldId}?`
-                    );
+                    //
                   } else {
                     const newFocusedChoiceOptions = removeElementAtIndex({
                       array: focusedChoiceOptions || [],
@@ -201,13 +173,6 @@ export default function useDeleteChoiceOption({
                     });
 
                     console.log("newFocusedChoiceOptions: ", newFocusedChoiceOptions);
-
-                    sessionStorage.setItem(
-                      "focusedChoiceOption",
-                      `${newFocusedChoiceOptions?.join("?")}?${prevOption?.optionType}-${
-                        prevOption?.choiceOptionId
-                      }-plotfieldCommandId-${currentChoiceOptionPlotfieldId}?`
-                    );
                   }
                 }
 
@@ -219,19 +184,15 @@ export default function useDeleteChoiceOption({
               }
             } else {
               // just remove and close
-              sessionStorage.setItem("focusedTopologyBlock", currentChoice?.topologyBlockId || "");
+              setItem("focusedTopologyBlock", currentChoice?.topologyBlockId || "");
 
               const newFocusedChoiceOption = removeElementAtIndex({
                 array: focusedChoiceOptions || [],
                 index: focusedChoiceOptionIndex || 0,
               });
+              // TODO when deleting choiceOption need to refocus
 
-              sessionStorage.setItem(
-                "focusedChoiceOption",
-                newFocusedChoiceOption.length ? `${newFocusedChoiceOption.join("?")}?` : "none"
-              );
-
-              sessionStorage.setItem("focusedCommand", `choice-${plotfieldCommandId}`);
+              setItem("focusedCommand", `choice-${plotfieldCommandId}`);
 
               updateCurrentlyOpenChoiceOption({
                 choiceOptionId: "",

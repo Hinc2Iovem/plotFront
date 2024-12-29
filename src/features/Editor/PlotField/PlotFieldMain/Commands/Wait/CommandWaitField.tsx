@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
+import { useParams } from "react-router-dom";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandWait from "../../../hooks/Wait/useGetCommandWait";
 import useUpdateWaitText from "../../../hooks/Wait/useUpdateWaitText";
-import useSearch from "../../../../Context/Search/SearchContext";
-import { useParams } from "react-router-dom";
-import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandWaitFieldTypes = {
   plotFieldCommandId: string;
@@ -22,9 +22,7 @@ export default function CommandWaitField({ plotFieldCommandId, command, topology
   const { data: commandWait } = useGetCommandWait({
     plotFieldCommandId,
   });
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const [commandWaitId, setCommandWaitId] = useState("");
 

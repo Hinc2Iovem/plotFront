@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetTranslationAchievementEnabled from "../../../hooks/Achievement/useGetTranslationAchievementEnabled";
 import useUpdateAchievementText from "../../../hooks/Achievement/useUpdateAchievementText";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import useGetCommandAchievement from "../../../hooks/Achievement/useGetCommandAchievement";
 
 type CommandAchievementFieldTypes = {
   plotFieldCommandId: string;
@@ -23,14 +24,15 @@ export default function CommandAchievementField({
   const [nameValue] = useState(command ?? "achievement");
   const [initialTextValue, setInitialTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
-
+  const [achievementId, setAchievementId] = useState("");
   const currentInput = useRef<HTMLInputElement | null>(null);
 
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
+  // because of this hook, I don't need useGetTranslationAchievemnetEnabled here
+  const { data: achievement } = useGetCommandAchievement({ plotFieldCommandId, language: "russian" });
   const { data: translatedAchievement } = useGetTranslationAchievementEnabled({
-    commandId: plotFieldCommandId,
+    achievementId,
+    language: "russian",
   });
 
   const { updateValue } = useSearch();
@@ -49,6 +51,12 @@ export default function CommandAchievementField({
       setInitialTextValue((translatedAchievement.translations || [])[0]?.text || "");
     }
   }, [translatedAchievement]);
+
+  useEffect(() => {
+    if (achievement) {
+      setAchievementId(achievement?.achievementId || "");
+    }
+  }, [achievement]);
 
   const updateAchievementText = useUpdateAchievementText({
     achievementId: translatedAchievement?.achievementId || "",

@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandCall from "../../../hooks/Call/useGetCommandCall";
 import useUpdateCallCommandIndex from "../../../hooks/Call/useUpdateCallCommandIndex";
 import useUpdateCallText from "../../../hooks/Call/useUpdateCallText";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
-import useSearch from "../../../../Context/Search/SearchContext";
-import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandCallFieldTypes = {
   plotFieldCommandId: string;
@@ -28,9 +28,7 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
     topologyBlockId,
   });
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const [commandCallId, setCommandCallId] = useState("");
   const [targetBlockId, setTargetBlockId] = useState("");

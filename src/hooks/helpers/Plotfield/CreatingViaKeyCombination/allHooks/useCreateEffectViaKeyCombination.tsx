@@ -16,5 +16,6 @@ export default function useCreateEffectViaKeyCombination({ topologyBlockId }: Cr
     firstRusLetter: "у",
     secondRusLetter: "а",
     topologyBlockId,
+    commandName: "effect",
   });
 }

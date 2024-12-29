@@ -25,18 +25,6 @@ export default function PlotField({
 }: PlotFieldProps) {
   const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
   const { setCurrentAmountOfCommands } = usePlotfieldCommands();
-  const { data: rootTopologyBlock } = useGetTopologyBlockById({
-    topologyBlockId: currentTopologyBlock._id,
-  });
-
-  useEffect(() => {
-    if (rootTopologyBlock) {
-      setCurrentAmountOfCommands({
-        topologyBlockId: currentTopologyBlock._id,
-        amountOfCommands: rootTopologyBlock.topologyBlockInfo.amountOfCommands,
-      });
-    }
-  }, [rootTopologyBlock, currentTopologyBlock]);
 
   const { data: topologyBlockData } = useGetTopologyBlockById({
     topologyBlockId: currentTopologyBlock._id,
@@ -59,7 +47,7 @@ export default function PlotField({
         command === "expandPlotField" || !command ? "" : "hidden"
       } flex-grow flex-shrink-0 bg-secondary rounded-md shadow-md min-h-[20rem] h-full relative p-[1rem]`}
     >
-      {rootTopologyBlock ? (
+      {topologyBlockData ? (
         <PlotfieldHeader
           setShowAllCommands={setShowAllCommands}
           showAllCommands={showAllCommands}

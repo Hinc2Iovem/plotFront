@@ -19,6 +19,6 @@ export default function useGetCurrentCommandOrderCommandIf({ plotfieldCommandIfI
         .get<ReturnTypeCommandOrders[]>(`/plotFieldCommands/ifs/${plotfieldCommandIfId}/checkOrder?isElse=${isElse}`)
         .then((r) => r.data),
 
-    enabled: !!commandIfId && !!isElse,
+    enabled: !!plotfieldCommandIfId && !!isElse,
   });
 }

@@ -4,22 +4,20 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additiona
 import { TranslationAchievementTypes } from "../../../../../types/Additional/TranslationTypes";
 
 type GetTranslationAchievementEnabledTypes = {
-  commandId: string;
+  achievementId: string;
   language?: CurrentlyAvailableLanguagesTypes;
 };
 
 export default function useGetTranslationAchievementEnabled({
-  commandId,
+  achievementId,
   language = "russian",
 }: GetTranslationAchievementEnabledTypes) {
   return useQuery({
-    queryKey: ["translation", language, "achievement", commandId],
+    queryKey: ["translation", language, "achievement", achievementId],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationAchievementTypes>(
-          `/achievements/${commandId}/translations?currentLanguage=${language}`
-        )
+        .get<TranslationAchievementTypes>(`/achievements/${achievementId}/translations?currentLanguage=${language}`)
         .then((r) => r.data),
-    enabled: !!commandId,
+    enabled: !!achievementId,
   });
 }

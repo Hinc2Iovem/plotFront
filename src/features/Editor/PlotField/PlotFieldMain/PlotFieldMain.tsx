@@ -30,7 +30,7 @@ export default function PlotFieldMain({
   } = usePlotfieldCommands();
 
   const { data: plotfieldCommands } = useGetAllPlotFieldCommands({
-    topologyBlockId,
+    topologyBlockId: currentTopologyBlock._id || topologyBlockId,
   });
 
   useEffect(() => {

@@ -5,15 +5,20 @@ import {
   AllPossibleSayPlotFieldCommands,
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
+import useNavigation from "../../../../Context/Navigation/NavigationContext";
+import useSearch from "../../../../Context/Search/SearchContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
+import useCreateCommandAchievement from "../../../hooks/Achievement/useCreateCommandAchievement";
 import useCreateAmbient from "../../../hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../../../hooks/Background/useCreateBackground";
 import useCreateCall from "../../../hooks/Call/useCreateCall";
@@ -23,7 +28,9 @@ import useCreateCondition from "../../../hooks/Condition/useCreateCondition";
 import useCreateCutScene from "../../../hooks/CutScene/useCreateCutScene";
 import useCreateEffect from "../../../hooks/Effect/useCreateEffect";
 import useCreateGetItem from "../../../hooks/GetItem/useCreateGetItem";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useCreateCommandIf from "../../../hooks/If/useCreateCommandIf";
+import useCreateCommandKey from "../../../hooks/Key/useCreateCommandKey";
 import useCreateMove from "../../../hooks/Move/useCreateMove";
 import useCreateCommandMusic from "../../../hooks/Music/useCreateCommandMusic";
 import useCreateName from "../../../hooks/Name/useCreateName";
@@ -35,10 +42,6 @@ import useCreateWait from "../../../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../../../hooks/Wardrobe/useCreateWardrobe";
 import useConditionBlocks from "../Condition/Context/ConditionContext";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
-import useCreateCommandKey from "../../../hooks/Key/useCreateCommandKey";
-import useCreateCommandAchievement from "../../../hooks/Achievement/useCreateCommandAchievement";
-import useSearch from "../../../../Context/Search/SearchContext";
-import useNavigation from "../../../../Context/Navigation/NavigationContext";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -71,12 +74,12 @@ const AllCommands = [
 ];
 
 export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: PlotFieldBlankTypes) {
-  const { storyId } = useParams();
+  const { storyId, episodeId } = useParams();
   const { addItem } = useSearch();
-  const { episodeId } = useParams();
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
+
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
+
   const currentInput = useRef<HTMLInputElement | null>(null);
 
   const { currentTopologyBlock } = useNavigation();
@@ -126,7 +129,7 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
     }
   }, [allPromptValues, value]);
 
-  const currentlyFocusedTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
+  const currentlyFocusedTopologyBlock = getItem("focusedTopologyBlock");
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,

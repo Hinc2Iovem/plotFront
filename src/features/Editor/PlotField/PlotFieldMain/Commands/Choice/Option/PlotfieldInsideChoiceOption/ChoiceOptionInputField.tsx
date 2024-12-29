@@ -10,6 +10,7 @@ type ChoiceOptionInputFieldTypes = {
   choiceOptionId: string;
   choiceId: string;
   option: string;
+  plotfieldCommandId: string;
   type: ChoiceOptionVariationsTypes;
 };
 
@@ -19,12 +20,9 @@ export default function ChoiceOptionInputField({
   option,
   choiceId,
   choiceOptionId,
+  plotfieldCommandId,
 }: ChoiceOptionInputFieldTypes) {
-  const {
-    updateChoiceOptionText,
-    getChoiceOptionText,
-    getCurrentlyOpenChoiceOptionPlotId,
-  } = useChoiceOptions();
+  const { updateChoiceOptionText, getChoiceOptionText, getCurrentlyOpenChoiceOptionPlotId } = useChoiceOptions();
   const theme = localStorage.getItem("theme");
   const debouncedValue = useDebounce({
     delay: 700,
@@ -40,10 +38,7 @@ export default function ChoiceOptionInputField({
   });
 
   useEffect(() => {
-    if (
-      debouncedValue?.trim().length &&
-      option?.trim() !== debouncedValue.trim()
-    ) {
+    if (debouncedValue?.trim().length && option?.trim() !== debouncedValue.trim()) {
       updateChoiceOption.mutate();
     }
   }, [debouncedValue]);
@@ -51,7 +46,7 @@ export default function ChoiceOptionInputField({
   return (
     <div
       className={`${
-        choiceOptionId === getCurrentlyOpenChoiceOptionPlotId({ choiceId })
+        choiceOptionId === getCurrentlyOpenChoiceOptionPlotId({ plotfieldCommandId: plotfieldCommandId })
           ? ""
           : "hidden"
       }  flex flex-col gap-[.5rem]`}

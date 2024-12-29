@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandComment from "../../../hooks/Comment/useGetCommandComment";
 import useUpdateCommentText from "../../../hooks/Comment/useUpdateCommentText";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 
 type CommandCommentFieldTypes = {
   plotFieldCommandId: string;
@@ -36,9 +36,7 @@ export default function CommandCommentField({
     }
   }, [commandComment]);
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const updateCommentText = useUpdateCommentText({
     commentId: commandCommentId,

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import useSearch from "../../../../Context/Search/SearchContext";
+import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandMove from "../../../hooks/Move/useGetCommandMove";
 import useUpdateMoveText from "../../../hooks/Move/useUpdateMoveText";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
-import useSearch from "../../../../Context/Search/SearchContext";
-import { useParams } from "react-router-dom";
-import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 
 type CommandMoveFieldTypes = {
   plotFieldCommandId: string;
@@ -25,9 +25,7 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
   const { data: commandMove } = useGetCommandMove({
     plotFieldCommandId,
   });
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const currentInput = useRef<HTMLInputElement | null>(null);
 

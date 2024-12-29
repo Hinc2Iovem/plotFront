@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import useGetCharacterWithTranslation from "../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
-import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
-import PlotfieldCharacterPromptMain, { ExposedMethods } from "../Prompts/Characters/PlotfieldCharacterPromptMain";
+import PlotfieldInput from "../../../../../../../ui/Inputs/PlotfieldInput";
+import useGetCharacterWithTranslation from "../../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
+import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
+import PlotfieldCharacterPromptMain, { ExposedMethods } from "../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import CommandWardrobeCreateCharacter from "./CommandWardrobeCreateCharacter";
 
 type CommandWardrobeCharacterTypes = {

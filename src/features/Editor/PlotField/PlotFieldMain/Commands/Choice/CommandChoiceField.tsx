@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import { ChoiceVariationsTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useCheckIfShowingPlotfieldInsideChoiceOnMount from "../../../hooks/Choice/helpers/useCheckIfShowingPlotfieldInsideChoiceOnMount";
-import useGoingDownInsideChoiceOption from "../../../hooks/Choice/helpers/useGoingDownInsideChoiceOption";
-import useGoingUpFromChoiceOptions from "../../../hooks/Choice/helpers/useGoingUpFromChoiceOption";
-import useHandleNavigationThroughOptionsInsideChoice from "../../../hooks/Choice/helpers/useHandleNavigationThroughOptionsInsideChoice";
+
 import useGetCommandChoice from "../../../hooks/Choice/useGetCommandChoice";
 import useUpdateChoiceIsAuthor from "../../../hooks/Choice/useUpdateChoiceIsAuthor";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
 import ChoiceQuestionField from "./QuestionField/ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./VariationTypeBlock/ChoiceVariationTypeBlock";
-import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
 
 type CommandChoiceFieldTypes = {
   plotFieldCommandId: string;
@@ -35,32 +33,13 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
 
   const [isFocusedBackground, setIsFocusedBackground] = useState(false);
   const [showOptionPlot, setShowOptionPlot] = useState(false);
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
+  // TODO ubrat
   useCheckIfShowingPlotfieldInsideChoiceOnMount({
     plotFieldCommandId: plotFieldCommandId,
     setIsFocusedBackground,
     setShowChoiceBlockPlot: setShowOptionPlot,
-  });
-
-  useGoingDownInsideChoiceOption({
-    choiceId: commandChoiceId,
-    plotfieldCommandId: plotFieldCommandId,
-    setIsFocusedBackground,
-    setShowChoiceOptionPlot: setShowOptionPlot,
-  });
-
-  useGoingUpFromChoiceOptions({
-    choiceId: commandChoiceId,
-    plotfieldCommandId: plotFieldCommandId,
-    setIsFocusedBackground,
-    setShowChoiceOptionPlot: setShowOptionPlot,
-  });
-
-  useHandleNavigationThroughOptionsInsideChoice({
-    plotfieldCommandId: plotFieldCommandId,
   });
 
   useEffect(() => {

@@ -21,5 +21,6 @@ export default function useCreateCharacterViaKeyCombination({
     topologyBlockId,
     sayType: "character",
     createCommandData: { type: "character" },
+    commandName: "say",
   });
 }

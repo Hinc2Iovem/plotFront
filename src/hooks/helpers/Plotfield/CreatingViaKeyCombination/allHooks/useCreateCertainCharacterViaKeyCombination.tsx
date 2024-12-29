@@ -6,6 +6,7 @@ import { preventCreatingCommandsWhenFocus } from "../../preventCreatingCommandsW
 import usePlotfieldCommands from "../../../../../features/Editor/PlotField/Context/PlotFieldContext";
 import useNavigation from "../../../../../features/Editor/Context/Navigation/NavigationContext";
 import { addItemInUndoSessionStorage } from "../../../UndoRedo/addItemInUndoSessionStorage";
+import useTypedSessionStorage, { SessionStorageKeys } from "../../../shared/SessionStorage/useTypedSessionStorage";
 
 type CreateCertainCharacterViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -32,7 +33,7 @@ export default function useCreateCertainCharacterViaKeyCombination({
   const createCharacter = useCreateSayWithCertainCharacter({
     topologyBlockId,
   });
-
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
   const { getCurrentAmountOfCommands } = usePlotfieldCommands();
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function useCreateCertainCharacterViaKeyCombination({
           return;
         }
 
-        const focusedTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const focusedTopologyBlockId = getItem("focusedTopologyBlock");
 
         const newPlotfieldCommandId = generateMongoObjectId();
         const plotfieldCommandIfId =

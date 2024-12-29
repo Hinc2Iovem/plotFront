@@ -34,7 +34,7 @@ export default function ChoiceOptionBlocksList({
   setShowOptionPlot,
   setIsFocusedBackground,
 }: ChoiceOptionBlockTypes) {
-  const { setChoiceOptions, getAllChoiceOptionsByChoiceId } = useChoiceOptions();
+  const { setChoiceOptions, getAllChoiceOptionsByPlotfieldCommandId } = useChoiceOptions();
   const [updated, setUpdated] = useState(false);
 
   const { data: allChoiceOptionBlocks } = useGetAllChoiceOptionsByChoiceId({
@@ -79,7 +79,7 @@ export default function ChoiceOptionBlocksList({
         currentTopologyBlockId={currentTopologyBlockId}
       />
 
-      {getAllChoiceOptionsByChoiceId({ choiceId })?.map((co) => (
+      {getAllChoiceOptionsByPlotfieldCommandId({ plotfieldCommandId: plotFieldCommandId })?.map((co) => (
         <ChoiceOptionBlock
           key={co.choiceOptionId}
           isFocusedBackground={isFocusedBackground}

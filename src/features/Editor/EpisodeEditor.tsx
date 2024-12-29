@@ -9,6 +9,7 @@ import useGetFirstTopologyBlock from "./PlotField/hooks/TopologyBlock/useGetFirs
 import useUpdateRootTopologyBlockOnSearchResult from "./hooks/PlotfieldSearch/useUpdateRootTopologyBlockOnSearchResult";
 import useUpdateValuesOnPageEnter from "./hooks/useUpdateValuesOnPageEnter";
 import usePopulateSearch from "./hooks/PlotfieldSearch/helpers/usePopulateSearch";
+import { useGetStoredTopologyBlock } from "../../hooks/helpers/shared/LocalStorage/useStoredTopologyBlock";
 
 export default function EpisodeEditor() {
   const { episodeId } = useParams();
@@ -20,7 +21,7 @@ export default function EpisodeEditor() {
     episodeId: episodeId || "",
   });
 
-  const [localTopologyBlockId] = useState(localStorage.getItem(`${episodeId}-topologyBlockId`));
+  const localTopologyBlockId = useGetStoredTopologyBlock();
 
   useUpdateValuesOnPageEnter({
     firstTopologyBlock,

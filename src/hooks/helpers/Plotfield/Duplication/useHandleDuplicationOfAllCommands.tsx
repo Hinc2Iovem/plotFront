@@ -21,13 +21,16 @@ import useDuplicateFocusedCommandSuit from "./allHooks/useDuplicateFocusedComman
 import useDuplicateFocusedCommandWait from "./allHooks/useDuplicateFocusedCommandWait";
 import useDuplicateFocusedCommandWardrobe from "./allHooks/useDuplicateFocusedCommandWardrobe";
 import useDuplicateFocusedCommandName from "./allHooks/useDuplicateFocusedCommandName";
+import useTypedSessionStorage, { SessionStorageKeys } from "../../shared/SessionStorage/useTypedSessionStorage";
 
 type HandleDuplicationOfAllCommandsTypes = {
   topologyBlockId: string;
 };
 
 export default function useHandleDuplicationOfAllCommands({ topologyBlockId }: HandleDuplicationOfAllCommandsTypes) {
-  const currentTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
+
+  const currentTopologyBlockId = getItem("focusedTopologyBlock");
   useDuplicateFocusedCommandAchievement({
     topologyBlockId: currentTopologyBlockId || topologyBlockId,
   });

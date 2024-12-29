@@ -3,13 +3,14 @@ import useNavigation from "../../../../../features/Editor/Context/Navigation/Nav
 import usePlotfieldCommands from "../../../../../features/Editor/PlotField/Context/PlotFieldContext";
 import useChoiceOptions from "../../../../../features/Editor/PlotField/PlotFieldMain/Commands/Choice/Context/ChoiceContext";
 import useConditionBlocks from "../../../../../features/Editor/PlotField/PlotFieldMain/Commands/Condition/Context/ConditionContext";
-import useTypedSessionStorage, { SessionStorageKeys } from "../../../shared/useTypedSessionStorage";
+import useTypedSessionStorage, { SessionStorageKeys } from "../../../shared/SessionStorage/useTypedSessionStorage";
 import { preventCreatingCommandsWhenFocus } from "../../preventCreatingCommandsWhenFocus";
 import dashInsideCommandIf from "../functions/dashInsideCommandIf";
+import insideAndOutsideChoiceOption from "../functions/insideAndOutsideChoiceOption";
+import insideAndOutsideConditionBlock from "../functions/insideAndOutsideConditionBlock";
+import movingAmongChoiceOptions from "../functions/movingAmongChoiceOptions";
+import movingAmongConditionBlocks from "../functions/movingAmongConditionBlocks";
 import navigationBackAndForth from "../functions/navigationBackAndForth";
-import setFocusedCommandInsideType from "../functions/sessionStorage/FocusedCommandInsideType/setFocusedCommandInsideType";
-import getPrevPlotfieldCommandIdInsideTypes from "../functions/sessionStorage/FocusedCommandInsideType/getPrevPlotfieldCommandIdInsideType";
-import getCurrentPlotfieldCommandIdInsideTypes from "../functions/sessionStorage/FocusedCommandInsideType/getCurrentPlotfieldCommandIdInsideType";
 
 // - focuse inside commands such as condition and choice happens in 2 levels, when shift + arrowDown pressed first time, focus will be directed
 // - on the according block(which means, now creating of commands will work as creating commands on primary field, they will be created at the end of the plot)
@@ -48,9 +49,19 @@ export default function useHandleNavigationThroughCommands() {
     getFirstConditionBlockWithTopologyBlockId,
     updateCurrentlyOpenConditionBlock,
     getCurrentlyOpenConditionBlock,
+    getConditionBlockByIndex,
+    getAmountOfConditionBlocks,
+    getAllConditionBlocksByPlotfieldCommandId,
   } = useConditionBlocks();
 
-  const { getFirstChoiceOptionWithTopologyBlockId, updateCurrentlyOpenChoiceOption } = useChoiceOptions();
+  const {
+    getFirstChoiceOptionWithTopologyBlockId,
+    updateCurrentlyOpenChoiceOption,
+    getCurrentlyOpenChoiceOption,
+    getAllChoiceOptionsByPlotfieldCommandId,
+    getAmountOfChoiceOptions,
+    getChoiceOptionByIndex,
+  } = useChoiceOptions();
 
   useEffect(() => {
     const pressedKeys = new Set();
@@ -60,6 +71,8 @@ export default function useHandleNavigationThroughCommands() {
       if (pressedKeys.has(key)) return;
       pressedKeys.add(key);
 
+      // TODO because I will need to add ability to move inside modal using arrowUp and arrowDown I need to add similar check for it, like the one below
+      // basically will have a sessionStorage with true or false value
       if (!preventCreatingCommandsWhenFocus()) {
         console.log("Not allowed to move on focus");
         return;
@@ -101,8 +114,8 @@ export default function useHandleNavigationThroughCommands() {
         const focusedCommand = getItem("focusedCommand") || "";
         const focusedCommandParentId = getItem("focusedCommandParentId") || "";
         const currentCommand = getCommandOnlyByPlotfieldCommandId({
-          plotfieldCommandId: focusedCommand,
-        });
+          plotfieldCommandId: focusedCommandType === "command" ? focusedCommand : focusedCommandParentId,
+        }); //this way because when focused on command focusedCommand === plotfieldCommandId, otherwise focusedCommand === choiceOptionId/conditionBlockId
 
         if (
           currentCommand?.command !== "condition" &&
@@ -126,80 +139,63 @@ export default function useHandleNavigationThroughCommands() {
           setItem,
         });
 
-        // TODO when will be updating focused block/option need to make sure to not forget about updateCurrentlyOpen(ConditionBlock)/(ChoiceOption)
-        if (currentCommand.command === "condition") {
-          const isElse = getItem("focusedConditionIsElse") || false;
-          const focusedCommand = getItem("focusedCommand") || "";
+        insideAndOutsideConditionBlock({
+          currentCommand,
+          currentlyFocusedCommandId,
+          key,
+          getCurrentlyOpenConditionBlock,
+          getItem,
+          setCurrentlyFocusedCommandId,
+          setItem,
+          getCommandOnlyByPlotfieldCommandId,
+          getCommandsByTopologyBlockId,
+          getFirstConditionBlockWithTopologyBlockId,
+          updateCurrentlyOpenConditionBlock,
+        });
 
-          if (key === "arrowdown") {
-            const block = getFirstConditionBlockWithTopologyBlockId({
-              insideElse: isElse,
-              plotfieldCommandId: focusedCommand,
-            });
+        insideAndOutsideChoiceOption({
+          currentlyFocusedCommandId,
+          currentCommand,
+          key,
+          getCommandOnlyByPlotfieldCommandId,
+          getCommandsByTopologyBlockId,
+          getCurrentlyOpenChoiceOption,
+          getFirstChoiceOptionWithTopologyBlockId,
+          setCurrentlyFocusedCommandId,
+          updateCurrentlyOpenChoiceOption,
+          setItem,
+          getItem,
+        });
+      } else if (
+        (key === "arrowup" || key === "arrowdown") &&
+        !pressedKeys.has("control") &&
+        !pressedKeys.has("shift") &&
+        focusedCommandType !== "command"
+      ) {
+        // moving among conditionBlocks/choiceOptions
+        movingAmongConditionBlocks({
+          currentlyFocusedCommandId,
+          key,
+          getAllConditionBlocksByPlotfieldCommandId,
+          getAmountOfConditionBlocks,
+          getConditionBlockByIndex,
+          getCurrentlyOpenConditionBlock,
+          setCurrentlyFocusedCommandId,
+          updateCurrentlyOpenConditionBlock,
+          setItem,
+        });
 
-            updateCurrentlyOpenConditionBlock({
-              conditionBlockId: block?.conditionBlockId || "",
-              plotfieldCommandId: focusedCommand,
-            });
-
-            setCurrentlyFocusedCommandId({
-              commandName: "condition",
-              commandOrder: currentlyFocusedCommandId.commandOrder || 0,
-              currentlyFocusedCommandId: block?.conditionBlockId || "",
-              parentId: focusedCommand,
-              type: "conditionBlock",
-              isElse: isElse,
-            });
-
-            setItem("focusedCommandParentId", focusedCommand);
-            setItem("focusedTopologyBlock", block?.targetBlockId || "");
-            setFocusedCommandInsideType({
-              getItem,
-              newType: "condition",
-              parentId: focusedCommand || "",
-              setItem,
-            });
-          } else if (key === "arrowup") {
-            if (currentlyFocusedCommandId.type === "conditionBlock") {
-              const currentCommandCondition = getCommandOnlyByPlotfieldCommandId({
-                plotfieldCommandId: focusedCommand,
-              });
-              // when focused on some conditionBlock
-              setCurrentlyFocusedCommandId({
-                commandName: "condition",
-                commandOrder: currentCommandCondition?.commandOrder || 0,
-                currentlyFocusedCommandId: focusedCommand || "",
-                type: "command",
-                isElse: isElse,
-              });
-
-              getPrevPlotfieldCommandIdInsideTypes({ getItem, setItem }); //removes last element of focusedCommandInsideType(sessionStorage)
-              setItem("focusedTopologyBlock", currentCommand?.topologyBlockId || "");
-              return;
-            } else {
-              // when focused on some command inside ConditionBlock and going up to ConditionBlock
-              const currentConditionPlotfieldCommandId = getCurrentPlotfieldCommandIdInsideTypes({ getItem });
-              const block = getCurrentlyOpenConditionBlock({ plotfieldCommandId: currentConditionPlotfieldCommandId });
-              const currentCommandCondition = getCommandOnlyByPlotfieldCommandId({
-                plotfieldCommandId: currentConditionPlotfieldCommandId,
-              });
-
-              if (!block) {
-                console.log("Should have a condition plotfieldCommandId");
-                return;
-              }
-
-              setCurrentlyFocusedCommandId({
-                commandName: "condition",
-                commandOrder: currentCommandCondition?.commandOrder || 0,
-                currentlyFocusedCommandId: currentConditionPlotfieldCommandId || "",
-                type: "conditionBlock",
-                isElse: isElse,
-                parentId: currentConditionPlotfieldCommandId,
-              });
-            }
-          }
-        }
+        movingAmongChoiceOptions({
+          currentlyFocusedCommandId,
+          key,
+          getAllChoiceOptionsByPlotfieldCommandId,
+          getAmountOfChoiceOptions,
+          getChoiceOptionByIndex,
+          getCurrentlyOpenChoiceOption,
+          setCurrentlyFocusedCommandId,
+          setItem,
+          updateCurrentlyOpenChoiceOption,
+        });
       }
     };
 
@@ -217,12 +213,18 @@ export default function useHandleNavigationThroughCommands() {
     };
   }, [
     getCommandsByTopologyBlockId,
+    getAmountOfConditionBlocks,
+    getAllConditionBlocksByPlotfieldCommandId,
+    getConditionBlockByIndex,
     getPreviousCommandByPlotfieldId,
     getNextCommandByPlotfieldId,
     getCommandByPlotfieldCommandId,
     getFirstConditionBlockWithTopologyBlockId,
     getCurrentlyOpenConditionBlock,
     updateCurrentlyOpenConditionBlock,
+    getAllChoiceOptionsByPlotfieldCommandId,
+    getAmountOfChoiceOptions,
+    getChoiceOptionByIndex,
     getCommandOnlyByPlotfieldCommandId,
     getFirstChoiceOptionWithTopologyBlockId,
     updateCurrentlyOpenChoiceOption,
@@ -232,6 +234,7 @@ export default function useHandleNavigationThroughCommands() {
     hasItem,
     removeItem,
     getCommandByPlotfieldCommandIfId,
+    getCurrentlyOpenChoiceOption,
     currentlyFocusedCommandId,
   ]);
 }

@@ -1,6 +1,6 @@
 import { ComponentProps, forwardRef, useRef } from "react";
 import { twMerge } from "tailwind-merge";
-import useBlurOutline from "../../../hooks/UI/useBlurOutline";
+import useBlurOutline from "../../hooks/UI/useBlurOutline";
 
 type PlotFieldInputTypes = ComponentProps<"input">;
 

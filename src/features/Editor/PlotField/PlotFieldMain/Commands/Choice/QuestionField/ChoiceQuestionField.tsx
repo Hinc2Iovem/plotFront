@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { TextStyleTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import ButtonHoverPromptModal from "../../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import plus from "../../../../../../assets/images/shared/add.png";
+import plus from "../../../../../../../assets/images/shared/add.png";
 import useAddItemInsideSearch from "../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateChoice from "../../../../hooks/Choice/useUpdateChoice";
 import CreateChoiceOptionTypeModal from "../Option/CreateChoiceOptionTypeModal";

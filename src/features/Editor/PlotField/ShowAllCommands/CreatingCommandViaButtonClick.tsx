@@ -34,6 +34,9 @@ import useCreateWait from "../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../hooks/Wardrobe/useCreateWardrobe";
 import useConditionBlocks from "../PlotFieldMain/Commands/Condition/Context/ConditionContext";
 import useNavigation from "../../Context/Navigation/NavigationContext";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 
 type CreatingCommandViaButtonClickTypes = {
   pc: string;
@@ -46,9 +49,9 @@ export default function CreatingCommandViaButtonClick({
   topologyBlockId,
   setShowAllCommands,
 }: CreatingCommandViaButtonClickTypes) {
-  const { storyId } = useParams();
-  const { episodeId } = useParams();
-  const currentlyFocusedTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
+  const { storyId, episodeId } = useParams();
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
+  const currentlyFocusedTopologyBlock = getItem("focusedTopologyBlock");
   const { updateCommandInfo } = usePlotfieldCommands();
   const { addConditionBlock } = useConditionBlocks();
   const { currentTopologyBlock } = useNavigation();
@@ -240,7 +243,13 @@ export default function CreatingCommandViaButtonClick({
         createGetItem.mutate({});
       } else if (allCommands === "if") {
         // TODO this shit will cause problems, but because I hid this feature completely from the site I can do it this way(for a better time)
-        createCommandIf.mutate({ plotFieldCommandElseId: "", plotFieldCommandIfElseEndId: "", plotfieldCommandId: "" });
+        createCommandIf.mutate({
+          plotFieldCommandElseId: "",
+          plotFieldCommandIfElseEndId: "",
+          plotfieldCommandId: "",
+          commandOrder: 0,
+          topologyBlockId: "",
+        });
       } else if (allCommands === "key") {
         createKey.mutate({});
       } else if (allCommands === "move") {

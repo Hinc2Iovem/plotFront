@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import rejectImg from "../../../../../../assets/images/shared/rejectWhite.png";
-import useCheckIsCurrentFieldFocused from "../../../../../../hooks/helpers/Plotfield/useInitializeCurrentlyFocusedCommandOnReload";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandWardrobe from "../../../hooks/Wardrobe/useGetCommandWardrobe";
 import useGetCommandWardrobeTranslation from "../../../hooks/Wardrobe/useGetCommandWardrobeTranslation";
 import useGetAllWardrobeAppearancePartBlocks from "../../../hooks/Wardrobe/WardrobeAppearancePartBlock/useGetAllWardrobeAppearancePartBlocks";
-import "../Prompts/promptStyles.css";
-import WardrobeAppearancePartBlock from "./WardrobeAppearancePartBlock";
-import WardrobeCharacterAppearancePartForm from "./WardrobeCharacterAppearancePartForm";
-import WardrobeTitle from "./WardrobeTitle/WardrobeTitle";
 import WardrobeAppearanceNames from "./WardrobeAppearanceNames/WardrobeAppearanceNames";
+import WardrobeAppearancePartBlock from "./AppearanceParts/WardrobeAppearancePartBlock";
+import WardrobeTitle from "./WardrobeTitle/WardrobeTitle";
+import WardrobeCharacterAppearancePartForm from "./AppearanceParts/WardrobeCharacterAppearancePartForm";
+import "../Prompts/promptStyles.css";
 
 type CommandWardrobeFieldTypes = {
   plotFieldCommandId: string;
@@ -36,9 +36,7 @@ export default function CommandWardrobeField({
 
   const [allAppearanceNames, setAllAppearanceNames] = useState<string[]>([]);
 
-  const isCommandFocused = useCheckIsCurrentFieldFocused({
-    plotFieldCommandId,
-  });
+  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const appearancePartsRef = useRef<HTMLDivElement>(null);
 

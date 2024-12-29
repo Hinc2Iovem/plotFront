@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useUpdateBackgroundMusicText from "../../../hooks/Background/useUpdateBackgroundMusicText";
-import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
-import useGetMusicById from "../../../hooks/Music/useGetMusicById";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import useUpdateBackgroundMusicText from "../../../../hooks/Background/useUpdateBackgroundMusicText";
+import useGetAllMusicByStoryId from "../../../../hooks/Music/useGetAllMusicByStoryId";
+import useGetMusicById from "../../../../hooks/Music/useGetMusicById";
+import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
+import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
+import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 
 type BackgroundMusicFormTypes = {
   backgroundId: string;

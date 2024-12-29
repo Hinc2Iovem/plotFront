@@ -6,6 +6,9 @@ import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useCreateCharacterBlank from "../../../hooks/Character/useCreateCharacterBlank";
 import useCreateSayCommand from "../../../hooks/Say/useCreateSayCommand";
 import useUpdateCommandName from "../../../hooks/useUpdateCommandName";
+import useTypedSessionStorage, {
+  SessionStorageKeys,
+} from "../../../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 
 type PlotFieldBlankCreateCharacterTypes = {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,7 +26,8 @@ export default function PlotFieldBlankCreateCharacter({
   topologyBlockId,
 }: PlotFieldBlankCreateCharacterTypes) {
   const { storyId } = useParams();
-  const currentlyFocusedTopologyBlock = sessionStorage.getItem("focusedTopologyBlock");
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
+  const currentlyFocusedTopologyBlock = getItem("focusedTopologyBlock");
   const { updateCommandName: updateCommandNameOptimistic } = usePlotfieldCommands();
 
   const modalRef = useRef<HTMLDivElement | null>(null);

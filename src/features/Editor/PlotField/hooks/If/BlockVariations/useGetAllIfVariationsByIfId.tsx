@@ -31,5 +31,6 @@ export default function useGetAllIfVariationsByIfId({ ifId }: GetAllIfVariations
     queryKey: ["if", ifId, "variations"],
     queryFn: async () =>
       await axiosCustomized.get<IfVariationResponseTypes>(`/ifs/${ifId}/variations`).then((r) => r.data),
+    enabled: !!ifId,
   });
 }

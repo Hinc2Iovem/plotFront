@@ -16,5 +16,6 @@ export default function useCreateGetItemViaKeyCombination({ topologyBlockId }: C
     firstRusLetter: "у",
     secondRusLetter: "п",
     topologyBlockId,
+    commandName: "getitem",
   });
 }

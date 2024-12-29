@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import plus from "../../../assets/images/shared/add.png";
+import plus from "../../assets/images/shared/add.png";
 
 type PreviewImage = {
   setPreview: React.Dispatch<React.SetStateAction<string | ArrayBuffer | null>>;
@@ -39,10 +39,7 @@ export default function PreviewImageSmallIcons({
   return (
     <>
       {!imagePreview ? (
-        <div
-          {...getRootProps()}
-          className={`cursor-pointer ${divClasses ? divClasses : ""}`}
-        >
+        <div {...getRootProps()} className={`cursor-pointer ${divClasses ? divClasses : ""}`}>
           <input type="file" name="Image" id="image" {...getInputProps()} />
           <img
             src={imagePreview ? (imagePreview as string) : plus}
@@ -52,10 +49,7 @@ export default function PreviewImageSmallIcons({
           {children ? children : ""}
         </div>
       ) : (
-        <div
-          {...getRootProps()}
-          className={`cursor-pointer ${divClasses ? divClasses : ""}`}
-        >
+        <div {...getRootProps()} className={`cursor-pointer ${divClasses ? divClasses : ""}`}>
           <input type="file" name="Image" id="image" {...getInputProps()} />
           <img
             src={imagePreview ? (imagePreview as string) : plus}

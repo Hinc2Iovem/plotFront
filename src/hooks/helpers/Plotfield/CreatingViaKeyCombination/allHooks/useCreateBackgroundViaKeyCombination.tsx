@@ -18,5 +18,6 @@ export default function useCreateBackgroundViaKeyCombination({
     firstRusLetter: "ф",
     secondRusLetter: "и",
     topologyBlockId,
+    commandName: "background",
   });
 }

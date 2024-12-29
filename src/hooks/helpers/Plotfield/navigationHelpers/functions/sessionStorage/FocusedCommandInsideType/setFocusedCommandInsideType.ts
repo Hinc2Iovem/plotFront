@@ -1,4 +1,4 @@
-import { SessionStorageKeys } from "../../../../../shared/useTypedSessionStorage";
+import { SessionStorageKeys } from "../../../../../shared/SessionStorage/useTypedSessionStorage";
 
 type SetFocusedCommandInsideTypes = {
   getItem: <K extends keyof SessionStorageKeys>(key: K) => SessionStorageKeys[K] | null;

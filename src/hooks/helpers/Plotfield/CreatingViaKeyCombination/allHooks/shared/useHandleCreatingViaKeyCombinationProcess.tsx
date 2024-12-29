@@ -8,6 +8,9 @@ import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/Pl
 import { UseMutationResult } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { addItemInUndoSessionStorage } from "../../../../UndoRedo/addItemInUndoSessionStorage";
+import useTypedSessionStorage, { SessionStorageKeys } from "../../../../shared/SessionStorage/useTypedSessionStorage";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import { CreateCommandIfBodyTypes } from "../../../../../../features/Editor/PlotField/hooks/If/useCreateCommandIf";
 
 type HandleCreatingViaKeyCombinationProcessTypes<T> = {
   topologyBlockId: string;
@@ -15,6 +18,7 @@ type HandleCreatingViaKeyCombinationProcessTypes<T> = {
   secondEngLetter: string;
   firstRusLetter: string;
   secondRusLetter: string;
+  commandName: AllPossiblePlotFieldComamndsTypes;
   sayType?: CommandSayVariationTypes | undefined;
   createCommand: UseMutationResult<void, Error, T, unknown>;
   createCommandData?: T;
@@ -26,11 +30,13 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
   firstRusLetter,
   secondEngLetter,
   secondRusLetter,
+  commandName,
   sayType,
   createCommand,
   createCommandData,
 }: HandleCreatingViaKeyCombinationProcessTypes<T>) {
   const { episodeId } = useParams();
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
 
   const { getCurrentAmountOfCommands } = usePlotfieldCommands();
   const { currentlyFocusedCommandId } = useNavigation();
@@ -64,12 +70,9 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
 
         createCommand.mutate(createCommandObject as T);
 
-        const focusedTopologyBlockId = sessionStorage.getItem("focusedTopologyBlock");
+        const focusedTopologyBlockId = getItem("focusedTopologyBlock");
 
         const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;
-
-        const plotfieldCommandElseId = generateMongoObjectId();
-        const plotfieldCommandIfElseEndId = generateMongoObjectId();
 
         addItemInUndoSessionStorage({
           _id,
@@ -78,15 +81,24 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
           type: "created",
         });
 
+        // TODO I think it's not the brightest idea to check if current command inside if using isElse because command condition has isElse too
+        // TODO better to check by current parentType
+
+        const commandIf = commandName === "if" ? (createCommandObject as CreateCommandIfBodyTypes) : null;
+
         createPlotfield.mutate({
           _id,
           topologyBlockId: currentTopologyBlockId,
-          commandName: "achievement",
+          commandName,
           isElse: currentlyFocusedCommandId?.isElse,
-          plotfieldCommandElseId,
-          plotfieldCommandIfElseEndId,
+          plotfieldCommandElseId: commandIf ? commandIf?.plotFieldCommandElseId : "",
+          plotfieldCommandIfElseEndId: commandIf ? commandIf?.plotFieldCommandIfElseEndId : "",
           plotfieldCommandIfId:
-            typeof currentlyFocusedCommandId.isElse === "boolean" ? currentlyFocusedCommandId?.parentId : "",
+            currentlyFocusedCommandId.commandName === "if" ||
+            (currentlyFocusedCommandId.commandName as AllPossiblePlotFieldComamndsTypes) === "else" ||
+            (typeof currentlyFocusedCommandId.isElse === "boolean" && currentlyFocusedCommandId.parentId)
+              ? currentlyFocusedCommandId?.parentId
+              : "",
           commandOrder:
             typeof currentlyFocusedCommandId.commandOrder === "number"
               ? currentlyFocusedCommandId?.commandOrder + 1
@@ -111,6 +123,8 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
   }, [
     topologyBlockId,
     createCommand,
+    getItem,
+    commandName,
     createCommandData,
     createPlotfield,
     currentlyFocusedCommandId,

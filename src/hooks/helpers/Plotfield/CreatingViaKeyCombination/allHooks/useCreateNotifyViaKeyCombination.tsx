@@ -19,5 +19,6 @@ export default function useCreateNotifyViaKeyCombination({ topologyBlockId }: Cr
     topologyBlockId,
     sayType: "notify",
     createCommandData: { type: "notify" },
+    commandName: "say",
   });
 }

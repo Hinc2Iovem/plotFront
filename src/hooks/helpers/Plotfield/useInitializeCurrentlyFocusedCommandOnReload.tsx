@@ -5,17 +5,18 @@ import useNavigation, {
 import { PlotfieldOptimisticCommandTypes } from "../../../features/Editor/PlotField/Context/PlotfieldCommandSlice";
 import usePlotfieldCommands from "../../../features/Editor/PlotField/Context/PlotFieldContext";
 import { OmittedCommandNames } from "../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import useTypedSessionStorage, { SessionStorageKeys } from "../shared/SessionStorage/useTypedSessionStorage";
 
 export default function useInitializeCurrentlyFocusedCommandOnReload() {
   const { getCommandOnlyByPlotfieldCommandId } = usePlotfieldCommands();
   const currentlyFocusedCommandId = useNavigation((state) => state.currentlyFocusedCommandId);
   const setCurrentlyFocusedCommandId = useNavigation((state) => state.setCurrentlyFocusedCommandId);
+  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
 
-  const focusedCommandId = sessionStorage.getItem("focusedCommand") || "";
+  const focusedCommandId = getItem("focusedCommand") || "";
   const focusedCommandType =
-    (sessionStorage.getItem("focusedCommandType") as CurrentlyFocusedVariationTypes) ||
-    ("" as CurrentlyFocusedVariationTypes);
-  const focusedCommandParentId = sessionStorage.getItem("focusedCommandParentId") || "";
+    (getItem("focusedCommandType") as CurrentlyFocusedVariationTypes) || ("" as CurrentlyFocusedVariationTypes);
+  const focusedCommandParentId = getItem("focusedCommandParentId") || "";
 
   useEffect(() => {
     if (!currentlyFocusedCommandId._id) {
@@ -31,7 +32,7 @@ export default function useInitializeCurrentlyFocusedCommandOnReload() {
           getCommandOnlyByPlotfieldCommandId,
           setCurrentlyFocusedCommandId,
           focusedPlotfieldCommandId: focusedCommandParentId,
-          blockOrOptionId: focusedCommandParentId,
+          blockOrOptionId: focusedCommandId,
           type: "choiceOption",
         });
       } else if (focusedCommandType === "conditionBlock") {
@@ -39,7 +40,7 @@ export default function useInitializeCurrentlyFocusedCommandOnReload() {
           getCommandOnlyByPlotfieldCommandId,
           setCurrentlyFocusedCommandId,
           focusedPlotfieldCommandId: focusedCommandParentId,
-          blockOrOptionId: focusedCommandParentId,
+          blockOrOptionId: focusedCommandId,
           type: "conditionBlock",
         });
       } else {

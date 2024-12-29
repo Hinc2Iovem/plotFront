@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import plus from "../../../assets/images/shared/add.png";
+import plus from "../../assets/images/shared/add.png";
 
 type PreviewImage = {
   setPreview: React.Dispatch<React.SetStateAction<string | ArrayBuffer | null>>;

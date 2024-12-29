@@ -40,5 +40,6 @@ export default function useCreateConditionViaKeyCombination({
       targetBlockId,
       topologyBlockId,
     },
+    commandName: "condition",
   });
 }

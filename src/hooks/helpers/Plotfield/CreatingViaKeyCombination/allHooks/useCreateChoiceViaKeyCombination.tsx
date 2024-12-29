@@ -16,5 +16,6 @@ export default function useCreateChoiceViaKeyCombination({ topologyBlockId }: Cr
     firstRusLetter: "с",
     secondRusLetter: "р",
     topologyBlockId,
+    commandName: "choice",
   });
 }

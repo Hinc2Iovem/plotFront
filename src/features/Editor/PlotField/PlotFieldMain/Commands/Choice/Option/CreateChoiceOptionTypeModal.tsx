@@ -51,7 +51,7 @@ export default function CreateChoiceOptionTypeModal({
     setShowCreateChoiceOptionModal(false);
     updateAmountOfChildBlocks("add");
     const amountOfChoiceOptions = getAmountOfChoiceOptions({
-      choiceId: plotFieldCommandChoiceId,
+      plotfieldCommandId: plotFieldCommandId,
     });
     addChoiceOption({
       choiceId: plotFieldCommandChoiceId,

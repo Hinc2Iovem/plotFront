@@ -10,7 +10,6 @@ type ConditionBlocksListTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
   commandConditionId: string;
-  isFocusedIf: boolean;
   isCommandFocused: boolean;
   isFocusedBackground: boolean;
 };
@@ -23,7 +22,6 @@ export default function ConditionBlocksList({
   topologyBlockId,
   showConditionBlockPlot,
   isCommandFocused,
-  isFocusedIf,
   isFocusedBackground,
 }: ConditionBlocksListTypes) {
   const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } = useConditionBlocks();
@@ -69,9 +67,7 @@ export default function ConditionBlocksList({
         ) : null}
         <div className="min-w-[10rem] w-full relative flex gap-[.5rem] flex-wrap bg-secondary rounded-md">
           <PlotfieldCommandNameField
-            className={`${
-              !isFocusedBackground && isCommandFocused && !isFocusedIf ? "bg-dark-dark-blue" : "bg-secondary"
-            }`}
+            className={`${!isFocusedBackground && isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}
           >
             Else
           </PlotfieldCommandNameField>

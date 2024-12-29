@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import useGetAppearancePartById from "../../../../../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
-import useGetTranslationAppearancePart from "../../../../../../hooks/Fetching/Translation/useGetTranslationAppearancePart";
-import { CommandWardrobeAppearanceTypeBlockTypes } from "../../../../../../types/StoryEditor/PlotField/Wardrobe/WardrobeTypes";
-import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
-import PreviewImageSmallIcons from "../../../../../../ui/shared/PreviewImageSmallIcons";
+import useGetAppearancePartById from "../../../../../../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
+import useGetTranslationAppearancePart from "../../../../../../../hooks/Fetching/Translation/useGetTranslationAppearancePart";
+import { CommandWardrobeAppearanceTypeBlockTypes } from "../../../../../../../types/StoryEditor/PlotField/Wardrobe/WardrobeTypes";
+import useUpdateImg from "../../../../../../../hooks/Patching/useUpdateImg";
+import PreviewImageSmallIcons from "../../../../../../../ui/shared/PreviewImageSmallIcons";
 
 type WardrobeAppearancePartBlockTypes = {
   setAllAppearanceNames: React.Dispatch<React.SetStateAction<string[]>>;

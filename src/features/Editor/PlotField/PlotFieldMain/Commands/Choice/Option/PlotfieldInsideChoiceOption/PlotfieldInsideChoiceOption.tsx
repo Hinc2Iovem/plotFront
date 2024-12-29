@@ -30,11 +30,11 @@ export default function PlotfieldInsideChoiceOption({
 }: PlotfieldInsideChoiceOptionTypes) {
   const { episodeId } = useParams();
 
-  const { getCurrentlyOpenChoiceOption, getAllChoiceOptionsByChoiceId, getCurrentlyOpenChoiceOptionPlotId } =
+  const { getCurrentlyOpenChoiceOption, getAllChoiceOptionsByPlotfieldCommandId, getCurrentlyOpenChoiceOptionPlotId } =
     useChoiceOptions();
 
   const createCommand = useCreateBlankCommand({
-    topologyBlockId: getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
+    topologyBlockId: getCurrentlyOpenChoiceOption({ plotfieldCommandId })?.topologyBlockId || "",
     episodeId: episodeId || "",
   });
 
@@ -42,7 +42,7 @@ export default function PlotfieldInsideChoiceOption({
     const _id = generateMongoObjectId();
     createCommand.mutate({
       _id,
-      topologyBlockId: getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || "",
+      topologyBlockId: getCurrentlyOpenChoiceOption({ plotfieldCommandId })?.topologyBlockId || "",
     });
   };
 
@@ -57,9 +57,10 @@ export default function PlotfieldInsideChoiceOption({
         className="w-[2.5rem] h-[1rem] bg-secondary rounded-md shadow-sm absolute right-[-.3rem] top-[-.3rem] hover:shadow-md transition-shadow"
       ></button>
       <form onSubmit={(e) => e.preventDefault()}>
-        {getAllChoiceOptionsByChoiceId({ choiceId }).map((op, i) => (
+        {getAllChoiceOptionsByPlotfieldCommandId({ plotfieldCommandId }).map((op, i) => (
           <ChoiceOptionInputField
             key={"optionValueInput-" + op.topologyBlockId + "-" + op.optionType + "-" + i}
+            plotfieldCommandId={plotfieldCommandId}
             option={op.optionText || ""}
             topologyBlockId={op.topologyBlockId || ""}
             type={op.optionType}
@@ -69,7 +70,7 @@ export default function PlotfieldInsideChoiceOption({
         ))}
       </form>
       <header className="w-full flex gap-[.5rem] relative px-[1rem] py-[.9rem] flex-wrap">
-        {getAllChoiceOptionsByChoiceId({ choiceId }).map((op, i) => (
+        {getAllChoiceOptionsByPlotfieldCommandId({ plotfieldCommandId }).map((op, i) => (
           <OptionVariationButton
             key={op.topologyBlockId + "-" + op.optionType + "-" + i}
             {...op}
@@ -78,7 +79,7 @@ export default function PlotfieldInsideChoiceOption({
             isFocusedBackground={isFocusedBackground}
             plotfieldCommandId={plotfieldCommandId}
             currentTopologyBlockId={currentTopologyBlockId}
-            showedOptionPlotTopologyBlockId={getCurrentlyOpenChoiceOptionPlotId({ choiceId })}
+            showedOptionPlotTopologyBlockId={getCurrentlyOpenChoiceOptionPlotId({ plotfieldCommandId })}
             setIsFocusedBackground={setIsFocusedBackground}
             setShowOptionPlot={setShowOptionPlot}
           />
@@ -106,7 +107,7 @@ export default function PlotfieldInsideChoiceOption({
         <PlotFieldMain
           showAllCommands={false}
           renderedAsSubPlotfield={true}
-          topologyBlockId={getCurrentlyOpenChoiceOption({ choiceId })?.topologyBlockId || ""}
+          topologyBlockId={getCurrentlyOpenChoiceOption({ plotfieldCommandId })?.topologyBlockId || ""}
         />
       </main>
     </section>

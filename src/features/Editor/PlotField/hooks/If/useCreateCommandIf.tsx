@@ -10,6 +10,8 @@ export type CreateCommandIfBodyTypes = {
   plotfieldCommandId?: string;
   plotFieldCommandElseId: string;
   plotFieldCommandIfElseEndId: string;
+  topologyBlockId: string;
+  commandOrder: number;
 };
 
 export default function useCreateCommandIf({ plotFieldCommandId }: CreateCommandIfTypes) {
@@ -18,11 +20,15 @@ export default function useCreateCommandIf({ plotFieldCommandId }: CreateCommand
       plotfieldCommandId,
       plotFieldCommandElseId,
       plotFieldCommandIfElseEndId,
+      commandOrder,
+      topologyBlockId,
     }: CreateCommandIfBodyTypes) => {
       const commandId = plotFieldCommandId?.trim().length ? plotFieldCommandId : plotfieldCommandId;
       await axiosCustomized.post<IfCommandTypes>(`/plotFieldCommands/${commandId}/ifs`, {
         plotFieldCommandElseId,
         plotFieldCommandIfElseEndId,
+        topologyBlockId,
+        commandOrder,
       });
     },
   });
