@@ -48,6 +48,7 @@ type NavigationBackAndForthTypes = {
     commandName: OmittedCommandNames;
     commandOrder: number;
   }) => void;
+  topologyBlockId: string;
 };
 
 export default function navigationBackAndForth({
@@ -62,9 +63,10 @@ export default function navigationBackAndForth({
   getCommandOnlyByPlotfieldCommandId,
   key,
   currentlyFocusedCommandId,
+  topologyBlockId,
 }: NavigationBackAndForthTypes) {
   const focusedCommand = getItem("focusedCommand") || "";
-  const currentTopologyBlock = getItem("focusedTopologyBlock") || "";
+  const currentTopologyBlock = getItem("focusedTopologyBlock") || topologyBlockId;
   const parentId = getItem("focusedCommandParentId") || "";
 
   if (key === "arrowup") {

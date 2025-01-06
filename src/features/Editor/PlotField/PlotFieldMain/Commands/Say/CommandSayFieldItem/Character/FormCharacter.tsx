@@ -87,7 +87,11 @@ export default function FormCharacter({
             setShowCharacters(true);
             setShowAllEmotions(false);
           }}
-          className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}
+          className={`${
+            isCommandFocused
+              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
+              : "bg-secondary"
+          }`}
           value={characterValue?.characterName || ""}
           onChange={(e) => {
             setShowCharacters(true);

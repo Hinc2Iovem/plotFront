@@ -9,7 +9,7 @@ import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotFiel
 import { generateMongoObjectId } from "../../../../utils/generateMongoObjectId";
 import { makeTopologyBlockName } from "../../Flowchart/utils/makeTopologyBlockName";
 import usePlotfieldCommands from "../Context/PlotFieldContext";
-import useCreateCommandAchievement from "../hooks/Achievement/useCreateCommandAchievement";
+import useCreateCommandAchievement from "../hooks/Achievement/CommandAchievement/useCreateCommandAchievement";
 import useCreateAmbient from "../hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../hooks/Background/useCreateBackground";
 import useCreateCall from "../hooks/Call/useCreateCall";

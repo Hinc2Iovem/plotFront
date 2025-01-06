@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../api/axios";
-import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { axiosCustomized } from "../../../../../../api/axios";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
 type CreateCommandAchievementTypes = {
   storyId: string;

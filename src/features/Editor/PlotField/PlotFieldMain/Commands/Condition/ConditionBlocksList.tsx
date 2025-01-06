@@ -67,7 +67,11 @@ export default function ConditionBlocksList({
         ) : null}
         <div className="min-w-[10rem] w-full relative flex gap-[.5rem] flex-wrap bg-secondary rounded-md">
           <PlotfieldCommandNameField
-            className={`${!isFocusedBackground && isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}
+            className={`${
+              !isFocusedBackground && isCommandFocused
+                ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
+                : "bg-secondary"
+            }`}
           >
             Else
           </PlotfieldCommandNameField>

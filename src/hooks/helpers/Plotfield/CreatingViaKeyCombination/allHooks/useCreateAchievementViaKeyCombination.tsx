@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import useCreateCommandAchievement from "../../../../../features/Editor/PlotField/hooks/Achievement/useCreateCommandAchievement";
+import useCreateCommandAchievement from "../../../../../features/Editor/PlotField/hooks/Achievement/CommandAchievement/useCreateCommandAchievement";
 import useHandleCreatingViaKeyCombinationProcess from "./shared/useHandleCreatingViaKeyCombinationProcess";
 import { CreateViaKeyCombinationOnMutation } from "../createViaKeyCombinationTypes";
 

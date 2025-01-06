@@ -51,7 +51,13 @@ export default function CommandConditionField({
   return (
     <div className="flex gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] flex-col relative">
       <div className="min-w-[10rem] flex-grow w-full relative flex items-start gap-[1rem]">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused
+              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
+              : "bg-secondary"
+          }`}
+        >
           {nameValue}
         </PlotfieldCommandNameField>
         <ButtonHoverPromptModal

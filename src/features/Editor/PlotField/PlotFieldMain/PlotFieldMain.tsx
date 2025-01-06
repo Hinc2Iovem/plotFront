@@ -54,8 +54,9 @@ export default function PlotFieldMain({
     updateCommandOrderOptimistic({
       commandOrder: result.destination.index,
       id: result.draggableId,
-      topologyBlockId,
+      topologyBlockId: currentTopologyBlock._id,
     });
+
     setAllCommands({ commands: orderedCommands, topologyBlockId });
   };
 

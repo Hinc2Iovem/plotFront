@@ -5,7 +5,7 @@ import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationAchievementTypes } from "../../../../../../types/Additional/TranslationTypes";
 import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useDeleteAchievement from "../../../../PlotField/hooks/Achievement/useDeleteAchievement";
-import useGetAllTranslationAchievementByStoryId from "../../../../PlotField/hooks/Achievement/useGetAllTranslationAchievementByStoryId";
+import useGetAllTranslationAchievementByStoryId from "../../../../PlotField/hooks/Achievement/Translation/useGetAllTranslationAchievementByStoryId";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import useGetPaginatedTranslationAchievement, {
   AllMightySearchAchievementResultTypes,

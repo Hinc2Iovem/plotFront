@@ -5,9 +5,6 @@ import {
   AllPossibleSayPlotFieldCommands,
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
-import useTypedSessionStorage, {
-  SessionStorageKeys,
-} from "../../../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
@@ -18,7 +15,7 @@ import useNavigation from "../../../../Context/Navigation/NavigationContext";
 import useSearch from "../../../../Context/Search/SearchContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
-import useCreateCommandAchievement from "../../../hooks/Achievement/useCreateCommandAchievement";
+import useCreateCommandAchievement from "../../../hooks/Achievement/CommandAchievement/useCreateCommandAchievement";
 import useCreateAmbient from "../../../hooks/Ambient/useCreateAmbient";
 import useCreateBackground from "../../../hooks/Background/useCreateBackground";
 import useCreateCall from "../../../hooks/Call/useCreateCall";
@@ -76,7 +73,6 @@ const AllCommands = [
 export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: PlotFieldBlankTypes) {
   const { storyId, episodeId } = useParams();
   const { addItem } = useSearch();
-  const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
 
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
@@ -91,6 +87,8 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
     language: "russian",
   });
 
+  const { getCommandOnlyByPlotfieldCommandId } = usePlotfieldCommands();
+  const currentCommand = getCommandOnlyByPlotfieldCommandId({ plotfieldCommandId: plotFieldCommandId });
   const promptRef = useRef<HTMLDivElement>(null);
   const [showPromptValues, setShowPromptValues] = useState(false);
   const [value, setValue] = useState("");
@@ -129,12 +127,10 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
     }
   }, [allPromptValues, value]);
 
-  const currentlyFocusedTopologyBlock = getItem("focusedTopologyBlock");
-
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
     value,
-    topologyBlockId: currentlyFocusedTopologyBlock || "",
+    topologyBlockId: topologyBlockId || currentTopologyBlock._id,
   });
 
   const createSayCommand = useCreateSayCommand({
@@ -359,6 +355,9 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
         createCommandIf.mutate({
           plotFieldCommandElseId,
           plotFieldCommandIfElseEndId,
+          topologyBlockId,
+          commandOrder: currentCommand?.commandOrder || 0,
+          plotfieldCommandId: plotFieldCommandId,
         });
       } else if (allCommands === "key") {
         createKey.mutate({});
@@ -437,7 +436,9 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
     <div className="bg-secondary rounded-md relative w-full">
       <form
         className={`${
-          isCommandFocused ? "bg-dark-dark-blue" : "bg-primary-darker"
+          isCommandFocused
+            ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
+            : "bg-primary-darker"
         } w-full relative rounded-md p-[.5rem]`}
         onSubmit={handleFormSubmit}
       >
@@ -457,7 +458,9 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
               setShowPromptValues(true);
             }
           }}
-          className={`${isCommandFocused ? "bg-dark-dark-blue" : ""} text-[1.5rem] text-text-light w-full`}
+          className={`${
+            isCommandFocused ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%" : ""
+          } text-[1.5rem] text-text-light w-full`}
         />
         <AsideScrollable
           ref={promptRef}

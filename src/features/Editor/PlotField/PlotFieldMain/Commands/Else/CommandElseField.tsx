@@ -48,7 +48,13 @@ export default function CommandElseField({
 
   return (
     <div className="min-w-[10rem] w-full rounded-md relative flex items-center gap-[1rem] p-[.5rem] bg-primary">
-      <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
+      <PlotfieldCommandNameField
+        className={`${
+          isCommandFocused
+            ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
+            : "bg-secondary"
+        }`}
+      >
         Else
       </PlotfieldCommandNameField>
       <ButtonHoverPromptModal

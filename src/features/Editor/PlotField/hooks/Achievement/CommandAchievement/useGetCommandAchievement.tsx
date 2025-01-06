@@ -1,7 +1,7 @@
+import { TranslationAchievementTypes } from "@/types/Additional/TranslationTypes";
 import { useQuery } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../api/axios";
-import { CommandAchievementTypes } from "../../../../../types/StoryEditor/PlotField/Achievement/AchievementTypes";
-import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { axiosCustomized } from "../../../../../../api/axios";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 
 type GetCommandAchievementTypes = {
   plotFieldCommandId: string;
@@ -16,7 +16,7 @@ export default function useGetCommandAchievement({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "achievement"],
     queryFn: async () =>
       await axiosCustomized
-        .get<CommandAchievementTypes>(
+        .get<TranslationAchievementTypes>(
           `/plotFieldCommands/${plotFieldCommandId}/commandAchievements?currentLanguage=${language}`
         )
         .then((r) => r.data),

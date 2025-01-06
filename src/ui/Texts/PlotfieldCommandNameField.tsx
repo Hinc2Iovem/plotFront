@@ -3,11 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 type PlotFieldInputTypes = ComponentProps<"p">;
 
-export default function PlotfieldCommandNameField({
-  className,
-  children,
-  ...props
-}: PlotFieldInputTypes) {
+export default function PlotfieldCommandNameField({ className, children, ...props }: PlotFieldInputTypes) {
   return (
     <p
       className={twMerge(

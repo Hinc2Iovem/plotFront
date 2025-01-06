@@ -16,7 +16,7 @@ import { fetchAllMightyPaginatedTranslationCharacter } from "../hooks/useGetPagi
 import { fetchAllMightyPaginatedTranslationCharacteristic } from "../hooks/useGetPaginatedTranslationCharacteristic";
 import { fetchAllSound } from "../../PlotField/hooks/Sound/useGetAllSoundsByStoryId";
 import { fetchAllMusic } from "../../PlotField/hooks/Music/useGetAllMusicByStoryId";
-import { fetchAllTranslationAchievements } from "../../PlotField/hooks/Achievement/useGetAllTranslationAchievementByStoryId";
+import { fetchAllTranslationAchievements } from "../../PlotField/hooks/Achievement/Translation/useGetAllTranslationAchievementByStoryId";
 import { fetchAllTranslationCharacteristics } from "../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
 import { fetchAllTranslationAppearanceParts } from "../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
 import { getTranslationCharactersByType } from "../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByType";

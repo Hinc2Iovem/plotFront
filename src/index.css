@@ -17,13 +17,13 @@
 *::after,
 *::before {
   box-sizing: border-box;
-  font-size: 62.5%;
 }
 
 body {
   margin: 0;
   padding: 0;
   min-width: 320px;
+  background-color: hsl(hue, saturation, lightness);
 }
 
 input:-webkit-autofill,
@@ -39,7 +39,7 @@ textarea {
   background-color: rgb(var(--secondary));
 }
 
-.light {
+/* .light {
   --primary: 238, 245, 255;
   --primary-darker: 190, 225, 253;
   --secondary: 255 255 255;
@@ -109,8 +109,108 @@ textarea {
   --lightest-yellow: 254 249 195;
 
   background: rgba(var(--primary));
+} */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+
+    --brand-gradient-left: #4e54c8;
+    --brand-gradient-right: #8f94fb;
+  }
+
+  .light {
+    --background: #fafafa;
+    --border: #e5e5e5;
+    --text: #000000;
+    --foreground: #f5f5f5;
+    --secondary: #e7e7e7;
+    --accent: #d9d9d9;
+    --green: #1fd2bd;
+    --orange: #ff7553;
+    --cyan: #44beef;
+
+    --text-opposite: #ffffff;
+  }
+  .dark {
+    --background: #0c0c0c;
+    --border: #363638;
+    --foreground: #171717;
+    --text: #ffffff;
+    --secondary: #1e1e1e;
+    --accent: #262626;
+    --green: #2a9d90;
+    --orange: #e76e50;
+    --cyan: #3f7388;
+
+    --text-opposite: #000000;
+
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
 }
 
-input {
-  background: rgba(var(--secondary));
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  border: 1px solid var(--border);
+  -webkit-text-fill-color: var(--text);
+  transition: background-color 5000s ease-in-out 0s;
+  color: var(--text);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

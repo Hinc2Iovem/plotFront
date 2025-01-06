@@ -379,6 +379,7 @@ export const createPlotfieldCommandSlice: StateCreator<
           : c
       );
 
+      console.log("updatedCommands: ", updatedCommands);
       return {
         commands: state.commands.map((c) =>
           c.topologyBlockId === topologyBlockId ? { ...c, commands: updatedCommands } : c

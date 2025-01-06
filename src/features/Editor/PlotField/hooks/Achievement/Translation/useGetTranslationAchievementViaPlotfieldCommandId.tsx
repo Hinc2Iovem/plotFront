@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../api/axios";
-import { TranslationAchievementTypes } from "../../../../../types/Additional/TranslationTypes";
+import { axiosCustomized } from "../../../../../../api/axios";
+import { TranslationAchievementTypes } from "../../../../../../types/Additional/TranslationTypes";
 
 type GetCommandAchievementTypes = {
   plotFieldCommandId: string;

@@ -68,7 +68,11 @@ export default function SayFieldItemVariationType({
             e.currentTarget.blur();
           }
         }}
-        className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"} capitalize text-start`}
+        className={`${
+          isCommandFocused
+            ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
+            : "bg-secondary"
+        } capitalize text-start`}
       >
         {sayVariationType}
       </PlotfieldButton>

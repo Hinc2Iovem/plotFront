@@ -75,7 +75,13 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
   return (
     <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
       <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
+        <PlotfieldCommandNameField
+          className={`${
+            isCommandFocused
+              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
+              : "bg-secondary"
+          }`}
+        >
           {nameValue}
         </PlotfieldCommandNameField>
       </div>

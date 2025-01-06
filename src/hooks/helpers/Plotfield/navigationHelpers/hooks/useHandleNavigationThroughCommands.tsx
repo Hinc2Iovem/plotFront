@@ -34,7 +34,7 @@ import navigationBackAndForth from "../functions/navigationBackAndForth";
 // ---and on contextMenu when chosen
 
 export default function useHandleNavigationThroughCommands() {
-  const { setCurrentlyFocusedCommandId, currentlyFocusedCommandId } = useNavigation();
+  const { setCurrentlyFocusedCommandId, currentlyFocusedCommandId, currentTopologyBlock } = useNavigation();
   const { setItem, getItem, hasItem, removeItem } = useTypedSessionStorage<SessionStorageKeys>();
   const {
     getCommandsByTopologyBlockId,
@@ -108,6 +108,7 @@ export default function useHandleNavigationThroughCommands() {
           setCurrentlyFocusedCommandId,
           setItem,
           getCommandOnlyByPlotfieldCommandId,
+          topologyBlockId: currentTopologyBlock._id,
         });
       } else if ((key === "arrowup" || key === "arrowdown") && pressedKeys.has("shift")) {
         // going inside and outside such commands as condition/choice, and doing dash for commandIf
@@ -235,6 +236,7 @@ export default function useHandleNavigationThroughCommands() {
     removeItem,
     getCommandByPlotfieldCommandIfId,
     getCurrentlyOpenChoiceOption,
+    currentTopologyBlock,
     currentlyFocusedCommandId,
   ]);
 }

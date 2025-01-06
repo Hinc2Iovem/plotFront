@@ -5,7 +5,7 @@ import ShowScreenSizeModal from "../helpers/ShowScreenSizeModal";
 export default function AuthLayout() {
   return (
     <>
-      <DivBgColor bgColor="bg-primary" />
+      <DivBgColor bgColor="bg-background" />
       <ShowScreenSizeModal />
       <Outlet />
     </>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
-import useUpdateAchievementText from "../../../../PlotField/hooks/Achievement/useUpdateAchievementText";
+import useUpdateAchievementText from "../../../../PlotField/hooks/Achievement/Update/useUpdateAchievementText";
 import { TempAchievementTypes } from "./AllMightySearchMainContentAchievement";
 import { AllMightySearchAchievementResultTypes } from "../../../hooks/useGetPaginatedTranslationAchievement";
 import { useParams } from "react-router-dom";

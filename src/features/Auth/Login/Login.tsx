@@ -1,20 +1,23 @@
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Input } from "@/components/ui/input";
+import { HoverCardContent } from "@radix-ui/react-hover-card";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { axiosCustomized } from "../../../api/axios";
-import visibilityOff from "../../../assets/images/Auth/eyeOff.png";
-import visibility from "../../../assets/images/Auth/eyeOn.png";
 import useAuth from "../../../hooks/Auth/useAuth";
 import { DecodedTypes } from "../RequireAuth";
-import Sidebar from "../Sidebar";
 
 export default function Login() {
   const { setToken } = useAuth();
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const theme = localStorage.getItem("theme");
   const navigate = useNavigate();
 
   const canSubmit = [login, password].every(Boolean);
@@ -32,9 +35,7 @@ export default function Login() {
           password,
         })
         .then((r) => r.data);
-      const decoded = res.accessToken
-        ? jwtDecode<DecodedTypes>(res.accessToken)
-        : undefined;
+      const decoded = res.accessToken ? jwtDecode<DecodedTypes>(res.accessToken) : undefined;
       navigate(`/profile/${decoded?.StaffInfo.userId}`, { replace: true });
       setToken({ accessToken: res.accessToken });
     } catch (error: unknown) {
@@ -52,95 +53,70 @@ export default function Login() {
     }
   };
   return (
-    <section className="md:h-screen w-screen flex md:items-center justify-center">
-      <main className="w-full max-w-[80rem] md:max-w-[65rem] md:mx-[1rem] md:bg-secondary flex md:flex-row flex-col md:h-[30rem] overflow-x-hidden shadow-sm md:rounded-md">
-        <Sidebar />
-        <form
-          onSubmit={handleSubmit}
-          className="md:h-full p-[1rem] w-3/4 mx-auto md:bg-transparent bg-secondary md:rounded-none rounded-md md:relative absolute md:top-0 md:left-auto md:translate-x-0 top-[5rem] left-1/2 -translate-x-1/2"
-        >
-          <div className={`mx-auto flex flex-col gap-[2rem]  mb-[2rem]`}>
-            <div className="w-full flex flex-col text-center">
-              <h2
-                className={`${
-                  theme === "light" ? "text-dark-dark-blue" : "text-text-light"
-                } font-medium text-[3rem]`}
-              >
-                Личные данные
-              </h2>
-              <p className="text-neutral-600 text-[1.3rem]">
-                Введите ваш логин и пароль
-              </p>
-            </div>
+    <section className="h-screen w-screen flex flex-col items-center justify-center">
+      <main className="w-fit rounded-md mx-auto mb-[10px]">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-[15px] border-[1px] border-border rounded-md">
+          <div className={`px-[30px] flex flex-col`}>
+            <h2 className={`text-text font-bold text-[36px] self-end`}>Логин</h2>
             <div className="flex flex-col gap-[.5rem] w-full relative">
-              <label
-                htmlFor="username"
-                className="text-[1.3rem] bg-secondary p-[.1rem] rounded-md text-neutral-600 absolute left-[1rem] top-[-1rem]"
-              >
-                Логин
-              </label>
-              <input
+              <Input
                 id="username"
-                className="w-full outline-0 text-[1.3rem] text-text-light px-[1rem] py-[.8rem] border-[1px] border-primary-darker rounded-md border-dotted"
+                placeholder="username"
+                className="w-full outline-0 text-[14px] text-text px-[10px] py-[5px] border-[1px] border-border rounded-md"
                 type="text"
                 value={login}
-                autoComplete={"off"}
                 onChange={(e) => setLogin(e.target.value)}
               />
-            </div>
-            <div className="flex flex-col gap-[.5rem] w-full relative">
-              <label
-                htmlFor="password"
-                className="text-[1.3rem] bg-secondary p-[.1rem] rounded-md text-neutral-600 absolute left-[1rem] top-[-1rem]"
-              >
-                Пароль
-              </label>
-              <input
-                id="password"
-                className="w-full outline-0 text-[1.3rem] text-text-light px-[1rem] py-[.8rem] border-[1px] border-primary-darker rounded-md border-dotted"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {showPassword ? (
-                <img
-                  src={visibility}
-                  alt="EyeOpen"
-                  onClick={() => setShowPassword(false)}
-                  className="absolute w-[2.2rem] right-[.5rem] -translate-y-1/2 top-1/2 cursor-pointer"
+              <div className="relative w-full">
+                <Input
+                  id="password"
+                  placeholder="password"
+                  className="w-full outline-0 text-[14px] text-text px-[10px] py-[5px] pr-[40px] border-[1px] border-border rounded-md"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
-              ) : (
-                <img
-                  src={visibilityOff}
-                  alt="EyeClosed"
-                  onClick={() => setShowPassword(true)}
-                  className="absolute w-[2.2rem] right-[.5rem] -translate-y-1/2 top-1/2 cursor-pointer"
-                />
-              )}
+                {showPassword ? (
+                  <EyeClosed
+                    onClick={() => setShowPassword(false)}
+                    className="absolute w-[35px] right-[.5rem] fill-text -translate-y-1/2 top-1/2 cursor-pointer"
+                  />
+                ) : (
+                  <Eye
+                    onClick={() => setShowPassword(true)}
+                    className="absolute w-[35px] right-[.5rem] fill-text -translate-y-1/2 top-1/2 cursor-pointer"
+                  />
+                )}
+              </div>
             </div>
           </div>
-          <div className="flex justify-between flex-col">
-            <Link
-              className="md:block hidden w-fit text-[1.3rem] hover:text-text-light transition-colors text-text-dark"
-              to="/auth/register"
-            >
-              Всё ещё нету аккаунта? Регистрация
-            </Link>
-            <button
+          <div className="self-end flex justify-between items-baseline px-[15px] gap-[30px] pb-[20px]">
+            <div className="gap-[5px] flex items-center self-end">
+              <HoverCard>
+                <HoverCardTrigger className="text-[13px] text-text opacity-60 hover:opacity-100 transition-opacity">
+                  Остаться залогиненным?
+                </HoverCardTrigger>
+                <HoverCardContent className="text-text text-[12px] left-0 border-border border-[1px] bg-secondary px-[10px] w-[200px] py-[10px] rounded-sm z-[10]">
+                  <span className="opacity-70">Вам больше не нужно будет логиниться на этом устройстве</span>
+                </HoverCardContent>
+              </HoverCard>
+              <Checkbox checked={stayLoggedIn} onClick={() => setStayLoggedIn((prev) => !prev)} />
+            </div>
+            <Button
               type="submit"
-              className="w-fit self-end px-[1rem] text-[1.3rem] py-[.5rem] rounded-md shadow-md bg-primary-darker text-text-dark hover:text-text-light active:scale-[0.98] transition-all"
+              className="w-fit bg-brand-gradient self-end px-[25px] text-[20px] text-text py-[10px] rounded-md hover:opacity-90 active:scale-[0.98] transition-all"
             >
               Войти
-            </button>
+            </Button>
           </div>
         </form>
-        <Link
-          className="block md:hidden w-fit absolute bottom-[33rem] text-[1.3rem] hover:text-text-light transition-colors text-text-dark left-1/2 -translate-x-1/2"
-          to="/auth/register"
-        >
-          Всё ещё нету аккаунта? Регистрация
-        </Link>
       </main>
+      <Link
+        className="z-0 w-fit text-[13px] mx-auto text-text opacity-50 hover:opacity-100 transition-opacity -translate-x-[calc(50%-10px)]"
+        to="/auth/register"
+      >
+        Нету аккаунта? Регистрация
+      </Link>
     </section>
   );
 }
