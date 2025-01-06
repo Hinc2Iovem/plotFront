@@ -12,6 +12,12 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Eye, EyeClosed } from "lucide-react";
 import scriptwriter from "../../../assets/images/Auth/scriptwriter.png";
 import translator from "../../../assets/images/Auth/translator.png";
+import { toast } from "sonner";
+
+const toastStyles = {
+  className: "text-[15px]",
+  style: { backgroundColor: "red" },
+};
 
 export default function Register() {
   const { setToken } = useAuth();
@@ -28,7 +34,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) {
-      console.log("Can't submit now");
+      toast("Заполните все поля", toastStyles);
       return;
     }
     try {
@@ -46,26 +52,24 @@ export default function Register() {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (!error.response) {
-          console.log("No Serve Response");
+          toast("No Serve Response", toastStyles);
         } else if (error.response?.status === 400) {
-          console.log("Username or Password is missing");
+          toast("Username or Password is missing", toastStyles);
         } else if (error.response?.status === 401) {
-          console.log("Wrong Username or Password");
+          toast("Wrong Username or Password", toastStyles);
         } else {
-          console.log("Something Went Wrong");
+          toast("Something Went Wrong", toastStyles);
         }
       }
     }
   };
-
-  console.log(stayLoggedIn);
 
   return (
     <section className="h-screen w-screen flex flex-col items-center justify-center">
       <main className="w-fit rounded-md mx-auto mb-[10px]">
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-[15px] border-[1px] border-border rounded-md">
           <div className={`px-[30px] flex flex-col`}>
-            <h2 className={`text-text font-bold text-[36px] self-end`}>Регистрация</h2>
+            <h2 className={`text-heading font-bold text-[36px] self-end`}>Регистрация</h2>
             <div className="flex flex-col gap-[.5rem] w-full relative">
               <Input
                 id="username"
@@ -87,18 +91,19 @@ export default function Register() {
                 {showPassword ? (
                   <EyeClosed
                     onClick={() => setShowPassword(false)}
-                    className="absolute w-[35px] right-[.5rem] fill-text -translate-y-1/2 top-1/2 cursor-pointer"
+                    className="absolute w-[35px] right-[.5rem] fill-paragraph -translate-y-1/2 top-1/2 cursor-pointer"
                   />
                 ) : (
                   <Eye
                     onClick={() => setShowPassword(true)}
-                    className="absolute w-[35px] right-[.5rem] fill-text -translate-y-1/2 top-1/2 cursor-pointer"
+                    className="absolute w-[35px] right-[.5rem] fill-paragraph -translate-y-1/2 top-1/2 cursor-pointer"
                   />
                 )}
               </div>
               <div className="flex justify-between px-[5px] items-center">
-                <h3 className="text-text text-[28px]">Роль: </h3>
+                <h3 className="text-heading text-[28px]">Роль: </h3>
                 <Button
+                  type="button"
                   onClick={() => setRole("translator")}
                   className={`w-[55px] h-[45px] ${
                     role === "translator" ? "bg-brand-gradient" : "bg-text-opposite"
@@ -111,6 +116,7 @@ export default function Register() {
                   />
                 </Button>
                 <Button
+                  type="button"
                   onClick={() => setRole("scriptwriter")}
                   className={`w-[55px] h-[45px] ${
                     role === "scriptwriter" ? "bg-brand-gradient" : "bg-text-opposite"
@@ -137,10 +143,10 @@ export default function Register() {
           <div className="self-end flex justify-between items-baseline px-[15px] gap-[30px] pb-[20px]">
             <div className="gap-[5px] flex items-center self-end">
               <HoverCard>
-                <HoverCardTrigger className="text-[13px] text-text opacity-60 hover:opacity-100 transition-opacity">
+                <HoverCardTrigger className="text-[13px] text-paragraph opacity-60 hover:opacity-100 transition-opacity">
                   Остаться залогиненным?
                 </HoverCardTrigger>
-                <HoverCardContent className="text-text text-[12px] left-0 border-border bg-secondary px-[10px] w-[200px] py-[10px] rounded-sm z-[10]">
+                <HoverCardContent className="text-paragraph text-[12px] left-0 border-border bg-secondary px-[10px] w-[200px] py-[10px] rounded-sm z-[10]">
                   <span className="opacity-70">Вам больше не нужно будет логиниться на этом устройстве</span>
                 </HoverCardContent>
               </HoverCard>
@@ -148,7 +154,7 @@ export default function Register() {
             </div>
             <Button
               type="submit"
-              className="w-fit bg-brand-gradient self-end px-[25px] text-[20px] text-text py-[10px] rounded-md hover:opacity-90 active:scale-[0.98] transition-all"
+              className="w-fit bg-brand-gradient self-end px-[25px] text-[20px] text-white py-[10px] rounded-md hover:opacity-90 active:scale-[0.98] transition-all"
             >
               Войти
             </Button>

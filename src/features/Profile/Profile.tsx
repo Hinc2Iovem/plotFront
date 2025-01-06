@@ -16,7 +16,7 @@ export default function Profile() {
   const debouncedStory = useDebounce({ value: searchValue, delay: 600 });
 
   return (
-    <section className="max-w-[146rem] px-[1rem] mx-auto flex sm:flex-row flex-col gap-[1rem] py-[1rem] relative items-center sm:items-start">
+    <section className="max-w-[1480px] px-[10px] mx-auto flex sm:flex-row flex-col gap-[10px] py-[10px] relative items-center sm:items-start">
       <ProfileLeftSide
         expandedTranslationSide={expandedTranslationSide === "expandTranslationSide"}
         setSearchValue={setSearchValue}
