@@ -14,10 +14,7 @@ export default function BackgroundPointOfMovement({
   const theme = localStorage.getItem("theme");
   return (
     <>
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="sm:w-[77%] flex-grow w-full"
-      >
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
         <input
           value={moveValue || ""}
           type="text"

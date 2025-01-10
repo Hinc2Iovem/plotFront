@@ -82,25 +82,20 @@ export default function CommandAchievementField({
   };
 
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused
-              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-              : "bg-secondary"
-          }`}
-        >
+    <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
+      <div className="sm:w-[20%] min-w-[100px] relative">
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
         <PlotfieldInput
           ref={currentInput}
           value={currentAchievement.textValue}
           onBlur={onBlur}
           type="text"
-          placeholder="Such a lovely day"
+          placeholder="Ачивка"
+          className="md:text-[17px] text-text"
           onChange={(e) =>
             setCurrentAchievement((prev) => ({
               ...prev,

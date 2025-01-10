@@ -67,7 +67,7 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
 
   return (
     <div className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-start">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
+      <div className="sm:w-[20%] min-w-[100px] relative">
         <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>

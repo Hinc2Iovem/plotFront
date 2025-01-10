@@ -13,7 +13,7 @@ export default function SyncLoad({ conditionToStart, conditionToLoading, classNa
       {conditionToLoading ? (
         <SyncLoader size={7} aria-label="Loading Spinner" color="lightblue" />
       ) : (
-        <img className="w-[3rem]" src={done} alt="OK" />
+        <img className="w-[30px]" src={done} alt="OK" />
       )}
     </div>
   );

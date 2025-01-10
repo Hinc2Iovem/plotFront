@@ -12,11 +12,7 @@ import { axiosCustomized } from "../../../api/axios";
 import useAuth from "../../../hooks/Auth/useAuth";
 import { DecodedTypes } from "../RequireAuth";
 import { toast } from "sonner";
-
-const toastStyles = {
-  className: "text-[15px]",
-  style: { backgroundColor: "red" },
-};
+import { toastErrorStyles } from "@/components/shared/toastStyles";
 
 export default function Login() {
   const { setToken } = useAuth();
@@ -31,7 +27,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) {
-      toast("Заполните все поля", toastStyles);
+      toast("Заполните все поля", toastErrorStyles);
       return;
     }
     try {
@@ -47,13 +43,13 @@ export default function Login() {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (!error.response) {
-          toast("No Serve Response", toastStyles);
+          toast("No Serve Response", toastErrorStyles);
         } else if (error.response?.status === 400) {
-          toast("Username or Password is missing", toastStyles);
+          toast("Username or Password is missing", toastErrorStyles);
         } else if (error.response?.status === 401) {
-          toast("Wrong Username or Password", toastStyles);
+          toast("Wrong Username or Password", toastErrorStyles);
         } else {
-          toast("Something Went Wrong", toastStyles);
+          toast("Something Went Wrong", toastErrorStyles);
         }
       }
     }

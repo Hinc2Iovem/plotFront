@@ -1,12 +1,11 @@
-import { useRef, useState } from "react";
-import PlotfieldTextarea from "../../../../../../../../ui/Textareas/PlotfieldTextarea";
+import { useRef } from "react";
+import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
+import { CommandSideTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import useSearch from "../../../../../../Context/Search/SearchContext";
+import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
 import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
-import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
-import TextSettingsModal from "../../../../../../components/TextSettingsModal";
-import { CommandSideTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import useSearch from "../../../../../../Context/Search/SearchContext";
+import TextAreaWithContextMenu from "../shared/TextAreaWithContextMenu";
 import useUpdateTextSideStyle from "../shared/useUpdateTextSideStyle";
 
 type SayFieldItemTextAreaTypes = {
@@ -42,8 +41,6 @@ export default function SayFieldItemTextArea({
   setInitTextValue,
 }: SayFieldItemTextAreaTypes) {
   const { updateValue } = useSearch();
-
-  const [showTextSettingsModal, setShowTextSettingsModal] = useState(false);
 
   const currentInput = useRef<HTMLTextAreaElement | null>(null);
   const { updateCommandSide } = usePlotfieldCommands();
@@ -87,41 +84,19 @@ export default function SayFieldItemTextArea({
   };
 
   return (
-    <form className="sm:w-[77%] flex-grow w-full relative">
-      <PlotfieldTextarea
-        value={textValue}
-        ref={currentInput}
-        placeholder="Such a lovely day"
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setShowTextSettingsModal((prev) => !prev);
-        }}
-        onBlur={updateOnBlur}
-        className={`${
-          currentTextStyle === "underscore"
-            ? "underline"
-            : currentTextStyle === "bold"
-            ? "font-bold"
-            : currentTextStyle === "italic"
-            ? "italic"
-            : ""
-        } ${currentTextSide === "right" ? "text-right" : "text-left"} `}
-        onChange={(e) => setTextValue(e.target.value)}
-      />
-
-      <TextSettingsModal
-        translateY="translate-y-[-13.5rem] right-0"
-        plotfieldCommandId={plotFieldCommandId}
-        setShowModal={setShowTextSettingsModal}
-        currentTextStyle={currentTextStyle}
-        setCurrentTextStyle={setCurrentTextStyle}
-        setTextValue={setTextValue}
-        showModal={showTextSettingsModal}
-        showTextSideRow={false}
-        showTextStyleRow={true}
-        setCurrentTextSide={setCurrentTextSide}
-        currentSide={currentTextSide}
-      />
-    </form>
+    <TextAreaWithContextMenu
+      currentTextSide={currentTextSide}
+      textValue={textValue}
+      updateOnBlur={updateOnBlur}
+      ref={currentInput}
+      plotfieldCommandId={plotFieldCommandId}
+      currentTextStyle={currentTextStyle}
+      setCurrentTextStyle={setCurrentTextStyle}
+      setTextValue={setTextValue}
+      showTextSideRow={false}
+      showTextStyleRow={true}
+      setCurrentTextSide={setCurrentTextSide}
+      currentSide={currentTextSide}
+    />
   );
 }

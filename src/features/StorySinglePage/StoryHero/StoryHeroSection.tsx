@@ -1,76 +1,42 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
-import useGetTranslationStoryById from "../../../hooks/Fetching/Story/useGetTranslationStoryById";
+import keyButton from "../../../assets/images/Story/keyButton.png";
+import { getAllCharacters } from "../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
+import { getSeasonsByStoryId } from "../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
+import { getTranslationCharacters } from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
 import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
-import { handleUploadeImg } from "../../../utils/handleUploadImg";
 import SyncLoad from "../../../ui/Loaders/SyncLoader";
 import PreviewImage from "../../../ui/shared/PreviewImage";
-import keyButton from "../../../assets/images/Story/keyButton.png";
-import { useQueryClient } from "@tanstack/react-query";
-import { getAllCharacters } from "../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
-import { getTranslationCharacters } from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
-import { getSeasonsByStoryId } from "../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
+import { handleUploadeImg } from "../../../utils/handleUploadImg";
 
-export default function StoryHeroSection() {
+type StoryInfoTypes = {
+  storyName: string;
+  storyDescription: string;
+  storyGenre: string;
+  storyImg: string;
+};
+
+type StoryHeroSectionTypes = {
+  setStoryInfo: React.Dispatch<React.SetStateAction<StoryInfoTypes>>;
+  storyInfo: StoryInfoTypes;
+};
+
+export default function StoryHeroSection({ setStoryInfo, storyInfo }: StoryHeroSectionTypes) {
   const { storyId } = useParams();
-  const { data: translatedStory } = useGetTranslationStoryById({
-    language: "russian",
-    storyId: storyId || "",
-  });
 
-  const { data: story } = useGetSingleStory({ storyId: storyId || "" });
-  const [storyImg, setStoryImg] = useState("");
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const [imgUploading, setImgUploading] = useState(false);
-
-  const [storyInfo, setStoryInfo] = useState({
-    storyName: "",
-    storyDescription: "",
-    storyGenre: "",
-  });
-
-  useEffect(() => {
-    if (translatedStory) {
-      translatedStory.translations.map((ts) => {
-        if (ts.textFieldName === "storyName") {
-          setStoryInfo((prev) => {
-            return {
-              ...prev,
-              storyName: ts?.text || "",
-            };
-          });
-        } else if (ts.textFieldName === "storyDescription") {
-          setStoryInfo((prev) => {
-            return {
-              ...prev,
-              storyDescription: ts?.text || "",
-            };
-          });
-        } else if (ts.textFieldName === "storyGenre") {
-          setStoryInfo((prev) => {
-            return {
-              ...prev,
-              storyGenre: ts?.text || "",
-            };
-          });
-        }
-      });
-    }
-  }, [translatedStory]);
-
-  useEffect(() => {
-    if (story) {
-      setStoryImg(story?.imgUrl || "");
-    }
-  }, [story]);
 
   useEffect(() => {
     if (preview) {
       setImgUploading(true);
       handleUploadeImg({ preview })
         .then((r) => {
-          setStoryImg(r);
+          setStoryInfo((prev) => ({
+            ...prev,
+            storyImg: r,
+          }));
           setImgUploading(false);
         })
         .catch((e) => {
@@ -86,14 +52,14 @@ export default function StoryHeroSection() {
   const updateImg = useUpdateImg({
     id: storyId || "",
     path: "/stories",
-    preview: storyImg,
+    preview: storyInfo.storyImg,
   });
 
   useEffect(() => {
-    if (storyImg) {
+    if (storyInfo.storyImg) {
       updateImg.mutate({});
     }
-  }, [storyImg]);
+  }, [storyInfo.storyImg]);
 
   const [opacityFull, setOpacityFull] = useState({
     title: false,
@@ -102,12 +68,12 @@ export default function StoryHeroSection() {
   });
 
   return (
-    <section className="flex flex-col max-w-[148rem] mx-auto min-h-screen lg:items-start sm:items-center mt-[1rem] sm:mt-0 lg:mt-[2.5rem] px-[1rem] relative">
-      <div className="flex lg:flex-row lg:w-full lg:mx-0 lg:items-start flex-col w-[100rem] gap-[1rem] h-fit items-center mt-[2rem]">
-        <div className="w-full lg:max-w-[20rem] lg:h-[30rem] sm:max-w-[50rem] h-[45rem] relative bg-lightest-gray shadow-md shadow-gray-600 rounded-md">
-          {storyImg ? (
+    <section className="flex flex-col max-w-[1480px] mx-auto min-h-screen lg:items-start items-center mt-[10px] sm:mt-0 lg:mt-[25px] px-[10px] relative">
+      <div className="flex lg:flex-row lg:w-full lg:mx-0 lg:items-start flex-col w-full gap-[10px] h-fit items-center mt-[20px] sm:px-0 px-[20px]">
+        <div className="w-full lg:max-w-[200px] lg:h-[300px] max-w-[500px] h-[450px] relative bg-lightest-gray shadow-md shadow-gray-600 rounded-md">
+          {storyInfo.storyImg ? (
             <img
-              src={storyImg as string}
+              src={storyInfo.storyImg as string}
               alt="Story Img"
               draggable={false}
               className="absolute w-full h-full rounded-md object-cover"
@@ -121,13 +87,13 @@ export default function StoryHeroSection() {
             />
           )}
           <SyncLoad
-            className="bg-secondary shadow-md rounded-sm bottom-[1rem] right-[1rem]"
+            className="bg-secondary shadow-md rounded-sm bottom-[10px] right-[10px]"
             conditionToLoading={!imgUploading}
             conditionToStart={imgUploading}
           />
         </div>
 
-        <div className="flex-grow flex flex-col gap-[.5rem] text-pretty sm:max-w-[50rem] w-full lg:text-right">
+        <div className="flex-grow flex flex-col gap-[5px] text-pretty max-w-[500px] w-full lg:text-right">
           <h1
             onMouseEnter={() =>
               setOpacityFull((prev) => {
@@ -145,11 +111,11 @@ export default function StoryHeroSection() {
                 };
               })
             }
-            className="sm:text-[5rem] lg:w-fit transition-all hover:text-black px-[1rem] cursor-cell first-letter:capitalize text-[4.5rem] lg:text-end text-center text-gray-700 break-words z-[10] relative"
+            className="sm:text-[50px] lg:w-fit transition-all px-[10px] cursor-cell first-letter:capitalize text-[45px] lg:text-end text-center text-text break-words z-[10] relative"
           >
             {storyInfo.storyName}
             <span
-              className={`absolute bg-secondary transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
+              className={`absolute bg-background text-text transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
                 opacityFull.title ? "" : " opacity-30"
               } rounded-md`}
             ></span>
@@ -171,11 +137,11 @@ export default function StoryHeroSection() {
                 };
               })
             }
-            className="sm:text-[3rem] lg:w-fit transition-all hover:text-black px-[1rem] cursor-cell text-[2rem] text-gray-700 break-words z-[10] relative"
+            className="sm:text-[30px] lg:w-fit transition-all px-[10px] cursor-cell text-[20px] text-text break-words z-[10] relative"
           >
             {storyInfo.storyDescription}
             <span
-              className={`absolute bg-secondary transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
+              className={`absolute bg-background transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] text-text ${
                 opacityFull.description ? "" : " opacity-30"
               } rounded-md`}
             ></span>
@@ -197,19 +163,17 @@ export default function StoryHeroSection() {
                 };
               })
             }
-            className="sm:text-[2rem] lg:w-fit transition-all hover:text-black px-[1rem] cursor-cell text-[1.4rem] text-gray-700 text-right break-words z-[10] relative"
+            className="sm:text-[20px] lg:w-fit transition-all text-text px-[10px] cursor-cell text-[14px] text-right break-words z-[10] relative"
           >
             {storyInfo.storyGenre}
             <span
-              className={`absolute bg-secondary transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] ${
+              className={`absolute bg-background transition-all w-full top-0 bottom-0 right-0 left-0 z-[-1] text-text ${
                 opacityFull.genres ? "" : " opacity-30"
               } rounded-md`}
             ></span>
           </h4>
         </div>
       </div>
-
-      <KeyBindsBlock />
     </section>
   );
 }
@@ -256,7 +220,7 @@ const KeyBindsBlock = () => {
   };
 
   return (
-    <div className="flex gap-[1rem] mt-[2rem] flex-wrap w-full mb-[1rem]">
+    <div className="flex gap-[10px] mt-[2rem] flex-wrap w-full mb-[10px]">
       <Link
         onFocus={handlePrefetches}
         onMouseOver={handlePrefetches}

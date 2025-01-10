@@ -1,12 +1,11 @@
+import { Button } from "@/components/ui/button";
 import { KeyBindsCharacterSubCategoryTypes } from "../KeyBinds";
 
 type KeyBindsCharacterSubCategoryBtnsTypes = {
   characterSubCategoryNameEng: KeyBindsCharacterSubCategoryTypes;
   characterSubCategory: KeyBindsCharacterSubCategoryTypes;
   characterSubCategoryName: string;
-  setCharacterSubCategory: React.Dispatch<
-    React.SetStateAction<KeyBindsCharacterSubCategoryTypes>
-  >;
+  setCharacterSubCategory: React.Dispatch<React.SetStateAction<KeyBindsCharacterSubCategoryTypes>>;
 };
 export default function KeyBindsCharacterSubCategoryBtns({
   characterSubCategory,
@@ -16,16 +15,17 @@ export default function KeyBindsCharacterSubCategoryBtns({
 }: KeyBindsCharacterSubCategoryBtnsTypes) {
   return (
     <li>
-      <button
-        className={`text-[2rem] ${
+      <Button
+        variant={"link"}
+        className={`text-[20px] ${
           characterSubCategory === characterSubCategoryNameEng
-            ? "text-light-gray underline"
-            : "text-text-dark"
-        } hover:text-light-gray transition-all hover:underline focus-within:text-light-gray focus-within:underline outline-none`}
+            ? "text-heading underline"
+            : "text-accent focus-within:underline hover:text-heading hover:underline focus-within:text-heading"
+        } transition-all outline-none`}
         onClick={() => setCharacterSubCategory(characterSubCategoryNameEng)}
       >
         {characterSubCategoryName}
-      </button>
+      </Button>
     </li>
   );
 }

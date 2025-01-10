@@ -51,7 +51,7 @@ export default function WardrobeCharacterAppearancePartForm({
   });
 
   return (
-    <div onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full flex flex-col gap-[1rem] relative">
+    <div onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow flex flex-col gap-[1rem] relative">
       <CommandWardrobeCharacter
         characterId={characterId}
         commandWardrobeId={commandWardrobeId}

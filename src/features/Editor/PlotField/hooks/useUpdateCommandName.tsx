@@ -3,32 +3,20 @@ import { axiosCustomized } from "../../../../api/axios";
 
 type UpdateCommandNameTypes = {
   plotFieldCommandId: string;
-  value?: string;
   topologyBlockId: string;
 };
 
 type UpdateCommandNameOnMutationTypes = {
   valueOnMutation?: string;
   valueForSay: boolean;
+  value?: string;
 };
 
-export default function useUpdateCommandName({
-  plotFieldCommandId,
-  value,
-  topologyBlockId,
-}: UpdateCommandNameTypes) {
+export default function useUpdateCommandName({ plotFieldCommandId, topologyBlockId }: UpdateCommandNameTypes) {
   return useMutation({
-    mutationFn: async ({
-      valueForSay,
-      valueOnMutation,
-    }: UpdateCommandNameOnMutationTypes) =>
-      await axiosCustomized.patch(
-        `/plotField/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/commandName`,
-        {
-          commandName: valueForSay
-            ? "say"
-            : value?.toLowerCase() || valueOnMutation?.toLowerCase(),
-        }
-      ),
+    mutationFn: async ({ valueForSay, value, valueOnMutation }: UpdateCommandNameOnMutationTypes) =>
+      await axiosCustomized.patch(`/plotField/${plotFieldCommandId}/topologyBlocks/${topologyBlockId}/commandName`, {
+        commandName: valueForSay ? "say" : value?.toLowerCase() || valueOnMutation?.toLowerCase(),
+      }),
   });
 }

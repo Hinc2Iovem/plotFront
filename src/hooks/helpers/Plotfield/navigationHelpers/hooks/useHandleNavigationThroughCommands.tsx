@@ -11,6 +11,7 @@ import insideAndOutsideConditionBlock from "../functions/insideAndOutsideConditi
 import movingAmongChoiceOptions from "../functions/movingAmongChoiceOptions";
 import movingAmongConditionBlocks from "../functions/movingAmongConditionBlocks";
 import navigationBackAndForth from "../functions/navigationBackAndForth";
+import { preventMovingUpAndDownWhenModalOpen } from "../../preventMovingUpAndDownWhenModalOpen";
 
 // - focuse inside commands such as condition and choice happens in 2 levels, when shift + arrowDown pressed first time, focus will be directed
 // - on the according block(which means, now creating of commands will work as creating commands on primary field, they will be created at the end of the plot)
@@ -76,6 +77,10 @@ export default function useHandleNavigationThroughCommands() {
       if (!preventCreatingCommandsWhenFocus()) {
         console.log("Not allowed to move on focus");
         return;
+      }
+
+      if (key === "arrowup" || key === "arrowdown") {
+        if (preventMovingUpAndDownWhenModalOpen()) return;
       }
 
       const focusedCommandType = getItem("focusedCommandType");

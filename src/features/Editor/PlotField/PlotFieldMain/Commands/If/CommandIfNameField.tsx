@@ -66,13 +66,7 @@ export default function CommandIfNameField({
   return (
     <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem]">
       <div className="flex gap-[.5rem] w-full">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused
-              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-              : "bg-secondary"
-          }`}
-        >
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
         <AddVariationButton nameValue={nameValue} ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />

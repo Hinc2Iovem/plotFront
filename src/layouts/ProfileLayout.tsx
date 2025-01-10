@@ -3,10 +3,9 @@ import DivBgColor from "../ui/shared/DivBgColor";
 import ShowScreenSizeModal from "../helpers/ShowScreenSizeModal";
 
 export default function ProfileLayout() {
-  const bgColor = localStorage.getItem("theme");
   return (
     <>
-      <DivBgColor bgColor={`${bgColor === "light" ? "bg-primary" : "bg-secondary"}`} />
+      <DivBgColor bgColor={`bg-background`} />
       <ShowScreenSizeModal />
       <Outlet />
     </>

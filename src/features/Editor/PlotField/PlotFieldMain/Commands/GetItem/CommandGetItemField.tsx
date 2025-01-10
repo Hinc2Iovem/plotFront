@@ -112,50 +112,52 @@ export default function CommandGetItemField({
   };
 
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused
-              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-              : "bg-secondary"
-          }`}
-        >
-          {nameValue}
-        </PlotfieldCommandNameField>
+    <div className="w-full border-border border-[1px] rounded-md p-[5px] flex flex-col gap-[5px]">
+      <div className="flex flex-wrap gap-[5px] w-full sm:flex-row flex-col">
+        <div className="sm:w-[20%] min-w-[100px] relative">
+          <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
+            {nameValue}
+          </PlotfieldCommandNameField>
+        </div>
+        <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow flex sm:flex-row flex-col gap-[5px]">
+          <PlotfieldInput
+            value={itemName}
+            type="text"
+            placeholder="Название"
+            className="w-auto flex-grow"
+            onBlur={() => {
+              if (itemName !== initValues.name) {
+                onBlur(itemName, TranslationTextFieldName.ItemName);
+              }
+            }}
+            onChange={(e) => setItemName(e.target.value)}
+          />
+
+          <PlotfieldInput
+            value={buttonText}
+            type="text"
+            placeholder="Текст Кнопки"
+            onBlur={() => {
+              if (buttonText !== initValues.text) {
+                onBlur(buttonText, TranslationTextFieldName.ButtonText);
+              }
+            }}
+            onChange={(e) => setButtonText(e.target.value)}
+          />
+        </form>
       </div>
-      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full flex flex-col gap-[1rem]">
-        <PlotfieldInput
-          value={itemName}
-          type="text"
-          placeholder="Название"
-          onBlur={() => {
-            if (itemName !== initValues.name) {
-              onBlur(itemName, TranslationTextFieldName.ItemName);
-            }
-          }}
-          onChange={(e) => setItemName(e.target.value)}
-        />
+
+      <form onSubmit={(e) => e.preventDefault()} className="w-full">
         <PlotfieldTextarea
           value={itemDescription}
           placeholder="Описание"
+          className="w-full flex-grow"
           onBlur={() => {
             if (itemDescription !== initValues.description) {
               onBlur(itemDescription, TranslationTextFieldName.ItemDescription);
             }
           }}
           onChange={(e) => setItemDescription(e.target.value)}
-        />
-        <PlotfieldInput
-          value={buttonText}
-          type="text"
-          placeholder="Текст Кнопки"
-          onBlur={() => {
-            if (buttonText !== initValues.text) {
-              onBlur(buttonText, TranslationTextFieldName.ButtonText);
-            }
-          }}
-          onChange={(e) => setButtonText(e.target.value)}
         />
       </form>
     </div>

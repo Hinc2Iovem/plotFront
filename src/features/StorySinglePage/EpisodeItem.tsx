@@ -16,6 +16,9 @@ import useNavigation from "../Editor/Context/Navigation/NavigationContext";
 import { getAllTopologyBlocksConnectionsByEpisodeId } from "../Editor/PlotField/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
 import { getAllTopologyBlocksByEpisodeId } from "../Editor/PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import { getAllPlotfieldCommands } from "../Editor/PlotField/hooks/useGetAllPlotFieldCommands";
+import { LocalStorageTypes, useTypedLocalStorage } from "@/hooks/helpers/shared/LocalStorage/useTypedLocalStorage";
+import shrinkBtnDark from "@/assets/images/Editor/minusCommand.png";
+import shrinkBtnLight from "@/assets/images/Editor/minus.png";
 
 type EpisodeItemTypes = {
   provided: DraggableProvided;
@@ -25,6 +28,8 @@ export default function EpisodeItem({ _id, episodeOrder, episodeStatus, provided
   const { storyId } = useParams();
   const { setItem, removeItem, getItem } = useTypedSessionStorage<SessionStorageKeys>();
   const { clearFocusedCommand, setCurrentTopologyBlock } = useNavigation();
+  const { getItem: getLocalItem } = useTypedLocalStorage<LocalStorageTypes>();
+  const theme = getLocalItem("theme");
   const [localTopologyBlockId] = useState(localStorage.getItem(`${_id}-topologyBlockId`));
   const [isEpisodeInfoOpen, setIsEpisodeInfoOpen] = useState(false);
   const { data: episode } = useGetTranslationEpisode({
@@ -94,12 +99,14 @@ export default function EpisodeItem({ _id, episodeOrder, episodeStatus, provided
     }
   };
 
+  console.log(theme);
+
   return (
     <li
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      className="w-full bg-secondary flex flex-col"
+      className="w-full bg-accent rounded-md flex flex-col"
     >
       <div
         onClick={() => {
@@ -107,32 +114,37 @@ export default function EpisodeItem({ _id, episodeOrder, episodeStatus, provided
           setIsEpisodeInfoOpen((prev) => !prev);
         }}
         className={` ${
-          isEpisodeInfoOpen ? "shadow-none border-[.1rem] border-b-0 rounded-b-none" : " hover:scale-[1.01]"
-        } outline-gray-400 text-start bg-secondary w-full rounded-md shadow-sm shadow-gray-300 p-[1rem]`}
+          isEpisodeInfoOpen
+            ? "border-b-0 border-accent rounded-b-none"
+            : "border-border hover:border-accent transition-all"
+        } text-start justify-between flex items-center w-full border-border border-[1px] rounded-md p-[10px]`}
       >
-        <h3 className="text-[1.5rem] text-text-light">
+        <h3 className="text-[15px] text-text">
           {episodeTitle.trim().length ? episodeTitle : `Эпизод ${episodeOrder}`}
         </h3>
+
+        <button className={`${isEpisodeInfoOpen ? "" : "hidden"}`}>
+          <img className="w-[30px]" src={theme === "dark" ? shrinkBtnDark : shrinkBtnLight} alt="shrink" />
+        </button>
       </div>
       <div
         className={`${
-          isEpisodeInfoOpen ? "border-[.1rem]  rounded-t-none" : "hidden"
-        } flex flex-col min-h-[10rem] w-full bg-secondary rounded-md shadow-gray-300`}
+          isEpisodeInfoOpen ? "border-[1px] border-accent rounded-t-none" : "hidden"
+        } flex flex-col min-h-[100px] w-full border-border rounded-md `}
       >
-        <p className="text-[1.5rem] self-end pt-[.5rem] pr-[.5rem] text-text-dark">
-          Статус:{" "}
-          <span className={`text-[1.4rem] ${episodeStatus === "doing" ? "text-orange-400" : "text-green-400"}`}>
-            {episodeStatus === "doing" ? "В процессе" : "Завершена"}
-          </span>
+        <p
+          className={`text-[15px] self-end ${
+            episodeStatus === "doing" ? "bg-orange" : "bg-green"
+          } text-text px-[10px] rounded-bl-md`}
+        >
+          {episodeStatus === "doing" ? "В процессе" : "Завершена"}
         </p>
-        <p className="text-[1.4rem] text-text-light opacity-70 h-full w-full break-words pl-[.5rem]">
-          {episodeDescription}
-        </p>
-        <div className="flex justify-between items-center gap-[1rem] mt-auto w-full">
+        <p className="text-[14px] text-paragraph h-full w-full break-words pl-[5px]">{episodeDescription}</p>
+        <div className="flex justify-between items-baseline gap-[10px] mt-auto w-full">
           <div
             className={`${
               currentStory?.storyStaffInfo?.length ? "" : "hidden"
-            } flex gap-[.5rem] flex-wrap bg-secondary shadow-md px-[1rem] py-[.5rem]`}
+            } flex gap-[5px] flex-wrap shadow-md px-[10px] py-[5px]`}
           >
             {currentStory?.storyStaffInfo?.length
               ? currentStory.storyStaffInfo.map((ss) => <WorkersItems key={ss.staffId} staffId={ss.staffId} />)
@@ -140,7 +152,7 @@ export default function EpisodeItem({ _id, episodeOrder, episodeStatus, provided
           </div>
           <Link
             onClick={updateSessionStorageValues}
-            className="ml-auto w-fit text-[1.5rem] text-text-dark hover:text-text-light pr-[.5rem] transition-all"
+            className="ml-auto w-fit text-[14px] pb-[2px] text-text opacity-70 hover:opacity-100 pr-[5px] transition-all"
             to={`/stories/${storyId}/editor/episodes/${_id}`}
           >
             На страницу Эпизода
@@ -162,12 +174,12 @@ function WorkersItems({ staffId }: { staffId: string }) {
         alt={scriptwriter?.username}
         onMouseEnter={() => setShowName(true)}
         onMouseLeave={() => setShowName(false)}
-        className="w-[3rem] rounded-md shadow-sm"
+        className="w-[40px] rounded-md shadow-sm"
       />
       <aside
         className={`${
           showName ? "" : "hidden"
-        } absolute bottom-[0rem] translate-y-[3rem] text-text-dark rounded-md px-[1rem] py-[.25rem] bg-secondary shadow-md z-[10] text-[1.4rem]`}
+        } absolute bottom-[0px] translate-y-[33px] text-text rounded-md px-[10px] py-[5px] bg-secondary z-[10] text-[14px]`}
       >
         {scriptwriter?.username}
       </aside>

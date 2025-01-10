@@ -13,17 +13,19 @@ import useUpdateCharacteristicTranslation from "../../../hooks/Patching/Translat
 import { useQueryClient } from "@tanstack/react-query";
 import { getTranslationCharactersByType } from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByType";
 import { SearchCharacterVariationTypes } from "../../Character/CharacterListPage";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function StoryAttributesSection() {
   return (
-    <section className="h-screen flex flex-col w-full gap-[.5rem] p-[1rem] items-center justify-center sm:my-0 my-[1rem]">
-      <div className="flex sm:flex-row flex-col max-w-[100rem] justify-center w-full gap-[.5rem] sm:h-[40%] min-h-fit min-w-[30rem] flex-wrap">
-        <CardBlock img={characterImg} alt="Персонажи" path="characters" />
-        <CardBlock img={emotionImg} alt="Эмоции" path="emotions" />
+    <section className="h-screen my-[40px] sm:my-0 flex flex-col w-full md:max-h-[1100px] gap-[5px] sm:p-[40px] px-[10px] items-center justify-center">
+      <div className="flex sm:flex-row flex-col max-w-[1200px] justify-center w-full gap-[5px] sm:h-[45%] max-h-[500px] min-h-fit sm:min-w-[600px] flex-grow flex-wrap">
+        <CardBlock cardColor={"bg-brand-gradient-left"} img={characterImg} alt="Персонажи" path="characters" />
+        <CardBlock cardColor={"bg-generall-yellow"} img={emotionImg} alt="Эмоции" path="emotions" />
       </div>
-      <div className="flex sm:flex-row flex-col max-w-[100rem] justify-center w-full gap-[.5rem] sm:h-[40%] min-h-fit min-w-[30rem] flex-wrap">
-        <CardBlock img={wardrobeImg} alt="Гардероб" path="wardrobes" />
-        <CardCharacteristicBlock img={characteristicImg} alt="Характеристики" />
+      <div className="flex sm:flex-row flex-col max-w-[1200px] justify-center w-full gap-[5px] sm:h-[45%] max-h-[500px] min-h-fit sm:min-w-[600px] flex-grow flex-wrap">
+        <CardBlock cardColor={"bg-generall-yellow"} img={wardrobeImg} alt="Гардероб" path="wardrobes" />
+        <CardCharacteristicBlock cardColor={"bg-brand-gradient-left"} img={characteristicImg} alt="Характеристики" />
       </div>
     </section>
   );
@@ -33,25 +35,16 @@ type CardBlockTypes = {
   img: string;
   alt: string;
   path: string;
+  cardColor: string;
 };
 
-function CardBlock({ img, path, alt }: CardBlockTypes) {
+function CardBlock({ img, path, alt, cardColor }: CardBlockTypes) {
   const { storyId } = useParams();
 
   const queryClient = useQueryClient();
   const prefetchCharacters = () => {
     queryClient.prefetchQuery({
-      queryKey: [
-        "translation",
-        "russian",
-        "character",
-        "type",
-        "",
-        "story",
-        storyId,
-        "search",
-        "",
-      ],
+      queryKey: ["translation", "russian", "character", "type", "", "story", storyId, "search", ""],
       queryFn: () =>
         getTranslationCharactersByType({
           language: "russian",
@@ -73,13 +66,13 @@ function CardBlock({ img, path, alt }: CardBlockTypes) {
           prefetchCharacters();
         }
       }}
-      className="sm:flex-grow flex-grow-0 sm:w-auto min-w-[20rem] min-h-[18rem] rounded-md shadow-md bg-secondary sm:h-full relative hover:scale-[1.01] transition-all"
+      className={`sm:flex-grow sm:w-auto min-w-[250px] min-h-[180px] rounded-md shadow-md ${cardColor} sm:h-full relative hover:scale-[1.01] transition-all`}
     >
       <Link to={`/stories/${storyId}/${path}`}>
         <img
           src={img}
           alt={alt}
-          className="w-[15rem] sm:w-[20rem] absolute object-contain left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 rounded-md"
+          className="min-w-[150px] max-w-[250px] max-sm:w-[300px] h-full absolute object-contain left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 rounded-md"
         />
       </Link>
     </div>
@@ -89,9 +82,10 @@ function CardBlock({ img, path, alt }: CardBlockTypes) {
 type CardCharacteristicBlockTypes = {
   img: string;
   alt: string;
+  cardColor: string;
 };
 
-function CardCharacteristicBlock({ img, alt }: CardCharacteristicBlockTypes) {
+function CardCharacteristicBlock({ img, alt, cardColor }: CardCharacteristicBlockTypes) {
   const { storyId } = useParams();
   const [showBackSide, setShowBackSide] = useState(false);
   const [characteristic, setCharacteristic] = useState("");
@@ -124,22 +118,22 @@ function CardCharacteristicBlock({ img, alt }: CardCharacteristicBlockTypes) {
         }}
         className={`${
           showBackSide ? "hidden" : "hover:scale-[1.01]"
-        } sm:flex-grow flex-grow-0 sm:w-auto min-w-[20rem] min-h-[18rem] rounded-md shadow-md bg-secondary sm:h-full relative  transition-all`}
+        } ${cardColor} sm:flex-grow flex-grow-0 sm:w-auto min-w-[250px] min-h-[180px] rounded-md shadow-md sm:h-full relative transition-all`}
       >
         <img
           src={img}
           alt={alt}
-          className={`w-[15rem] cursor-pointer sm:w-[20rem] absolute object-contain left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 rounded-md`}
+          className={`min-w-[150px] max-w-[250px] h-full max-sm:w-[300px] cursor-pointer absolute object-contain left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 rounded-md`}
         />
       </div>
       <div
         ref={modalRef}
         className={`${
           showBackSide ? "" : "hidden"
-        } overflow-y-auto sm:w-[calc(50%-0.25rem)] p-[1rem] w-full min-h-[18rem] max-h-[30rem] rounded-md shadow-md bg-secondary sm:h-full relative transition-all | containerScroll`}
+        } overflow-y-auto sm:w-[calc(50%-2.5px)] p-[10px] w-full min-h-[180px] max-h-[300px] rounded-md shadow-md bg-secondary sm:h-full relative transition-all | containerScroll`}
       >
         <form
-          className="flex gap-[1rem]"
+          className="flex gap-[10px]"
           onSubmit={(e) => {
             e.preventDefault();
             createCharacteristic.mutate();
@@ -148,22 +142,22 @@ function CardCharacteristicBlock({ img, alt }: CardCharacteristicBlockTypes) {
             });
           }}
         >
-          <input
+          <Input
             type="text"
             value={characteristic}
             onChange={(e) => setCharacteristic(e.target.value)}
             placeholder="Характеристика"
-            className="flex-grow text-text-light outline-none rounded-md shadow-sm shadow-gray-200 text-[1.4rem] px-[1rem] py-[.5rem]"
+            className="flex-grow text-text outline-none rounded-md border-border border-[1px] text-[14px] px-[10px] py-[5px]"
           />
-          <button
+          <Button
             disabled={isPending}
-            className="text-[1.4rem] shadow-sm shadow-gray-200 px-[1rem] rounded-md text-text-dark hover:text-text-light transition-colors"
+            className="text-[14px] bg-brand-gradient hover:shadow-sm hover:shadow-brand-gradient-right px-[10px] active:scale-[.99] rounded-md text-white transition-all"
           >
             Создать
-          </button>
+          </Button>
         </form>
 
-        <ul className="flex w-full gap-[1rem] flex-wrap mt-[1rem]">
+        <ul className="flex w-full gap-[10px] flex-wrap mt-[10px]">
           {characteristics?.map((c) => (
             <CharacteristicItem key={c._id} {...c} />
           ))}
@@ -173,19 +167,13 @@ function CardCharacteristicBlock({ img, alt }: CardCharacteristicBlockTypes) {
   );
 }
 
-function CharacteristicItem({
-  characteristicId,
-  translations,
-  storyId,
-}: TranslationCharacterCharacteristicTypes) {
+function CharacteristicItem({ characteristicId, translations, storyId }: TranslationCharacterCharacteristicTypes) {
   const [clicked, setClicked] = useState({
     first: false,
     second: false,
   });
 
-  const [characteristic, setCharacteristic] = useState(
-    translations[0]?.text || ""
-  );
+  const [characteristic, setCharacteristic] = useState(translations[0]?.text || "");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -243,23 +231,21 @@ function CharacteristicItem({
         }}
         className={`${
           clicked.first && clicked.second ? "hidden" : ""
-        } flex-grow text-text-light cursor-cell min-w-[15rem] px-[1rem] py-[.5rem] rounded-md text-[1.4rem] shadow-sm shadow-gray-200`}
+        } flex-grow text-text cursor-cell min-w-[150px] px-[10px] py-[5px] rounded-md text-[14px] border-border border-[1px]`}
       >
         {characteristic}
       </li>
       <form
-        className={`${
-          clicked.first && clicked.second ? "" : "hidden"
-        } flex-grow min-w-[15rem]`}
+        className={`${clicked.first && clicked.second ? "" : "hidden"} flex-grow min-w-[150px]`}
         onSubmit={(e) => {
           handleSubmit(e);
         }}
       >
-        <input
+        <Input
           type="text"
           value={characteristic}
           onChange={(e) => setCharacteristic(e.target.value)}
-          className="w-full text-text-light opacity-70 border-[1px] border-dashed border-orange-200 px-[1rem] py-[.5rem] rounded-md text-[1.4rem] shadow-sm shadow-gray-200 outline-orange-200"
+          className="w-full text-text border-orange border-[1px] px-[10px] py-[5px] rounded-md text-[14px] outline-orange-200"
         />
       </form>
     </>

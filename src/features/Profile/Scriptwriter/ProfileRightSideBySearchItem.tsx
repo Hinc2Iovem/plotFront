@@ -1,32 +1,16 @@
 import { useEffect, useState } from "react";
 import useGetSingleStory from "../../../hooks/Fetching/Story/useGetSingleStory";
-import { StoryFilterTypes } from "../../Story/Story";
-import ProfileRightSideItem from "./ProfileRightSideItem";
 import { TranslationStoryTypes } from "../../../types/Additional/TranslationTypes";
+import ProfileRightSideItem from "./ProfileRightSideItem";
 
 type ProfileRightSideBySearchItemTypes = {
-  storiesType: StoryFilterTypes;
   storyId: string;
-  setOpenedStoryId: React.Dispatch<React.SetStateAction<string>>;
-  openedStoryId: string;
-  setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
-  characterIds: string[];
 } & TranslationStoryTypes;
 
-export default function ProfileRightSideBySearchItem({
-  characterIds,
-  openedStoryId,
-  setCharacterIds,
-  setOpenedStoryId,
-  storiesType,
-  storyId,
-  translations,
-}: ProfileRightSideBySearchItemTypes) {
+export default function ProfileRightSideBySearchItem({ storyId, translations }: ProfileRightSideBySearchItemTypes) {
   const { data: story } = useGetSingleStory({ storyId });
-  const [showScriptwriters, setShowScriptwriters] = useState(false);
-  const [storyTitle] = useState(
-    translations.find((t) => t.textFieldName === "storyName")?.text || ""
-  );
+  const [storyTitle] = useState(translations.find((t) => t.textFieldName === "storyName")?.text || "");
+  const [storyDescription] = useState(translations.find((t) => t.textFieldName === "storyDescription")?.text || "");
   const [imgUrl, setImgUrl] = useState("");
 
   useEffect(() => {
@@ -34,20 +18,14 @@ export default function ProfileRightSideBySearchItem({
       setImgUrl(story?.imgUrl || "");
     }
   }, [story]);
+
   return (
     <ProfileRightSideItem
-      characterIds={characterIds}
       imgUrl={imgUrl}
-      openedStoryId={openedStoryId}
-      setCharacterIds={setCharacterIds}
-      setOpenedStoryId={setOpenedStoryId}
-      storiesType={storiesType}
+      description={storyDescription}
       storyId={storyId}
       title={storyTitle}
-      assignedWorkers={story?.storyStaffInfo || []}
       storyStatus={story?.storyStatus}
-      showScriptwriters={showScriptwriters}
-      setShowScriptwriters={setShowScriptwriters}
     />
   );
 }

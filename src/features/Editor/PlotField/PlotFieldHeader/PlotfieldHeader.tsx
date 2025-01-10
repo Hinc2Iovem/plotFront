@@ -16,7 +16,6 @@ type PlotFieldHeaderTypes = {
   topologyBlockId: string;
   showAllCommands: boolean;
   hideFlowchartFromScriptwriter: boolean;
-  setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
   setHideFlowchartFromScriptwriter: React.Dispatch<React.SetStateAction<boolean | null>>;
   setExpansionDivDirection: React.Dispatch<React.SetStateAction<"right" | "left">>;
   setShowAllCommands: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +23,6 @@ type PlotFieldHeaderTypes = {
 
 export default function PlotfieldHeader({
   topologyBlockId,
-  setShowHeader,
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
   hideFlowchartFromScriptwriter,
@@ -123,7 +121,6 @@ export default function PlotfieldHeader({
           className="text-[1.6rem] px-[1rem] outline-gray-300 rounded-md shadow-md hover:bg-primary hover:text-text-dark text-text-light transition-all"
           onClick={(e) => {
             e.stopPropagation();
-            setShowHeader(true);
           }}
         >
           Заголовок

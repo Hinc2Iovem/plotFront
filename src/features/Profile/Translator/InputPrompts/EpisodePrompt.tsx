@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useEffect, useMemo, useState } from "react";
 import useGetEpisodesTranslationsBySeasonId from "../../../../hooks/Fetching/Translation/Episode/useGetEpisodesTranslationsBySeasonId";
-import useOutOfModal from "../../../../hooks/UI/useOutOfModal";
-import useDebounce from "../../../../hooks/utilities/useDebounce";
-import AsideScrollable from "../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldInput from "../../../../ui/Inputs/PlotfieldInput";
 
 type EpisodePromptTypes = {
   setEpisodeId: React.Dispatch<React.SetStateAction<string>>;
   setEpisodeCurrentValue?: React.Dispatch<React.SetStateAction<string>>;
   seasonId: string;
+  episodeId: string;
   episodeCurrentValue?: string;
 };
 
@@ -17,24 +16,12 @@ export default function EpisodePrompt({
   setEpisodeCurrentValue,
   setEpisodeId,
   seasonId,
+  episodeId,
   episodeCurrentValue,
 }: EpisodePromptTypes) {
   const [showEpisodes, setShowEpisodes] = useState(false);
-  // const [episodeValue, setEpisodeValue] = useState("");
+  const [episodeValue, setEpisodeValue] = useState("");
   const [episodeBackupValue, setEpisodeBackupValue] = useState("");
-
-  const modalEpisodesRef = useRef<HTMLDivElement>(null);
-
-  useOutOfModal({
-    modalRef: modalEpisodesRef,
-    setShowModal: setShowEpisodes,
-    showModal: showEpisodes,
-  });
-
-  const debouncedValue = useDebounce({
-    value: episodeCurrentValue || "",
-    delay: 500,
-  });
 
   const { data: episodesSearch, isLoading } = useGetEpisodesTranslationsBySeasonId({
     language: "russian",
@@ -60,90 +47,99 @@ export default function EpisodePrompt({
     }
   }, [showEpisodes, episodeCurrentValue, episodeBackupValue]);
 
-  useEffect(() => {
-    if (debouncedValue) {
-      const matchedValue = episodesSearch?.find((cs) =>
-        cs?.translations?.some(
-          (tct) => tct.textFieldName === "episodeName" && tct.text.toLowerCase() === debouncedValue.toLowerCase()
-        )
-      );
-      if (matchedValue) {
-        setEpisodeId(matchedValue?.episodeId);
-        setEpisodeBackupValue(matchedValue?.translations[0]?.text);
-        if (setEpisodeCurrentValue) {
-          setEpisodeCurrentValue(matchedValue?.translations[0]?.text);
-        }
-      } else {
-        setEpisodeId("");
-      }
+  const onBlur = () => {
+    if (!episodeValue) {
+      setEpisodeValue(episodeBackupValue);
+      return;
     }
-  }, [debouncedValue, episodesSearch]);
+
+    const matchedValue = episodesSearch?.find((cs) =>
+      cs?.translations?.some(
+        (tct) => tct.textFieldName === "episodeName" && tct.text.toLowerCase() === episodeValue.toLowerCase()
+      )
+    );
+    if (matchedValue) {
+      setEpisodeId(matchedValue?.episodeId);
+      setEpisodeBackupValue(matchedValue?.translations[0]?.text);
+      if (setEpisodeCurrentValue) {
+        setEpisodeCurrentValue(matchedValue?.translations[0]?.text);
+      }
+    } else {
+      setEpisodeId("");
+      setEpisodeValue(episodeBackupValue);
+    }
+  };
 
   return (
-    <form className="rounded-md shadow-md relative" onSubmit={(e) => e.preventDefault()}>
-      <PlotfieldInput
-        type="text"
-        placeholder="Название Эпизода"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (episodeCurrentValue?.trim().length) {
-            setEpisodeBackupValue(episodeCurrentValue);
-          }
-          if (setEpisodeCurrentValue) {
-            setEpisodeCurrentValue("");
-          }
-          setShowEpisodes(true);
-        }}
-        value={episodeCurrentValue}
-        onChange={(e) => {
-          if (setEpisodeCurrentValue) {
-            setEpisodeCurrentValue(e.target.value);
-          }
-        }}
-      />
-      {seasonId ? (
-        <AsideScrollable ref={modalEpisodesRef} className={`${showEpisodes ? "" : "hidden"} translate-y-[.5rem]`}>
-          {isLoading ? (
-            <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">Загрузка...</div>
-          ) : filteredEpisodes && filteredEpisodes.length > 0 ? (
-            filteredEpisodes.map((s) => (
-              <AsideScrollableButton
-                key={s._id}
-                type="button"
-                onClick={() => {
-                  setEpisodeId(s.episodeId);
-                  if (setEpisodeCurrentValue) {
-                    setEpisodeCurrentValue(s.translations[0]?.text || "");
-                  }
-                  setShowEpisodes(false);
-                }}
-              >
-                {s.translations[0]?.text || ""}
-              </AsideScrollableButton>
-            ))
-          ) : (
-            <AsideScrollableButton
-              type="button"
-              onClick={() => {
-                setShowEpisodes(false);
-              }}
-            >
-              Нету Подходящих Эпизодов
-            </AsideScrollableButton>
-          )}
-        </AsideScrollable>
-      ) : (
-        <AsideScrollable ref={modalEpisodesRef} className={`${showEpisodes ? "" : "hidden"} translate-y-[.5rem]`}>
-          <AsideScrollableButton
-            type="button"
-            onClick={() => {
-              setShowEpisodes(false);
+    <Popover open={showEpisodes} onOpenChange={setShowEpisodes}>
+      <PopoverTrigger asChild>
+        <Button variant={"outline"} className="px-[10px] py-[20px] text-[15px] capitalize text-text">
+          {episodeId?.trim().length ? episodeBackupValue : "Название Эпизода"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="translate-x-[20px]">
+        <Command className="w-full">
+          <CommandInput
+            className="flex-grow text-text"
+            placeholder="Название Эпизода"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (setEpisodeValue) {
+                setEpisodeValue("");
+              }
+              setShowEpisodes(true);
             }}
-          >
-            Выберите Сезон
-          </AsideScrollableButton>
-        </AsideScrollable>
-      )}
-    </form>
+            value={episodeValue}
+            onBlur={onBlur}
+            onValueChange={(e) => {
+              if (setEpisodeValue) {
+                setEpisodeValue(e);
+              }
+            }}
+          />
+          <CommandList>
+            <CommandEmpty>Выберите Сезон</CommandEmpty>
+
+            <CommandGroup className={`${seasonId?.trim().length ? "flex" : "hidden"} flex-col gap-[10px] items-center`}>
+              {isLoading ? (
+                <CommandItem className="text-[14px] text-text text-center py-[5px]">Загрузка...</CommandItem>
+              ) : filteredEpisodes && filteredEpisodes.length > 0 ? (
+                filteredEpisodes.map((s) => (
+                  <CommandItem
+                    key={s._id}
+                    onSelect={() => {
+                      setEpisodeId(s.episodeId);
+                      setEpisodeBackupValue(s.translations[0]?.text || "");
+                      if (setEpisodeValue) {
+                        setEpisodeValue(s.translations[0]?.text || "");
+                      }
+                      setShowEpisodes(false);
+                    }}
+                    className={`${
+                      episodeBackupValue?.toLowerCase() === s.translations[0].text?.toLowerCase()
+                        ? "underline bg-accent"
+                        : "transition-all"
+                    } text-[17px] text-text relative capitalize`}
+                  >
+                    {s.translations[0]?.text || ""}
+                  </CommandItem>
+                ))
+              ) : (
+                <Button
+                  type="button"
+                  variant="link"
+                  className="text-text text-[15px]"
+                  onClick={() => {
+                    setShowEpisodes(false);
+                  }}
+                >
+                  Нету Подходящих Эпизодов
+                </Button>
+              )}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

@@ -1,13 +1,16 @@
+import { Button } from "@/components/ui/button";
 import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } from "@hello-pangea/dnd";
 import { useEffect, useRef, useState, useTransition } from "react";
-import add from "../../assets/images/shared/add.png";
 import useGetEpisodesBySeasonId from "../../hooks/Fetching/Episode/useGetEpisodesBySeasonId";
 import useUpdateEpisodeOrder from "../../hooks/Patching/Episode/useUpdateEpisodeOrder";
 import useCreateNewEpisode from "../../hooks/Posting/Episode/useCreateNewEpisode";
 import useOutOfModal from "../../hooks/UI/useOutOfModal";
 import { TranslationSeasonTypes } from "../../types/Additional/TranslationTypes";
-import ButtonHoverPromptModal from "../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import EpisodeItem from "./EpisodeItem";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { toastErrorStyles } from "@/components/shared/toastStyles";
 
 type DisplaySeasonsTypes = {
   index: number;
@@ -19,29 +22,27 @@ export default function DisplaySeasons({ index, seasonId, translations }: Displa
 
   return (
     <>
-      <div className="flex flex-col w-full md:w-[calc(50%-0.5rem)] flex-grow bg-secondary p-[1rem] rounded-md">
-        <div className="flex justify-between w-full items-center gap-[1rem]">
-          <h2 className="text-[2.5rem] text-text-light border-b-[.1rem] rounded-md px-[.5rem]">
-            {seasonTitle || `Сезон ${index}`}
-          </h2>
-          <ButtonHoverPromptModal
+      <div className="w-full h-[450px] rounded-md border-border border-[1px] p-[10px] transition-all flex flex-col">
+        <div className="flex justify-between w-full items-center gap-[10px] bg-secondary border-border border-[1px] rounded-md p-[5px]">
+          <h2 className="text-[30px] text-heading capitalize rounded-md px-[5px]">{seasonTitle || `Сезон ${index}`}</h2>
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               setShowModal(true);
             }}
-            asideClasses="text-[1.5rem] top-[3.9rem] bottom-[-3.9rem] text-text-light"
-            contentName="Создать Эпизод"
-            positionByAbscissa="right"
-            className="w-fit bg-secondary rounded-md shadow-sm shadow-gray-500 p-[.2rem]"
-            variant={"rectangle"}
+            className={`${
+              showModal
+                ? "bg-accent hover:shadow-accent text-white/80"
+                : "bg-brand-gradient hover:shadow-brand-gradient-right text-white"
+            } px-[10px] py-[20px] text-[26px] rounded-md hover:shadow-sm active:scale-[.99] transition-all`}
           >
-            <img src={add} alt="NewEpisode" className="w-[3rem]" />
-          </ButtonHoverPromptModal>
+            + Эпизод
+          </Button>
         </div>
         <div
           className={`${
             showModal ? "hidden" : ""
-          } w-full h-[20rem] mt-[1rem] overflow-y-auto flex flex-col gap-[1rem] | containerScroll`}
+          } w-full mt-[10px] overflow-y-auto flex flex-grow flex-col gap-[10px] | containerScroll`}
         >
           <DisplayEpisodes seasonId={seasonId} />
         </div>
@@ -86,7 +87,7 @@ function DisplayEpisodes({ seasonId }: DisplayEpisodesTypes) {
     <DragDropContext onDragEnd={handleOnDragEnd}>
       <Droppable droppableId="episodes">
         {(provided: DroppableProvided) => (
-          <ul {...provided.droppableProps} ref={provided.innerRef} className={`flex flex-col gap-[1rem]`}>
+          <ul {...provided.droppableProps} ref={provided.innerRef} className={`flex flex-col gap-[10px]`}>
             {episodes?.length ? (
               episodes?.map((ei, i) => {
                 return (
@@ -96,7 +97,7 @@ function DisplayEpisodes({ seasonId }: DisplayEpisodesTypes) {
                 );
               })
             ) : (
-              <li className="text-[1.5rem] text-text-light opacity-60 bg-secondary w-full rounded-md shadow-sm shadow-gray-300 p-[1rem] hover:scale-[1.01]">
+              <li className="text-[15px] text-text opacity-60 border-border border-[1px] w-full rounded-md px-[10px] py-[5px]">
                 В этом сезоне покамись нету эпизодов
               </li>
             )}
@@ -130,7 +131,7 @@ function CreateEpisodeBlock({ seasonId, setShowModal, showModal }: CreateEpisode
     e.preventDefault();
 
     if (!title.trim().length || !description.trim().length) {
-      console.log("title and description are required");
+      toast("Тайтл или описание отсутствует", toastErrorStyles);
       return;
     }
     createNewEpisode.mutate();
@@ -146,28 +147,31 @@ function CreateEpisodeBlock({ seasonId, setShowModal, showModal }: CreateEpisode
   return (
     <div
       ref={modalRef}
-      className={`${showModal ? "" : "hidden"} h-[20rem] overflow-y-auto flex flex-col gap-[1rem] | containerScroll`}
+      className={`${
+        showModal ? "" : "hidden"
+      } flex-grow h-full overflow-y-auto flex flex-col gap-[10px] | containerScroll`}
     >
-      <form onSubmit={handleSubmit} className={`w-full bg-secondary flex flex-col gap-[1rem] p-[1rem]`}>
-        <input
+      <form onSubmit={handleSubmit} className={`w-full flex flex-col gap-[10px] p-[10px]`}>
+        <Input
           type="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="text-[2rem] text-text-light border-double border-l-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none"
+          className="text-text border-double border-border border-[3px] rounded-md px-[10px] py-[5px] rounde-md"
           placeholder="Название Эпизода"
         />
-        <textarea
+        <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="text-[1.5rem] text-text-light border-double border-l-light-gray border-[3px] rounded-md px-[1rem] py-[.5rem] rounde-md outline-none max-h-[30rem]"
+          className="text-text border-double border-border border-[3px] rounded-md px-[10px] py-[5px] rounde-md max-h-[300px] min-h-[150px]"
           placeholder="Описание Эпизода"
         />
-        <button
+        <Button
+          type="submit"
           disabled={isPending}
-          className={` w-fit text-text-dark hover:text-text-light self-end outline-gray-300 text-[1.5rem] shadow-md rounded-md px-[1rem] py-[.5rem] hover:scale-[1.01] active:scale-[0.98]`}
+          className={`text-white hover:shadow-sm bg-brand-gradient hover:shadow-brand-gradient-right self-end text-[16px] rounded-md px-[10px] py-[20px] active:scale-[.99] transition-all`}
         >
           Создать
-        </button>
+        </Button>
       </form>
     </div>
   );

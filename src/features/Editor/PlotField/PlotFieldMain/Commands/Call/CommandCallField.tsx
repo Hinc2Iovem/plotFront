@@ -1,9 +1,12 @@
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SelectWithBlur from "@/components/ui/selectWithBlur";
+import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import { SelectContent } from "@radix-ui/react-select";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
@@ -21,6 +24,9 @@ type CommandCallFieldTypes = {
 };
 
 export default function CommandCallField({ plotFieldCommandId, topologyBlockId, command }: CommandCallFieldTypes) {
+  const { episodeId } = useParams();
+  const { updateValue } = useSearch();
+
   const [nameValue] = useState<string>(command ?? "Call");
 
   const { data: commandCall } = useGetCommandCall({
@@ -53,6 +59,21 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
     }
   }, [currentTopologyBlock]);
 
+  const updateValues = ({ blockName, index }: { index?: number; blockName?: string }) => {
+    //TODO update value on backend
+    const currentIndex = typeof index === "number" ? index : currentReferencedCommandIndex;
+    const currentBlockName = typeof blockName === "string" ? blockName : currentTopologyBlockName;
+    if (typeof index === "number" && episodeId) {
+      updateValue({
+        episodeId,
+        commandName: "call",
+        id: plotFieldCommandId,
+        type: "command",
+        value: `${currentBlockName} ${currentIndex}`,
+      });
+    }
+  };
+
   useEffect(() => {
     if (commandCall) {
       setCommandCallId(commandCall._id);
@@ -64,28 +85,16 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
   }, [commandCall]);
 
   return (
-    <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused
-              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-              : "bg-secondary"
-          }`}
-        >
+    <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
+      <div className="sm:w-[20%] min-w-[100px] relative">
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <div className="flex gap-[.5rem] sm:w-fit w-full flex-grow">
-        <ChooseReferencedCommandIndex
-          setCurrentReferencedCommandIndex={setCurrentReferencedCommandIndex}
-          currentReferencedCommandIndex={currentReferencedCommandIndex}
-          amountOfCommands={currentTopologyBlock?.topologyBlockInfo.amountOfCommands || 0}
-          callId={commandCallId}
-          plotFieldCommandId={plotFieldCommandId}
-        />
+      <div className="flex gap-[5px] flex-grow">
         <ChooseTopologyBlock
           callId={commandCallId}
+          onChange={(value) => updateValues({ blockName: value })}
           setCurrentReferencedCommandIndex={setCurrentReferencedCommandIndex}
           currentTopologyBlockName={currentTopologyBlockName}
           setCurrentTopologyBlockName={setCurrentTopologyBlockName}
@@ -94,6 +103,14 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
           targetBlockId={targetBlockId}
           prevTargetBlockId={commandCall?.targetBlockId || ""}
         />
+
+        <ChooseReferencedCommandIndex
+          onSelect={(value) => updateValues({ index: value })}
+          setCurrentReferencedCommandIndex={setCurrentReferencedCommandIndex}
+          currentReferencedCommandIndex={currentReferencedCommandIndex}
+          amountOfCommands={currentTopologyBlock?.topologyBlockInfo.amountOfCommands || 0}
+          callId={commandCallId}
+        />
       </div>
     </div>
   );
@@ -101,9 +118,9 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
 
 type ChooseReferencedCommandIndexTypes = {
   callId: string;
-  plotFieldCommandId: string;
   amountOfCommands: number;
   currentReferencedCommandIndex: number | null;
+  onSelect: (value: number) => void;
   setCurrentReferencedCommandIndex: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
@@ -111,78 +128,45 @@ function ChooseReferencedCommandIndex({
   callId,
   amountOfCommands,
   currentReferencedCommandIndex,
-  plotFieldCommandId,
+  onSelect,
   setCurrentReferencedCommandIndex,
 }: ChooseReferencedCommandIndexTypes) {
-  const { episodeId } = useParams();
-  const { updateValue } = useSearch();
-
   const updateCommandIndex = useUpdateCallCommandIndex({ callId });
-  const modalRef = useRef<HTMLDivElement>(null);
-  const [showAllCommandIndexes, setShowAllCommandIndexes] = useState(false);
-
-  const updateValues = (index: number) => {
-    if (typeof index === "number" && episodeId) {
-      updateValue({
-        episodeId,
-        commandName: "call",
-        id: plotFieldCommandId,
-        type: "command",
-        value: `${index}`,
-      });
-    }
-  };
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowAllCommandIndexes,
-    showModal: showAllCommandIndexes,
-  });
 
   return (
-    <div className="relative">
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowAllCommandIndexes((prev) => !prev);
-        }}
-      >
-        {typeof currentReferencedCommandIndex === "number"
-          ? `Ссылаться на команду - ${currentReferencedCommandIndex}`
-          : "Ссылаться на команду"}
-      </PlotfieldButton>
-      <AsideScrollable ref={modalRef} className={`${showAllCommandIndexes ? "" : "hidden"} translate-y-[.5rem] `}>
+    <SelectWithBlur onValueChange={(value) => onSelect(+value)}>
+      <SelectTrigger disabled={amountOfCommands <= 0} className="text-text w-[200px] opacity-80 relative">
+        <SelectValue
+          placeholder={
+            typeof currentReferencedCommandIndex === "number"
+              ? `Ссылаться на команду - ${currentReferencedCommandIndex}`
+              : "Ссылаться на команду"
+          }
+          onBlur={(v) => v.currentTarget.blur()}
+          className={`capitalize text-text text-[17px] py-[5px] px-[1px]`}
+        />
+      </SelectTrigger>
+      <SelectContent className="w-full">
         {(typeof currentReferencedCommandIndex === "number" && amountOfCommands > 1) ||
-        (typeof currentReferencedCommandIndex !== "number" && amountOfCommands > 0) ? (
-          [...Array.from({ length: amountOfCommands })]?.map((_, i) => {
-            return (
-              <AsideScrollableButton
-                key={"command" + "-" + i}
-                type="button"
-                onClick={() => {
-                  setShowAllCommandIndexes(false);
-                  updateValues(i);
-                  setCurrentReferencedCommandIndex(i);
-                  updateCommandIndex.mutate({ commandIndex: i });
-                }}
-                className={`${currentReferencedCommandIndex === i ? "hidden" : ""} `}
-              >
-                {i}
-              </AsideScrollableButton>
-            );
-          })
-        ) : (
-          <AsideScrollableButton
-            type="button"
-            onClick={() => {
-              setShowAllCommandIndexes(false);
-            }}
-          >
-            Пусто
-          </AsideScrollableButton>
-        )}
-      </AsideScrollable>
-    </div>
+        (typeof currentReferencedCommandIndex !== "number" && amountOfCommands > 0)
+          ? [...Array.from({ length: amountOfCommands })]?.map((_, i) => {
+              return (
+                <SelectItem
+                  key={"command" + "-" + i}
+                  value={`${i}`}
+                  onSelect={() => {
+                    setCurrentReferencedCommandIndex(i);
+                    updateCommandIndex.mutate({ commandIndex: i });
+                  }}
+                  className={`${currentReferencedCommandIndex === i ? "hidden" : ""} text-text`}
+                >
+                  {i}
+                </SelectItem>
+              );
+            })
+          : null}
+      </SelectContent>
+    </SelectWithBlur>
   );
 }
 
@@ -195,6 +179,7 @@ type ChooseTopologyBlockTypes = {
   setTargetBlockId: React.Dispatch<React.SetStateAction<string>>;
   setCurrentReferencedCommandIndex: React.Dispatch<React.SetStateAction<number | null>>;
   topologyBlockId: string;
+  onChange: (value: string) => void;
 };
 
 function ChooseTopologyBlock({
@@ -206,20 +191,14 @@ function ChooseTopologyBlock({
   topologyBlockId,
   targetBlockId,
   prevTargetBlockId,
+  onChange,
 }: ChooseTopologyBlockTypes) {
   const { episodeId } = useParams();
-
-  const modalRef = useRef<HTMLDivElement>(null);
-  const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
-    episodeId: episodeId || "",
-  });
-
+  const currentInput = useRef<HTMLInputElement>(null);
   const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowAllTopologyBlocks,
-    showModal: showAllTopologyBlocks,
+  const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
+    episodeId: episodeId || "",
   });
 
   const updateCallText = useUpdateCallText({
@@ -229,28 +208,41 @@ function ChooseTopologyBlock({
     episodeId: episodeId || "",
   });
 
-  useEffect(() => {
+  const updateTopologyBlockNameOnBlur = () => {
     if (prevTargetBlockId !== targetBlockId && targetBlockId?.trim().length) {
       updateCallText.mutate();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetBlockId]);
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allTopologyBlocks?.length || 0 });
 
   return (
-    <div className="relative flex-grow">
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowAllTopologyBlocks((prev) => !prev);
-        }}
-      >
-        {currentTopologyBlockName || "Блок"}
-      </PlotfieldButton>
-      <AsideScrollable ref={modalRef} className={`${showAllTopologyBlocks ? "" : "hidden"} translate-y-[.5rem]`}>
+    <Popover open={showAllTopologyBlocks} onOpenChange={setShowAllTopologyBlocks}>
+      <PopoverTrigger asChild>
+        <form className="flex-grow flex justify-between items-center relative">
+          <PlotfieldInput
+            ref={currentInput}
+            value={currentTopologyBlockName || ""}
+            onChange={(e) => {
+              setShowAllTopologyBlocks(true);
+              setCurrentTopologyBlockName(e.target.value);
+              if (onChange) {
+                onChange(e.target.value);
+              }
+            }}
+            onBlur={updateTopologyBlockNameOnBlur}
+            className={`w-full text-text md:text-[17px]`}
+            placeholder="Блок"
+          />
+        </form>
+      </PopoverTrigger>
+
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
         {((allTopologyBlocks?.length || 0) > 1 && !targetBlockId) || (allTopologyBlocks?.length || 0) > 2 ? (
-          allTopologyBlocks?.map((tb) => (
-            <AsideScrollableButton
+          allTopologyBlocks?.map((tb, i) => (
+            <Button
               key={tb._id}
+              ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
               onClick={() => {
                 setShowAllTopologyBlocks(false);
@@ -258,22 +250,22 @@ function ChooseTopologyBlock({
                 setCurrentTopologyBlockName(tb?.name || "");
                 setCurrentReferencedCommandIndex(0);
               }}
-              className={`${topologyBlockId === tb._id ? "hidden" : ""} ${tb._id === targetBlockId ? "hidden" : ""} `}
+              className={`${topologyBlockId === tb._id ? "hidden" : ""} ${
+                tb._id === targetBlockId ? "hidden" : ""
+              } whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all text-[16px]`}
             >
               {tb.name}
-            </AsideScrollableButton>
+            </Button>
           ))
         ) : (
-          <AsideScrollableButton
+          <Button
             type="button"
-            onClick={() => {
-              setShowAllTopologyBlocks(false);
-            }}
+            className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
           >
             Пусто
-          </AsideScrollableButton>
+          </Button>
         )}
-      </AsideScrollable>
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 }

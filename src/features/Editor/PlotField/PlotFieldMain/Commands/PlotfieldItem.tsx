@@ -62,7 +62,6 @@ export default function PlotfieldItem({
   emotionId,
   emotionImg,
   emotionName,
-  commandOrder,
   plotfieldCommandIfId,
 }: PlotFieldItemTypes) {
   return (
@@ -70,9 +69,9 @@ export default function PlotfieldItem({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      className={`w-full flex gap-[1rem] ${
-        plotfieldCommandIfId?.trim().length && command !== "else" && command !== "end" ? "pl-[1rem]" : ""
-      } ${command?.trim().length ? "outline-gray-300" : `outline-gray-600`}`}
+      className={`w-full flex gap-[10px] ${
+        plotfieldCommandIfId?.trim().length && command !== "else" && command !== "end" ? "pl-[10px]" : ""
+      }`}
     >
       <ErrorBoundary FallbackComponent={(error) => <ErrorFallback commandName={command} {...error} />}>
         {!command ? (
@@ -137,7 +136,6 @@ export default function PlotfieldItem({
         ) : command === "comment" ? (
           <CommandCommentField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : null}
-        <span className="w-[3rem] bg-red-500 text-center text-text-light rounded-md text-[1.5rem]">{commandOrder}</span>
       </ErrorBoundary>
     </li>
   );

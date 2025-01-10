@@ -7,14 +7,10 @@ import AllMightySearch from "./AllMightySearch/AllMightySearch";
 import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
 import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
 import Flowchart from "./Flowchart/Flowchart";
-import "./Flowchart/FlowchartStyles.css";
 import PlotField from "./PlotField/PlotField";
+import "./Flowchart/FlowchartStyles.css";
 
-type EditorMainTypes = {
-  setShowHeader: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-export default function EditorMain({ setShowHeader }: EditorMainTypes) {
+export default function EditorMain() {
   const [command, setCommand] = useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
     "" as PossibleCommandsCreatedByCombinationOfKeysTypes
   );
@@ -42,15 +38,12 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
       {typeof hideFlowchartFromScriptwriter === "boolean" && (
         <main
           ref={containerRef}
-          className={`flex w-full ${
-            showAllMightySearch ? "hidden" : ""
-          } h-[calc(100vh-2.30rem)] justify-center relative`}
+          className={`flex w-full ${showAllMightySearch ? "hidden" : ""} h-[calc(100vh-23px)] justify-center relative`}
         >
           <PlotField
             expansionDivDirection={expansionDivDirection}
             hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
             setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
-            setShowHeader={setShowHeader}
             setExpansionDivDirection={setExpansionDivDirection}
             command={command}
           />
@@ -65,7 +58,7 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
           <div
             className={`${
               keyCombinationToExpandPlotField === "expandPlotField" || hideFlowchartFromScriptwriter ? "hidden" : ""
-            } fixed top-[2rem] text-text-light text-[1.3rem] transition-all bg-secondary hover:bg-primary-darker hover:text-text-dark text-gray-700 shadow-md px-[1rem] py-[.5rem] rounded-md z-[10]`}
+            } fixed top-[20px] text-text-light text-[13px] transition-all bg-secondary text-text px-[10px] py-[5px] rounded-md z-[10]`}
             style={{
               left: `${scaleDivPosition}px`,
             }}
@@ -84,7 +77,7 @@ export default function EditorMain({ setShowHeader }: EditorMainTypes) {
 
           <button
             onClick={() => setShowAllMightySearch(true)}
-            className="absolute bottom-[1rem] right-[1rem] w-[3.5rem] rounded-full "
+            className="absolute bottom-[0px] right-[0px] w-[35px] rounded-full "
           >
             <img src={search} alt="Поиск" className="w-full hover:scale-[1.05] transition-all" />
           </button>

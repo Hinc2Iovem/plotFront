@@ -1,9 +1,8 @@
 import { useState } from "react";
 import KeyBindsByEpisodeSubHeader from "./CharacterMain/ByEpisode/KeyBindsByEpisodeSubHeader";
-import KeyBindsCharacterModalByStory from "./CharacterMain/KeyBindsCharacterModalByStory";
+import KeyBindsCharacterModal from "./CharacterMain/KeyBindsCharacterModal";
 import KeyBindsHeader from "./KeyBindsHeader/KeyBindsHeader";
-import KeyBindsCharacterModalByEpisode from "./CharacterMain/KeyBindsCharacterModalByEpisode";
-import PlotfieldCommandNameField from "../../../ui/Texts/PlotfieldCommandNameField";
+import { Button } from "@/components/ui/button";
 
 export type KeyBindsCategoryTypes = "characters" | "commands";
 export type KeyBindsCharacterSubCategoryTypes = "byStory" | "byEpisode";
@@ -20,15 +19,16 @@ export default function KeyBinds() {
   const [episodeCurrentValue, setEpisodeCurrentValue] = useState("");
 
   return (
-    <section className="flex flex-col w-full max-w-[148rem] mx-auto gap-[.5rem] p-[1rem]">
+    <section className="flex flex-col w-full max-w-[1480px] mx-auto p-[40px]">
       <KeyBindsHeader
         characterSubCategory={characterSubCategory}
         currentCategory={currentCategory}
         setCharacterSubCategory={setCharacterSubCategory}
         setCurrentCategory={setCurrentCategory}
       />
-      <main className="w-full mt-[1rem]">
+      <main className="w-full border-border border-[1px] border-t-0 rounded-b-md p-[10px]">
         <KeyBindsByEpisodeSubHeader
+          episodeId={episodeId}
           episodeCurrentValue={episodeCurrentValue}
           seasonValue={seasonValue}
           setEpisodeCurrentValue={setEpisodeCurrentValue}
@@ -39,17 +39,19 @@ export default function KeyBinds() {
           characterSubCategory={characterSubCategory}
         />
         {characterSubCategory === "byStory" ? (
-          <div className={`w-full flex flex-col gap-[2rem]`}>
-            {...Array.from({ length: 10 }).map((_, i) => <KeyBindByStoryItem key={`keysByStory-${i}`} index={i} />)}
+          <div className={`w-full flex flex-col gap-[20px] mt-[10px] border-border border-[1px] rounded-md p-[5px]`}>
+            {...Array.from({ length: 10 }).map((_, i) => <KeyBindItem key={`keysByStory-${i}`} index={i} />)}
           </div>
         ) : (
-          <div className={`w-full flex flex-col gap-[2rem] mt-[2rem]`}>
+          <div className={`w-full flex flex-col gap-[20px] mt-[10px] border-border border-[1px] rounded-md p-[5px]`}>
             {episodeId ? (
               Array.from({ length: 10 }).map((_, i) => (
-                <KeyBindByEpisodeItem key={`keysByEpisode-${i}`} index={i} episodeId={episodeId} />
+                <KeyBindItem key={`keysByEpisode-${i}`} index={i} episodeId={episodeId} />
               ))
             ) : (
-              <PlotfieldCommandNameField>Выберите Эпизод</PlotfieldCommandNameField>
+              <p className="text-text bg-secondary px-[10px] py-[5px] opacity-60 rounded-md hover:opacity-80 transition-all cursor-default">
+                Выберите Эпизод
+              </p>
             )}
           </div>
         )}
@@ -58,73 +60,23 @@ export default function KeyBinds() {
   );
 }
 
-type KeyBindByStoryItemTypes = {
+type KeyBindItemTypes = {
   index: number;
+  episodeId?: string;
 };
 
-const KeyBindByStoryItem = ({ index }: KeyBindByStoryItemTypes) => {
-  const theme = localStorage.getItem("theme");
+const KeyBindItem = ({ index, episodeId }: KeyBindItemTypes) => {
   const [characterId, setCharacterId] = useState("");
   const [showAllCharacters, setShowAllCharacters] = useState(false);
   const [characterName, setCharacterName] = useState("");
 
   return (
-    <div className="flex gap-[1rem]">
-      <button
-        className={`${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-[2rem] text-text-light bg-primary-darker px-[1rem] py-[.5rem] rounded-md cursor-default hover:bg-secondary transition-colors focus-within:bg-secondary`}
-      >
-        C
-      </button>
-      <button
-        className={`${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-[2rem] text-text-light bg-primary-darker px-[1rem] py-[.5rem] rounded-md cursor-default hover:bg-secondary transition-colors focus-within:bg-secondary`}
-      >
+    <div className="flex gap-[10px] items-center">
+      <Button className={`text-[25px] text-text bg-secondary px-[10px] py-[20px] rounded-md cursor-default`}>C</Button>
+      <Button className={`text-[25px] text-text bg-secondary px-[10px] py-[20px] rounded-md cursor-default`}>
         {index}
-      </button>
-      <KeyBindsCharacterModalByStory
-        setShowModal={setShowAllCharacters}
-        showModal={showAllCharacters}
-        characterId={characterId}
-        characterName={characterName}
-        setCharacterId={setCharacterId}
-        setCharacterName={setCharacterName}
-        index={index}
-      />
-    </div>
-  );
-};
-
-type KeyBindByEpisodeItemTypes = {
-  index: number;
-  episodeId: string;
-};
-
-const KeyBindByEpisodeItem = ({ index, episodeId }: KeyBindByEpisodeItemTypes) => {
-  const theme = localStorage.getItem("theme");
-  const [characterId, setCharacterId] = useState("");
-  const [showAllCharacters, setShowAllCharacters] = useState(false);
-  const [characterName, setCharacterName] = useState("");
-
-  return (
-    <div className="flex gap-[1rem]">
-      <button
-        className={`${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-[2rem] text-text-light bg-primary-darker px-[1rem] py-[.5rem] rounded-md cursor-default hover:bg-secondary transition-colors focus-within:bg-secondary`}
-      >
-        C
-      </button>
-      <button
-        className={`${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-[2rem] text-text-light bg-primary-darker px-[1rem] py-[.5rem] rounded-md cursor-default hover:bg-secondary transition-colors focus-within:bg-secondary`}
-      >
-        {index}
-      </button>
-      <KeyBindsCharacterModalByEpisode
+      </Button>
+      <KeyBindsCharacterModal
         setShowModal={setShowAllCharacters}
         showModal={showAllCharacters}
         characterId={characterId}
@@ -133,6 +85,7 @@ const KeyBindByEpisodeItem = ({ index, episodeId }: KeyBindByEpisodeItemTypes) =
         setCharacterName={setCharacterName}
         index={index}
         episodeId={episodeId}
+        type="episode"
       />
     </div>
   );

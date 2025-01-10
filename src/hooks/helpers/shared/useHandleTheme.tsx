@@ -1,10 +1,12 @@
 import { useEffect } from "react";
+import { LocalStorageTypes, useTypedLocalStorage } from "./LocalStorage/useTypedLocalStorage";
 
 export default function useHandleTheme() {
+  const { getItem, setItem } = useTypedLocalStorage<LocalStorageTypes>();
   useEffect(() => {
-    localStorage.setItem("theme", "dark");
+    setItem("theme", "dark");
 
-    const selectedTheme = localStorage.getItem("theme");
+    const selectedTheme = getItem("theme");
 
     if (selectedTheme) {
       document.body.classList.add(selectedTheme);

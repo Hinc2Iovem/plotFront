@@ -11,6 +11,7 @@ export default {
       colors: {
         "brand-gradient-left": "var(--brand-gradient-left)",
         "brand-gradient-right": "var(--brand-gradient-right)",
+        "generall-yellow": "var(--generall-yellow)",
         "text-opposite": "var(--text-opposite)",
         secondary: "var(--secondary)",
         accent: "var(--accent)",
@@ -22,8 +23,6 @@ export default {
         cyan: "var(--cyan)",
         "dark-blue": "rgba(var(--dark-blue))",
         "dark-dark-blue": "rgba(var(--dark-dark-blue))",
-        black: "rgba(var(--black))",
-        white: "rgba(var(--white))",
         "light-gray": "rgba(var(--light-gray))",
         "lightest-gray": "rgba(var(--lightest-gray))",
         "second-lightest-gray": "rgba(var(--second-lightest-gray))",

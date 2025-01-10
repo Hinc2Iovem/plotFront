@@ -3,24 +3,19 @@ import { ComponentProps, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import AsideHoverPromptModal from "./AsideHoverPromptModal";
 
-const ButtonHoverPromptModalStyles = cva(
-  ["z-[999] transition-all outline-none w-fit"],
-  {
-    variants: {
-      variant: {
-        icon: ["bg-secondary rounded-full"],
-        iconWithShadow: [
-          "hover:shadow-black bg-secondary hover:shadow-sm rounded-full",
-        ],
-        rectangle: ["rounded-md"],
-        rectangleWithShadow: ["hover:shadow-gray-300 rounded-md shadow-sm"],
-      },
+const ButtonHoverPromptModalStyles = cva(["z-[999] transition-all outline-none w-fit bg-secondary"], {
+  variants: {
+    variant: {
+      icon: ["bg-secondary rounded-full"],
+      iconWithShadow: ["hover:shadow-black bg-secondary hover:shadow-sm rounded-full"],
+      rectangle: ["rounded-md"],
+      rectangleWithShadow: ["hover:shadow-gray-300 rounded-md shadow-sm"],
     },
-    defaultVariants: {
-      variant: "iconWithShadow",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: "iconWithShadow",
+  },
+});
 
 export interface hidePromptModal {
   hideModal?: boolean;
@@ -35,9 +30,7 @@ interface exclusivelyButtonTypes extends hidePromptModal {
   positionForDiv?: string;
 }
 
-type ButtonHoverPromptModalProps = VariantProps<
-  typeof ButtonHoverPromptModalStyles
-> &
+type ButtonHoverPromptModalProps = VariantProps<typeof ButtonHoverPromptModalStyles> &
   ComponentProps<"button"> &
   exclusivelyButtonTypes;
 
@@ -54,8 +47,7 @@ export default function ButtonHoverPromptModal({
   ...props
 }: ButtonHoverPromptModalProps) {
   const [showAsidePrompt, setShowAsidePrompt] = useState(false);
-  const putDiveInPositionByAbscissa =
-    position !== "relative" ? `${positionForDiv}` : "";
+  const putDiveInPositionByAbscissa = position !== "relative" ? `${positionForDiv}` : "";
   return (
     <div
       className={`${marginAutoSide ? `${marginAutoSide}` : ""} ${
@@ -64,10 +56,7 @@ export default function ButtonHoverPromptModal({
     >
       <button
         {...props}
-        className={twMerge(
-          ButtonHoverPromptModalStyles({ variant }),
-          className
-        )}
+        className={twMerge(ButtonHoverPromptModalStyles({ variant }), className)}
         onMouseOver={() => setShowAsidePrompt(true)}
         onMouseOut={() => setShowAsidePrompt(false)}
       ></button>

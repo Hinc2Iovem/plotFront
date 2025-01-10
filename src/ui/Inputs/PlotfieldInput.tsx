@@ -1,19 +1,17 @@
 import { ComponentProps, forwardRef, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import useBlurOutline from "../../hooks/UI/useBlurOutline";
+import { Input } from "@/components/ui/input";
 
 type PlotFieldInputTypes = ComponentProps<"input">;
 
 type PlotfieldInputPropsTypes = {
   setFocusedSecondTime?: React.Dispatch<React.SetStateAction<boolean>>;
   focusedSecondTime?: boolean;
-  outlineNone?: boolean;
 };
 
 const PlotfieldInput = forwardRef<HTMLInputElement, PlotFieldInputTypes & PlotfieldInputPropsTypes>(
-  ({ className, outlineNone = false, ...props }, ref) => {
-    const theme = localStorage.getItem("theme");
-
+  ({ className, ...props }, ref) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const resolvedRef = ref || inputRef;
 
@@ -22,16 +20,10 @@ const PlotfieldInput = forwardRef<HTMLInputElement, PlotFieldInputTypes & Plotfi
     });
 
     return (
-      <input
+      <Input
         ref={resolvedRef}
         className={twMerge(
-          `${
-            outlineNone
-              ? "outline-none"
-              : theme === "light"
-              ? "outline-gray-300 bg-secondary"
-              : "outline-gray-900 bg-secondary"
-          } w-full text-[1.5rem] text-text-light rounded-md shadow-sm px-[1rem] py-[.5rem] focus-within:shadow-inner transition-shadow`,
+          `w-full md:text-[17px] text-text rounded-md px-[10px] py-[5px] transition-shadow`,
           className
         )}
         {...props}

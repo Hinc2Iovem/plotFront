@@ -55,7 +55,7 @@ export default function WardrobeTitle({
   };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full flex gap-[1rem]">
+    <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow flex gap-[1rem]">
       <PlotfieldInput
         value={wardrobeTitle}
         type="text"

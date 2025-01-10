@@ -1,12 +1,11 @@
+import { Button } from "@/components/ui/button";
 import { KeyBindsCategoryTypes } from "../KeyBinds";
 
 type KeyBindsCategoryBtnsTypes = {
   currentCategory: KeyBindsCategoryTypes;
   categoryNameEng: KeyBindsCategoryTypes;
   categoryName: string;
-  setCurrentCategory: React.Dispatch<
-    React.SetStateAction<KeyBindsCategoryTypes>
-  >;
+  setCurrentCategory: React.Dispatch<React.SetStateAction<KeyBindsCategoryTypes>>;
 };
 
 export default function KeyBindsCategoryBtns({
@@ -17,16 +16,17 @@ export default function KeyBindsCategoryBtns({
 }: KeyBindsCategoryBtnsTypes) {
   return (
     <li>
-      <button
-        className={`text-[2rem] ${
+      <Button
+        variant={"link"}
+        className={`text-[30px] ${
           currentCategory === categoryNameEng
-            ? "text-text-light underline"
-            : "text-text-dark"
-        } hover:text-text-light transition-all hover:underline focus-within:text-text-light focus-within:underline outline-none`}
+            ? "text-text underline"
+            : "text-accent hover:text-text focus-within:underline focus-within:text-text hover:underline"
+        }  transition-all outline-none`}
         onClick={() => setCurrentCategory(categoryNameEng)}
       >
         {categoryName}
-      </button>
+      </Button>
     </li>
   );
 }

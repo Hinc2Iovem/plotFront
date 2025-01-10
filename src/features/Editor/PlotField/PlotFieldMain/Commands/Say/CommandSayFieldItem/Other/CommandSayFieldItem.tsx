@@ -53,7 +53,7 @@ export default function CommandSayFieldItem({
   }, [commandSayText]);
 
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
+    <div className="flex flex-wrap gap-[10px] w-full bg-background border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
       <SayFieldItemVariationType
         episodeId={episodeId || ""}
         plotFieldCommandId={plotFieldCommandId}

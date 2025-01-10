@@ -7,6 +7,8 @@ import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/us
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandMove from "../../../hooks/Move/useGetCommandMove";
 import useUpdateMoveText from "../../../hooks/Move/useUpdateMoveText";
+import { toast } from "sonner";
+import { toastErrorStyles } from "@/components/shared/toastStyles";
 
 type CommandMoveFieldTypes = {
   plotFieldCommandId: string;
@@ -15,13 +17,12 @@ type CommandMoveFieldTypes = {
 };
 
 const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
+const regexCheckDecimalNumberWithoutZeroAtBeginning = /^\.\d$/;
 
 export default function CommandMoveField({ plotFieldCommandId, command, topologyBlockId }: CommandMoveFieldTypes) {
   const { episodeId } = useParams();
   const [nameValue] = useState<string>(command ?? "Move");
-  const [initValue, setInitValue] = useState<string>("");
   const [moveValue, setMoveValue] = useState<string>("");
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
   const { data: commandMove } = useGetCommandMove({
     plotFieldCommandId,
   });
@@ -35,7 +36,6 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
     if (commandMove) {
       setCommandMoveId(commandMove._id);
       setMoveValue(commandMove?.moveValue || "");
-      setInitValue(commandMove?.moveValue || "");
     }
   }, [commandMove]);
 
@@ -56,53 +56,44 @@ export default function CommandMoveField({ plotFieldCommandId, command, topology
 
   const handleBlur = () => {
     if (moveValue.trim().length && currentInput.current && document.activeElement !== currentInput.current) {
-      const fixIfZeroOrOne = moveValue === "0" ? "0.0" : moveValue === "1" ? "1.0" : moveValue;
-      setMoveValue(fixIfZeroOrOne);
+      let correctedValue = moveValue;
+      if (regexCheckDecimalNumberWithoutZeroAtBeginning.test(moveValue)) {
+        correctedValue = `0${moveValue}`;
+      } else {
+        correctedValue = moveValue === "0" ? "0.0" : moveValue === "1" ? "1.0" : moveValue;
+      }
+      setMoveValue(correctedValue);
 
       if (episodeId) {
-        updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: fixIfZeroOrOne });
+        updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: correctedValue });
       }
 
-      if (regexCheckDecimalNumberBetweenZeroAndOne.test(fixIfZeroOrOne) && initValue !== moveValue) {
-        setShowNotificationModal(false);
+      console.log("correctedValue: ", correctedValue);
+
+      if (regexCheckDecimalNumberBetweenZeroAndOne.test(correctedValue)) {
         updateMoveText.mutate();
-        setInitValue(moveValue);
       } else {
-        setShowNotificationModal(true);
+        toast("Значение должно быть десятичным числом в промежутке от 0.0 до 1.0", toastErrorStyles);
       }
     }
   };
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused
-              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-              : "bg-secondary"
-          }`}
-        >
+    <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col relative">
+      <div className="sm:w-[20%] min-w-[100px] relative">
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
+      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
         <PlotfieldInput
           ref={currentInput}
           onBlur={handleBlur}
           value={moveValue || ""}
           type="text"
-          placeholder="Such a lovely day"
+          placeholder="Двигай"
           onChange={(e) => setMoveValue(e.target.value)}
         />
       </form>
-      <aside
-        onClick={() => setShowNotificationModal(false)}
-        className={`${
-          showNotificationModal ? "" : "hidden"
-        } absolute -translate-y-[2rem] right-0 bg-secondary shadow-md rounded-md border-red-400 border-[2px] border-dashed w-[70%] text-[1.4rem] p-[.5rem] text-right text-red-300`}
-      >
-        Значение должно быть десятичным числом в промежутке от 0.0 до 1.0
-      </aside>
     </div>
   );
 }

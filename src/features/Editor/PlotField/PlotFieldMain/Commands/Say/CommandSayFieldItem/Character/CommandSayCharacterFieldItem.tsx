@@ -99,38 +99,27 @@ export default function CommandSayCharacterFieldItem({
     }
   }, [showCreateEmotionModal, showCreateCharacterModal]);
 
-  const [showCharacters, setShowCharacters] = useState(false);
-  const [showAllEmotions, setShowAllEmotions] = useState(false);
-
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full h-fit bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
-      <div className="flex flex-col gap-[1rem] sm:w-1/3 min-w-[20rem] w-full flex-grow">
+    <div className="flex flex-wrap gap-[5px] w-full h-full rounded-md p-[5px] sm:flex-row flex-col relative border-border border-[1px]">
+      <div className="flex flex-col gap-[5px] md:w-[300px] w-full">
         <FormCharacter
-          initialCharacterId={currentCharacterId}
-          topologyBlockId={topologyBlockId}
           plotFieldCommandId={plotFieldCommandId}
           plotFieldCommandSayId={plotFieldCommandSayId}
           setShowCreateCharacterModal={setShowCreateCharacterModal}
           showCreateCharacterModal={showCreateCharacterModal}
-          setShowCharacters={setShowCharacters}
-          setShowAllEmotions={setShowAllEmotions}
-          showCharacters={showCharacters}
           setEmotionValue={setEmotionValue}
           characterValue={characterValue}
           setCharacterValue={setCharacterValue}
         />
+
         <FormEmotion
           emotionValue={emotionValue}
           emotions={allEmotions}
           plotFieldCommandId={plotFieldCommandId}
-          initialEmotionId={currentEmotionId}
           setEmotionValue={setEmotionValue}
           plotFieldCommandSayId={plotFieldCommandSayId}
           setShowCreateEmotionModal={setShowCreateEmotionModal}
           showCreateEmotionModal={showCreateEmotionModal}
-          setShowAllEmotions={setShowAllEmotions}
-          setShowCharacters={setShowCharacters}
-          showAllEmotions={showAllEmotions}
           characterId={characterValue._id || ""}
         />
       </div>

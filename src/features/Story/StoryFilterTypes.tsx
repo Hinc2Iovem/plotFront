@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { StoryFilterTypes } from "./Story";
 import { getAllAssignedStories } from "../../hooks/Fetching/Story/useGetAllAssignedStoryTranslationsSearch";
 import useGetDecodedJWTValues from "../../hooks/Auth/useGetDecodedJWTValues";
+import { Button } from "@/components/ui/button";
 
 type StoryFilterTypesProps = {
   setStoriesType: React.Dispatch<React.SetStateAction<StoryFilterTypes>>;
@@ -18,15 +19,7 @@ export default function StoryFilterTypesHeader({
   const { userId } = useGetDecodedJWTValues();
   const prefetchAllAssignedStories = (storyStatus: string) => {
     queryClient.prefetchQuery({
-      queryKey: [
-        "translation",
-        "assigned",
-        "stories",
-        storyStatus,
-        userId,
-        "search",
-        "",
-      ],
+      queryKey: ["translation", "assigned", "stories", storyStatus, userId, "search", ""],
       queryFn: () =>
         getAllAssignedStories({
           debouncedValue: "",
@@ -37,9 +30,9 @@ export default function StoryFilterTypesHeader({
     });
   };
   return (
-    <ul className="flex flex-col gap-[1rem] bg-secondary rounded-md p-[1rem] shadow-sm">
+    <ul className="flex flex-col gap-[5px] rounded-md">
       <li>
-        <button
+        <Button
           onMouseEnter={() => prefetchAllAssignedStories("")}
           onFocus={() => prefetchAllAssignedStories("")}
           onClick={() => {
@@ -50,15 +43,15 @@ export default function StoryFilterTypesHeader({
           }}
           className={`text-[1.4rem] ${
             storiesType === "allAssigned"
-              ? "rounded-md bg-primary-darker text-text-light w-full text-start px-[1rem] py-[.5rem]"
-              : ""
-          } w-full hover:bg-primary-darker outline-gray-300 hover:text-text-light text-text-dark hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+              ? "rounded-md bg-secondary text-text w-full text-start px-[10px] py-[5px]"
+              : "hover:bg-secondary hover:text-text bg-accent text-text opacity-80 hover:opacity-100 focus-within:opacity-100"
+          } w-full outline-gray-300 transition-all py-[20px] text-[15px]`}
         >
           Все
-        </button>
+        </Button>
       </li>
       <li>
-        <button
+        <Button
           onFocus={() => prefetchAllAssignedStories("done")}
           onMouseEnter={() => prefetchAllAssignedStories("done")}
           onClick={() => {
@@ -69,15 +62,15 @@ export default function StoryFilterTypesHeader({
           }}
           className={`text-[1.4rem] ${
             storiesType === "done"
-              ? "rounded-md bg-primary-darker text-text-light w-full text-start px-[1rem] py-[.5rem]"
-              : ""
-          } w-full hover:bg-primary-darker outline-gray-300 hover:text-text-light text-text-dark hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+              ? "rounded-md bg-secondary text-text w-full text-start px-[10px] py-[5px]"
+              : "hover:bg-secondary hover:text-text bg-accent text-text opacity-80 hover:opacity-100 focus-within:opacity-100"
+          } w-full outline-gray-300 transition-all py-[20px] text-[15px] `}
         >
           Законченные
-        </button>
+        </Button>
       </li>
       <li>
-        <button
+        <Button
           onFocus={() => prefetchAllAssignedStories("doing")}
           onMouseEnter={() => prefetchAllAssignedStories("doing")}
           onClick={() => {
@@ -88,12 +81,12 @@ export default function StoryFilterTypesHeader({
           }}
           className={`text-[1.4rem] ${
             storiesType === "doing"
-              ? "rounded-md bg-primary-darker text-text-light w-full text-start px-[1rem] py-[.5rem]"
-              : ""
-          } w-full hover:bg-primary-darker outline-gray-300 hover:text-text-light text-text-dark hover:w-full hover:px-[1rem] hover:py-[.5rem] hover:rounded-md text-start transition-all `}
+              ? "rounded-md bg-secondary text-text w-full text-start px-[10px] py-[5px]"
+              : "hover:bg-secondary hover:text-text bg-accent text-text opacity-80 hover:opacity-100 focus-within:opacity-100"
+          } w-full outline-gray-300 transition-all py-[20px] text-[15px] `}
         >
           В Процессе
-        </button>
+        </Button>
       </li>
     </ul>
   );

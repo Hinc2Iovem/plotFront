@@ -1,162 +1,175 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllCharactersByStoryId from "../../../../../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
 import useGetTranslationCharacters from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
-import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import usePlotfieldCommands from "../../../../Context/PlotFieldContext";
 import {
   CharacterValueTypes,
   EmotionTypes,
 } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 import PlotfieldCharactersPrompt from "./PlotfieldCharactersPrompt";
-import useDebounce from "../../../../../../../hooks/utilities/useDebounce";
 
 export type ExposedMethods = {
   updateCharacterNameOnBlur: () => void;
 };
 
 type PlotfieldCharacterPromptMainTypes = {
-  setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
-  showCharacterModal: boolean;
-  translateAsideValue: string;
   characterName: string;
   plotfieldCommandId?: string;
   currentCharacterId: string;
+  inputClasses?: string;
+  imgClasses?: string;
+  characterValue: CharacterValueTypes;
   setCharacterValue: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
   setEmotionValue?: React.Dispatch<React.SetStateAction<EmotionTypes>>;
+  onChange: (value: string) => void;
 };
 
-const PlotfieldCharacterPromptMain = forwardRef<ExposedMethods, PlotfieldCharacterPromptMainTypes>(
-  (
-    {
-      setCharacterValue,
-      setEmotionValue,
-      currentCharacterId,
-      setShowCharacterModal,
-      characterName,
-      showCharacterModal,
-      translateAsideValue,
-      plotfieldCommandId,
-    },
-    ref
-  ) => {
-    const { storyId } = useParams();
-    const modalRef = useRef<HTMLDivElement>(null);
-    const theme = localStorage.getItem("theme");
-    const { updateCharacterProperties, updateEmotionProperties } = usePlotfieldCommands();
+const PlotfieldCharacterPromptMain = ({
+  setCharacterValue,
+  setEmotionValue,
+  currentCharacterId,
+  characterValue,
+  onChange,
+  characterName,
+  plotfieldCommandId,
+  inputClasses,
+  imgClasses,
+}: PlotfieldCharacterPromptMainTypes) => {
+  const { storyId } = useParams();
+  const [showCharacterModal, setShowCharacterModal] = useState(false);
+  const { updateCharacterProperties, updateEmotionProperties } = usePlotfieldCommands();
+  const currentInput = useRef<HTMLInputElement>(null);
+  const { data: allTranslatedCharacters } = useGetTranslationCharacters({
+    storyId: storyId || "",
+    language: "russian",
+  });
 
-    const debouncedValue = useDebounce({ value: characterName || "", delay: 600 });
+  const { data: allCharacters } = useGetAllCharactersByStoryId({
+    storyId: storyId || "",
+  });
 
-    const { data: allTranslatedCharacters } = useGetTranslationCharacters({
-      storyId: storyId || "",
-      language: "russian",
-    });
-
-    const { data: allCharacters } = useGetAllCharactersByStoryId({
-      storyId: storyId || "",
-    });
-
-    const combinedCharacters = useMemo(() => {
-      if (allTranslatedCharacters && allCharacters) {
-        return allCharacters.map((c) => {
-          const currentTranslatedCharacter = allTranslatedCharacters.find((tc) => tc.characterId === c._id);
-          return {
-            characterImg: c?.img || "",
-            characterId: c._id,
-            characterName:
-              currentTranslatedCharacter?.translations?.find((tc) => tc.textFieldName === "characterName")?.text || "",
-          };
-        });
-      } else {
-        return [];
-      }
-    }, [allTranslatedCharacters, allCharacters]);
-
-    const filteredCharacters = useMemo(() => {
-      if (combinedCharacters) {
-        if (debouncedValue?.trim().length) {
-          return combinedCharacters.filter((cc) =>
-            cc?.characterName?.toLowerCase().includes(debouncedValue?.toLowerCase())
-          );
-        } else {
-          return combinedCharacters;
-        }
-      } else {
-        return [];
-      }
-    }, [combinedCharacters, debouncedValue]);
-
-    useImperativeHandle(ref, () => ({
-      updateCharacterNameOnBlur,
-    }));
-
-    const updateCharacterNameOnBlur = () => {
-      if (!debouncedValue?.trim().length) {
-        return;
-      }
-      const tranlsatedCharacter = allTranslatedCharacters?.find((tc) =>
-        tc.translations?.find(
-          (tct) => tct.textFieldName === "characterName" && tct.text?.toLowerCase() === debouncedValue?.toLowerCase()
-        )
-      );
-      if (!tranlsatedCharacter) {
-        // TODO give possibility to create a new character here
-        console.log("Non-existing character");
-        return;
-      }
-
-      const character = allCharacters?.find((c) => c._id === tranlsatedCharacter?.characterId);
-
-      if (currentCharacterId?.trim().length && currentCharacterId !== character?._id) {
-        if (setEmotionValue) {
-          setEmotionValue({
-            _id: null,
-            emotionName: null,
-            imgUrl: null,
-          });
-          updateEmotionProperties({
-            emotionId: "",
-            emotionName: "",
-            id: plotfieldCommandId || "",
-            emotionImg: "",
-          });
-        }
-
-        setCharacterValue({
-          _id: character?._id || null,
+  const combinedCharacters = useMemo(() => {
+    if (allTranslatedCharacters && allCharacters) {
+      return allCharacters.map((c) => {
+        const currentTranslatedCharacter = allTranslatedCharacters.find((tc) => tc.characterId === c._id);
+        return {
+          characterImg: c?.img || "",
+          characterId: c._id,
           characterName:
-            tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || null,
-          imgUrl: character?.img || null,
-        });
+            currentTranslatedCharacter?.translations?.find((tc) => tc.textFieldName === "characterName")?.text || "",
+        };
+      });
+    } else {
+      return [];
+    }
+  }, [allTranslatedCharacters, allCharacters]);
 
-        updateCharacterProperties({
-          characterId: character?._id || "",
-          characterName:
-            tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || "",
+  const filteredCharacters = useMemo(() => {
+    if (combinedCharacters) {
+      if (characterName?.trim().length) {
+        return combinedCharacters.filter((cc) =>
+          cc?.characterName?.toLowerCase().includes(characterName?.trim()?.toLowerCase())
+        );
+      } else {
+        return combinedCharacters;
+      }
+    } else {
+      return [];
+    }
+  }, [combinedCharacters, characterName]);
+
+  const updateCharacterNameOnBlur = () => {
+    if (!characterName?.trim().length) {
+      return;
+    }
+    const tranlsatedCharacter = allTranslatedCharacters?.find((tc) =>
+      tc.translations?.find(
+        (tct) => tct.textFieldName === "characterName" && tct.text?.toLowerCase() === characterName?.toLowerCase()
+      )
+    );
+    if (!tranlsatedCharacter) {
+      // TODO give possibility to create a new character here
+      console.log("Non-existing character");
+      return;
+    }
+
+    const character = allCharacters?.find((c) => c._id === tranlsatedCharacter?.characterId);
+
+    if (currentCharacterId?.trim().length && currentCharacterId !== character?._id) {
+      if (setEmotionValue) {
+        setEmotionValue({
+          _id: null,
+          emotionName: null,
+          imgUrl: null,
+        });
+        updateEmotionProperties({
+          emotionId: "",
+          emotionName: "",
           id: plotfieldCommandId || "",
-          characterImg: character?.img || "",
+          emotionImg: "",
         });
       }
-    };
 
-    useOutOfModal({
-      modalRef,
-      setShowModal: setShowCharacterModal,
-      showModal: showCharacterModal,
-    });
+      setCharacterValue({
+        _id: character?._id || null,
+        characterName:
+          tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || null,
+        imgUrl: character?.img || null,
+      });
 
-    return (
-      <AsideScrollable
-        ref={modalRef}
-        className={`${showCharacterModal ? "" : "hidden"} ${
-          !allCharacters?.length && debouncedValue ? "hidden" : ""
-        } ${translateAsideValue}`}
-      >
+      updateCharacterProperties({
+        characterId: character?._id || "",
+        characterName: tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || "",
+        id: plotfieldCommandId || "",
+        characterImg: character?.img || "",
+      });
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredCharacters.length });
+
+  return (
+    <Popover open={showCharacterModal} onOpenChange={setShowCharacterModal}>
+      <PopoverTrigger asChild>
+        <form className="flex-grow flex justify-between items-center relative">
+          <PlotfieldInput
+            ref={currentInput}
+            value={characterValue?.characterName || ""}
+            onChange={(e) => {
+              setShowCharacterModal(true);
+              setCharacterValue((prev) => ({
+                ...prev,
+                characterName: e.target.value,
+              }));
+              if (onChange) {
+                onChange(e.target.value);
+              }
+            }}
+            onBlur={updateCharacterNameOnBlur}
+            className={`${inputClasses ? inputClasses : "h-[50px] w-full pr-[50px] text-text md:text-[17px]"}`}
+            placeholder="Имя Персонажа"
+          />
+
+          <img
+            src={characterValue?.imgUrl || ""}
+            alt="CharacterImg"
+            className={`${characterValue?.imgUrl?.trim().length ? "" : "hidden"} ${
+              imgClasses ? imgClasses : "w-[40px] object-cover top-[5px] right-[3px] rounded-md absolute"
+            }`}
+          />
+        </form>
+      </PopoverTrigger>
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
         {filteredCharacters?.length ? (
           filteredCharacters?.map((c, i) => (
             <PlotfieldCharactersPrompt
               key={`${c.characterId}-${i}`}
+              ref={(el) => (buttonsRef.current[i] = el)}
               setShowCharacterModal={setShowCharacterModal}
               plotfieldCommandId={plotfieldCommandId}
               setCharacterValue={setCharacterValue}
@@ -166,20 +179,16 @@ const PlotfieldCharacterPromptMain = forwardRef<ExposedMethods, PlotfieldCharact
             />
           ))
         ) : !filteredCharacters?.length ? (
-          <button
+          <Button
             type="button"
-            className={`text-start ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } focus-within:bg-primary-darker focus-within:text-text-light text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all rounded-md`}
+            className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
           >
             Пусто
-          </button>
+          </Button>
         ) : null}
-      </AsideScrollable>
-    );
-  }
-);
-
-PlotfieldCharacterPromptMain.displayName = "PlotfieldCharacterPromptMain";
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export default PlotfieldCharacterPromptMain;

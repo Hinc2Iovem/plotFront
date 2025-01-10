@@ -1,20 +1,23 @@
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import useCreateStory from "../../../../hooks/Posting/Story/useCreateStory";
-import { handleUploadeImg } from "../../../../utils/handleUploadImg";
-import LightBox from "../../../../ui/shared/LightBox";
-import PreviewImage from "../../../../ui/shared/PreviewImage";
 import SyncLoad from "../../../../ui/Loaders/SyncLoader";
+import PreviewImage from "../../../../ui/shared/PreviewImage";
+import { handleUploadeImg } from "../../../../utils/handleUploadImg";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { toastErrorStyles } from "@/components/shared/toastStyles";
 
 export default function CreateStory() {
-  const [isLightBox, setIsLightBox] = useState(false);
   const [storyTitle, setStoryTitle] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
   const [storyDescription, setStoryDescription] = useState("");
   const [storyGenre, setStoryGenre] = useState("");
   const [preview, setPreview] = useState<string | ArrayBuffer | null>("");
   const [imgPreviewLink, setImgPreviewLink] = useState("");
   const [imgUploading, setImgUploading] = useState(false);
-
-  const theme = localStorage.getItem("theme");
 
   const createStory = useCreateStory({
     currentLanguage: "russian",
@@ -42,83 +45,86 @@ export default function CreateStory() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preview]);
 
-  useEffect(() => {
-    if (isLightBox) {
-      setStoryTitle("");
-      setStoryDescription("");
-      setStoryGenre("");
-      setImgPreviewLink("");
-      setPreview("");
+  console.log(showDialog);
+
+  const handleCreateStory = async () => {
+    if (!storyTitle.trim().length || !storyDescription.trim().length || !storyGenre.trim().length) {
+      toast("Тайтл, описание или жанр отсутствуют", toastErrorStyles);
+      return;
     }
-  }, [isLightBox]);
+
+    try {
+      setShowDialog(false);
+      createStory.mutate();
+    } catch (error) {
+      console.error(error);
+      toast("Упс что-то пошло не так", toastErrorStyles);
+    }
+  };
+
   return (
-    <>
-      <div className={`rounded-md shadow-md relative`}>
-        <button
+    <Dialog open={showDialog} onOpenChange={(open) => (open ? setShowDialog(true) : setShowDialog(false))}>
+      <DialogTrigger asChild>
+        <Button
           onClick={() => {
-            setIsLightBox(true);
+            setShowDialog(true);
+            setStoryTitle("");
+            setStoryDescription("");
+            setStoryGenre("");
+            setImgPreviewLink("");
+            setPreview("");
           }}
-          className={`text-[1.5rem] outline-none active:scale-[0.99] w-full  ${
-            theme === "light"
-              ? "hover:text-text-dark hover:bg-green-300 bg-secondary-darker"
-              : " bg-primary text-text-dark hover:text-text-light hover:bg-primary-darker"
-          } transition-all py-[1rem] p-[.5rem] rounded-md`}
+          className={`text-[15px] mb-[10px] text-white hover:shadow-brand-gradient-right hover:shadow-sm outline-none active:scale-[0.99] w-full bg-brand-gradient transition-all py-[20px] px-[10px] rounded-md`}
         >
           Создать Историю
-        </button>
-      </div>
-      <LightBox isLightBox={isLightBox} setIsLightBox={setIsLightBox} />
-      <aside
-        className={`${
-          isLightBox ? "" : "hidden"
-        } flex flex-col gap-[1rem] p-[1rem] z-[3] fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-secondary rounded-md shadow-md sm:w-[30rem] h-fit w-[25rem]`}
-      >
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
         <PreviewImage
           imagePreview={preview}
           setPreview={setPreview}
           imgClasses="w-full h-full object-cover rounded-md"
-          divClasses="h-[15rem] rounded-md shadow-sm relative"
+          divClasses="h-[150px] rounded-md shadow-sm relative"
         />
         <form
-          className="flex flex-col gap-[1rem]"
+          className="flex flex-col gap-[10px]"
           onSubmit={(e) => {
             e.preventDefault();
-            createStory.mutate();
-            setIsLightBox(false);
+            handleCreateStory();
           }}
         >
-          <input
+          <Input
             type="text"
             value={storyTitle}
             onChange={(e) => setStoryTitle(e.target.value)}
-            className="w-full text-text-light text-[1.6rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
+            className="w-full text-text text-[16px] px-[10px] py-[5px] border-border border-[1px] rounded-md transition-all"
             placeholder="Тайтл Истории"
           />
-          <input
+          <Input
             type="text"
             value={storyGenre}
             onChange={(e) => setStoryGenre(e.target.value)}
-            className="w-full text-text-light text-[1.5rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
+            className="w-full text-text text-[15px] px-[10px] py-[5px] border-border border-[1px] rounded-md transition-all"
             placeholder="Жанры Истории"
           />
-          <textarea
+          <Textarea
             value={storyDescription}
             onChange={(e) => setStoryDescription(e.target.value)}
-            className="w-full text-text-light text-[1.4rem] max-h-[10rem] placeholder:text-gray-500 text-gray-700 px-[1rem] py-[.5rem] border-dashed border-gray-500 border-[2px] rounded-md transition-all"
+            className="w-full text-text text-[14px] max-h-[100px] px-[10px] py-[5px] border-border border-[1px] rounded-md transition-all"
             placeholder="Описание Истории"
           />
-          <button
-            className={`w-full text-text-dark hover:text-text-light px-[1rem] py-[.5rem] text-[1.5rem] rounded-md hover:shadow-md border-gray-700 border-[1px] active:scale-[0.99] transition-all`}
+          <Button
+            className={`w-full text-white hover:shadow-brand-gradient-right bg-brand-gradient hover:shadow-sm px-[10px] py-[20px] text-[15px] rounded-md active:scale-[0.99] transition-all`}
           >
             Создать
-          </button>
+          </Button>
         </form>
         <SyncLoad
           className="bg-secondary shadow-md rounded-sm top-[1rem] right-[1rem]"
-          conditionToLoading={!imgUploading}
-          conditionToStart={imgUploading}
+          conditionToLoading={imgUploading}
+          conditionToStart={!imgUploading}
         />
-      </aside>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }

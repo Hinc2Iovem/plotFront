@@ -1,145 +1,134 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import { useMemo, useState } from "react";
 import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import useUpdateMusicText from "../../../hooks/Music/useUpdateMusicText";
 
-type ExposedMethods = {
-  handleUpdatingMusicState: () => void;
-};
-
 type AllMusicModalTypes = {
-  showMusicDropDown: boolean;
   musicName: string;
   storyId: string;
-  debouncedValue: string;
   musicId: string;
   initValue: string;
   setMusicName: React.Dispatch<React.SetStateAction<string>>;
-  setShowMusicDropDown: React.Dispatch<React.SetStateAction<boolean>>;
   setShowCreateMusicModal: React.Dispatch<React.SetStateAction<boolean>>;
   setInitValue: React.Dispatch<React.SetStateAction<string>>;
+  onChange: (value: string) => void;
 };
 
-const AllMusicModal = forwardRef<ExposedMethods, AllMusicModalTypes>(
-  (
-    {
-      storyId,
-      debouncedValue,
-      musicName,
-      musicId,
-      initValue,
-      showMusicDropDown,
-      setShowMusicDropDown,
-      setMusicName,
-      setShowCreateMusicModal,
-      setInitValue,
-    },
-    ref
-  ) => {
-    const modalRef = useRef<HTMLDivElement>(null);
+const AllMusicModal = ({
+  storyId,
+  musicName,
+  musicId,
+  initValue,
+  setMusicName,
+  setShowCreateMusicModal,
+  setInitValue,
+  onChange,
+}: AllMusicModalTypes) => {
+  const [showMusicModal, setShowMusicModal] = useState(false);
+  const { data: allMusic } = useGetAllMusicByStoryId({
+    storyId: storyId || "",
+  });
 
-    const { data: allMusic } = useGetAllMusicByStoryId({
-      storyId: storyId || "",
-    });
+  const allMusicFilteredMemoized = useMemo(() => {
+    const res = [...(allMusic || [])];
+    if (musicName) {
+      const filtered = res?.filter((a) => a.musicName.toLowerCase().includes(musicName.toLowerCase())) || [];
+      return filtered.map((f) => f.musicName.toLowerCase());
+    } else {
+      return res.map((r) => r.musicName.toLowerCase());
+    }
+  }, [allMusic, musicName]);
 
-    const allMusicFilteredMemoized = useMemo(() => {
-      const res = [...(allMusic || [])];
-      if (debouncedValue) {
-        const filtered = res?.filter((a) => a.musicName.toLowerCase().includes(debouncedValue.toLowerCase())) || [];
-        return filtered.map((f) => f.musicName.toLowerCase());
-      } else {
-        return res.map((r) => r.musicName.toLowerCase());
-      }
-    }, [allMusic, debouncedValue]);
+  const allMusicMemoized = useMemo(() => {
+    return allMusic?.map((a) => a.musicName.toLowerCase()) || [];
+  }, [allMusic]);
 
-    const allMusicMemoized = useMemo(() => {
-      return allMusic?.map((a) => a.musicName.toLowerCase()) || [];
-    }, [allMusic]);
+  const updateMusicText = useUpdateMusicText({
+    storyId: storyId || "",
+    musicId,
+  });
 
-    const updateMusicText = useUpdateMusicText({
-      storyId: storyId || "",
-      musicId,
-    });
+  const handleUpdatingMusicState = (mm?: string) => {
+    const value = mm?.trim().length ? mm : musicName;
+    if (!value?.trim().length) {
+      console.log("Заполните поле");
+      return;
+    }
 
-    useImperativeHandle(ref, () => ({
-      handleUpdatingMusicState,
-    }));
+    if (initValue === value) {
+      return;
+    }
 
-    const handleUpdatingMusicState = (mm?: string) => {
-      if (!musicName?.trim().length && !mm?.trim().length) {
-        console.log("Заполните поле");
-        return;
-      }
+    setInitValue(value);
+    if (value?.trim().length) {
+      // on button click
+      updateMusicText.mutate({ musicName: value });
+    } else if (allMusicMemoized?.includes(value.toLowerCase())) {
+      // just updated music command
+      updateMusicText.mutate({ musicName });
+    } else {
+      // suggest to create new music
+      setShowCreateMusicModal(true);
+    }
+  };
 
-      if (initValue === musicName) {
-        return;
-      }
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allMusicFilteredMemoized.length });
 
-      setShowMusicDropDown(false);
+  return (
+    <Popover open={showMusicModal} onOpenChange={setShowMusicModal}>
+      <PopoverTrigger asChild>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+          className="w-full"
+        >
+          <PlotfieldInput
+            onBlur={() => handleUpdatingMusicState()}
+            value={musicName || ""}
+            onChange={(e) => {
+              setShowMusicModal(true);
+              setMusicName(e.target.value);
+              if (onChange) {
+                onChange(e.target.value);
+              }
+            }}
+            placeholder="Музыка"
+          />
+        </form>
+      </PopoverTrigger>
 
-      setInitValue(musicName);
-      if (mm?.trim().length) {
-        // on button click
-        updateMusicText.mutate({ musicName: mm });
-      } else if (allMusicMemoized?.includes(musicName.toLowerCase())) {
-        // just updated music command
-        updateMusicText.mutate({ musicName });
-      } else {
-        // suggest to create new music
-        setShowCreateMusicModal(true);
-      }
-    };
-
-    useOutOfModal({
-      setShowModal: setShowMusicDropDown,
-      showModal: showMusicDropDown,
-      modalRef,
-    });
-    return (
-      <AsideScrollable
-        ref={modalRef}
-        className={`${showMusicDropDown ? "" : "hidden"} translate-y-[3.5rem] ${
-          !allMusicFilteredMemoized.length && musicName ? "hidden" : ""
-        }`}
-      >
-        <ul className={`flex flex-col gap-[.5rem]`}>
-          {allMusicFilteredMemoized.length ? (
-            allMusicFilteredMemoized.map((mm, i) => (
-              <li key={mm + i}>
-                <AsideScrollableButton
-                  type="button"
-                  onClick={() => {
-                    handleUpdatingMusicState(mm);
-                    setMusicName(mm);
-                    setShowMusicDropDown(false);
-                  }}
-                  className={`${
-                    musicName === mm ? "bg-primary-darker text-text-light" : "bg-secondary text-text-dark"
-                  }`}
-                >
-                  {mm}
-                </AsideScrollableButton>
-              </li>
-            ))
-          ) : !musicName?.trim().length ? (
-            <li>
-              <AsideScrollableButton
-                onClick={() => {
-                  setShowMusicDropDown(false);
-                }}
-              >
-                Пусто
-              </AsideScrollableButton>
-            </li>
-          ) : null}
-        </ul>
-      </AsideScrollable>
-    );
-  }
-);
-
-AllMusicModal.displayName = "AllMusicModal";
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
+        {allMusicFilteredMemoized.length ? (
+          allMusicFilteredMemoized.map((mm, i) => (
+            <Button
+              key={mm + i}
+              ref={(el) => (buttonsRef.current[i] = el)}
+              type="button"
+              onClick={() => {
+                setMusicName(mm);
+                handleUpdatingMusicState(mm);
+                setShowMusicModal(false);
+              }}
+              className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
+            >
+              {mm}
+            </Button>
+          ))
+        ) : !musicName?.trim().length ? (
+          <Button
+            type="button"
+            className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
+          >
+            Пусто
+          </Button>
+        ) : null}
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export default AllMusicModal;

@@ -1,3 +1,4 @@
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -8,8 +9,6 @@ import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Transl
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import useNavigation from "../../../../Context/Navigation/NavigationContext";
 import useSearch from "../../../../Context/Search/SearchContext";
@@ -129,7 +128,6 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
-    value,
     topologyBlockId: topologyBlockId || currentTopologyBlock._id,
   });
 
@@ -269,9 +267,11 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
   const handleSubmit = ({
     submittedByCharacter,
     type,
+    value,
   }: {
     submittedByCharacter: boolean;
     type?: CommandSayVariationTypes;
+    value: string;
   }) => {
     if (submittedByCharacter && type) {
       if (type === "character") {
@@ -298,10 +298,11 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
         });
         createSayCommand.mutate({ type });
       }
-      updateCommandName.mutate({ valueForSay: true });
+      updateCommandName.mutate({ valueForSay: true, value });
     } else if (!submittedByCharacter) {
       const plotFieldCommandElseId = generateMongoObjectId();
       const plotFieldCommandIfElseEndId = generateMongoObjectId();
+
       const allCommands: AllPossiblePlotFieldComamndsTypes = value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
       if (allCommands === "achievement") {
         createCommandAchievement.mutate({
@@ -387,37 +388,37 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
         plotfieldCommandIfElseEndId: plotFieldCommandIfElseEndId,
       });
 
-      updateCommandName.mutate({ valueForSay: false });
+      updateCommandName.mutate({ valueForSay: false, value: allCommands });
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!value.trim().length) {
+  const handleFormSubmit = (pv: string) => {
+    if (!pv.trim().length) {
       console.log("Заполните поле");
       return;
     }
     let submittedByCharacter = false;
     // if it's say command whether it's hint, author, notify or some character name which already exists
+    const refinedValue = pv.trim()?.toLowerCase();
 
     if (
-      allCharacterNames.includes(value.toLowerCase()) ||
-      AllPossibleSayPlotFieldCommands.includes(value.toLowerCase())
+      allCharacterNames.includes(pv.trim().toLowerCase()) ||
+      AllPossibleSayPlotFieldCommands.includes(pv.trim().toLowerCase())
     ) {
       let type: CommandSayVariationTypes = "" as CommandSayVariationTypes;
-      if (value.toLowerCase() !== "hint" && value.toLowerCase() !== "author" && value.toLowerCase() !== "notify") {
+      if (refinedValue !== "hint" && refinedValue !== "author" && refinedValue !== "notify") {
         type = "character";
       } else {
-        type = value.toLowerCase() as CommandSayVariationTypes;
+        type = refinedValue as CommandSayVariationTypes;
       }
 
       submittedByCharacter = true;
-      handleSubmit({ submittedByCharacter, type });
-    } else if (AllPossiblePlotFieldCommands.includes(value?.toLowerCase())) {
+      handleSubmit({ submittedByCharacter, type, value: refinedValue });
+    } else if (AllPossiblePlotFieldCommands.includes(refinedValue)) {
       // if it's any another existing command beside say and it's variations
 
       submittedByCharacter = false;
-      handleSubmit({ submittedByCharacter });
+      handleSubmit({ submittedByCharacter, value: refinedValue });
     } else {
       // if it's not any command and if there's no such character, it suggests to create a new one
 
@@ -433,65 +434,60 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
   });
 
   return (
-    <div className="bg-secondary rounded-md relative w-full">
-      <form
+    <Command
+      className={`${isCommandFocused ? "bg-brand-gradient" : "border-border border-[1px]"} rounded-md relative w-full`}
+    >
+      <CommandInput
+        ref={currentInput}
+        value={value}
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowPromptValues((prev) => !prev);
+          setShowCreateCharacterModal(false);
+        }}
+        placeholder="ПУСТОТА"
+        onValueChange={(value) => {
+          setValue(value);
+          if (!showPromptValues) {
+            setShowPromptValues(true);
+          }
+        }}
+        className={`${isCommandFocused ? "border-0 shadow-none" : ""} md:text-[17px] text-text w-full`}
+      />
+      <CommandList
+        ref={promptRef}
         className={`${
-          isCommandFocused
-            ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-            : "bg-primary-darker"
-        } w-full relative rounded-md p-[.5rem]`}
-        onSubmit={handleFormSubmit}
+          showPromptValues && !showCreateCharacterModal ? "" : "hidden"
+        }  w-full absolute z-[10] translate-y-[40px] bg-secondary left-0 | containerScroll`}
       >
-        <PlotfieldInput
-          type="text"
-          ref={currentInput}
-          value={value}
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowPromptValues((prev) => !prev);
-            setShowCreateCharacterModal(false);
-          }}
-          placeholder="ПУСТОТА"
-          onChange={(e) => {
-            setValue(e.target.value);
-            if (!showPromptValues) {
-              setShowPromptValues(true);
-            }
-          }}
-          className={`${
-            isCommandFocused ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%" : ""
-          } text-[1.5rem] text-text-light w-full`}
-        />
-        <AsideScrollable
-          ref={promptRef}
-          className={`${showPromptValues && !showCreateCharacterModal ? "" : "hidden"} translate-y-[.5rem] left-0`}
-        >
+        <CommandEmpty>Пусто</CommandEmpty>
+        <CommandGroup>
           {filteredPromptValues.length > 0 ? (
             filteredPromptValues.map((pv) => (
-              <button
+              <CommandItem
                 key={pv}
-                onClick={() => {
+                onSelect={() => {
                   setValue(pv);
                   setShowPromptValues(false);
+                  handleFormSubmit(pv);
                 }}
-                className="text-text-dark hover:text-text-light hover:bg-primary focus-within:text-text-light focus-within:bg-primary text-start w-full text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
+                className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 w-full text-[14px] px-[10px] py-[5px] transition-all"
               >
                 {pv}
-              </button>
+              </CommandItem>
             ))
           ) : (
-            <button
-              type="button"
-              onClick={() => {
+            <CommandItem
+              onSelect={() => {
                 setShowPromptValues(false);
               }}
-              className="text-text-dark hover:text-text-light hover:bg-primary focus-within:text-text-light focus-within:bg-primary text-start w-full text-[1.4rem] px-[1rem] py-[.5rem] rounded-md transition-all"
+              className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 w-full text-[14px] px-[10px] py-[5px] transition-all"
             >
               Такой команды или персонажа не существует
-            </button>
+            </CommandItem>
           )}
-        </AsideScrollable>
-      </form>
+        </CommandGroup>
+      </CommandList>
       <PlotFieldBlankCreateCharacter
         setShowModal={setShowCreateCharacterModal}
         characterName={value}
@@ -499,6 +495,6 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
         topologyBlockId={topologyBlockId}
         showModal={showCreateCharacterModal}
       />
-    </div>
+    </Command>
   );
 }

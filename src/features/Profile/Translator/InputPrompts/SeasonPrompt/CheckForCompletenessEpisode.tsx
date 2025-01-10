@@ -22,9 +22,7 @@ export default function CheckForCompletenessEpisode({
 
   return (
     <div
-      className={`${
-        completed ? "bg-green-300" : "bg-orange-300"
-      } absolute left-[.5rem] top-[.5rem] w-[.5rem] h-[.5rem] rounded-full`}
+      className={`${completed ? "bg-green" : "bg-orange"} absolute left-[5px] top-[5px] w-[5px] h-[5px] rounded-full`}
     ></div>
   );
 }

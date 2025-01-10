@@ -12,6 +12,7 @@ type KeyBindsByEpisodeSubHeaderTypes = {
   episodeCurrentValue: string;
   seasonValue: string;
   seasonId: string;
+  episodeId: string;
 };
 
 export default function KeyBindsByEpisodeSubHeader({
@@ -19,6 +20,7 @@ export default function KeyBindsByEpisodeSubHeader({
   episodeCurrentValue,
   seasonValue,
   seasonId,
+  episodeId,
   setEpisodeCurrentValue,
   setEpisodeId,
   setSeasonId,
@@ -27,19 +29,17 @@ export default function KeyBindsByEpisodeSubHeader({
   const { storyId } = useParams();
 
   return (
-    <div
-      className={`${
-        characterSubCategory === "byEpisode" ? "" : "hidden"
-      } flex gap-[1rem]`}
-    >
+    <div className={`${characterSubCategory === "byEpisode" ? "" : "hidden"} flex gap-[5px] sm:flex-row flex-col`}>
       <SeasonPrompt
         setSeasonId={setSeasonId}
         storyId={storyId || ""}
         seasonValue={seasonValue}
+        seasonId={seasonId}
         setSeasonValue={setSeasonValue}
       />
       <EpisodePrompt
         seasonId={seasonId}
+        episodeId={episodeId}
         setEpisodeId={setEpisodeId}
         setEpisodeCurrentValue={setEpisodeCurrentValue}
         episodeCurrentValue={episodeCurrentValue}

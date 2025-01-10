@@ -67,15 +67,9 @@ export default function CommandCommentField({
   };
 
   return (
-    <div className="flex flex-wrap gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[10rem] w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused
-              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-              : "bg-secondary"
-          }`}
-        >
+    <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
+      <div className="sm:w-[20%] min-w-[100px] w-full relative">
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
@@ -84,11 +78,12 @@ export default function CommandCommentField({
         onSubmit={(e) => {
           e.preventDefault();
         }}
-        className="min-w-[10rem] flex-grow relative"
+        className="min-w-[100px] flex-grow"
       >
         <PlotfieldTextarea
           onBlur={onBlur}
           value={comment}
+          className="min-h-[70px]"
           onChange={(e) => setComment(e.target.value)}
           placeholder="Коммент"
         />

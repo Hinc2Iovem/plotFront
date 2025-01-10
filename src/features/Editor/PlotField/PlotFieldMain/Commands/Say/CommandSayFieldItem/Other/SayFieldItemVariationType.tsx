@@ -1,7 +1,6 @@
-import { useRef, useState } from "react";
-import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SelectWithBlur from "@/components/ui/selectWithBlur";
 import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
-import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import useGetCurrentFocusedElement from "../../../../../hooks/helpers/useGetCurrentFocusedElement";
 import useUpdateCommandSayType from "../../../../../hooks/Say/useUpdateCommandSayType";
@@ -25,13 +24,8 @@ export default function SayFieldItemVariationType({
   setSayVariationType,
   textValue,
 }: SayFieldItemVariationTypeTypes) {
-  const [showUpdateNameModal, setShowUpdateNameModal] = useState(false);
-  const updateNameModalRef = useRef<HTMLDivElement | null>(null);
-
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
-
   const { updateValue } = useSearch();
-
   const handleOnUpdateNameValue = (pv: string) => {
     if (pv) {
       setSayVariationType(pv);
@@ -52,52 +46,31 @@ export default function SayFieldItemVariationType({
     plotFieldCommandSayId,
   });
 
-  useOutOfModal({
-    modalRef: updateNameModalRef,
-    setShowModal: setShowUpdateNameModal,
-    showModal: showUpdateNameModal,
-  });
-
   return (
-    <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowUpdateNameModal((prev) => !prev);
-          if (showUpdateNameModal) {
-            e.currentTarget.blur();
-          }
-        }}
-        className={`${
-          isCommandFocused
-            ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-            : "bg-secondary"
-        } capitalize text-start`}
-      >
-        {sayVariationType}
-      </PlotfieldButton>
-      <aside
-        ref={updateNameModalRef}
-        className={`${
-          showUpdateNameModal ? "" : "hidden"
-        } bg-secondary w-full translate-y-[.5rem] rounded-md shadow-md absolute z-10 flex flex-col gap-[.5rem] p-[.5rem]`}
-      >
+    <SelectWithBlur
+      onValueChange={(v) => {
+        handleOnUpdateNameValue(v);
+        updateCommandSayNameValue.mutate(v as CommandSayVariationTypes);
+      }}
+    >
+      <SelectTrigger className="sm:w-[20%] min-w-[150px] capitalize flex-grow w-full text-text relative">
+        <SelectValue
+          placeholder={sayVariationType}
+          onBlur={(v) => v.currentTarget.blur()}
+          className={`${
+            isCommandFocused ? "bg-brand-gradient" : "bg-secondary"
+          } capitalize text-text text-[25px] py-[20px]`}
+        />
+      </SelectTrigger>
+      <SelectContent>
         {CommandSayPossibleUpdateVariations.map((pv) => {
           return (
-            <PlotfieldButton
-              key={pv}
-              onClick={() => {
-                handleOnUpdateNameValue(pv);
-                updateCommandSayNameValue.mutate(pv as CommandSayVariationTypes);
-                setShowUpdateNameModal(false);
-              }}
-              className={`${pv === sayVariationType ? "hidden" : ""} capitalize`}
-            >
+            <SelectItem key={pv} value={pv} className={`${pv === sayVariationType ? "hidden" : ""} capitalize w-full`}>
               {pv}
-            </PlotfieldButton>
+            </SelectItem>
           );
         })}
-      </aside>
-    </div>
+      </SelectContent>
+    </SelectWithBlur>
   );
 }

@@ -4,14 +4,11 @@ import { twMerge } from "tailwind-merge";
 import { hidePromptModal } from "./ButtonHoverPromptModal";
 
 const AsideHoverPromptModalStyles = cva(
-  [
-    "z-[2] transition-all w-fit absolute bottom-[-4.5rem] py-[.5rem] px-[1rem] whitespace-nowrap",
-  ],
+  ["z-[2] transition-all w-fit absolute bottom-[-4.5rem] py-[.5rem] px-[1rem] whitespace-nowrap bg-secondary"],
   {
     variants: {
       variant: {
-        squareModalPromptWithShadow:
-          "rounded-md shadow-sm shadow-black bg-secondary font-medium",
+        squareModalPromptWithShadow: "rounded-md shadow-sm shadow-black bg-secondary font-medium",
       },
     },
     defaultVariants: {
@@ -24,9 +21,7 @@ interface AsidePromptModal extends hidePromptModal {
   showAsidePrompt: boolean;
 }
 
-type AsideHoverPromptModalProps = VariantProps<
-  typeof AsideHoverPromptModalStyles
-> &
+type AsideHoverPromptModalProps = VariantProps<typeof AsideHoverPromptModalStyles> &
   ComponentProps<"aside"> &
   AsidePromptModal;
 
@@ -43,8 +38,7 @@ export default function AsideHoverPromptModal({
 }: AsideHoverPromptModalProps) {
   const clickToOpenModal = hideModal ? "hidden" : "block";
   const hoverOnButtonToOpenAsideModal = showAsidePrompt ? "block" : "hidden";
-  const wrapperDivPositionAbsolute =
-    position === "relative" ? "" : "bottom-[-4rem]";
+  const wrapperDivPositionAbsolute = position === "relative" ? "" : "bottom-[-4rem]";
   const currentPosition = `${positionByAbscissa}-0`;
 
   return (

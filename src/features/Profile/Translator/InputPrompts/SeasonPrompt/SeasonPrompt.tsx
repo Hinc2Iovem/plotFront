@@ -1,12 +1,11 @@
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useEffect, useMemo, useRef, useState } from "react";
 import useGetSeasonsByStoryId from "../../../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
 import useOutOfModal from "../../../../../hooks/UI/useOutOfModal";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import AsideScrollable from "../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
 import CheckForCompletenessEpisode from "./CheckForCompletenessEpisode";
-import useDebounce from "../../../../../hooks/utilities/useDebounce";
 
 type SeasonPromptTypes = {
   setSeasonId: React.Dispatch<React.SetStateAction<string>>;
@@ -15,6 +14,7 @@ type SeasonPromptTypes = {
   translateToLanguage?: CurrentlyAvailableLanguagesTypes;
   setSeasonValue?: React.Dispatch<React.SetStateAction<string>>;
   seasonValue?: string;
+  seasonId: string;
   currentTranslationView?: "episode";
 };
 
@@ -24,6 +24,7 @@ export default function SeasonPrompt({
   currentLanguage,
   translateToLanguage,
   seasonValue,
+  seasonId,
   currentTranslationView,
   setSeasonValue,
 }: SeasonPromptTypes) {
@@ -36,8 +37,6 @@ export default function SeasonPrompt({
     language: "russian",
     storyId,
   });
-
-  const debouncedValue = useDebounce({ value: seasonValue || "", delay: 700 });
 
   const filteredSeasons = useMemo(() => {
     if (seasonsSearch) {
@@ -61,24 +60,28 @@ export default function SeasonPrompt({
     }
   }, [showSeasons, seasonValue, seasonBackupValue]);
 
-  useEffect(() => {
-    if (debouncedValue) {
-      const matchedValue = seasonsSearch?.find((cs) =>
-        cs?.translations?.some(
-          (tct) => tct.textFieldName === "seasonName" && tct.text.toLowerCase() === debouncedValue.toLowerCase()
-        )
-      );
-      if (matchedValue) {
-        setSeasonId(matchedValue?.seasonId);
-        if (setSeasonValue) {
-          setSeasonValue(matchedValue?.translations[0]?.text);
-        }
-        setSeasonBackupValue(matchedValue?.translations[0]?.text);
-      } else {
-        setSeasonId("");
-      }
+  const onBlur = () => {
+    if (!seasonValue?.trim().length) {
+      if (setSeasonValue) setSeasonValue(seasonBackupValue);
+      return;
     }
-  }, [debouncedValue, seasonsSearch]);
+
+    const matchedValue = seasonsSearch?.find((cs) =>
+      cs?.translations?.some(
+        (tct) => tct.textFieldName === "seasonName" && tct.text.toLowerCase() === seasonValue?.toLowerCase()
+      )
+    );
+    if (matchedValue) {
+      setSeasonId(matchedValue?.seasonId);
+      if (setSeasonValue) {
+        setSeasonValue(matchedValue?.translations[0]?.text);
+      }
+      setSeasonBackupValue(matchedValue?.translations[0]?.text);
+    } else {
+      if (setSeasonValue) setSeasonValue(seasonBackupValue);
+      setSeasonId("");
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,87 +101,86 @@ export default function SeasonPrompt({
   });
 
   return (
-    <form className={`rounded-md shadow-sm relative`} onSubmit={handleSubmit}>
-      <PlotfieldInput
-        type="text"
-        ref={inputRef}
-        placeholder="Название Сезона"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (seasonValue?.trim().length) {
-            setSeasonBackupValue(seasonValue);
-          }
-          if (setSeasonValue) {
-            setSeasonValue("");
-          }
-          setShowSeasons(true);
-        }}
-        value={seasonValue}
-        onChange={(e) => {
-          if (setSeasonValue) {
-            setSeasonValue(e.target.value);
-          }
-        }}
-      />
-      {storyId ? (
-        <AsideScrollable ref={modalSeasonsRef} className={`${showSeasons ? "" : "hidden"} translate-y-[.5rem]`}>
-          {isLoading ? (
-            <div className="text-[1.4rem] text-gray-600 text-center py-[.5rem]">Загрузка...</div>
-          ) : filteredSeasons && filteredSeasons.length > 0 ? (
-            filteredSeasons.map((s) => (
-              <AsideScrollableButton
-                key={s._id}
-                type="button"
-                onClick={() => {
-                  setSeasonId(s.seasonId);
-                  if (setSeasonValue) {
-                    setSeasonValue(s.translations[0]?.text || "");
-                  }
-                  setShowSeasons(false);
-                }}
-                className={`${
-                  seasonBackupValue?.toLowerCase() === s.translations[0].text?.toLowerCase()
-                    ? "bg-primary text-text-light"
-                    : ""
-                }`}
-              >
-                {s.translations[0]?.text || ""}
-                {currentLanguage && translateToLanguage ? (
-                  <>
-                    {currentTranslationView === "episode" ? (
-                      <CheckForCompletenessEpisode
-                        seasonId={s.seasonId}
-                        currentLanguage={currentLanguage}
-                        translateToLanguage={translateToLanguage}
-                      />
-                    ) : null}
-                  </>
-                ) : null}
-              </AsideScrollableButton>
-            ))
-          ) : (
-            <AsideScrollableButton
-              type="button"
-              onClick={() => {
-                setShowSeasons(false);
-              }}
-            >
-              Нету Подходящих Сезонов
-            </AsideScrollableButton>
-          )}
-        </AsideScrollable>
-      ) : (
-        <AsideScrollable ref={modalSeasonsRef} className={`${showSeasons ? "" : "hidden"} translate-y-[.5rem]`}>
-          <AsideScrollableButton
-            type="button"
-            onClick={() => {
-              setShowSeasons(false);
+    <Popover open={showSeasons} onOpenChange={setShowSeasons}>
+      <PopoverTrigger asChild>
+        <Button variant={"outline"} className="px-[10px] py-[20px] text-[15px] capitalize text-text">
+          {seasonId?.trim().length ? seasonBackupValue : "Название Сезона"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="translate-x-[20px]">
+        <Command className="w-full" onSubmit={handleSubmit}>
+          <CommandInput
+            className="flex-grow text-text"
+            ref={inputRef}
+            placeholder="Название Сезона"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (setSeasonValue) {
+                setSeasonValue("");
+              }
+              setShowSeasons(true);
             }}
-          >
-            Выберите Историю
-          </AsideScrollableButton>
-        </AsideScrollable>
-      )}
-    </form>
+            value={seasonValue}
+            onBlur={onBlur}
+            onValueChange={(e) => {
+              if (setSeasonValue) {
+                setSeasonValue(e);
+              }
+            }}
+          />
+          <CommandList>
+            <CommandEmpty>Сезон не найден</CommandEmpty>
+            <CommandGroup className="flex flex-col gap-[10px]">
+              {isLoading ? (
+                <CommandItem className="text-[14px] text-text text-center py-[5px]">Загрузка...</CommandItem>
+              ) : filteredSeasons && filteredSeasons.length > 0 ? (
+                filteredSeasons.map((s) => (
+                  <CommandItem
+                    key={s._id}
+                    onSelect={() => {
+                      setSeasonId(s.seasonId);
+                      setSeasonBackupValue(s.translations[0]?.text || "");
+                      if (setSeasonValue) {
+                        setSeasonValue(s.translations[0]?.text || "");
+                      }
+                      setShowSeasons(false);
+                    }}
+                    className={`${
+                      seasonBackupValue?.toLowerCase() === s.translations[0].text?.toLowerCase()
+                        ? "underline bg-accent"
+                        : "transition-all"
+                    } text-[17px] text-text relative capitalize`}
+                  >
+                    {s.translations[0]?.text || ""}
+                    {currentLanguage && translateToLanguage ? (
+                      <>
+                        {currentTranslationView === "episode" ? (
+                          <CheckForCompletenessEpisode
+                            seasonId={s.seasonId}
+                            currentLanguage={currentLanguage}
+                            translateToLanguage={translateToLanguage}
+                          />
+                        ) : null}
+                      </>
+                    ) : null}
+                  </CommandItem>
+                ))
+              ) : (
+                <Button
+                  type="button"
+                  variant="link"
+                  className="text-text text-[15px]"
+                  onClick={() => {
+                    setShowSeasons(false);
+                  }}
+                >
+                  Нету Подходящих Сезонов
+                </Button>
+              )}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

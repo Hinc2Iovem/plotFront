@@ -39,7 +39,7 @@ export default function PreviewImage({ setPreview, imagePreview, divClasses, img
             className={`${
               imagePreview
                 ? `${imgClasses}`
-                : "absolute w-[5.5rem] h-[5.5rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
+                : "absolute w-[55px] h-[55px] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
             }`}
           />
           {children ? children : ""}
@@ -54,7 +54,7 @@ export default function PreviewImage({ setPreview, imagePreview, divClasses, img
             className={`${
               imagePreview
                 ? `${imgClasses}`
-                : "absolute w-[5.5rem] h-[5.5rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
+                : "absolute w-[55px] h-[55px] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2"
             }`}
           />
           {children ? children : ""}

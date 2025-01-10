@@ -1,49 +1,26 @@
-import { Link } from "react-router-dom";
-import AssignScriptwriterModal from "./AssignScriptwriterModal";
-import PreviewImage from "../../../ui/shared/PreviewImage";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getSeasonsByStoryId } from "../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
 import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
-import { StoryFilterTypes } from "../../Story/Story";
-import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
-import { useQueryClient } from "@tanstack/react-query";
-import { getSeasonsByStoryId } from "../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
+import PreviewImage from "../../../ui/shared/PreviewImage";
 
 type ProfileRightSideItemTypes = {
-  storiesType: StoryFilterTypes;
   storyStatus?: EpisodeStatusTypes;
   storyId: string;
-  setOpenedStoryId: React.Dispatch<React.SetStateAction<string>>;
-  openedStoryId: string;
-  setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
-  characterIds: string[];
-  setShowScriptwriters: React.Dispatch<React.SetStateAction<boolean>>;
-  showScriptwriters: boolean;
-  assignedWorkers?:
-    | {
-        staffId: string;
-        storyStatus: EpisodeStatusTypes;
-      }[]
-    | undefined;
   title: string;
+  description: string;
   imgUrl: string;
 };
 
 export default function ProfileRightSideItem({
-  characterIds,
-  openedStoryId,
-  setCharacterIds,
-  setOpenedStoryId,
-  storiesType,
   storyId,
-  assignedWorkers,
   storyStatus,
   title,
   imgUrl,
-  setShowScriptwriters,
-  showScriptwriters,
+  description,
 }: ProfileRightSideItemTypes) {
-  const { roles } = useGetDecodedJWTValues();
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const uploadImgMutation = useUpdateImg({
     id: storyId,
@@ -51,7 +28,6 @@ export default function ProfileRightSideItem({
     preview: imagePreview,
   });
   const [isMounted, setIsMounted] = useState(false);
-  const theme = localStorage.getItem("theme");
 
   useEffect(() => {
     if (isMounted && imagePreview) {
@@ -75,58 +51,33 @@ export default function ProfileRightSideItem({
     <article
       onMouseEnter={prefetchSeason}
       onFocus={prefetchSeason}
-      className={`w-full h-[26rem] ${
-        theme === "light" ? "bg-secondary" : "bg-secondary-darker"
-      } rounded-md shadow-sm relative flex flex-col justify-between`}
+      className={`w-full h-[210px] rounded-md flex gap-[10px] border-border border-[1px] bg-secondary`}
     >
-      <div
-        className={`relative border-[3px] w-full max-h-[23rem] rounded-md rounded-b-none h-full ${
-          theme === "light" ? "bg-secondary border-secondary" : "bg-primary border-primary"
-        } `}
-      >
+      <div className={`relative w-1/2 rounded-md rounded-bl-none rounded-tl-none h-full`}>
         {imgUrl ? (
           <img src={imgUrl} alt="StoryBg" className="w-full h-full object-cover absolute rounded-md" />
         ) : (
           <PreviewImage
-            imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 border-[2px] border-secondary"
+            imgClasses="w-full h-full object-cover rounded-md absolute top-0 bottom-0 left-0 right-0 bg-secondary"
             imagePreview={imagePreview}
             setPreview={setPreview}
           />
         )}
         <div
-          className={`${
-            (storyStatus && storiesType === "all") || storiesType === "allAssigned" ? "" : "hidden"
-          } absolute top-[.5rem] right-[.5rem] bg-secondary rounded-md shadow-md p-[.5rem]`}
+          className={`absolute bottom-[0rem] left-[0rem] ${
+            storyStatus === "doing" ? "text-white bg-orange" : "text-white bg-green"
+          } rounded-md rounded-bl-none rounded-tl-none p-[5px]`}
         >
-          <p className={`text-[1.5rem] self-end text-text-light`}>
-            Статус:{" "}
-            <span className={`text-[1.4rem] ${storyStatus === "doing" ? "text-orange-400" : "text-green-400"}`}>
-              {storyStatus === "doing" ? "В процессе" : "Завершена"}
-            </span>
-          </p>
+          <p className={`text-[13px]`}>{storyStatus === "doing" ? "В процессе" : "Завершена"}</p>
         </div>
       </div>
-      {roles?.includes("editor") || roles?.includes("headscriptwriter") ? (
-        <AssignScriptwriterModal
-          openedStoryId={openedStoryId}
-          setOpenedStoryId={setOpenedStoryId}
-          storyTitle={title}
-          storyId={storyId}
-          setCharacterIds={setCharacterIds}
-          characterIds={characterIds}
-          assignedWorkers={assignedWorkers}
-          setShowScriptwriters={setShowScriptwriters}
-          showScriptwriters={showScriptwriters}
-        />
-      ) : null}
-      <Link
-        to={`/stories/${storyId}`}
-        className={`text-[1.5rem] hover:text-text-light text-text-dark transition-all ${
-          theme === "light" ? "bg-secondary border-secondary" : "bg-primary border-primary"
-        } w-full p-[1rem] rounded-b-md`}
-      >
-        {title.length > 25 ? title.substring(0, 25) + "..." : title}
-      </Link>
+
+      <div className="flex flex-col gap-[10px] w-1/2 p-[10px]">
+        <Link to={`/stories/${storyId}`} className={`text-[20px] text-heading hover:underline transition-all w-full`}>
+          {title.length > 25 ? title.substring(0, 25) + "..." : title}
+        </Link>
+        <p className="text-[15px] text-paragraph">{description}</p>
+      </div>
     </article>
   );
 }

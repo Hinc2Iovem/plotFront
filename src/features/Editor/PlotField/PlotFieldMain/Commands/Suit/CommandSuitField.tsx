@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useDebounce from "../../../../../../hooks/utilities/useDebounce";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
@@ -9,7 +8,7 @@ import useGetCharacterWithTranslation from "../../../hooks/helpers/CombineTransl
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
 import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
-import PlotfieldCharacterPromptMain, { ExposedMethods } from "../Prompts/Characters/PlotfieldCharacterPromptMain";
+import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 
 type CommandSuitFieldTypes = {
   plotFieldCommandId: string;
@@ -23,7 +22,6 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
   const [initTextValue, setInitTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
 
-  const [showCharacterList, setShowCharacterList] = useState(false);
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const { data: commandSuit } = useGetCommandSuit({
@@ -60,36 +58,33 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
     type: "command",
   });
 
-  const inputRef = useRef<ExposedMethods>(null);
-  const debouncedValue = useDebounce({ value: textValue, delay: 500 });
-
   const updateSuitText = useUpdateSuitText({
     characterId: characterValue._id || "",
     suitId: commandSuitId,
-    suitName: debouncedValue,
+    suitName: textValue,
   });
 
-  const updateValues = () => {
+  const updateValues = (characterName?: string) => {
+    const character = characterName?.trim().length
+      ? characterName
+      : typeof characterValue.characterName === "string"
+      ? characterValue.characterName
+      : "";
     if (episodeId) {
       updateValue({
         episodeId,
         commandName: "suit",
         id: plotFieldCommandId,
         type: "command",
-        value: `${
-          typeof characterValue.characterName === "string" ? characterValue.characterName : ""
-        } ${debouncedValue}`,
+        value: `${character} ${textValue}`,
       });
     }
   };
-
-  const onBlur = () => {
-    if (inputRef.current) {
-      inputRef.current.updateCharacterNameOnBlur();
+  useEffect(() => {
+    if (characterValue._id) {
+      updateValues();
     }
-
-    updateValues();
-  };
+  }, [characterValue._id]);
 
   const onBlurSuitName = () => {
     if (initTextValue !== textValue) {
@@ -108,61 +103,25 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
   }, [characterValue]);
 
   return (
-    <div className="flex flex-wrap gap-[.5rem] w-full bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col relative">
-      <div className="sm:w-[20%] min-w-[10rem] flex-grow w-full relative">
-        <PlotfieldCommandNameField
-          className={`${
-            isCommandFocused
-              ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-              : "bg-secondary"
-          }`}
-        >
+    <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col relative">
+      <div className="sm:w-[20%] min-w-[100px] relative">
+        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setShowCharacterList(false);
-        }}
-        className="w-full relative flex gap-[.5rem]"
-      >
-        <PlotfieldInput
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowCharacterList(true);
-          }}
-          onBlur={onBlur}
-          value={characterValue.characterName || ""}
-          onChange={(e) => {
-            setShowCharacterList(true);
-            setCharacterValue((prev) => ({
-              ...prev,
-              characterName: e.target.value,
-            }));
-          }}
-          placeholder="Имя Персонажа"
-        />
 
-        <img
-          src={characterValue?.imgUrl || ""}
-          alt="CharacterImg"
-          className={`${
-            characterValue?.imgUrl?.trim().length ? "" : "hidden"
-          } w-[3rem] object-cover rounded-md self-end`}
-        />
-        <PlotfieldCharacterPromptMain
-          characterName={characterValue.characterName || ""}
-          translateAsideValue="translate-y-[3.5rem]"
-          setShowCharacterModal={setShowCharacterList}
-          showCharacterModal={showCharacterList}
-          currentCharacterId={characterValue._id || ""}
-          setCharacterValue={setCharacterValue}
-          ref={inputRef}
-        />
-      </form>
+      <PlotfieldCharacterPromptMain
+        characterName={characterValue.characterName || ""}
+        currentCharacterId={characterValue._id || ""}
+        setCharacterValue={setCharacterValue}
+        characterValue={characterValue}
+        onChange={(value) => updateValues(value)}
+        plotfieldCommandId={plotFieldCommandId}
+        inputClasses="w-full pr-[35px] text-text md:text-[17px]"
+        imgClasses="w-[30px] object-cover rounded-md right-0 absolute"
+      />
 
-      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow w-full">
+      <form onSubmit={(e) => e.preventDefault()} className="flex-grow">
         <PlotfieldInput
           value={textValue}
           onBlur={onBlurSuitName}

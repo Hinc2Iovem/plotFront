@@ -56,7 +56,7 @@ export default function BackgroundMusicForm({ backgroundId, musicId, setCurrentM
     showModal: showMusicDropDown,
   });
   return (
-    <div className={`sm:w-[77%] flex-grow w-full flex-wrap sm:flex-row flex-col flex items-center gap-[1rem] relative`}>
+    <div className={`sm:w-[77%] flex-grow flex-wrap sm:flex-row flex-col flex items-center gap-[1rem] relative`}>
       <div className="flex-grow relative sm:w-auto w-full">
         <PlotfieldButton
           onClick={(e) => {

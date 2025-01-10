@@ -1,10 +1,12 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllCharactersByStoryIdAndType from "../../../../../../../hooks/Fetching/Character/useGetAllCharactersByStoryIdAndType";
 import useGetTranslationCharactersByStoryIdAndType from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByStoryIdAndType";
-import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
 import PlotfieldUnknownCharactersPrompt from "./PlotfieldUnknownCharactersPrompt";
+import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 
 export type UnknownCharacterValueTypes = {
   characterUnknownName: string;
@@ -18,20 +20,21 @@ export type ExposedMethodsUnknownCharacter = {
 };
 
 type PlotfieldUnknownCharacterPromptMainTypes = {
-  setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
-  showCharacterModal: boolean;
-  translateAsideValue: string;
-  debouncedValue?: string;
-  setCharacterValue?: React.Dispatch<React.SetStateAction<UnknownCharacterValueTypes>>;
+  unknownName?: string;
+  characterValue: UnknownCharacterValueTypes;
+  onChange: (value: string) => void;
+  setCharacterValue: React.Dispatch<React.SetStateAction<UnknownCharacterValueTypes>>;
 };
 
-const PlotfieldUnknownCharacterPromptMain = forwardRef<
-  ExposedMethodsUnknownCharacter,
-  PlotfieldUnknownCharacterPromptMainTypes
->(({ setCharacterValue, setShowCharacterModal, debouncedValue, showCharacterModal, translateAsideValue }, ref) => {
+const PlotfieldUnknownCharacterPromptMain = ({
+  setCharacterValue,
+  onChange,
+  characterValue,
+  unknownName,
+}: PlotfieldUnknownCharacterPromptMainTypes) => {
   const { storyId } = useParams();
-  const modalRef = useRef<HTMLDivElement>(null);
-  const theme = localStorage.getItem("theme");
+  const [showCharacterModal, setShowCharacterModal] = useState(false);
+  const currentInput = useRef<HTMLInputElement>(null);
 
   const { data: allTranslatedCharacters } = useGetTranslationCharactersByStoryIdAndType({
     storyId: storyId || "",
@@ -65,9 +68,9 @@ const PlotfieldUnknownCharacterPromptMain = forwardRef<
 
   const filteredCharacters = useMemo(() => {
     if (combinedCharacters) {
-      if (debouncedValue?.trim().length) {
+      if (unknownName?.trim().length) {
         return combinedCharacters.filter((cc) =>
-          cc?.characterUnknownName?.toLowerCase().includes(debouncedValue?.toLowerCase())
+          cc?.characterUnknownName?.toLowerCase().includes(unknownName?.toLowerCase())
         );
       } else {
         return combinedCharacters;
@@ -75,17 +78,12 @@ const PlotfieldUnknownCharacterPromptMain = forwardRef<
     } else {
       return [];
     }
-  }, [combinedCharacters, debouncedValue]);
-
-  useImperativeHandle(ref, () => ({
-    updateCharacterOnBlur,
-  }));
+  }, [combinedCharacters, unknownName]);
 
   const updateCharacterOnBlur = () => {
     const tranlsatedCharacter = allTranslatedCharacters?.find((tc) =>
       tc.translations?.find(
-        (tct) =>
-          tct.textFieldName === "characterUnknownName" && tct.text?.toLowerCase() === debouncedValue?.toLowerCase()
+        (tct) => tct.textFieldName === "characterUnknownName" && tct.text?.toLowerCase() === unknownName?.toLowerCase()
       )
     );
     if (!tranlsatedCharacter) {
@@ -106,42 +104,67 @@ const PlotfieldUnknownCharacterPromptMain = forwardRef<
     }
   };
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowCharacterModal,
-    showModal: showCharacterModal,
-  });
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredCharacters.length });
 
   return (
-    <AsideScrollable
-      ref={modalRef}
-      className={`${showCharacterModal ? "" : "hidden"} ${
-        !allCharacters?.length && debouncedValue ? "hidden" : ""
-      } ${translateAsideValue}`}
-    >
-      {filteredCharacters?.length ? (
-        filteredCharacters?.map((c, i) => (
-          <PlotfieldUnknownCharactersPrompt
-            key={`${c.characterId}-${i}`}
-            setShowCharacterModal={setShowCharacterModal}
-            setCharacterValue={setCharacterValue}
-            {...c}
-          />
-        ))
-      ) : !filteredCharacters?.length ? (
-        <button
-          type="button"
-          className={`text-start ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } focus-within:bg-primary-darker focus-within:text-text-light text-[1.3rem] px-[1rem] py-[.5rem] hover:bg-primary-darker hover:text-text-light text-text-dark transition-all rounded-md`}
+    <Popover open={showCharacterModal} onOpenChange={setShowCharacterModal}>
+      <PopoverTrigger asChild>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+          className="flex-grow flex justify-between items-center relative"
         >
-          Пусто
-        </button>
-      ) : null}
-    </AsideScrollable>
-  );
-});
+          <PlotfieldInput
+            ref={currentInput}
+            onBlur={updateCharacterOnBlur}
+            value={characterValue.characterUnknownName}
+            onChange={(e) => {
+              setShowCharacterModal(true);
+              setCharacterValue((prev) => ({
+                ...prev,
+                characterUnknownName: e.target.value,
+              }));
+              if (onChange) {
+                onChange(e.target.value);
+              }
+            }}
+            className={`w-full pr-[35px] text-text md:text-[17px]`}
+            placeholder="Неизвестное Имя"
+          />
 
-PlotfieldUnknownCharacterPromptMain.displayName = "PlotfieldUnknownCharacterPromptMain";
+          <img
+            src={characterValue.characterImg}
+            alt="CharacterImg"
+            className={`${
+              characterValue.characterImg?.trim().length ? "" : "hidden"
+            } w-[30px] object-cover rounded-md right-0 absolute`}
+          />
+        </form>
+      </PopoverTrigger>
+
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={` flex-grow flex flex-col gap-[5px]`}>
+        {filteredCharacters?.length ? (
+          filteredCharacters?.map((c, i) => (
+            <PlotfieldUnknownCharactersPrompt
+              key={`${c.characterId}-${i}`}
+              ref={(el) => (buttonsRef.current[i] = el)}
+              setShowCharacterModal={setShowCharacterModal}
+              setCharacterValue={setCharacterValue}
+              {...c}
+            />
+          ))
+        ) : !filteredCharacters?.length ? (
+          <Button
+            type="button"
+            className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
+          >
+            Пусто
+          </Button>
+        ) : null}
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export default PlotfieldUnknownCharacterPromptMain;
