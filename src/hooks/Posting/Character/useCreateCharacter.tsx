@@ -50,6 +50,11 @@ export default function useCreateCharacter({
         })
         .then((r) => r.data),
     onSuccess: () => {
+      if (characterType === "maincharacter") {
+        queryClient.invalidateQueries({
+          queryKey: ["story", storyId, "character", "mainCharacter"],
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: ["translation", language, "character", "type", "story", storyId, "search"],
         exact: true,

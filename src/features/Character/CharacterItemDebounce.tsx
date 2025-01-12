@@ -1,247 +1,123 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import wardrobe from "../../assets/images/Story/wardrobe.png";
 import useGetCharacterById from "../../hooks/Fetching/Character/useGetCharacterById";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { TranslationCharacterTypes } from "../../types/Additional/TranslationTypes";
 import PreviewImage from "../../ui/shared/PreviewImage";
-import CharacterItemMainHero from "./CharacterMainHero";
+import { StoryNewCharacterTypes } from "./CharacterListPage";
 
-export default function CharacterItemDebounce({ characterId, translations }: TranslationCharacterTypes) {
+type CharacterItemDebounceTypes = {
+  setCharacterValue: React.Dispatch<React.SetStateAction<StoryNewCharacterTypes>>;
+  setInitCharacterValue: React.Dispatch<React.SetStateAction<StoryNewCharacterTypes>>;
+  characterValue: StoryNewCharacterTypes;
+  created: boolean | null;
+} & TranslationCharacterTypes;
+
+export default function CharacterItemDebounce({
+  characterId,
+  translations,
+  characterValue,
+  characterType,
+  created,
+  setCharacterValue,
+  setInitCharacterValue,
+}: CharacterItemDebounceTypes) {
   const { data: character } = useGetCharacterById({ characterId });
 
-  const [isFrontSide, setIsFrontSide] = useState(true);
-  const [characterName, setCharacterName] = useState("");
-  const [characterUnknownName, setCharacterUnknownName] = useState("");
-  const [characterDescription, setCharacterDescription] = useState("");
+  const [currentCharacter, setCurrentCharacter] = useState<StoryNewCharacterTypes>({
+    characterDescription: characterValue.characterDescription,
+    characterId: characterId,
+    characterName: characterValue.characterName,
+    characterType: characterType,
+    characterImg: characterValue.characterImg,
+    characterTag: characterValue.characterTag,
+    characterUnknownName: characterValue.characterUnknownName,
+  });
+
+  useEffect(() => {
+    if (typeof created === "boolean" && characterValue.characterId === characterId) {
+      setCurrentCharacter(characterValue);
+    }
+  }, [created]);
+
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
+  const uploadImgMutation = useUpdateImg({
+    id: characterId,
+    path: "/characters",
+    preview: imagePreview,
+  });
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setCurrentCharacter((prev) => ({
+      ...prev,
+      characterImg: character?.img || "",
+      characterTag: character?.nameTag || "",
+    }));
+  }, [character]);
+
+  useEffect(() => {
+    if (isMounted && imagePreview) {
+      uploadImgMutation.mutate({});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagePreview, isMounted]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (translations) {
       translations.map((tc) => {
-        if (tc.textFieldName === "characterName") {
-          setCharacterName(tc.text);
-        } else if (tc.textFieldName === "characterDescription") {
-          setCharacterDescription(tc.text);
-        } else if (tc.textFieldName === "characterUnknownName") {
-          setCharacterUnknownName(tc.text);
-        }
+        setCurrentCharacter((prev) => ({
+          ...prev,
+          characterName: tc.textFieldName === "characterName" ? tc.text : prev.characterName,
+          characterDescription: tc.textFieldName === "characterDescription" ? tc.text : prev.characterDescription,
+          characterUnknownName: tc.textFieldName === "characterUnknownName" ? tc.text : prev.characterUnknownName,
+        }));
       });
     }
   }, [translations]);
 
   return (
-    <>
-      {character?.type === "maincharacter" ? (
-        <article
-          onClick={() => setIsFrontSide((prev) => !prev)}
-          className={`${
-            isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-secondary w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
-        >
-          <CharacterItemMainHero
-            img={character?.img}
-            characterId={characterId}
-            characterName={characterName}
-            isFrontSide={isFrontSide}
-          />
-        </article>
-      ) : character?.type === "minorcharacter" ? (
-        <article
-          onClick={() => setIsFrontSide((prev) => !prev)}
-          className={`${
-            isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-secondary w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
-        >
-          <CharacterItemMinor
-            img={character?.img}
-            characterId={characterId}
-            nameTag={character?.nameTag ?? ""}
-            characterName={characterName}
-            characterDescription={characterDescription}
-            characterUnknownName={characterUnknownName}
-            isFrontSide={isFrontSide}
-          />
-        </article>
+    <article className={`rounded-md max-h-[337px] w-full h-full border-border border-[1px] relative`}>
+      <div
+        className={`${
+          character?.type === "maincharacter"
+            ? "bg-red"
+            : character?.type === "minorcharacter"
+            ? "bg-brand-gradient-left"
+            : "bg-accent"
+        } absolute top-0 right-0 rounded-b-full  w-[30px] h-[30px]`}
+      ></div>
+      {currentCharacter.characterImg ? (
+        <img
+          src={currentCharacter.characterImg}
+          alt="StoryBackground"
+          className="object-cover w-full h-full cursor-pointer rounded-t-md"
+        />
       ) : (
-        <article
-          onClick={() => setIsFrontSide((prev) => !prev)}
-          className={`${
-            isFrontSide ? "hover:scale-[1.01]" : ""
-          } cursor-pointer flex flex-col rounded-md bg-secondary w-full h-[30rem] border-[2px] border-dashed border-gray-300 relative`}
-        >
-          <CharacterItemEmpty
-            img={character?.img}
-            characterId={characterId}
-            characterName={characterName}
-            isFrontSide={isFrontSide}
+        <div className={`w-full h-full`}>
+          <PreviewImage
+            imgClasses="object-cover rounded-md"
+            divClasses="top-1/2 relative"
+            imagePreview={imagePreview}
+            setPreview={setPreview}
           />
-        </article>
-      )}
-    </>
-  );
-}
-
-type CharacterItemMinorTypes = {
-  characterName: string;
-  characterDescription: string;
-  characterUnknownName: string;
-  isFrontSide: boolean;
-  nameTag: string;
-  img?: string;
-  characterId: string;
-};
-
-function CharacterItemMinor({
-  isFrontSide,
-  characterDescription,
-  characterName,
-  nameTag,
-  img,
-  characterId,
-  characterUnknownName,
-}: CharacterItemMinorTypes) {
-  const { storyId } = useParams();
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
-  const theme = localStorage.getItem("theme");
-  const uploadImgMutation = useUpdateImg({
-    id: characterId,
-    path: "/characters",
-    preview: imagePreview,
-  });
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    if (isMounted && imagePreview) {
-      uploadImgMutation.mutate({});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview, isMounted]);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  return (
-    <>
-      {isFrontSide ? (
-        <>
-          {img ? (
-            <div className="w-full h-full rounded-t-md relative shadow-sm">
-              <img
-                src={img}
-                alt="StoryBackground"
-                className="object-cover w-full h-full cursor-pointer rounded-t-md border-[3px] border-b-0 border-white"
-              />
-            </div>
-          ) : (
-            <div className={`w-full h-full ${theme === "light" ? "bg-secondary-darker" : "bg-secondary"}`}>
-              <PreviewImage
-                imgClasses="object-cover rounded-md"
-                divClasses="top-1/2 relative"
-                imagePreview={imagePreview}
-                setPreview={setPreview}
-              />
-            </div>
-          )}
-          <div
-            className={`w-full rounded-b-md ${
-              theme === "light" ? "bg-secondary-darker" : "bg-secondary"
-            } p-[1rem] text-[1.5rem] shadow-sm border-t-[1px] border-gray-300 text-text-light rounded-t-md shadow-gray-600`}
-          >
-            {characterName.length > 30 ? characterName.substring(0, 30) + "..." : characterName}
-          </div>
-        </>
-      ) : (
-        <div className="flex flex-col gap-[1rem] p-[1rem] justify-between h-full">
-          <div className="gap-[1rem] flex flex-col">
-            <div>
-              <h3 className="text-[2rem] break-words text-text-light">Имя: {characterName}</h3>
-              <p className="text-[1.6rem] break-words text-text-light opacity-80">
-                Имя(Незнакомец) : {characterUnknownName}
-              </p>
-              <p className="text-[1.6rem] break-words text-text-light opacity-80">НеймТаг {nameTag}</p>
-            </div>
-            <p className="text-[1.3rem] break-words text-text-light opacity-80">Описание: {characterDescription}</p>
-          </div>
-
-          <div className="flex gap-[1rem] flex-wrap">
-            <Link className="ml-auto" to={`/stories/${storyId}/wardrobes/characters/${characterId}`}>
-              <button
-                className={`${
-                  theme === "light" ? "bg-secondary" : "bg-primary-darker"
-                } shadow-md p-[.5rem] rounded-md active:scale-[0.99] hover:scale-[1.01] `}
-              >
-                <img src={wardrobe} alt="Wardrobe" className="w-[3rem]" />
-              </button>
-            </Link>
-          </div>
         </div>
       )}
-    </>
-  );
-}
-
-type CharacterItemEmptyTypes = {
-  characterName: string;
-  isFrontSide: boolean;
-  characterId: string;
-  img?: string;
-};
-
-function CharacterItemEmpty({ isFrontSide, characterId, img, characterName }: CharacterItemEmptyTypes) {
-  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
-  const theme = localStorage.getItem("theme");
-  const uploadImgMutation = useUpdateImg({
-    id: characterId,
-    path: "/characters",
-    preview: imagePreview,
-  });
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    if (isMounted && imagePreview) {
-      uploadImgMutation.mutate({});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview, isMounted]);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  return (
-    <>
-      {isFrontSide ? (
-        <>
-          {img ? (
-            <div className="w-full h-full rounded-t-md relative shadow-sm">
-              <img src={img} alt="StoryBackground" className="object-cover w-full h-full cursor-pointer rounded-t-md" />
-            </div>
-          ) : (
-            <div className={`w-full h-full ${theme === "light" ? "bg-secondary-darker" : "bg-secondary"}`}>
-              <PreviewImage
-                imgClasses="object-cover rounded-md"
-                divClasses="top-1/2 relative"
-                imagePreview={imagePreview}
-                setPreview={setPreview}
-              />
-            </div>
-          )}
-          <div
-            className={`w-full rounded-b-md  ${
-              theme === "light" ? "bg-secondary-darker" : "bg-secondary"
-            } p-[1rem] text-[1.5rem] text-text-light shadow-sm border-t-[1px] border-gray-300 rounded-t-md shadow-gray-600`}
-          >
-            {characterName.length > 30 ? characterName.substring(0, 30) + "..." : characterName}
-          </div>
-        </>
-      ) : (
-        <div className={`text-text-light flex flex-col gap-[1rem] p-[1rem] h-full`}>
-          <h3 className="text-[2rem] break-words">{characterName}</h3>
-        </div>
-      )}
-    </>
+      <button
+        onClick={() => {
+          setCharacterValue(currentCharacter);
+          setInitCharacterValue(currentCharacter);
+        }}
+        className="absolute text-[30px] text-start bottom-0 w-full rounded-b-md text-text bg-background px-[10px] py-[5px]"
+      >
+        {`${currentCharacter.characterName}`.trim().length > 22
+          ? `${currentCharacter.characterName}...`.substring(0, 22)
+          : `${currentCharacter.characterName}`}
+      </button>
+    </article>
   );
 }

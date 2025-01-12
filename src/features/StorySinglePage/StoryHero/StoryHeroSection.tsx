@@ -24,7 +24,6 @@ type StoryHeroSectionTypes = {
 
 export default function StoryHeroSection({ setStoryInfo, storyInfo }: StoryHeroSectionTypes) {
   const { storyId } = useParams();
-
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const [imgUploading, setImgUploading] = useState(false);
 
@@ -68,7 +67,7 @@ export default function StoryHeroSection({ setStoryInfo, storyInfo }: StoryHeroS
   });
 
   return (
-    <section className="flex flex-col max-w-[1480px] mx-auto min-h-screen lg:items-start items-center mt-[10px] sm:mt-0 lg:mt-[25px] px-[10px] relative">
+    <section className="flex flex-col max-w-[1480px] mx-auto min-h-screen lg:items-start items-center mt-[10px] sm:mt-0 lg:mt-[25px] px-[10px]">
       <div className="flex lg:flex-row lg:w-full lg:mx-0 lg:items-start flex-col w-full gap-[10px] h-fit items-center mt-[20px] sm:px-0 px-[20px]">
         <div className="w-full lg:max-w-[200px] lg:h-[300px] max-w-[500px] h-[450px] relative bg-lightest-gray shadow-md shadow-gray-600 rounded-md">
           {storyInfo.storyImg ? (

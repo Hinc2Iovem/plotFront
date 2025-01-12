@@ -20,6 +20,7 @@ export default {
         paragraph: "var(--paragraph)",
         green: "var(--green)",
         orange: "var(--orange)",
+        red: "var(--red)",
         cyan: "var(--cyan)",
         "dark-blue": "rgba(var(--dark-blue))",
         "dark-dark-blue": "rgba(var(--dark-dark-blue))",
