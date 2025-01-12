@@ -136,7 +136,7 @@ const PlotfieldCharacterPromptMain = ({
   return (
     <Popover open={showCharacterModal} onOpenChange={setShowCharacterModal}>
       <PopoverTrigger asChild>
-        <form className="flex-grow flex justify-between items-center relative">
+        <div className="flex-grow flex justify-between items-center relative">
           <PlotfieldInput
             ref={currentInput}
             value={characterValue?.characterName || ""}
@@ -162,7 +162,7 @@ const PlotfieldCharacterPromptMain = ({
               imgClasses ? imgClasses : "w-[40px] object-cover top-[5px] right-[3px] rounded-md absolute"
             }`}
           />
-        </form>
+        </div>
       </PopoverTrigger>
       <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
         {filteredCharacters?.length ? (

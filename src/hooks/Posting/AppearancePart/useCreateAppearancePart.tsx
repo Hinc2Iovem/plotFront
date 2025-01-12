@@ -4,7 +4,7 @@ import { TranslationTextFieldNameAppearancePartsTypes } from "../../../types/Add
 
 type CreateAppearancePartTypes = {
   characterId: string;
-  appearanceType: TranslationTextFieldNameAppearancePartsTypes;
+  appearanceType: TranslationTextFieldNameAppearancePartsTypes | "temp";
   appearancePartName: string;
   storyId: string;
 };
@@ -18,13 +18,10 @@ export default function useCreateAppearancePart({
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () =>
-      await axiosCustomized.post(
-        `/appearanceParts/stories/${storyId}/characters/${characterId}/translations`,
-        {
-          appearancePartName,
-          type: appearanceType,
-        }
-      ),
+      await axiosCustomized.post(`/appearanceParts/stories/${storyId}/characters/${characterId}/translations`, {
+        appearancePartName,
+        type: appearanceType,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["appearancePart", appearanceType, "character", characterId],

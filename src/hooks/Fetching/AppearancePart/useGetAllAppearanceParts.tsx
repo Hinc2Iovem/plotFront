@@ -10,11 +10,13 @@ export default function useGetAllAppearancePartsByCharacterIdAndType({
   language,
 }: {
   characterId: string;
-  appearanceType: TranslationTextFieldNameAppearancePartsTypes;
+  appearanceType: TranslationTextFieldNameAppearancePartsTypes | "temp";
   language: CurrentlyAvailableLanguagesTypes;
 }) {
+  console.log("main hook: ", "appearancePart", appearanceType?.toLowerCase(), "character", characterId);
+
   return useQuery({
-    queryKey: ["appearancePart", appearanceType, "character", characterId],
+    queryKey: ["appearancePart", appearanceType?.toLowerCase(), "character", characterId],
     queryFn: async () =>
       await axiosCustomized
         .get<TranslationAppearancePartTypes[]>(

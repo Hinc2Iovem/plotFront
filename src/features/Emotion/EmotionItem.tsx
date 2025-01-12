@@ -1,23 +1,77 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import useUpdateImg from "../../hooks/Patching/useUpdateImg";
-import PreviewImage from "../../ui/shared/PreviewImage";
 import { EmotionsTypes } from "../../types/StoryData/Character/CharacterTypes";
 import SyncLoad from "../../ui/Loaders/SyncLoader";
+import PreviewImage from "../../ui/shared/PreviewImage";
+import { EmotionValueTypes } from "../Editor/PlotField/PlotFieldMain/Commands/Prompts/Emotions/PlotfieldEmotionPromptMain";
+import { toast } from "sonner";
+import { toastErrorStyles, toastSuccessStyles } from "@/components/shared/toastStyles";
 
-export default function EmotionItem({ emotionName, imgUrl, _id }: EmotionsTypes) {
+type EmotionItemTypes = {
+  setEmotionValue: React.Dispatch<React.SetStateAction<EmotionValueTypes>>;
+  setInitEmotionValue: React.Dispatch<React.SetStateAction<EmotionValueTypes>>;
+  emotionValue: EmotionValueTypes;
+  created: boolean | null;
+  characterId: string;
+} & EmotionsTypes;
+
+export default function EmotionItem({
+  emotionName,
+  imgUrl,
+  _id,
+  created,
+  emotionValue,
+  characterId,
+  setEmotionValue,
+  setInitEmotionValue,
+}: EmotionItemTypes) {
+  const queryClient = useQueryClient();
   const [imgPreview, setPreview] = useState<string | ArrayBuffer | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const theme = localStorage.getItem("theme");
-  const { mutate: updateImg, isPending } = useUpdateImg({
+
+  const [currentEmotion, setCurrentEmotion] = useState<EmotionValueTypes>({
+    emotionId: _id,
+    emotionImg: imgUrl || emotionValue.emotionImg,
+    emotionName: emotionName || emotionValue.emotionName,
+  });
+
+  useEffect(() => {
+    setCurrentEmotion((prev) => ({
+      ...prev,
+      emotionImg: imgUrl || "",
+    }));
+  }, [imgUrl]);
+
+  useEffect(() => {
+    if (typeof created === "boolean" && emotionValue.emotionId === _id) {
+      setCurrentEmotion(emotionValue);
+    }
+  }, [created]);
+
+  const { mutateAsync: updateImg, isPending } = useUpdateImg({
     id: _id,
     path: "/characterEmotions",
     preview: imgPreview,
   });
 
   useEffect(() => {
-    if (isMounted && imgPreview) {
-      updateImg({});
-    }
+    const uploadAndInvalidate = async () => {
+      if (isMounted && imgPreview) {
+        try {
+          await updateImg({ bodyId: _id });
+          queryClient.invalidateQueries({
+            queryKey: ["character", characterId],
+          });
+          toast("Картинка была обновлена", toastSuccessStyles);
+        } catch (error) {
+          toast("Ой, ой, изображение не было загруженно", toastErrorStyles);
+          console.error("Image upload failed:", error);
+        }
+      }
+    };
+
+    uploadAndInvalidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imgPreview, isMounted]);
 
@@ -26,37 +80,34 @@ export default function EmotionItem({ emotionName, imgUrl, _id }: EmotionsTypes)
   }, []);
 
   return (
-    <article
-      className={`w-full min-h-[24rem] h-full rounded-md shadow-md ${
-        theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
-      } bg-secondary relative`}
-    >
-      <div className={`${theme === "light" ? "border-[3px] border-white rounded-sm" : ""} relative w-full h-[20rem]`}>
-        {imgUrl ? (
-          <img
-            src={imgUrl}
-            alt="StoryBg"
-            className={`w-[10rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 cursor-pointer absolute rounded-md`}
-          />
-        ) : (
-          <PreviewImage
-            imgClasses="w-[10rem] left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 cursor-pointer absolute rounded-md"
-            imagePreview={imgPreview}
-            setPreview={setPreview}
-          />
-        )}
-      </div>
-      <div
-        className={`bg-secondary w-full p-[1rem] rounded-b-md shadow-md ${
-          theme === "light" ? "shadow-gray-400" : "shadow-gray-800"
-        }`}
+    <article className={`rounded-md h-[337px] w-full border-border border-[1px] relative`}>
+      {currentEmotion?.emotionImg ? (
+        <img
+          src={currentEmotion.emotionImg}
+          alt="EmotionImg"
+          className="object-contain w-[80%] h-[80%] cursor-pointer rounded-t-md mx-auto mt-[10px]"
+        />
+      ) : (
+        <PreviewImage
+          imgClasses="absolute object-cover rounded-md h-[200px] -translate-y-[137px] -translate-x-1/2 left-1/2"
+          divClasses="top-1/2 relative"
+          imagePreview={imgPreview}
+          setPreview={setPreview}
+        />
+      )}
+      <button
+        onClick={() => {
+          setEmotionValue(currentEmotion);
+          setInitEmotionValue(currentEmotion);
+        }}
+        className="absolute text-[30px] text-start bottom-0 w-full rounded-b-md text-text bg-background px-[10px] py-[5px]"
       >
-        <p className="text-[1.5rem] text-text-dark hover:cursor-default hover:text-text-light transition-all">
-          {emotionName}
-        </p>
-      </div>
+        {`${currentEmotion.emotionName}`.trim().length > 22
+          ? `${currentEmotion.emotionName}...`.substring(0, 22)
+          : `${currentEmotion.emotionName}`}
+      </button>
       {isPending && (
-        <SyncLoad conditionToLoading={!isPending} conditionToStart={isPending} className="top-[1rem] right-[1rem] " />
+        <SyncLoad conditionToLoading={!isPending} conditionToStart={isPending} className="top-[10px] right-[10px] " />
       )}
     </article>
   );

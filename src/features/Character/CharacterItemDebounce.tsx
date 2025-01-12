@@ -4,6 +4,10 @@ import useUpdateImg from "../../hooks/Patching/useUpdateImg";
 import { TranslationCharacterTypes } from "../../types/Additional/TranslationTypes";
 import PreviewImage from "../../ui/shared/PreviewImage";
 import { StoryNewCharacterTypes } from "./CharacterListPage";
+import { useQueryClient } from "@tanstack/react-query";
+import SyncLoad from "@/ui/Loaders/SyncLoader";
+import { toast } from "sonner";
+import { toastErrorStyles, toastSuccessStyles } from "@/components/shared/toastStyles";
 
 type CharacterItemDebounceTypes = {
   setCharacterValue: React.Dispatch<React.SetStateAction<StoryNewCharacterTypes>>;
@@ -21,6 +25,7 @@ export default function CharacterItemDebounce({
   setCharacterValue,
   setInitCharacterValue,
 }: CharacterItemDebounceTypes) {
+  const queryClient = useQueryClient();
   const { data: character } = useGetCharacterById({ characterId });
 
   const [currentCharacter, setCurrentCharacter] = useState<StoryNewCharacterTypes>({
@@ -40,7 +45,7 @@ export default function CharacterItemDebounce({
   }, [created]);
 
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
-  const uploadImgMutation = useUpdateImg({
+  const { mutateAsync: uploadImgMutation, isPending } = useUpdateImg({
     id: characterId,
     path: "/characters",
     preview: imagePreview,
@@ -57,9 +62,22 @@ export default function CharacterItemDebounce({
   }, [character]);
 
   useEffect(() => {
-    if (isMounted && imagePreview) {
-      uploadImgMutation.mutate({});
-    }
+    const uploadAndInvalidate = async () => {
+      if (isMounted && imagePreview) {
+        try {
+          await uploadImgMutation({ bodyId: characterId });
+          queryClient.invalidateQueries({
+            queryKey: ["character", characterId],
+          });
+          toast("Картинка была обновлена", toastSuccessStyles);
+        } catch (error) {
+          toast("Ой, ой, изображение не было загруженно", toastErrorStyles);
+          console.error("Image upload failed:", error);
+        }
+      }
+    };
+
+    uploadAndInvalidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagePreview, isMounted]);
 
@@ -81,7 +99,7 @@ export default function CharacterItemDebounce({
   }, [translations]);
 
   return (
-    <article className={`rounded-md max-h-[337px] w-full h-full border-border border-[1px] relative`}>
+    <article className={`rounded-md h-[337px] w-full border-border border-[1px] relative`}>
       <div
         className={`${
           character?.type === "maincharacter"
@@ -89,18 +107,18 @@ export default function CharacterItemDebounce({
             : character?.type === "minorcharacter"
             ? "bg-brand-gradient-left"
             : "bg-accent"
-        } absolute top-0 right-0 rounded-b-full  w-[30px] h-[30px]`}
+        } absolute top-0 right-0 rounded-b-full w-[30px] h-[30px]`}
       ></div>
       {currentCharacter.characterImg ? (
         <img
           src={currentCharacter.characterImg}
-          alt="StoryBackground"
-          className="object-cover w-full h-full cursor-pointer rounded-t-md"
+          alt="CharacterImg"
+          className="object-contain w-[80%] h-[80%] cursor-pointer rounded-t-md mx-auto mt-[10px]"
         />
       ) : (
         <div className={`w-full h-full`}>
           <PreviewImage
-            imgClasses="object-cover rounded-md"
+            imgClasses="absolute object-cover rounded-md h-[200px] -translate-y-[137px] -translate-x-1/2 left-1/2"
             divClasses="top-1/2 relative"
             imagePreview={imagePreview}
             setPreview={setPreview}
@@ -118,6 +136,9 @@ export default function CharacterItemDebounce({
           ? `${currentCharacter.characterName}...`.substring(0, 22)
           : `${currentCharacter.characterName}`}
       </button>
+      {isPending && (
+        <SyncLoad conditionToLoading={!isPending} conditionToStart={isPending} className="top-[10px] right-[10px] " />
+      )}
     </article>
   );
 }

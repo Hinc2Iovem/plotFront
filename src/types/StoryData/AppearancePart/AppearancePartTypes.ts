@@ -20,3 +20,10 @@ export type AppearancePartVariationRusTypes =
   | "волосы"
   | "остальное"
   | "кожа";
+
+export type AppearancePartValueTypes = {
+  appearanceName: string;
+  appearanceType: TranslationTextFieldNameAppearancePartsTypes | "temp";
+  appearanceId: string;
+  appearanceImg?: string;
+};

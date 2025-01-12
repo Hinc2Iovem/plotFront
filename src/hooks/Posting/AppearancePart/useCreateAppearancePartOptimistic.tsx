@@ -20,14 +20,16 @@ export default function useCreateAppearancePartOptimistic({ appearancePartName, 
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ appearancePartId, currentLanguage, characterId, type, img }: CreateAppearancePartBodyTypes) =>
-      await axiosCustomized.post(`/appearanceParts/stories/${storyId}/optimistic/translations`, {
-        appearancePartName,
-        appearancePartId,
-        type,
-        currentLanguage,
-        characterId,
-        img,
-      }),
+      await axiosCustomized
+        .post(`/appearanceParts/stories/${storyId}/optimistic/translations`, {
+          appearancePartName,
+          appearancePartId,
+          type,
+          currentLanguage,
+          characterId,
+          img,
+        })
+        .then((r) => r.data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["translation", "russian", "story", storyId, "appearancePart"],

@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { SearchCharacterVariationTypes, StoryNewCharacterTypes } from "../CharacterListPage";
 import SelectCharacterType from "../shared/SelectCharacterType";
+import useUpdateImg from "@/hooks/Patching/useUpdateImg";
 
 type NewCharacterFormTypes = {
   searchValue: string;
@@ -39,13 +40,24 @@ export default function NewCharacterForm({
   const [mainCharacterAlreadyExists, setMainCharacterAlreadyExists] = useState(false);
   const createOrSave = !characterValue.characterId.trim().length ? "create" : "save";
 
+  const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(characterValue.characterImg || "");
+
+  useEffect(() => {
+    setPreview(characterValue.characterImg || "");
+  }, [characterValue.characterImg]);
+
+  const uploadImgMutation = useUpdateImg({
+    path: "/characters",
+    preview: imagePreview,
+  });
+
   useEffect(() => {
     if (character) {
       setMainCharacterAlreadyExists(true);
     }
   }, [character]);
 
-  const createCharacter = useCreateCharacter({
+  const { mutateAsync: createCharacter, isPaused: creating } = useCreateCharacter({
     characterType: characterValue.characterType,
     name: characterValue.characterName,
     searchCharacterType: searchCharacterType === "all" ? ("" as SearchCharacterVariationTypes) : searchCharacterType,
@@ -57,13 +69,13 @@ export default function NewCharacterForm({
     language: "russian",
   });
 
-  const updateCharacter = useUpdateFullCharacterTranslation({
+  const { mutateAsync: updateCharacter, isPaused: updating } = useUpdateFullCharacterTranslation({
     characterId: characterValue.characterId,
     language: "russian",
     storyId: storyId || "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (characterValue.characterType === "emptycharacter" || characterValue.characterType === "maincharacter") {
@@ -93,13 +105,19 @@ export default function NewCharacterForm({
 
     if (createOrSave === "create") {
       const characterId = generateMongoObjectId();
-      createCharacter.mutate({ characterId });
+      await createCharacter({ characterId });
+      if (imagePreview) {
+        await uploadImgMutation.mutateAsync({ bodyId: characterId });
+      }
     } else {
       if (checkObjectsIdenticalShallow(characterValue, initCharacterValue)) {
         toast("Значения не были обновлены!", toastNotificationStyles);
         return;
       }
-      updateCharacter.mutate({ searchCharacterType, debouncedValue: searchValue, ...characterValue });
+      if (imagePreview !== characterValue.characterImg) {
+        await uploadImgMutation.mutateAsync({ bodyId: characterValue.characterId });
+      }
+      await updateCharacter({ searchCharacterType, debouncedValue: searchValue, ...characterValue });
     }
 
     toast(`Персонаж был ${createOrSave === "create" ? "создан" : "обновлён"}`, toastSuccessStyles);
@@ -109,11 +127,7 @@ export default function NewCharacterForm({
 
   return (
     <form onSubmit={handleSubmit} className="md:max-w-[355px] w-full flex h-fit flex-col gap-[5px]">
-      <StoryAttributesImgBlock
-        id={characterValue.characterId}
-        img={characterValue.characterImg || ""}
-        path="/characters"
-      />
+      <StoryAttributesImgBlock imagePreview={imagePreview} setPreview={setPreview} />
       <TypeTagSection characterValue={characterValue} setCharacterValue={setCharacterValue} />
       <Input
         value={characterValue.characterName}
@@ -153,10 +167,11 @@ export default function NewCharacterForm({
         } w-full border-border border-[1px] h-full rounded-md px-[10px] py-[5px] max-h-[200px] min-h-[100px] text-text md:text-[20px]`}
       />
       <StoryAttributesCreateButton
-        disabled={checkObjectsIdenticalShallow(characterValue, initCharacterValue)}
+        disabled={checkObjectsIdenticalShallow(characterValue, initCharacterValue) || creating || updating}
         createOrSave={createOrSave}
       />
       <StoryAttributesClearButton
+        disabled={creating || updating}
         clear={() => {
           const defaultObj = {
             characterId: "",

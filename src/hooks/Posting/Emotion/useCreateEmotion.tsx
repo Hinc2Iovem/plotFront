@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../api/axios";
 import { CharacterGetTypes } from "../../../types/StoryData/Character/CharacterTypes";
 
@@ -14,7 +14,6 @@ type CreateEmotionBodyTypes = {
 };
 
 export default function useCreateEmotion({ characterId, emotionName }: CreateEmotionTypes) {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["new", "emotion", emotionName],
     mutationFn: async ({ emotionBodyName, emotionId, imgUrl }: CreateEmotionBodyTypes) =>
@@ -25,13 +24,6 @@ export default function useCreateEmotion({ characterId, emotionName }: CreateEmo
           imgUrl,
         })
         .then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["character", characterId],
-        exact: true,
-        type: "active",
-      });
-    },
   });
 }
 
