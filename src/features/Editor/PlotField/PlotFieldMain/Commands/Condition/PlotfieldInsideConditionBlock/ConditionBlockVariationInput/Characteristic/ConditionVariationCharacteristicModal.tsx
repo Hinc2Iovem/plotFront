@@ -1,150 +1,163 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllCharacteristicsByStoryId from "../../../../../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
-import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import useUpdateConditionCharacteristic from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
 import useConditionBlocks from "../../../Context/ConditionContext";
 
-export type ExposedMethodsCharacteristic = {
-  updateCharacteristicOnBlur: () => void;
-};
-
 type CharacteristicsPromptModalTypes = {
-  setShowCharacteristicPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentCharacteristic: React.Dispatch<React.SetStateAction<string | number>>;
-  setBackUpCharacteristic: React.Dispatch<React.SetStateAction<string | number>>;
   setCharacteristicId: React.Dispatch<React.SetStateAction<string>>;
-  showCharacteristicPromptModal: boolean;
   currentCharacteristic: string | number;
   plotfieldCommandId: string;
   conditionBlockId: string;
-  backUpCharacteristic: string;
   conditionBlockVariationId: string;
   fieldType: "conditionName" | "conditionValue";
+  initValue: string | number;
+  setInitValue: React.Dispatch<React.SetStateAction<string | number>>;
 };
 
-const ConditionVariationCharacteristicModal = forwardRef<ExposedMethodsCharacteristic, CharacteristicsPromptModalTypes>(
-  (
-    {
-      setShowCharacteristicPromptModal,
-      setCurrentCharacteristic,
-      setBackUpCharacteristic,
-      setCharacteristicId,
-      currentCharacteristic,
-      showCharacteristicPromptModal,
-      plotfieldCommandId,
-      conditionBlockId,
-      conditionBlockVariationId,
-      fieldType,
-      backUpCharacteristic,
-    },
-    ref
-  ) => {
-    const { storyId } = useParams();
+const ConditionVariationCharacteristicModal = ({
+  setCurrentCharacteristic,
+  setCharacteristicId,
+  currentCharacteristic,
+  plotfieldCommandId,
+  conditionBlockId,
+  conditionBlockVariationId,
+  fieldType,
+  initValue,
+  setInitValue,
+}: CharacteristicsPromptModalTypes) => {
+  const { storyId } = useParams();
+  const [showCharacteristicModal, setShowCharacteristicModal] = useState(false);
+  const currentInput = useRef<HTMLInputElement>(null);
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
 
-    const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const { data: characteristics } = useGetAllCharacteristicsByStoryId({
+    storyId: storyId || "",
+    language: "russian",
+  });
 
-    const modalRef = useRef<HTMLDivElement>(null);
+  const memoizedCharacteristics = useMemo(() => {
+    if (!characteristics || typeof currentCharacteristic === "number") return [];
+    if (currentCharacteristic?.trim().length) {
+      return characteristics.filter((c) =>
+        c.translations.filter(
+          (ct) =>
+            ct.textFieldName === "characterCharacteristic" &&
+            ct.text?.toLowerCase().includes(currentCharacteristic?.toLowerCase())
+        )
+      );
+    } else {
+      return characteristics;
+    }
+  }, [currentCharacteristic, characteristics]);
 
-    const { data: characteristics } = useGetAllCharacteristicsByStoryId({
-      storyId: storyId || "",
-      language: "russian",
-    });
+  const updateConditionBlock = useUpdateConditionCharacteristic({
+    conditionBlockCharacteristicId: conditionBlockVariationId,
+  });
 
-    const memoizedCharacteristics = useMemo(() => {
-      if (!characteristics || typeof currentCharacteristic === "number") return [];
-      if (currentCharacteristic?.trim().length) {
-        return characteristics.filter((c) =>
-          c.translations.filter(
-            (ct) =>
-              ct.textFieldName === "characterCharacteristic" &&
-              ct.text?.toLowerCase().includes(currentCharacteristic?.toLowerCase())
-          )
-        );
+  const updateCharacteristicOnBlur = () => {
+    if (initValue === currentCharacteristic) {
+      return;
+    }
+
+    if (typeof currentCharacteristic === "string") {
+      const existingCharacteristic = memoizedCharacteristics.find((mc) =>
+        mc.translations.find((mct) => mct.text?.toLowerCase() === currentCharacteristic?.toLowerCase())
+      );
+      if (existingCharacteristic) {
+        handleSubmit({
+          characteristicId: existingCharacteristic.characteristicId,
+          currentCharacteristic:
+            (existingCharacteristic.translations || []).find((t) => t.textFieldName === "characterCharacteristic")
+              ?.text || "",
+        });
       } else {
-        return characteristics;
+        // TODO suggest to create
       }
-    }, [currentCharacteristic, characteristics]);
+    }
+  };
 
-    const updateConditionBlock = useUpdateConditionCharacteristic({
-      conditionBlockCharacteristicId: conditionBlockVariationId,
-    });
+  const handleSubmit = ({
+    characteristicId,
+    currentCharacteristic,
+  }: {
+    currentCharacteristic: string;
+    characteristicId: string;
+  }) => {
+    if (initValue === currentCharacteristic) {
+      return;
+    }
 
-    useImperativeHandle(ref, () => ({
-      updateCharacteristicOnBlur,
-    }));
+    setCurrentCharacteristic(currentCharacteristic);
+    setCharacteristicId(characteristicId);
 
-    const updateCharacteristicOnBlur = () => {
-      if (typeof currentCharacteristic === "string") {
-        const existingCharacteristic = memoizedCharacteristics.find((mc) =>
-          mc.translations.find((mct) => mct.text?.toLowerCase() === currentCharacteristic?.toLowerCase())
-        );
-        if (existingCharacteristic) {
-          handleSubmit({
-            characteristicId: existingCharacteristic.characteristicId,
-            currentCharacteristic:
-              (existingCharacteristic.translations || []).find((t) => t.textFieldName === "characterCharacteristic")
-                ?.text || "",
-          });
-        } else {
-          setShowCharacteristicPromptModal(false);
-          setCurrentCharacteristic(backUpCharacteristic);
-        }
-      }
-    };
-
-    const handleSubmit = ({
+    setInitValue(currentCharacteristic);
+    updateConditionBlockVariationValue({
+      conditionBlockId,
+      plotfieldCommandId,
+      conditionBlockVariationId,
       characteristicId,
-      currentCharacteristic,
-    }: {
-      currentCharacteristic: string;
-      characteristicId: string;
-    }) => {
-      setShowCharacteristicPromptModal(false);
-      setCurrentCharacteristic(currentCharacteristic);
-      setBackUpCharacteristic(currentCharacteristic);
-      setCharacteristicId(characteristicId);
-
-      updateConditionBlockVariationValue({
-        conditionBlockId,
-        plotfieldCommandId,
-        conditionBlockVariationId,
-        characteristicId,
-      });
-
-      updateConditionBlock.mutate({
-        characteristicId: fieldType === "conditionName" ? characteristicId : null,
-        secondCharacteristicId: fieldType === "conditionValue" ? characteristicId : null,
-      });
-    };
-
-    useOutOfModal({
-      modalRef,
-      setShowModal: setShowCharacteristicPromptModal,
-      showModal: showCharacteristicPromptModal,
     });
-    return (
-      <AsideScrollable
-        ref={modalRef}
-        className={`${showCharacteristicPromptModal ? "" : "hidden"} translate-y-[.5rem]`}
-      >
-        {(memoizedCharacteristics || [])?.map((mk) => (
-          <AsideScrollableButton
-            key={mk.characteristicId}
-            onClick={() =>
-              handleSubmit({ currentCharacteristic: mk.translations[0]?.text, characteristicId: mk.characteristicId })
-            }
-          >
-            {mk.translations[0]?.text}
-          </AsideScrollableButton>
-        ))}
-      </AsideScrollable>
-    );
-  }
-);
 
-ConditionVariationCharacteristicModal.displayName = "ConditionVariationCharacteristicModal";
+    updateConditionBlock.mutate({
+      characteristicId: fieldType === "conditionName" ? characteristicId : null,
+      secondCharacteristicId: fieldType === "conditionValue" ? characteristicId : null,
+    });
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedCharacteristics.length });
+
+  return (
+    <Popover open={showCharacteristicModal} onOpenChange={setShowCharacteristicModal}>
+      <PopoverTrigger asChild>
+        <div>
+          <PlotfieldInput
+            ref={currentInput}
+            value={currentCharacteristic}
+            onChange={(e) => {
+              setCurrentCharacteristic(e.target.value);
+            }}
+            onBlur={updateCharacteristicOnBlur}
+            className={`w-full text-text md:text-[17px] border-border border-[3px]`}
+            placeholder="Характеристика"
+          />
+        </div>
+      </PopoverTrigger>
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
+        {memoizedCharacteristics?.length ? (
+          memoizedCharacteristics?.map((c, i) => (
+            <Button
+              key={`${c.characteristicId}-${i}`}
+              ref={(el) => (buttonsRef.current[i] = el)}
+              type="button"
+              onClick={() => {
+                handleSubmit({ currentCharacteristic: c.translations[0]?.text, characteristicId: c.characteristicId });
+                setShowCharacteristicModal(false);
+              }}
+              className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
+            >
+              {c.translations[0]?.text.length > 20
+                ? c.translations[0]?.text.substring(0, 20) + "..."
+                : c.translations[0]?.text}
+            </Button>
+          ))
+        ) : !memoizedCharacteristics?.length ? (
+          <Button
+            type="button"
+            onClick={() => setShowCharacteristicModal(false)}
+            className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
+          >
+            Пусто
+          </Button>
+        ) : null}
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export default ConditionVariationCharacteristicModal;

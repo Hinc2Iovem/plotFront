@@ -1,16 +1,14 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import useUpdateConditionKey from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionKey";
 import useGetAllKeysByStoryId from "../../../../../../hooks/Key/useGetAllKeysByStoryId";
-import useConditionBlocks from "../../../Context/ConditionContext";
-import useSearch from "../../../../../../../Context/Search/SearchContext";
-
-export type ExposedMethodsKey = {
-  updateKeyOnBlur: () => void;
-};
+import { toast } from "sonner";
+import { toastErrorStyles, toastSuccessStyles } from "@/components/shared/toastStyles";
+import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
+import useCreateNewKeyAsValue from "@/features/Editor/PlotField/hooks/Key/useCreateNewKeyAsValue";
 
 export type DebouncedCheckKeyTypes = {
   keyId: string;
@@ -18,131 +16,141 @@ export type DebouncedCheckKeyTypes = {
 };
 
 type KeyPromptsModalTypes = {
-  showKeyPromptModal: boolean;
-  setShowKeyPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentKeyName: React.Dispatch<React.SetStateAction<string>>;
-  setBackUpConditionName: React.Dispatch<React.SetStateAction<string>>;
   currentKeyName: string;
-  conditionBlockVariationId: string;
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  backUpConditionName: string;
+  initValue: string;
   setCommandKeyId: React.Dispatch<React.SetStateAction<string>>;
+  setCurrentlyActive?: React.Dispatch<React.SetStateAction<boolean>>;
+  onChange: (value: string) => void;
+  onBlur?: () => void;
 };
 
-const KeyPromptsModal = forwardRef<ExposedMethodsKey, KeyPromptsModalTypes>(
-  (
-    {
-      showKeyPromptModal,
-      setCurrentKeyName,
-      setBackUpConditionName,
-      currentKeyName,
-      setShowKeyPromptModal,
-      setCommandKeyId,
-      conditionBlockVariationId,
-      conditionBlockId,
-      plotfieldCommandId,
-      backUpConditionName,
-    },
-    ref
-  ) => {
-    const { storyId, episodeId } = useParams();
-    const { updateValue } = useSearch();
-    const { updateConditionBlockVariationValue } = useConditionBlocks();
-    const { data: keys } = useGetAllKeysByStoryId({ storyId: storyId || "" });
+const KeyPromptsModal = ({
+  setCurrentKeyName,
+  currentKeyName,
+  setCommandKeyId,
+  initValue,
+  onChange,
+  setCurrentlyActive,
+  onBlur,
+}: KeyPromptsModalTypes) => {
+  const { storyId } = useParams();
 
-    const updateConditionBlock = useUpdateConditionKey({
-      conditionBlockKeyId: conditionBlockVariationId || "",
-    });
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const currentInput = useRef<HTMLInputElement>(null);
 
-    const memoizedKeys = useMemo(() => {
-      if (!keys) return [];
+  const { data: keys } = useGetAllKeysByStoryId({ storyId: storyId || "" });
 
-      if (currentKeyName) {
-        return keys?.filter((k) => k?.text?.toLowerCase().includes(currentKeyName?.toLowerCase()));
-      }
-      return keys;
-    }, [currentKeyName, keys]);
+  const memoizedKeys = useMemo(() => {
+    if (!keys) return [];
 
-    const modalRef = useRef<HTMLDivElement>(null);
+    if (currentKeyName) {
+      return keys?.filter((k) => k?.text?.toLowerCase().includes(currentKeyName?.toLowerCase()));
+    }
+    return keys;
+  }, [currentKeyName, keys]);
 
-    useImperativeHandle(ref, () => ({
-      updateKeyOnBlur,
-    }));
+  const createKey = useCreateNewKeyAsValue({ storyId: storyId || "" });
 
-    const updateValues = (value: string) => {
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          commandName: "Condition - Key",
-          id: conditionBlockVariationId,
-          type: "conditionVariation",
-          value: value,
-        });
-      }
-    };
+  const updateKeyOnBlur = async ({ value }: { value?: string }) => {
+    const currentValue = value?.trim().length ? value : currentKeyName;
+    if (!currentValue.trim().length) {
+      return;
+    }
 
-    const updateKeyOnBlur = () => {
-      const existingKey = memoizedKeys?.find((k) => k.text?.toLowerCase() === currentKeyName?.toLowerCase());
-      if (existingKey) {
-        handleButtonClick({ keyId: existingKey._id, text: existingKey.text });
-      } else {
-        updateValues(backUpConditionName);
-        setCurrentKeyName(backUpConditionName);
-      }
-    };
+    if (currentValue.trim() === initValue.trim()) {
+      return;
+    }
 
-    const handleButtonClick = ({ keyId, text }: { keyId: string; text: string }) => {
-      updateConditionBlockVariationValue({
-        commandKeyId: keyId,
-        conditionBlockId,
-        plotfieldCommandId,
-        conditionBlockVariationId,
-      });
+    const existingKey = memoizedKeys?.find((k) => k.text?.toLowerCase() === currentValue?.toLowerCase());
+    if (setCurrentlyActive) {
+      setCurrentlyActive(false);
+    }
 
-      setCurrentKeyName(text);
-      setBackUpConditionName(text);
+    if (existingKey) {
+      // lol
+      setCommandKeyId(existingKey._id);
+      setCurrentKeyName(existingKey.text);
+    } else {
+      // just create a new one
+      const keyId = generateMongoObjectId();
       setCommandKeyId(keyId);
+      try {
+        await createKey.mutateAsync({ keyId, keyName: currentValue.trim() });
+        toast(`Новый ключ был создан`, toastSuccessStyles);
+      } catch (error) {
+        toast(`Что-то пошло не так, ключ не был создан`, toastErrorStyles);
+        setCommandKeyId("");
+        setCurrentKeyName("");
+        console.error(error);
+      }
+    }
+  };
 
-      updateConditionBlock.mutate({
-        keyId: keyId,
-      });
-    };
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedKeys.length });
 
-    useOutOfModal({
-      modalRef,
-      setShowModal: setShowKeyPromptModal,
-      showModal: showKeyPromptModal,
-    });
+  return (
+    <Popover open={showKeyModal} onOpenChange={setShowKeyModal}>
+      <PopoverTrigger asChild>
+        <div className="flex-grow flex justify-between items-center relative">
+          <PlotfieldInput
+            type="text"
+            ref={currentInput}
+            onBlur={() => {
+              updateKeyOnBlur({});
+              if (onBlur) {
+                onBlur();
+              }
+            }}
+            placeholder="Ключ"
+            value={currentKeyName}
+            onClick={() => {
+              if (setCurrentlyActive) {
+                setCurrentlyActive(true);
+              }
+            }}
+            onChange={(e) => {
+              setShowKeyModal(true);
+              setCurrentKeyName(e.target.value);
 
-    return (
-      <AsideScrollable ref={modalRef} className={`${showKeyPromptModal ? "" : "hidden"} translate-y-[.5rem]`}>
+              if (onChange) {
+                onChange(e.target.value);
+              }
+            }}
+            className={`border-[3px] text-text border-border outline-none`}
+          />
+        </div>
+      </PopoverTrigger>
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
         {memoizedKeys?.length ? (
-          memoizedKeys.map((mk) => (
-            <AsideScrollableButton
-              key={mk._id}
+          memoizedKeys?.map((c, i) => (
+            <Button
+              key={`${c._id}-${i}`}
+              ref={(el) => (buttonsRef.current[i] = el)}
+              type="button"
               onClick={() => {
-                setShowKeyPromptModal(false);
-                handleButtonClick({ keyId: mk._id, text: mk.text });
+                setShowKeyModal(false);
+                updateKeyOnBlur({ value: c.text });
               }}
+              className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >
-              {mk.text}
-            </AsideScrollableButton>
+              {c.text.length > 20 ? c.text.substring(0, 20) + "..." : c.text}
+            </Button>
           ))
         ) : (
-          <AsideScrollableButton
+          <Button
+            type="button"
             onClick={() => {
-              setShowKeyPromptModal(false);
+              setShowKeyModal(false);
             }}
+            className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
           >
-            Пусто
-          </AsideScrollableButton>
+            {currentKeyName ? "Создать" : "Пусто"}
+          </Button>
         )}
-      </AsideScrollable>
-    );
-  }
-);
-
-KeyPromptsModal.displayName = "KeyPromptsModal";
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export default KeyPromptsModal;

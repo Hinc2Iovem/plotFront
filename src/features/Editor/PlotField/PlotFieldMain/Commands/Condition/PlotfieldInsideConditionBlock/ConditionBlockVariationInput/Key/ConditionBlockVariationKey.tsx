@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import useUpdateConditionKey from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionKey";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetKeyById from "../../../../../../hooks/Key/useGetKeyById";
+import useConditionBlocks from "../../../Context/ConditionContext";
 import ConditionBlockFieldName from "../shared/ConditionBlockFieldName";
-import CreateNewValueModal from "./CreateNewKey";
-import KeyPromptsModal, { ExposedMethodsKey } from "./KeyPromptsModal";
+import KeyPromptsModal from "./KeyPromptsModal";
 
 type ConditionBlockVariationKeyTypes = {
   plotfieldCommandId: string;
@@ -24,30 +24,24 @@ export default function ConditionBlockVariationKey({
   topologyBlockId,
 }: ConditionBlockVariationKeyTypes) {
   const { episodeId } = useParams();
-  const [showKeyPromptModal, setShowKeyPromptModal] = useState(false);
-  const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
+  const { updateConditionBlockVariationValue } = useConditionBlocks();
+
   const [commandKeyId, setCommandKeyId] = useState(keyId || "");
+  const [initKeyId, setInitKeyId] = useState(keyId || "");
 
   const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const [currentConditionName, setCurrentConditionName] = useState("");
-  const [backUpConditionName, setBackUpConditionName] = useState("");
+  const [initValue, setInitValue] = useState("");
 
   const { data: commandKey } = useGetKeyById({ keyId: commandKeyId });
 
   useEffect(() => {
     if (commandKey) {
       setCurrentConditionName(commandKey.text);
-      setBackUpConditionName(commandKey.text);
+      setInitValue(commandKey.text);
     }
   }, [commandKey]);
-
-  useEffect(() => {
-    if (keyId?.trim().length) {
-      setCommandKeyId(keyId);
-    }
-  }, [keyId]);
 
   const { updateValue } = useSearch();
 
@@ -59,13 +53,25 @@ export default function ConditionBlockVariationKey({
     type: "conditionVariation",
   });
 
-  const inputRef = useRef<ExposedMethodsKey>(null);
+  const updateConditionBlock = useUpdateConditionKey({
+    conditionBlockKeyId: conditionBlockVariationId || "",
+  });
 
-  const onBlur = () => {
-    if (inputRef.current) {
-      inputRef.current.updateKeyOnBlur();
+  useEffect(() => {
+    if (commandKeyId && commandKeyId !== initKeyId) {
+      setInitKeyId(commandKeyId);
+      setInitValue(currentConditionName);
+      updateConditionBlock.mutate({
+        keyId: commandKeyId,
+      });
     }
-  };
+    updateConditionBlockVariationValue({
+      commandKeyId: keyId,
+      conditionBlockId,
+      plotfieldCommandId,
+      conditionBlockVariationId,
+    });
+  }, [commandKeyId, initKeyId]);
 
   const updateValues = (value: string) => {
     if (episodeId) {
@@ -81,51 +87,14 @@ export default function ConditionBlockVariationKey({
 
   return (
     <div className="relative w-full">
-      <PlotfieldInput
-        type="text"
-        onBlur={() => {
-          setCurrentlyActive(false);
-          onBlur();
-        }}
-        placeholder="Ключ"
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowKeyPromptModal((prev) => !prev);
-          setCurrentlyActive(true);
-        }}
-        value={currentConditionName}
-        onChange={(e) => {
-          if (!showKeyPromptModal) {
-            setShowKeyPromptModal(true);
-          }
-          setCurrentlyActive(true);
-          setHighlightRedOnValueOnExisting(false);
-          setCurrentConditionName(e.target.value);
-          updateValues(e.target.value);
-        }}
-        className={`${highlightRedOnValueNonExisting ? "" : ""} border-[3px] border-double border-dark-mid-gray`}
-      />
-
       <KeyPromptsModal
+        onBlur={() => setCurrentlyActive(false)}
         currentKeyName={currentConditionName}
         setCurrentKeyName={setCurrentConditionName}
-        backUpConditionName={backUpConditionName}
-        setBackUpConditionName={setBackUpConditionName}
-        setShowKeyPromptModal={setShowKeyPromptModal}
-        showKeyPromptModal={showKeyPromptModal}
         setCommandKeyId={setCommandKeyId}
-        conditionBlockVariationId={conditionBlockVariationId}
-        conditionBlockId={conditionBlockId}
-        plotfieldCommandId={plotfieldCommandId}
-        ref={inputRef}
-      />
-
-      <CreateNewValueModal
-        conditionName={currentConditionName}
-        conditionBlockKeyId={conditionBlockVariationId}
-        setHighlightRedOnValueOnExisting={setHighlightRedOnValueOnExisting}
-        setShowCreateNewValueModal={setShowCreateNewValueModal}
-        showCreateNewValueModal={showCreateNewValueModal}
+        onChange={(value) => updateValues(value)}
+        initValue={initValue}
+        setCurrentlyActive={setCurrentlyActive}
       />
 
       <ConditionBlockFieldName currentlyActive={currentlyActive} text="Ключ" />

@@ -1,13 +1,14 @@
-import { useRef, useState } from "react";
-import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SelectWithBlur from "@/components/ui/selectWithBlur";
+import useUpdateConditionCharacter from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacter";
+import useUpdateConditionCharacteristic from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
+import useUpdateConditionRetry from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionRetry";
 import {
   AllConditionSigns,
   ConditionSignTypes,
   ConditionValueVariationType,
 } from "../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import { PlotfieldConditionSingsPrompt } from "../../ConditionBlockItem/ConditionValueItem";
-import AsideScrollable from "../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldButton from "../../../../../../../../ui/Buttons/PlotfieldButton";
+import useConditionBlocks from "../../Context/ConditionContext";
 
 type ConditionSignFieldTypes = {
   conditionBlockId: string;
@@ -26,45 +27,45 @@ export default function ConditionSignField({
   currentSign,
   setCurrentSign,
 }: ConditionSignFieldTypes) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const [showSignModal, setShowSignModal] = useState(false);
-
-  useOutOfModal({
-    showModal: showSignModal,
-    setShowModal: setShowSignModal,
-    modalRef,
+  const { updateConditionBlockVariationSign } = useConditionBlocks();
+  const updateValueCharacter = useUpdateConditionCharacter({ conditionBlockCharacterId: conditionBlockVariationId });
+  const updateValueCharacteristic = useUpdateConditionCharacteristic({
+    conditionBlockCharacteristicId: conditionBlockVariationId,
   });
+  const updateValueRetry = useUpdateConditionRetry({ conditionBlockRetryId: conditionBlockVariationId });
+
   return (
-    <div className="relative w-full h-full">
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowSignModal((prev) => !prev);
-        }}
-        type="button"
-        className="bg-primary-darker h-full"
-      >
-        {currentSign || "Знак"}
-      </PlotfieldButton>
-      <AsideScrollable
-        ref={modalRef}
-        className={` ${showSignModal ? "" : "hidden"} translate-y-[.5rem] min-w-fit right-0`}
-      >
-        {AllConditionSigns &&
-          AllConditionSigns?.map((c) => (
-            <PlotfieldConditionSingsPrompt
-              key={c}
-              signName={c}
-              setCurrentSign={setCurrentSign}
-              setShowSignModal={setShowSignModal}
-              conditionBlockId={conditionBlockId}
-              plotfieldCommandId={plotfieldCommandId}
-              conditionBlockVariationId={conditionBlockVariationId}
-              type={type}
-            />
-          ))}
-      </AsideScrollable>
-    </div>
+    <SelectWithBlur
+      onValueChange={(v: ConditionSignTypes) => {
+        if (type === "character") {
+          updateValueCharacter.mutate({ sign: v });
+        } else if (type === "characteristic") {
+          updateValueCharacteristic.mutate({ sign: v });
+        } else if (type === "retry") {
+          updateValueRetry.mutate({ sign: v });
+        }
+
+        updateConditionBlockVariationSign({
+          conditionBlockId,
+          sign: v,
+          conditionBlockVariationId,
+          plotFieldCommandId: plotfieldCommandId,
+        });
+        setCurrentSign(v);
+      }}
+    >
+      <SelectTrigger className="text-text border-border border-[3px] hover:bg-accent active:scale-[.99] transition-all">
+        <SelectValue placeholder={currentSign || "Знак"} onBlur={(v) => v.currentTarget.blur()} />
+      </SelectTrigger>
+      <SelectContent>
+        {AllConditionSigns.map((pv) => {
+          return (
+            <SelectItem key={pv} value={pv} className={`${pv === currentSign ? "hidden" : ""} capitalize w-full`}>
+              {pv}
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </SelectWithBlur>
   );
 }

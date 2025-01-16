@@ -1,14 +1,11 @@
-import PlotfieldButton from "../../../../../../../../../ui/Buttons/PlotfieldButton";
+import { Button } from "@/components/ui/button";
 
 export default function ConditionBlockVariationRandom() {
   return (
     <div className="relative w-full">
-      <PlotfieldButton
-        type="button"
-        className={`bg-blue-600 active:bg-blue-600 focus-within:bg-blue-600 hover:bg-blue-500 text-text-light w-full`}
-      >
+      <Button type="button" className={`bg-background text-text w-full`}>
         Рандом
-      </PlotfieldButton>
+      </Button>
     </div>
   );
 }

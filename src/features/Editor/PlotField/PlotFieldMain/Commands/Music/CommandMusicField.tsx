@@ -4,11 +4,10 @@ import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldComma
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
-import useGetCommandMusic from "../../../hooks/Music/useGetCommandMusic";
+import useGetCommandMusic from "../../../hooks/Music/Command/useGetCommandMusic";
 import useGetMusicById from "../../../hooks/Music/useGetMusicById";
-import "../Prompts/promptStyles.css";
 import AllMusicModal from "./AllMusicModal";
-import CreateMusicField from "./CreateMusicField";
+import "../Prompts/promptStyles.css";
 
 type CommandMusicFieldTypes = {
   plotFieldCommandId: string;
@@ -21,7 +20,6 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
   const [nameValue] = useState<string>(command ?? "Music");
   const [initValue, setInitValue] = useState<string>("");
   const [musicName, setMusicName] = useState<string>("");
-  const [showCreateMusicModal, setShowCreateMusicModal] = useState(false);
 
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
@@ -76,24 +74,15 @@ export default function CommandMusicField({ plotFieldCommandId, command, topolog
       </div>
       <div className={`sm:w-[77%] flex-grow flex-col flex-wrap flex items-center gap-[5px] relative`}>
         <AllMusicModal
-          musicId={commandMusic?.musicId || ""}
           musicName={musicName}
           setMusicName={setMusicName}
-          setShowCreateMusicModal={setShowCreateMusicModal}
+          commandMusicId={commandMusicId}
           storyId={storyId || ""}
           initValue={initValue}
           onChange={(value) => updateMusicState(value)}
           setInitValue={setInitValue}
         />
       </div>
-
-      <CreateMusicField
-        commandMusicId={commandMusicId}
-        setShowModal={setShowCreateMusicModal}
-        showModal={showCreateMusicModal}
-        storyId={storyId || ""}
-        musicName={musicName}
-      />
     </div>
   );
 }

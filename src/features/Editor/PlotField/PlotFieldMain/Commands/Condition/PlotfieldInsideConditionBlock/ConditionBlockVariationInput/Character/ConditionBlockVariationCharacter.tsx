@@ -76,22 +76,20 @@ export default function ConditionBlockVariationCharacter({
 
   useEffect(() => {
     updateValues();
-  }, [currentSign]);
+  }, [currentSign, characterValue.characterName]);
 
   return (
-    <div className="w-full flex gap-[1rem] flex-col">
-      <div className="w-full flex gap-[.5rem] flex-wrap">
+    <div className="w-full flex gap-[10px] flex-col">
+      <div className="w-full flex gap-[5px] flex-wrap">
         <ConditionVariationCharacterField
           characterValue={characterValue}
           conditionBlockCharacterId={conditionBlockCharacterId}
           conditionBlockId={conditionBlockId}
           plotfieldCommandId={plotfieldCommandId}
           setCharacterValue={setCharacterValue}
-          setShowCharacterPromptModal={setShowCharacterPromptModal}
-          showCharacterPromptModal={showCharacterPromptModal}
         />
 
-        <div className="w-[7rem]">
+        <div className="w-fit">
           <ConditionSignField
             currentSign={currentSign}
             setCurrentSign={setCurrentSign}
@@ -144,7 +142,7 @@ function ConditionValueField({
   });
 
   return (
-    <div className="min-w-[10rem] flex-grow relative">
+    <div className="min-w-[100px] flex-grow relative">
       <PlotfieldInput
         type="text"
         onBlur={() => {
@@ -153,7 +151,7 @@ function ConditionValueField({
         onClick={() => {
           setCurrentlyActive(true);
         }}
-        placeholder="Значение"
+        placeholder="Значение(числа)"
         value={currentConditionValue || ""}
         onChange={(e) => {
           if (showCharacterPromptModal) {
@@ -171,7 +169,7 @@ function ConditionValueField({
 
           updateConditionBlock.mutate({ value: +e.target.value });
         }}
-        className={`text-[1.5rem] border-[3px] border-double border-dark-mid-gray `}
+        className={`border-[3px] border-border text-text`}
       />
       <ConditionBlockFieldName currentlyActive={currentlyActive} text="Персонаж" />
     </div>

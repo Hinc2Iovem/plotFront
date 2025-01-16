@@ -12,6 +12,27 @@ export type LogicalOperatorTypes = "&&" | "||";
 
 export const AllConditionSigns: ConditionSignTypes[] = [">=", ">", "=", "<", "<="];
 
+export const AllConditionVariations: ConditionValueVariationType[] = [
+  "appearance",
+  "character",
+  "characteristic",
+  "key",
+  "language",
+  "random",
+  "retry",
+  "status",
+];
+export const AllConditionVariationsRus: ConditionValueVariationRusType[] = [
+  "Внешний Вид",
+  "Персонаж",
+  "Характеристика",
+  "Ключ",
+  "Язык",
+  "Рандом",
+  "Кол Прохождений",
+  "Статус",
+];
+
 export type ConditionValueVariationType =
   | "key"
   | "appearance"
@@ -21,6 +42,16 @@ export type ConditionValueVariationType =
   | "random"
   | "retry"
   | "status";
+
+export type ConditionValueVariationRusType =
+  | "Ключ"
+  | "Внешний Вид"
+  | "Персонаж"
+  | "Характеристика"
+  | "Язык"
+  | "Рандом"
+  | "Кол Прохождений"
+  | "Статус";
 
 export type ConditionBlockTypes = {
   _id: string;

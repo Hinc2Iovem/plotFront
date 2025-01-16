@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetTranslationCharacteristic from "../../../../../../../../../hooks/Fetching/Translation/useGetTranslationCharacteristic";
 import { ConditionSignTypes } from "../../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput";
 import { isNumeric } from "../../../../../../../../../utils/regExpIsNumeric";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
@@ -52,8 +51,8 @@ export default function ConditionBlockVariationCharacteristic({
   }, [hideModal]);
 
   return (
-    <div className="flex flex-col gap-[1rem] w-full">
-      <div className="w-full flex gap-[.5rem] flex-shrink flex-wrap">
+    <div className="flex flex-col gap-[10px] w-full">
+      <div className="w-full flex gap-[5px] flex-shrink flex-wrap">
         <CharacteristicInputField
           key={"characteristic-1"}
           conditionBlockId={conditionBlockId}
@@ -66,7 +65,7 @@ export default function ConditionBlockVariationCharacteristic({
           setHideModal={setHideModal}
           topologyBlockId={topologyBlockId}
         />
-        <div className="h-full">
+        <div className="w-fit">
           <ConditionSignField
             setCurrentSign={setCurrentSign}
             currentSign={currentSign}
@@ -108,9 +107,6 @@ type CharacteristicInputFieldTypes = {
 };
 
 function CharacteristicInputField({
-  setShowCharacteristicPromptModal,
-  setHideModal,
-  showCharacteristicPromptModal,
   plotfieldCommandId,
   conditionBlockId,
   fieldType,
@@ -120,9 +116,8 @@ function CharacteristicInputField({
   topologyBlockId,
 }: CharacteristicInputFieldTypes) {
   const { episodeId } = useParams();
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
   const [currentConditionName, setCurrentConditionName] = useState<string | number>(value ? value : "");
-  const [backUpConditionName, setBackUpConditionName] = useState<string | number>(value ? value : "");
+  const [initValue, setInitValue] = useState<string | number>(value ? value : "");
 
   const [characteristicId, setCharacteristicId] = useState(currentCharacteristicId);
 
@@ -140,7 +135,7 @@ function CharacteristicInputField({
   useEffect(() => {
     if (translatedCharacteristic) {
       setCurrentConditionName((translatedCharacteristic.translations || [])[0]?.text);
-      setBackUpConditionName((translatedCharacteristic.translations || [])[0]?.text);
+      setInitValue((translatedCharacteristic.translations || [])[0]?.text);
     }
   }, [translatedCharacteristic, characteristicId]);
 
@@ -183,47 +178,17 @@ function CharacteristicInputField({
   }, [currentConditionName, episodeId]);
 
   return (
-    <div className="w-[40%] flex-grow min-w-[10rem] relative">
-      <PlotfieldInput
-        type="text"
-        placeholder="Характеристика"
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowCharacteristicPromptModal((prev) => !prev);
-          if (fieldType === "conditionName") {
-            setHideModal("second");
-          } else {
-            setHideModal("first");
-          }
-        }}
-        value={currentConditionName}
-        onChange={(e) => {
-          if (!showCharacteristicPromptModal) {
-            setShowCharacteristicPromptModal(true);
-            if (fieldType === "conditionName") {
-              setHideModal("second");
-            } else {
-              setHideModal("first");
-            }
-          }
-          setHighlightRedOnValueOnExisting(false);
-          setCurrentConditionName(e.target.value);
-        }}
-        className={`${highlightRedOnValueNonExisting ? " " : ""} border-[3px] border-double border-dark-mid-gray`}
-      />
-
+    <div className="w-[40%] flex-grow min-w-[100px] relative">
       <ConditionVariationCharacteristicModal
         currentCharacteristic={currentConditionName}
         setCharacteristicId={setCharacteristicId}
-        setBackUpCharacteristic={setBackUpConditionName}
         setCurrentCharacteristic={setCurrentConditionName}
-        setShowCharacteristicPromptModal={setShowCharacteristicPromptModal}
-        showCharacteristicPromptModal={showCharacteristicPromptModal}
         conditionBlockId={conditionBlockId}
         conditionBlockVariationId={conditionBlockVariationId}
         plotfieldCommandId={plotfieldCommandId}
         fieldType={fieldType}
-        backUpCharacteristic={typeof backUpConditionName === "string" ? backUpConditionName : ""}
+        initValue={initValue}
+        setInitValue={setInitValue}
       />
     </div>
   );

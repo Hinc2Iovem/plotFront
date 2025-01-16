@@ -4,50 +4,42 @@ import useConditionBlocks, { ConditionBlockItemTypes } from "./Context/Condition
 import PlotfieldInsideConditionBlock from "./PlotfieldInsideConditionBlock/PlotfieldInsideConditionBlock";
 
 type ConditionBlocksListTypes = {
-  setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
   showConditionBlockPlot: boolean;
   plotFieldCommandId: string;
   topologyBlockId: string;
   commandConditionId: string;
-  isCommandFocused: boolean;
   isFocusedBackground: boolean;
+  setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function ConditionBlocksList({
-  setIsFocusedBackground,
-  setShowConditionBlockPlot,
   plotFieldCommandId,
   commandConditionId,
   topologyBlockId,
   showConditionBlockPlot,
-  isCommandFocused,
   isFocusedBackground,
+  setShowConditionBlockPlot,
 }: ConditionBlocksListTypes) {
   const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } = useConditionBlocks();
 
   return (
-    <div className={`w-full bg-primary rounded-md p-[.5rem]`}>
-      <div className={`${showConditionBlockPlot || isFocusedBackground ? "" : "hidden"} flex flex-col gap-[1rem]`}>
+    <div className={`w-full rounded-md p-[5px]`}>
+      <div className={`${showConditionBlockPlot || isFocusedBackground ? "" : "hidden"} flex flex-col gap-[10px]`}>
         <PlotfieldInsideConditionBlock
           topologyBlockId={topologyBlockId}
           isFocusedBackground={isFocusedBackground}
           plotfieldCommandId={plotFieldCommandId}
-          setShowConditionBlockPlot={setShowConditionBlockPlot}
-          setIsFocusedBackground={setIsFocusedBackground}
           showConditionBlockPlot={showConditionBlockPlot}
         />
       </div>
-      <div className={`${showConditionBlockPlot || isFocusedBackground ? "hidden" : ""} flex flex-col gap-[1rem]`}>
+      <div className={`${showConditionBlockPlot || isFocusedBackground ? "hidden" : ""} flex flex-col gap-[10px]`}>
         {(
           getAllConditionBlocksElseOrIfByPlotfieldCommandId({
             plotfieldCommandId: plotFieldCommandId,
             isElse: false,
           }) as ConditionBlockItemTypes[]
         ).length ? (
-          <div
-            className={`grid grid-cols-[repeat(auto-fill,minmax(40rem,1fr))] gap-[1rem] w-full bg-primary rounded-md`}
-          >
+          <div className={`grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-[10px] w-full rounded-md`}>
             {(
               getAllConditionBlocksElseOrIfByPlotfieldCommandId({
                 plotfieldCommandId: plotFieldCommandId,
@@ -65,21 +57,13 @@ export default function ConditionBlocksList({
             ))}
           </div>
         ) : null}
-        <div className="min-w-[10rem] w-full relative flex gap-[.5rem] flex-wrap bg-secondary rounded-md">
-          <PlotfieldCommandNameField
-            className={`${
-              !isFocusedBackground && isCommandFocused
-                ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-                : "bg-secondary"
-            }`}
-          >
-            Else
-          </PlotfieldCommandNameField>
+        <div className="min-w-[100px] w-full relative flex gap-[5px] flex-wrap bg-secondary rounded-md">
+          <PlotfieldCommandNameField className={`text-[25px]`}>Else</PlotfieldCommandNameField>
           <ConditionBlockElse
+            setShowConditionBlockPlot={setShowConditionBlockPlot}
             plotFieldCommandId={plotFieldCommandId}
             topologyBlockId={topologyBlockId}
             commandConditionId={commandConditionId}
-            setShowConditionBlockPlot={setShowConditionBlockPlot}
           />
         </div>
       </div>
@@ -95,10 +79,10 @@ type ConditionBlockElseTypes = {
 };
 
 function ConditionBlockElse({
-  setShowConditionBlockPlot,
   plotFieldCommandId,
   topologyBlockId,
   commandConditionId,
+  setShowConditionBlockPlot,
 }: ConditionBlockElseTypes) {
   const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } = useConditionBlocks();
 

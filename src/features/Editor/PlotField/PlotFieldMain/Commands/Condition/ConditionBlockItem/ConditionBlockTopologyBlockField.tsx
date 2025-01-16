@@ -1,38 +1,41 @@
-import { useEffect, useRef, useState } from "react";
-import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
-import useGetAllTopologyBlocksByEpisodeId from "../../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
+import TopologyBlocksPrompt, {
+  TopologyBlockValueTypes,
+} from "@/features/Editor/components/shared/TopologyBlocksPrompt";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import useUpdateConditionBlockTopologyBlockId from "../../../../hooks/Condition/ConditionBlock/useUpdateConditionBlockTopologyBlockId";
 import useGetTopologyBlockById from "../../../../hooks/TopologyBlock/useGetTopologyBlockById";
 import useConditionBlocks from "../Context/ConditionContext";
-import useUpdateConditionBlockTopologyBlockId from "../../../../hooks/Condition/ConditionBlock/useUpdateConditionBlockTopologyBlockId";
 
 type ConditionBlockTopologyBlockFieldTpyes = {
   targetBlockId: string;
   conditionBlockId: string;
   plotfieldCommandId: string;
   topologyBlockName: string;
-  currentTopologyBlockId: string;
   isElse: boolean;
 };
 
 export default function ConditionBlockTopologyBlockField({
   conditionBlockId,
-  currentTopologyBlockId,
   plotfieldCommandId,
   targetBlockId,
   topologyBlockName,
   isElse,
 }: ConditionBlockTopologyBlockFieldTpyes) {
   const { episodeId } = useParams();
+  const [update, setUpdate] = useState(false);
   const { updateConditionBlockTargetBlockId } = useConditionBlocks();
-  const modalRef = useRef<HTMLDivElement>(null);
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId: targetBlockId,
   });
-  const [showAllTopologyBlocks, setShowAllTopologyBlocks] = useState(false);
+
+  const defaultObj: TopologyBlockValueTypes = {
+    id: targetBlockId,
+    name: topologyBlockName,
+  };
+
+  const [topologyBlockValue, setTopologyBlockValue] = useState<TopologyBlockValueTypes>(defaultObj);
+  const [initValue, setInitValue] = useState<TopologyBlockValueTypes>(defaultObj);
 
   useEffect(() => {
     if (topologyBlock) {
@@ -42,12 +45,17 @@ export default function ConditionBlockTopologyBlockField({
         targetBlockId,
         topologyBlockName: topologyBlock?.name || "",
       });
+
+      setTopologyBlockValue({
+        id: topologyBlock._id,
+        name: topologyBlock?.name || "",
+      });
+      setInitValue({
+        id: topologyBlock._id,
+        name: topologyBlock?.name || "",
+      });
     }
   }, [topologyBlock]);
-
-  const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
-    episodeId: episodeId || "",
-  });
 
   const updateTopologyBlock = useUpdateConditionBlockTopologyBlockId({
     conditionBlockId: conditionBlockId,
@@ -55,61 +63,42 @@ export default function ConditionBlockTopologyBlockField({
     episodeId: episodeId || "",
   });
 
-  useOutOfModal({
-    setShowModal: setShowAllTopologyBlocks,
-    showModal: showAllTopologyBlocks,
-    modalRef,
-  });
+  useEffect(() => {
+    if (topologyBlockValue && topologyBlockValue.name !== initValue.name && update) {
+      setInitValue({
+        name: topologyBlockValue.name,
+        id: topologyBlockValue.id,
+      });
+
+      updateConditionBlockTargetBlockId({
+        conditionBlockId,
+        plotfieldCommandId,
+        targetBlockId,
+        topologyBlockName: topologyBlock?.name || "",
+      });
+
+      updateTopologyBlock.mutate({ targetBlockId: topologyBlockValue.id });
+
+      setUpdate(false);
+    }
+  }, [topologyBlockValue]);
+
   return (
     <div
       className={`${
-        isElse ? "relative self-end flex-grow" : "relative w-full flex justify-between flex-wrap gap-[1rem]"
+        isElse ? "relative self-end flex-grow" : "relative w-full flex justify-between flex-wrap gap-[10px]"
       }`}
     >
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowAllTopologyBlocks((prev) => !prev);
-        }}
-        className={`${isElse ? "py-[1rem]" : ""}`}
-        type="button"
-      >
-        {topologyBlockName ? `Ветка - ${topologyBlockName}` : "Текущая Ветка"}
-      </PlotfieldButton>
-      <AsideScrollable ref={modalRef} className={`${showAllTopologyBlocks ? "" : "hidden"} translate-y-[3.5rem]`}>
-        {(allTopologyBlocks?.length || 0) > 1 ? (
-          allTopologyBlocks?.map((tb) => (
-            <AsideScrollableButton
-              key={tb._id}
-              type="button"
-              onClick={() => {
-                setShowAllTopologyBlocks(false);
-                updateConditionBlockTargetBlockId({
-                  conditionBlockId,
-                  plotfieldCommandId,
-                  targetBlockId: tb._id,
-                  topologyBlockName: tb?.name || "",
-                });
-                updateTopologyBlock.mutate({ targetBlockId: tb._id });
-              }}
-              className={`${currentTopologyBlockId === tb._id ? "hidden" : ""} ${
-                tb._id === targetBlockId ? "hidden" : ""
-              }`}
-            >
-              {tb.name}
-            </AsideScrollableButton>
-          ))
-        ) : (
-          <AsideScrollableButton
-            type="button"
-            onClick={() => {
-              setShowAllTopologyBlocks(false);
-            }}
-          >
-            Пусто
-          </AsideScrollableButton>
-        )}
-      </AsideScrollable>
+      <TopologyBlocksPrompt
+        initValue={initValue}
+        setUpdate={setUpdate}
+        inputClasses={`${
+          isElse ? "border-none" : "border-border border-[1px]"
+        } focus:text-start text-center text-[20px] shadow-md hover:shadow-accent hover:shadow-sm transition-all`}
+        currentlyFocusedBlockId={topologyBlockValue.id}
+        setTopologyBlockValue={setTopologyBlockValue}
+        topologyBlockName={topologyBlockValue.name}
+      />
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default function IfVariationValueField({
   });
 
   return (
-    <div className="min-w-[10rem] flex-grow relative">
+    <div className="min-w-[100px] flex-grow relative">
       <PlotfieldInput
         type="text"
         onBlur={() => {
@@ -55,7 +55,7 @@ export default function IfVariationValueField({
             ifValue: +e.target.value,
           });
         }}
-        className={`text-[1.5rem] border-[3px] border-double border-dark-mid-gray `}
+        className={`border-[3px] border-border text-text`}
       />
       <IfFieldName currentlyActive={currentlyActive} text="Персонаж" />
     </div>

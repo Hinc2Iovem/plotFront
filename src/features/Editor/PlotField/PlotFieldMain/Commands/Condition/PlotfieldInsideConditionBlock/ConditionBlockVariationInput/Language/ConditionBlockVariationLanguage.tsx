@@ -1,17 +1,11 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
-import {
-  ALL_LANGUAGES,
-  CurrentlyAvailableLanguagesTypes,
-} from "../../../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import AsideScrollable from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../../../../../../ui/Buttons/PlotfieldButton";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateConditionLanguage from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionLanguage";
 import useConditionBlocks from "../../../Context/ConditionContext";
+import SelectLanguage from "./SelectLanguage";
 
 type ConditionBlockVariationLanguageTypes = {
   currentLanguage: CurrentlyAvailableLanguagesTypes | null;
@@ -29,13 +23,10 @@ export default function ConditionBlockVariationLanguage({
   topologyBlockId,
 }: ConditionBlockVariationLanguageTypes) {
   const { episodeId } = useParams();
-  const [language, setLanguage] = useState(typeof currentLanguage === "string" ? currentLanguage : "");
-  const [showAllLangauges, setShowAllLanguages] = useState(false);
-
+  const [language, setLanguage] = useState(
+    typeof currentLanguage === "string" ? currentLanguage : ("" as CurrentlyAvailableLanguagesTypes)
+  );
   const { updateConditionBlockVariationValue } = useConditionBlocks();
-
-  const languageModalRef = useRef<HTMLDivElement>(null);
-
   const updateConditionLanguage = useUpdateConditionLanguage({ conditionBlockLanguageId: conditionBlockVariationId });
 
   const { updateValue } = useSearch();
@@ -60,50 +51,20 @@ export default function ConditionBlockVariationLanguage({
     }
   };
 
-  useOutOfModal({
-    modalRef: languageModalRef,
-    setShowModal: setShowAllLanguages,
-    showModal: showAllLangauges,
-  });
-
   return (
-    <div className="relative w-full">
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowAllLanguages((prev) => !prev);
-        }}
-        type="button"
-        className={` bg-primary-darker hover:bg-primary transition-colors text-text-light w-full`}
-      >
-        {language?.trim().length ? language : "Язык"}
-      </PlotfieldButton>
-
-      <AsideScrollable
-        ref={languageModalRef}
-        className={`${showAllLangauges ? "" : "hidden"} translate-y-[.5rem] z-[10] right-0 w-full min-w-fit`}
-      >
-        {ALL_LANGUAGES.map((l) => (
-          <AsideScrollableButton
-            key={l}
-            onClick={() => {
-              setLanguage(l);
-              setShowAllLanguages(false);
-              updateConditionBlockVariationValue({
-                conditionBlockId,
-                conditionBlockVariationId,
-                plotfieldCommandId,
-                currentLanguage: l,
-              });
-              updateValues(l);
-              updateConditionLanguage.mutate({ language: l });
-            }}
-            type="button"
-          >
-            {l}
-          </AsideScrollableButton>
-        ))}
-      </AsideScrollable>
-    </div>
+    <SelectLanguage
+      currentLanguage={language}
+      setCurrentLanguage={setLanguage}
+      onValueChange={(v) => {
+        updateConditionBlockVariationValue({
+          conditionBlockId,
+          conditionBlockVariationId,
+          plotfieldCommandId,
+          currentLanguage: v,
+        });
+        updateValues(v);
+        updateConditionLanguage.mutate({ language: v });
+      }}
+    />
   );
 }

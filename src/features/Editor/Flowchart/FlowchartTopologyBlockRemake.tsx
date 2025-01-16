@@ -92,7 +92,7 @@ export default function FlowchartTopologyBlock({
               e.stopPropagation();
               prefetchCommands();
               if (clicked) {
-                localStorage.setItem(`${episodeId}-topologyBlockId`, _id);
+                localStorage.setItem(`${episodeId}-topologyBlockId`, JSON.stringify(_id));
                 setItem(`focusedTopologyBlock`, _id);
                 setItem(`focusedCommand`, ``);
                 setCurrentTopologyBlock({

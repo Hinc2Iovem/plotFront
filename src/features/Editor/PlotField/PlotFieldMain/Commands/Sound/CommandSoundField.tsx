@@ -4,11 +4,10 @@ import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldComma
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
-import useGetCommandSound from "../../../hooks/Sound/useGetCommandSound";
+import useGetCommandSound from "../../../hooks/Sound/Command/useGetCommandSound";
 import useGetSoundById from "../../../hooks/Sound/useGetSoundById";
-import AllSoundsModal from "./AllSoundsModal";
-import CreateSoundField from "./CreateSoundField";
 import "../Prompts/promptStyles.css";
+import AllSoundsModal from "./AllSoundsModal";
 
 type CommandSoundFieldTypes = {
   plotFieldCommandId: string;
@@ -18,19 +17,16 @@ type CommandSoundFieldTypes = {
 
 export default function CommandSoundField({ plotFieldCommandId, command, topologyBlockId }: CommandSoundFieldTypes) {
   const { storyId, episodeId } = useParams();
-  const [showCreateSoundModal, setShowCreateSoundModal] = useState(false);
   const [nameValue] = useState<string>(command ?? "Sound");
   const [initValue, setInitValue] = useState<string>("");
   const [soundName, setSoundName] = useState<string>("");
+
+  const [commandSoundId, setCommandSoundId] = useState("");
 
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const { data: commandSound } = useGetCommandSound({
     plotFieldCommandId,
-  });
-  const [commandSoundId, setCommandSoundId] = useState("");
-  const { data: sound } = useGetSoundById({
-    soundId: commandSound?.soundId || "",
   });
 
   useEffect(() => {
@@ -38,6 +34,10 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
       setCommandSoundId(commandSound._id);
     }
   }, [commandSound]);
+
+  const { data: sound } = useGetSoundById({
+    soundId: commandSound?.soundId || "",
+  });
 
   useEffect(() => {
     if (sound) {
@@ -75,24 +75,15 @@ export default function CommandSoundField({ plotFieldCommandId, command, topolog
       </div>
       <div className={`sm:w-[77%] flex-grow flex-col flex-wrap flex items-center gap-[5px] relative`}>
         <AllSoundsModal
-          setShowCreateSoundModal={setShowCreateSoundModal}
           setSoundName={setSoundName}
-          soundId={commandSound?.soundId || ""}
           onChange={(value) => updateSoundState(value)}
           soundName={soundName}
           storyId={storyId || ""}
           setInitValue={setInitValue}
           initValue={initValue}
+          commandSoundId={commandSoundId}
         />
       </div>
-
-      <CreateSoundField
-        commandSoundId={commandSoundId}
-        setShowModal={setShowCreateSoundModal}
-        showModal={showCreateSoundModal}
-        storyId={storyId || ""}
-        soundName={soundName}
-      />
     </div>
   );
 }

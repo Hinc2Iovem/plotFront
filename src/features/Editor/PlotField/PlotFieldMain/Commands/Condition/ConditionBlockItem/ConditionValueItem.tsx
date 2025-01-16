@@ -25,7 +25,7 @@ export default function ConditionValueItem({
 }: ConditionValueItemTypes) {
   return (
     <form
-      className="w-full flex-grow flex flex-col gap-[1rem] bg-secondary rounded-md h-fit"
+      className="w-full flex-grow flex flex-col gap-[10px] bg-secondary rounded-md h-fit p-[10px]"
       onSubmit={(e) => e.preventDefault()}
     >
       {conditionBlockVariations.map((cbv, i) => (

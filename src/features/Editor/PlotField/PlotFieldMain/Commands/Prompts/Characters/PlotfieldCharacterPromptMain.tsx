@@ -23,10 +23,11 @@ type PlotfieldCharacterPromptMainTypes = {
   currentCharacterId: string;
   inputClasses?: string;
   imgClasses?: string;
+  containerClasses?: string;
   characterValue: CharacterValueTypes;
   setCharacterValue: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
   setEmotionValue?: React.Dispatch<React.SetStateAction<EmotionTypes>>;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
 };
 
 const PlotfieldCharacterPromptMain = ({
@@ -39,6 +40,7 @@ const PlotfieldCharacterPromptMain = ({
   plotfieldCommandId,
   inputClasses,
   imgClasses,
+  containerClasses,
 }: PlotfieldCharacterPromptMainTypes) => {
   const { storyId } = useParams();
   const [showCharacterModal, setShowCharacterModal] = useState(false);
@@ -136,7 +138,9 @@ const PlotfieldCharacterPromptMain = ({
   return (
     <Popover open={showCharacterModal} onOpenChange={setShowCharacterModal}>
       <PopoverTrigger asChild>
-        <div className="flex-grow flex justify-between items-center relative">
+        <div
+          className={`${containerClasses ? containerClasses : "flex-grow flex justify-between items-center"} relative`}
+        >
           <PlotfieldInput
             ref={currentInput}
             value={characterValue?.characterName || ""}

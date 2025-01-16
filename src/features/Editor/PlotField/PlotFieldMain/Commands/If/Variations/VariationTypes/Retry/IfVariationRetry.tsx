@@ -65,7 +65,7 @@ export default function IfVariationRetry({
   };
 
   return (
-    <div className="relative flex gap-[.5rem] items-center w-full">
+    <div className="relative flex gap-[5px] w-full">
       <div className="w-[30%] h-full">
         <IfSignField
           setCurrentSign={setCurrentSign}
@@ -84,7 +84,7 @@ export default function IfVariationRetry({
             updateRetry();
           }}
           value={retryAmount || ""}
-          className="border-[3px] border-double border-dark-mid-gray"
+          className="border-[3px] border-border text-text"
           onClick={() => setCurrentlyActive(true)}
           onChange={(e) => {
             if (+e.target.value < 0) {

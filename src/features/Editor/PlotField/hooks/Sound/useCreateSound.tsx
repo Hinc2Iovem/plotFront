@@ -20,7 +20,7 @@ export default function useCreateSound({ storyId }: CreateSoundTypes) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ["story", storyId, "sound"],
+        queryKey: ["story", storyId, "sound", "isGlobal"],
         exact: true,
       });
     },

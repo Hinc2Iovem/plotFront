@@ -1,21 +1,14 @@
+import { Button } from "@/components/ui/button";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import HideCommandsButton from "./HideCommandsButton";
-import ButtonHoverPromptModal from "../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import usePlotfieldCommands from "../../../Context/PlotFieldContext";
-import commandImg from "../../../../../../assets/images/Editor/command.png";
-import plus from "../../../../../../assets/images/shared/add.png";
-import { useRef, useState } from "react";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import { AllPossibleConditionBlockVariations } from "../../../../../../const/CONDITION_BLOCK_VARIATIONS";
-import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import useAddNewIfVariation from "../../../hooks/If/BlockVariations/useAddNewIfVariation";
-import useIfVariations from "./Context/IfContext";
-import useAddNewLogicalOperator from "../../../hooks/If/BlockVariations/logicalOperator/useAddNewLogicalOperator";
+import useIfVariations, { IfVariationTypes } from "./Context/IfContext";
+import CreateIfVariationButton from "./CreateIfVariationButton";
+import { IfVariationInputField } from "./Variations/IfVariationInputField";
+import useRefineAndAssignVariations from "./Variations/useRefineAndAssignVariations";
 import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
+import command from "@/assets/images/Editor/command.png";
+import plus from "@/assets/images/shared/add.png";
 import { useParams } from "react-router-dom";
+import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
 
 type CommandIfNameFieldTypes = {
   topologyBlockId: string;
@@ -39,121 +32,88 @@ export default function CommandIfNameField({
   setHideCommands,
 }: CommandIfNameFieldTypes) {
   const { episodeId } = useParams();
-  const { getCurrentAmountOfCommands } = usePlotfieldCommands();
 
-  const createBlankCommand = useCreateBlankCommand({
-    topologyBlockId,
+  // const { getCurrentAmountOfCommands } = usePlotfieldCommands();
+
+  // const createBlankCommand = useCreateBlankCommand({
+  //   topologyBlockId,
+  //   episodeId: episodeId || "",
+  // });
+
+  // const handleCreateCommand = (isElse: boolean) => {
+  //   const _id = generateMongoObjectId();
+
+  //   const commandOrder = getCurrentAmountOfCommands({
+  //     topologyBlockId,
+  //   });
+
+  //   createBlankCommand.mutate({
+  //     commandOrder: commandOrder,
+  //     _id,
+  //     commandName: "" as AllPossiblePlotFieldComamndsTypes,
+  //     isElse: isElse,
+  //     topologyBlockId,
+  //     plotfieldCommandIfId: commandIfId,
+  //   });
+  // };
+
+  useRefineAndAssignVariations({ ifId: commandIfId, plotfieldCommandId });
+
+  const { getAllIfVariationsByPlotfieldCommandId, getAllLogicalOperators } = useIfVariations();
+
+  const createCommand = useCreateBlankCommand({
+    topologyBlockId: topologyBlockId || "",
     episodeId: episodeId || "",
   });
 
-  const handleCreateCommand = (isElse: boolean) => {
+  const handleCreateCommand = () => {
     const _id = generateMongoObjectId();
-
-    const commandOrder = getCurrentAmountOfCommands({
-      topologyBlockId,
-    });
-
-    createBlankCommand.mutate({
-      commandOrder: commandOrder,
+    createCommand.mutate({
       _id,
-      commandName: "" as AllPossiblePlotFieldComamndsTypes,
-      isElse: isElse,
-      topologyBlockId,
-      plotfieldCommandIfId: commandIfId,
+      topologyBlockId: topologyBlockId || "",
     });
   };
 
   return (
-    <div className="min-w-[10rem] w-full relative flex items-center gap-[1rem]">
-      <div className="flex gap-[.5rem] w-full">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
+    <div className="min-w-[100px] w-full relative flex flex-col items-center gap-[10px]">
+      <div className="flex w-full">
+        <PlotfieldCommandNameField
+          className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} text-text text-[25px] text-center`}
+        >
           {nameValue}
         </PlotfieldCommandNameField>
-        <AddVariationButton nameValue={nameValue} ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />
-        <HideCommandsButton hideCommands={hideCommands} setHideCommands={setHideCommands} />
       </div>
-      <ButtonHoverPromptModal
-        contentName="Создать строку"
-        positionByAbscissa="right"
-        className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-secondary"
-        asideClasses="text-[1.3rem] -translate-y-1/4 text-text-light"
-        onClick={() => handleCreateCommand(createInsideElse)}
-        variant="rectangle"
-      >
-        <img
-          src={plus}
-          alt="+"
-          className="w-[1.5rem] absolute translate-y-1/2 -translate-x-1/2 left-[0rem] bottom-0 z-[2]"
-        />
-        <img src={commandImg} alt="Commands" className="w-[3rem]" />
-      </ButtonHoverPromptModal>
-    </div>
-  );
-}
+      <div className="px-[5px] flex gap-[5px] w-full">
+        <CreateIfVariationButton ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />
+        <div className={`flex gap-[5px] w-full rounded-md flex-wrap`}>
+          {(
+            getAllIfVariationsByPlotfieldCommandId({
+              plotfieldCommandId,
+            }) as IfVariationTypes[]
+          )?.map((p, i) => (
+            <IfVariationInputField
+              key={p.ifVariationId}
+              {...p}
+              insidePlotfield={false}
+              topologyBlockId={topologyBlockId}
+              ifId={commandIfId}
+              logicalOperators={getAllLogicalOperators({ plotfieldCommandId })}
+              plotfieldCommandId={plotfieldCommandId}
+              index={i}
+            />
+          ))}
+        </div>
+      </div>
 
-type AddVariationButtonTypes = {
-  nameValue: "if" | "else";
-  ifId: string;
-  plotfieldCommandId: string;
-};
-
-function AddVariationButton({ nameValue, ifId, plotfieldCommandId }: AddVariationButtonTypes) {
-  const { getAmountOfIfVariations, addNewLogicalOperator, addIfVariation } = useIfVariations();
-  const [showVariationTypes, setShowVariationTypes] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const createIfVariation = useAddNewIfVariation({ ifId });
-  const addLogicalOperator = useAddNewLogicalOperator({ ifId });
-
-  useOutOfModal({ modalRef, setShowModal: setShowVariationTypes, showModal: showVariationTypes });
-  return (
-    <div className="relative">
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowVariationTypes((prev) => !prev);
-        }}
-        className={`${
-          nameValue === "if" ? "" : "hidden"
-        } text-[1.5rem] text-text-light bg-secondary hover:opacity-85 transition-all rounded-md px-[1rem] py-[.5rem] whitespace-nowrap active:scale-[0.99]`}
-      >
-        Добавить Условие +
-      </button>
-
-      <AsideScrollable ref={modalRef} className={`${showVariationTypes ? "" : "hidden"} left-0 translate-y-[.5rem]`}>
-        {AllPossibleConditionBlockVariations.map((cbv) => (
-          <AsideScrollableButton
-            key={cbv}
-            onClick={() => {
-              setShowVariationTypes(false);
-              const _id = generateMongoObjectId();
-              createIfVariation.mutate({
-                _id,
-                type: cbv,
-              });
-
-              const amount = getAmountOfIfVariations({ plotfieldCommandId });
-
-              if (amount > 0) {
-                addNewLogicalOperator({ logicalOperator: "&&", plotfieldCommandId });
-                addLogicalOperator.mutate({ logicalOperator: "&&" });
-              }
-
-              addIfVariation({
-                plotfieldCommandId,
-                ifVariation: {
-                  ifVariationId: _id,
-                  type: cbv,
-                  createdAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString(),
-                },
-              });
-            }}
-          >
-            {cbv}
-          </AsideScrollableButton>
-        ))}
-      </AsideScrollable>
+      <div className="flex w-full bg-secondary rounded-md shadow-sm items-center px-[5px] py-[5px]">
+        <Button
+          className="self-end bg-brand-gradient px-[5px] hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] transition-all relative"
+          onClick={handleCreateCommand}
+        >
+          <img src={plus} alt="+" className="w-[15px] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0" />
+          <img src={command} alt="Commands" className="w-[30px]" />
+        </Button>
+      </div>
     </div>
   );
 }

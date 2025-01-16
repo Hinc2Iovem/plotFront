@@ -1,13 +1,13 @@
+import command from "@/assets/images/Editor/command.png";
+import plus from "@/assets/images/shared/add.png";
+import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
-import usePlotfieldCommands from "../../../Context/PlotFieldContext";
-import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
-import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import ButtonHoverPromptModal from "../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import commandImg from "../../../../../../assets/images/Editor/command.png";
-import plus from "../../../../../../assets/images/shared/add.png";
+import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
+import usePlotfieldCommands from "../../../Context/PlotFieldContext";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
 
 type CommandElseFieldTypes = {
   plotFieldCommandId: string;
@@ -47,31 +47,19 @@ export default function CommandElseField({
   };
 
   return (
-    <div className="min-w-[10rem] w-full rounded-md relative flex items-center gap-[1rem] p-[.5rem] bg-primary">
-      <PlotfieldCommandNameField
-        className={`${
-          isCommandFocused
-            ? "bg-gradient-to-r from-brand-gradient-left from-0% to-brand-gradient-right to-90%"
-            : "bg-secondary"
-        }`}
-      >
-        Else
-      </PlotfieldCommandNameField>
-      <ButtonHoverPromptModal
-        contentName="Создать строку"
-        positionByAbscissa="right"
-        className="shadow-sm shadow-gray-400 active:scale-[.99] relative bg-secondary"
-        asideClasses="text-[1.3rem] -translate-y-1/4 text-text-light"
+    <div
+      className={`${
+        isCommandFocused ? "bg-brand-gradient" : "bg-secondary"
+      } min-w-[10rem] w-full rounded-md relative flex items-center gap-[1rem] p-[.5rem]`}
+    >
+      <PlotfieldCommandNameField className={`shadow-none`}>Else</PlotfieldCommandNameField>
+      <Button
+        className="self-end bg-brand-gradient px-[5px] hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] transition-all relative"
         onClick={handleCreateCommand}
-        variant="rectangle"
       >
-        <img
-          src={plus}
-          alt="+"
-          className="w-[1.5rem] absolute translate-y-1/2 -translate-x-1/2 left-[0rem] bottom-0 z-[2]"
-        />
-        <img src={commandImg} alt="Commands" className="w-[3rem]" />
-      </ButtonHoverPromptModal>
+        <img src={plus} alt="+" className="w-[15px] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0" />
+        <img src={command} alt="Commands" className="w-[30px]" />
+      </Button>
     </div>
   );
 }

@@ -1,29 +1,31 @@
+import { toastSuccessStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import useUpdateCommandSound from "../../../hooks/Sound/Command/useUpdateCommandSound";
+import useCreateSound from "../../../hooks/Sound/useCreateSound";
 import useGetAllSoundByStoryIdAndIsGlobal from "../../../hooks/Sound/useGetAllSoundsByStoryIdAndIsGlobal";
-import useUpdateSoundText from "../../../hooks/Sound/useUpdateSoundText";
 
 type AllSoundsModalTypes = {
   soundName: string;
   storyId: string;
   initValue: string;
-  soundId: string;
+  commandSoundId: string;
   onChange: (value: string) => void;
   setSoundName: React.Dispatch<React.SetStateAction<string>>;
   setInitValue: React.Dispatch<React.SetStateAction<string>>;
-  setShowCreateSoundModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const AllSoundsModal = ({
-  setShowCreateSoundModal,
   setSoundName,
-  soundId,
   initValue,
   soundName,
   storyId,
+  commandSoundId,
   setInitValue,
   onChange,
 }: AllSoundsModalTypes) => {
@@ -44,18 +46,24 @@ const AllSoundsModal = ({
   }, [allSound, soundName]);
 
   const allSoundMemoized = useMemo(() => {
-    return allSound?.map((a) => a.soundName?.toLowerCase()) || [];
+    return (
+      allSound?.map((a) => ({
+        soundName: a.soundName?.toLowerCase(),
+        id: a._id,
+      })) || []
+    );
   }, [allSound]);
 
-  const updateSoundText = useUpdateSoundText({
-    storyId: storyId ?? "",
-    soundId,
+  const updateSoundText = useUpdateCommandSound();
+
+  const createNewSound = useCreateSound({
+    storyId: storyId || "",
   });
 
-  const handleUpdatingSoundState = (mm?: string) => {
+  const handleUpdatingSoundState = async ({ create, mm }: { mm?: string; create: boolean }) => {
     const value = mm?.trim().length ? mm : soundName;
 
-    if (!soundName?.trim().length && !mm?.trim().length) {
+    if (!value?.trim().length) {
       console.log("Заполните поле");
       return;
     }
@@ -64,17 +72,26 @@ const AllSoundsModal = ({
       return;
     }
 
+    const foundSound = allSoundMemoized?.find((s) => s.soundName.trim().toLowerCase() === value.trim().toLowerCase());
+
     setInitValue(value);
-    if (mm?.trim().length) {
-      // on button click
-      updateSoundText.mutate({ soundName: mm });
-    } else if (value.trim().length) {
-      if (!allSoundMemoized?.includes(value.toLowerCase())) {
-        // suggest to create new sound
-        setShowCreateSoundModal(true);
+
+    if (value.trim().length) {
+      if (!foundSound?.id) {
+        if (showSoundModal) {
+          if (create) {
+            toast(`Звук был создан`, toastSuccessStyles);
+            const soundId = generateMongoObjectId();
+            await createNewSound.mutateAsync({ soundId, soundName: value });
+            await updateSoundText.mutateAsync({ commandSoundId, soundId });
+            return;
+          }
+          // when onBlur and jumping to a modal
+          return;
+        }
       } else {
         // just updated sound command
-        updateSoundText.mutate({ soundName: value });
+        updateSoundText.mutate({ commandSoundId, soundId: foundSound.id });
       }
     }
   };
@@ -91,7 +108,6 @@ const AllSoundsModal = ({
           className="w-full"
         >
           <PlotfieldInput
-            onBlur={() => handleUpdatingSoundState()}
             value={soundName || ""}
             onChange={(e) => {
               setShowSoundModal(true);
@@ -114,7 +130,7 @@ const AllSoundsModal = ({
               type="button"
               onClick={() => {
                 setSoundName(mm);
-                handleUpdatingSoundState(mm);
+                handleUpdatingSoundState({ mm: mm, create: false });
                 setShowSoundModal(false);
               }}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
@@ -125,9 +141,13 @@ const AllSoundsModal = ({
         ) : (
           <Button
             type="button"
+            onClick={() => {
+              handleUpdatingSoundState({ mm: soundName, create: true });
+              setShowSoundModal(false);
+            }}
             className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
           >
-            Пусто
+            {soundName?.trim().length ? "Создать" : "Пусто"}
           </Button>
         )}
       </PopoverContent>

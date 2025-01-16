@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../api/axios";
+import { axiosCustomized } from "../../../../../../api/axios";
 
 type DeleteSoundTypes = {
   soundId: string;

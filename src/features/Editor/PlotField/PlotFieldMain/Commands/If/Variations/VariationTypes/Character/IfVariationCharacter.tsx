@@ -1,17 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
 import { ConditionSignTypes } from "../../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
-import useUpdateIfCharacter from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacter";
 import useGetCharacterWithTranslation from "../../../../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
-import PlotfieldCharacterPromptMain, {
-  ExposedMethods,
-} from "../../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useIfVariations from "../../../Context/IfContext";
 import IfSignField from "../../IfSignField";
+import IfVariationCharacterField from "./IfVariationCharacterField";
 import IfVariationValueField from "./IfVariationValueField";
 
 type IfVariationCharacterTypes = {
@@ -29,7 +24,7 @@ export default function IfVariationCharacter({
 }: IfVariationCharacterTypes) {
   const { episodeId } = useParams();
   const [showCharacterPromptModal, setShowCharacterPromptModal] = useState(false);
-  const { getIfVariationById, updateIfVariationValue } = useIfVariations();
+  const { getIfVariationById } = useIfVariations();
   const [currentSign, setCurrentSign] = useState<ConditionSignTypes>(
     getIfVariationById({
       plotfieldCommandId,
@@ -52,12 +47,6 @@ export default function IfVariationCharacter({
     }
   }, [characterValue]);
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const updateIf = useUpdateIfCharacter({
-    ifCharacterId,
-  });
-
   const { updateValue } = useSearch();
 
   useAddItemInsideSearch({
@@ -68,98 +57,35 @@ export default function IfVariationCharacter({
     type: "ifVariation",
   });
 
-  const updateValues = (value: string) => {
+  const updateValues = () => {
     if (episodeId) {
       updateValue({
         episodeId,
         commandName: "If - Character",
         id: ifCharacterId,
-        value: value,
+        value: `${
+          typeof characterValue.characterName === "string" ? characterValue.characterName : ""
+        } ${currentSign} ${currentIfValue}`,
         type: "ifVariation",
       });
     }
   };
 
-  const inputRef = useRef<ExposedMethods>(null);
-
-  const updateCharacterValue = () => {
-    if (characterValue) {
-      setInitialCharacterId(characterValue._id || "");
-
-      updateIfVariationValue({
-        characterId: characterValue.characterName || "",
-        plotfieldCommandId,
-        ifVariationId: ifCharacterId,
-      });
-
-      updateIf.mutate({
-        characterId: characterValue._id || "",
-      });
-    } else {
-      console.error("Such character doesn't exist");
-    }
-  };
-
   useEffect(() => {
-    if (characterValue._id !== initialCharacterId) {
-      updateCharacterValue();
-    }
-  }, [characterValue._id]);
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowCharacterPromptModal,
-    showModal: showCharacterPromptModal,
-  });
+    updateValues();
+  }, [currentSign, characterValue.characterName]);
 
   return (
-    <div className="w-full flex gap-[1rem] flex-col">
-      <div className="w-full flex gap-[.5rem]">
-        <div className="flex-grow min-w-[10rem] relative">
-          <PlotfieldInput
-            type="text"
-            onBlur={() => {}}
-            placeholder="Персонаж"
-            onClick={(e) => {
-              setShowCharacterPromptModal((prev) => !prev);
-              e.stopPropagation();
-            }}
-            value={characterValue.characterName || ""}
-            onChange={(e) => {
-              if (!showCharacterPromptModal) {
-                setShowCharacterPromptModal(true);
-              }
-              setCharacterValue((prev) => ({
-                ...prev,
-                characterName: e.target.value,
-              }));
-              updateValues(
-                `${
-                  typeof characterValue.characterName === "string" ? characterValue.characterName : ""
-                } ${currentIfValue}`
-              );
-            }}
-            className={`border-[3px] border-double border-dark-mid-gray `}
-          />
-          {characterValue.imgUrl ? (
-            <img
-              src={characterValue.imgUrl}
-              alt="CharacterImg"
-              className="w-[3rem] absolute right-[3px] rounded-md top-[3px]"
-            />
-          ) : null}
-          <PlotfieldCharacterPromptMain
-            setShowCharacterModal={setShowCharacterPromptModal}
-            showCharacterModal={showCharacterPromptModal}
-            translateAsideValue="translate-y-[.5rem]"
-            characterName={characterValue.characterName || ""}
-            currentCharacterId={characterValue._id || ""}
-            setCharacterValue={setCharacterValue}
-            ref={inputRef}
-          />
-        </div>
+    <div className="w-full flex gap-[10px] flex-col">
+      <div className="w-full flex gap-[5px] flex-wrap">
+        <IfVariationCharacterField
+          setCharacterValue={setCharacterValue}
+          characterValue={characterValue}
+          ifCharacterId={ifCharacterId}
+          plotfieldCommandId={plotfieldCommandId}
+        />
 
-        <div className="w-[7rem]">
+        <div className="w-fit">
           <IfSignField
             setCurrentSign={setCurrentSign}
             currentSign={currentSign}

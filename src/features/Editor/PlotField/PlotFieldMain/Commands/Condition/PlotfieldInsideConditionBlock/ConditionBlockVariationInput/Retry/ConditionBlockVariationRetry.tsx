@@ -70,7 +70,7 @@ export default function ConditionBlockVariationRetry({
   }, [currentSign]);
 
   return (
-    <div className="relative flex gap-[.5rem] items-center w-full">
+    <div className="relative flex gap-[5px] items-center w-full">
       <div className="w-[30%] h-full">
         <ConditionSignField
           setCurrentSign={setCurrentSign}
@@ -89,7 +89,7 @@ export default function ConditionBlockVariationRetry({
             setCurrentlyActive(false);
           }}
           value={retryAmount || ""}
-          className="border-[3px] border-double border-dark-mid-gray"
+          className="border-[3px] border-border text-text"
           onClick={() => setCurrentlyActive(true)}
           onChange={(e) => {
             if (+e.target.value < 0) {

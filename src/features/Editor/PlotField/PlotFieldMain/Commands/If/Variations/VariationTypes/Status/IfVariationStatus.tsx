@@ -1,16 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
 import { StatusTypes } from "../../../../../../../../../types/StoryData/Status/StatusTypes";
-import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateIfStatus from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfStatus";
 import useGetCharacterWithTranslation from "../../../../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
-import PlotfieldCharacterPromptMain, {
-  ExposedMethods,
-} from "../../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import useIfVariations from "../../../Context/IfContext";
+import IfVariationStatusCharacterField from "./IfVariationStatusCharacterField";
 import IfVariationStatusModal from "./IfVariationStatusModal";
 
 type IfVariationStatusTypes = {
@@ -37,21 +33,9 @@ export default function IfVariationStatus({
 
   const updateIfStatus = useUpdateIfStatus({ ifStatusId: ifVariationId });
 
-  const [showCharacterPromptModal, setShowCharacterPromptModal] = useState(false);
-
   const { characterValue, setCharacterValue } = useGetCharacterWithTranslation({
     currentCharacterId: typeof currentCharacterId === "string" ? currentCharacterId : "",
   });
-
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const inputRef = useRef<ExposedMethods>(null);
-
-  const onBlur = () => {
-    if (inputRef.current) {
-      inputRef.current.updateCharacterNameOnBlur();
-    }
-  };
 
   useEffect(() => {
     if (characterValue) {
@@ -97,53 +81,14 @@ export default function IfVariationStatus({
     }
   }, [status]);
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowCharacterPromptModal,
-    showModal: showCharacterPromptModal,
-  });
-
   return (
-    <div className="relative flex gap-[.5rem] w-full">
-      <div className="relative w-full">
-        <PlotfieldInput
-          type="text"
-          placeholder="Персонаж"
-          className="border-[3px] border-double border-dark-mid-gray"
-          onBlur={onBlur}
-          onClick={(e) => {
-            setShowCharacterPromptModal((prev) => !prev);
-            e.stopPropagation();
-          }}
-          value={characterValue.characterName || ""}
-          onChange={(e) => {
-            if (!showCharacterPromptModal) {
-              setShowCharacterPromptModal(true);
-            }
-            setCharacterValue((prev) => ({
-              ...prev,
-              characterName: e.target.value,
-            }));
-            updateValues(typeof characterValue.characterName === "string" ? characterValue.characterName : "", status);
-          }}
-        />
-        {characterValue.imgUrl?.trim().length ? (
-          <img
-            src={characterValue.imgUrl}
-            alt="CharacterImg"
-            className="w-[3rem] absolute right-[5px] rounded-md top-[0px] translate-y-[3px]"
-          />
-        ) : null}
-        <PlotfieldCharacterPromptMain
-          setShowCharacterModal={setShowCharacterPromptModal}
-          showCharacterModal={showCharacterPromptModal}
-          translateAsideValue="translate-y-[.5rem]"
-          characterName={characterValue.characterName || ""}
-          currentCharacterId={characterValue._id || ""}
-          setCharacterValue={setCharacterValue}
-          ref={inputRef}
-        />
-      </div>
+    <div className="relative flex gap-[5px] w-full">
+      <IfVariationStatusCharacterField
+        characterValue={characterValue}
+        ifVariationId={ifVariationId}
+        plotfieldCommandId={plotfieldCommandId}
+        setCharacterValue={setCharacterValue}
+      />
 
       <IfVariationStatusModal
         ifVariationId={ifVariationId}

@@ -28,10 +28,10 @@ import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFoc
 import useCreateCommandIf from "../../../hooks/If/useCreateCommandIf";
 import useCreateCommandKey from "../../../hooks/Key/useCreateCommandKey";
 import useCreateMove from "../../../hooks/Move/useCreateMove";
-import useCreateCommandMusic from "../../../hooks/Music/useCreateCommandMusic";
+import useCreateCommandMusic from "../../../hooks/Music/Command/useCreateCommandMusic";
 import useCreateName from "../../../hooks/Name/useCreateName";
 import useCreateSayCommand from "../../../hooks/Say/useCreateSayCommand";
-import useCreateCommandSound from "../../../hooks/Sound/useCreateCommandSound";
+import useCreateCommandSound from "../../../hooks/Sound/Command/useCreateCommandSound";
 import useCreateSuit from "../../../hooks/Suit/useCreateSuit";
 import useUpdateCommandName from "../../../hooks/useUpdateCommandName";
 import useCreateWait from "../../../hooks/Wait/useCreateWait";

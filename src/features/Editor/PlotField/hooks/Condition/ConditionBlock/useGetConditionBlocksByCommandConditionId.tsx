@@ -16,5 +16,6 @@ export default function useGetConditionBlocksByCommandConditionId({
         .get<ConditionBlockTypes[]>(`/commandConditions/${commandConditionId}/conditionBlocks`)
         .then((r) => r.data),
     enabled: !!commandConditionId,
+    refetchOnMount: false,
   });
 }

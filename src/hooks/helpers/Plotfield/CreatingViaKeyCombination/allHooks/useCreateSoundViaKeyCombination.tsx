@@ -1,4 +1,4 @@
-import useCreateCommandSound from "../../../../../features/Editor/PlotField/hooks/Sound/useCreateCommandSound";
+import useCreateCommandSound from "../../../../../features/Editor/PlotField/hooks/Sound/Command/useCreateCommandSound";
 import { CreateViaKeyCombinationOnMutation } from "../createViaKeyCombinationTypes";
 import useHandleCreatingViaKeyCombinationProcess from "./shared/useHandleCreatingViaKeyCombinationProcess";
 

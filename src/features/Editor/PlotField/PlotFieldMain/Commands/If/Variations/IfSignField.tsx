@@ -1,13 +1,14 @@
-import { useRef, useState } from "react";
-import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SelectWithBlur from "@/components/ui/selectWithBlur";
+import useUpdateIfCharacter from "@/features/Editor/PlotField/hooks/If/BlockVariations/patch/useUpdateIfCharacter";
+import useUpdateIfCharacteristic from "@/features/Editor/PlotField/hooks/If/BlockVariations/patch/useUpdateIfCharacteristic";
+import useUpdateIfRetry from "@/features/Editor/PlotField/hooks/If/BlockVariations/patch/useUpdateIfRetry";
 import {
   AllConditionSigns,
   ConditionSignTypes,
   ConditionValueVariationType,
 } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import AsideScrollable from "../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
-import { PlotfieldIfSingsPrompt } from "./IfVariationsField";
+import useIfVariations from "../Context/IfContext";
 
 type IfSignFieldTypes = {
   plotfieldCommandId: string;
@@ -24,44 +25,44 @@ export default function IfSignField({
   currentSign,
   setCurrentSign,
 }: IfSignFieldTypes) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const [showSignModal, setShowSignModal] = useState(false);
-
-  useOutOfModal({
-    showModal: showSignModal,
-    setShowModal: setShowSignModal,
-    modalRef,
+  const { updateIfVariationSign } = useIfVariations();
+  const updateValueCharacter = useUpdateIfCharacter({ ifCharacterId: ifVariationId });
+  const updateValueCharacteristic = useUpdateIfCharacteristic({
+    ifCharacteristicId: ifVariationId,
   });
+  const updateValueRetry = useUpdateIfRetry({ ifRetryId: ifVariationId });
+
   return (
-    <div className="relative w-full h-full">
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowSignModal((prev) => !prev);
-        }}
-        type="button"
-        className="bg-secondary hover:bg-primary transition-all h-full"
-      >
-        {currentSign || "Знак"}
-      </PlotfieldButton>
-      <AsideScrollable
-        ref={modalRef}
-        className={` ${showSignModal ? "" : "hidden"} translate-y-[.5rem] min-w-fit right-0`}
-      >
-        {AllConditionSigns &&
-          AllConditionSigns?.map((c) => (
-            <PlotfieldIfSingsPrompt
-              key={c}
-              signName={c}
-              setCurrentSign={setCurrentSign}
-              setShowSignModal={setShowSignModal}
-              plotfieldCommandId={plotfieldCommandId}
-              ifVariationId={ifVariationId}
-              type={type}
-            />
-          ))}
-      </AsideScrollable>
-    </div>
+    <SelectWithBlur
+      onValueChange={(v: ConditionSignTypes) => {
+        if (type === "character") {
+          updateValueCharacter.mutate({ sign: currentSign });
+        } else if (type === "characteristic") {
+          updateValueCharacteristic.mutate({ sign: currentSign });
+        } else if (type === "retry") {
+          updateValueRetry.mutate({ sign: currentSign });
+        }
+
+        updateIfVariationSign({
+          sign: currentSign,
+          ifVariationId,
+          plotFieldCommandId: plotfieldCommandId,
+        });
+        setCurrentSign(v);
+      }}
+    >
+      <SelectTrigger className="text-text border-border border-[3px] hover:bg-accent active:scale-[.99] transition-all">
+        <SelectValue placeholder={currentSign || "Знак"} onBlur={(v) => v.currentTarget.blur()} />
+      </SelectTrigger>
+      <SelectContent>
+        {AllConditionSigns.map((pv) => {
+          return (
+            <SelectItem key={pv} value={pv} className={`${pv === currentSign ? "hidden" : ""} capitalize w-full`}>
+              {pv}
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </SelectWithBlur>
   );
 }

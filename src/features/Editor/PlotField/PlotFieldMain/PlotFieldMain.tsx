@@ -30,12 +30,15 @@ export default function PlotFieldMain({
   } = usePlotfieldCommands();
 
   const { data: plotfieldCommands } = useGetAllPlotFieldCommands({
-    topologyBlockId: currentTopologyBlock._id || topologyBlockId,
+    topologyBlockId: renderedAsSubPlotfield ? topologyBlockId : currentTopologyBlock._id,
   });
 
   useEffect(() => {
     if (plotfieldCommands) {
-      setAllCommands({ commands: plotfieldCommands, topologyBlockId });
+      setAllCommands({
+        commands: plotfieldCommands,
+        topologyBlockId: renderedAsSubPlotfield ? topologyBlockId : currentTopologyBlock._id,
+      });
     }
   }, [plotfieldCommands]);
 
@@ -54,7 +57,7 @@ export default function PlotFieldMain({
     updateCommandOrderOptimistic({
       commandOrder: result.destination.index,
       id: result.draggableId,
-      topologyBlockId: currentTopologyBlock._id,
+      topologyBlockId: renderedAsSubPlotfield ? topologyBlockId : currentTopologyBlock._id,
     });
 
     setAllCommands({ commands: orderedCommands, topologyBlockId });
@@ -82,7 +85,13 @@ export default function PlotFieldMain({
               {getCommandsByTopologyBlockId({ topologyBlockId })?.map((p, i) => {
                 return (
                   <Draggable key={p._id} draggableId={p._id} index={i}>
-                    {(provided) => <PlotfieldItem provided={provided} {...p} />}
+                    {(provided) => (
+                      <PlotfieldItem
+                        provided={provided}
+                        currentTopologyBlockId={renderedAsSubPlotfield ? topologyBlockId : p.topologyBlockId}
+                        {...p}
+                      />
+                    )}
                   </Draggable>
                 );
               })}

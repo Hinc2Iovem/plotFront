@@ -1,35 +1,29 @@
-import { useRef } from "react";
+import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
+import useNavigation from "../../../../Context/Navigation/NavigationContext";
 import { makeTopologyBlockName } from "../../../../Flowchart/utils/makeTopologyBlockName";
 import useAddAnotherConditionBlock from "../../../hooks/Condition/ConditionBlock/useAddAnotherConditionBlock";
 import useConditionBlocks from "./Context/ConditionContext";
-import useNavigation from "../../../../Context/Navigation/NavigationContext";
 
 type CreateConditionValueTypeModalTypes = {
-  setShowCreateValueType: React.Dispatch<React.SetStateAction<boolean>>;
-  showCreateValueType: boolean;
   commandConditionId: string;
   plotfieldCommandId: string;
 };
 
 export default function CreateConditionValueTypeModal({
-  setShowCreateValueType,
-  showCreateValueType,
   commandConditionId,
   plotfieldCommandId,
 }: CreateConditionValueTypeModalTypes) {
   const { episodeId } = useParams();
   const { addConditionBlock, getAmountOfOnlyIfConditionBlocks } = useConditionBlocks();
   const { currentTopologyBlock, updateAmountOfChildBlocks } = useNavigation();
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const createCommandinsideCondition = useAddAnotherConditionBlock({
     commandConditionId,
     episodeId: episodeId || "",
   });
+
   const handleConditionValueCreation = () => {
     const targetBlockId = generateMongoObjectId();
     const conditionBlockId = generateMongoObjectId();
@@ -70,22 +64,14 @@ export default function CreateConditionValueTypeModal({
           ? 1
           : getAmountOfOnlyIfConditionBlocks({ plotfieldCommandId }),
     });
-    setShowCreateValueType(false);
   };
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowCreateValueType,
-    showModal: showCreateValueType,
-  });
   return (
-    <aside
-      ref={modalRef}
-      className={`absolute right-[0rem] top-[3.5rem] bg-secondary rounded-md shadow-sm ${
-        showCreateValueType ? "" : "hidden"
-      } w-fit flex flex-col gap-[.5rem] p-[.5rem] z-[10]`}
+    <Button
+      className="active:scale-[.99] absolute right-[10px] text-white top-[10px] bg-brand-gradient hover:shadow-md hover:shadow-brand-gradient-left transition-all"
+      onClick={handleConditionValueCreation}
     >
-      <PlotfieldButton onClick={() => handleConditionValueCreation()}>Создать Блок</PlotfieldButton>
-    </aside>
+      + Блок
+    </Button>
   );
 }

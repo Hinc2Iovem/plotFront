@@ -1,9 +1,6 @@
-import { useRef, useState } from "react";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SelectWithBlur from "@/components/ui/selectWithBlur";
 import { AllPossibleStatuses } from "../../../../../../../../../const/STATUSES";
-import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../../../../../../ui/Buttons/PlotfieldButton";
 import { StatusTypes } from "../../../../../../../../../types/StoryData/Status/StatusTypes";
 import useUpdateConditionStatus from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionStatus";
 import useConditionBlocks from "../../../Context/ConditionContext";
@@ -24,54 +21,34 @@ export default function StatusModal({
   setStatus,
 }: StatusModalTypes) {
   const { updateConditionBlockVariationValue } = useConditionBlocks();
-  const [showAllLangauges, setShowAllStatuses] = useState(false);
-  const statusModalRef = useRef<HTMLDivElement>(null);
-
   const updateConditionStatus = useUpdateConditionStatus({ conditionBlockStatusId: conditionBlockVariationId });
 
-  useOutOfModal({
-    modalRef: statusModalRef,
-    setShowModal: setShowAllStatuses,
-    showModal: showAllLangauges,
-  });
   return (
-    <div className="relative w-fit">
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowAllStatuses((prev) => !prev);
-        }}
-        type="button"
-        className={`bg-primary-darker h-full hover:bg-primary transition-colors text-text-light w-full`}
-      >
-        {status?.trim().length ? status : "Статус"}
-      </PlotfieldButton>
+    <SelectWithBlur
+      onValueChange={(v: StatusTypes) => {
+        setStatus(v);
+        updateConditionBlockVariationValue({
+          conditionBlockId,
+          conditionBlockVariationId,
+          plotfieldCommandId,
+          status: v,
+        });
 
-      <AsideScrollable
-        ref={statusModalRef}
-        className={`${showAllLangauges ? "" : "hidden"} w-fit right-0 translate-y-[.5rem]`}
-      >
-        {AllPossibleStatuses.map((l) => (
-          <AsideScrollableButton
-            key={l}
-            onClick={() => {
-              setStatus(l);
-              setShowAllStatuses(false);
-              updateConditionBlockVariationValue({
-                conditionBlockId,
-                conditionBlockVariationId,
-                plotfieldCommandId,
-                status: l,
-              });
-
-              updateConditionStatus.mutate({ status: l });
-            }}
-            type="button"
-          >
-            {l}
-          </AsideScrollableButton>
-        ))}
-      </AsideScrollable>
-    </div>
+        updateConditionStatus.mutate({ status: v });
+      }}
+    >
+      <SelectTrigger className="w-fit h-full text-text capitalize border-border border-[3px] hover:bg-accent active:scale-[.99] transition-all">
+        <SelectValue placeholder={status || "Статус"} onBlur={(v) => v.currentTarget.blur()} />
+      </SelectTrigger>
+      <SelectContent>
+        {AllPossibleStatuses.map((pv) => {
+          return (
+            <SelectItem key={pv} value={pv} className={`${pv === status ? "hidden" : ""} capitalize w-full`}>
+              {pv}
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </SelectWithBlur>
   );
 }

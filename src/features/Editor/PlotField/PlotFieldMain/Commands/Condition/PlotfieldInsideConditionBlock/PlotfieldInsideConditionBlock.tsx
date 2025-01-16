@@ -1,8 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { useParams } from "react-router-dom";
 import command from "../../../../../../../assets/images/Editor/command.png";
 import plus from "../../../../../../../assets/images/shared/add.png";
 import { generateMongoObjectId } from "../../../../../../../utils/generateMongoObjectId";
-import ButtonHoverPromptModal from "../../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
 import useCreateBlankCommand from "../../../../hooks/useCreateBlankCommand";
 import PlotFieldMain from "../../../PlotFieldMain";
 import useConditionBlocks, { ConditionBlockItemTypes } from "../Context/ConditionContext";
@@ -13,8 +13,6 @@ type PlotfieldInsideConditionBlockTypes = {
   isFocusedBackground: boolean;
   plotfieldCommandId: string;
   topologyBlockId: string;
-  setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function PlotfieldInsideConditionBlock({
@@ -22,8 +20,6 @@ export default function PlotfieldInsideConditionBlock({
   plotfieldCommandId,
   topologyBlockId,
   isFocusedBackground,
-  setIsFocusedBackground,
-  setShowConditionBlockPlot,
 }: PlotfieldInsideConditionBlockTypes) {
   const { episodeId } = useParams();
   const {
@@ -48,21 +44,10 @@ export default function PlotfieldInsideConditionBlock({
     });
   };
 
-  const handleUpdatingSessionStorageOnClosing = () => {};
-
   return (
     <section
-      className={`${showConditionBlockPlot || isFocusedBackground ? "" : "hidden"} flex flex-col gap-[1rem] relative`}
+      className={`${showConditionBlockPlot || isFocusedBackground ? "" : "hidden"} flex flex-col gap-[10px] relative`}
     >
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowConditionBlockPlot(false);
-          setIsFocusedBackground(false);
-          handleUpdatingSessionStorageOnClosing();
-        }}
-        className="w-[2.5rem] h-[1rem] bg-secondary rounded-md shadow-sm absolute right-[-.3rem] top-[-.3rem] hover:shadow-md transition-shadow"
-      ></button>
       <form onSubmit={(e) => e.preventDefault()}>
         {(
           getAllConditionBlocksElseOrIfByPlotfieldCommandId({
@@ -79,7 +64,7 @@ export default function PlotfieldInsideConditionBlock({
           />
         ))}
       </form>
-      <header className="w-full flex gap-[.5rem] relative flex-wrap">
+      <header className="w-full flex gap-[5px] relative flex-wrap">
         {(
           getAllConditionBlocksByPlotfieldCommandId({
             plotfieldCommandId,
@@ -96,23 +81,19 @@ export default function PlotfieldInsideConditionBlock({
         ))}
       </header>
 
-      <main className="flex flex-col gap-[.5rem] w-full ">
-        <div className="flex w-full bg-secondary rounded-md shadow-sm items-center px-[1rem] py-[.5rem]">
-          <ButtonHoverPromptModal
-            contentName="Создать комманду"
-            positionByAbscissa="left"
-            className="bg-primary  shadow-sm shadow-gray-400 active:scale-[.99] relative "
-            asideClasses="text-text-light text-[1.3rem] top-[3.5rem] bottom-[-3.5rem]"
+      <main className="flex flex-col gap-[5px] w-full ">
+        <div className="flex w-full bg-secondary rounded-md shadow-sm items-center px-[5px] py-[5px]">
+          <Button
+            className="bg-brand-gradient px-[5px] hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] transition-all relative "
             onClick={handleCreateCommand}
-            variant="rectangle"
           >
             <img
               src={plus}
               alt="+"
-              className="w-[1.5rem] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0"
+              className="w-[15px] absolute translate-y-1/2 translate-x-1/2 right-[0rem] bottom-0"
             />
-            <img src={command} alt="Commands" className="w-[3rem]" />
-          </ButtonHoverPromptModal>
+            <img src={command} alt="Commands" className="w-[30px]" />
+          </Button>
         </div>
         <PlotFieldMain
           showAllCommands={false}
@@ -139,11 +120,12 @@ function OptionVariationButton({
   isElse,
   isFocusedBackground,
   topologyBlockName,
+  orderOfExecution,
 }: OptionVariationButtonTypes) {
   const { updateCurrentlyOpenConditionBlock, getCurrentlyOpenConditionBlockPlotId } = useConditionBlocks();
 
   return (
-    <button
+    <Button
       onClick={(e) => {
         e.stopPropagation();
         if (targetBlockId) {
@@ -161,19 +143,17 @@ function OptionVariationButton({
       className={`${
         targetBlockId === showedConditionBlockPlotTopologyBlockId ||
         getCurrentlyOpenConditionBlockPlotId({ plotfieldCommandId }) === conditionBlockId
-          ? "bg-primary-darker text-text-light focus-within:outline-secondary"
-          : "bg-secondary text-text-dark"
+          ? "bg-accent shadow-md shadow-accent scale-[1.05]"
+          : "bg-secondary"
       } ${
         isFocusedBackground && getCurrentlyOpenConditionBlockPlotId({ plotfieldCommandId }) === conditionBlockId
-          ? "border-dark-blue border-dashed border-[2px]"
+          ? "bg-background border-border border-[3px]"
           : ""
       } ${
-        !targetBlockId
-          ? "hover:outline-red-200 focus-within:outline-red-200"
-          : "focus-within:bg-primary-darker focus-within:text-text-dark"
-      } min-w-[7rem] text-[1.5rem] outline-none rounded-md px-[1rem] py-[.5rem] shadow-sm transition-all hover:bg-primary-darker hover:text-text-light focus-within:text-text-light`}
+        !targetBlockId ? "hover:outline-red focus-within:outline-red" : "focus-within:bg-accent"
+      } text-text w-fit outline-none rounded-md px-[10px] py-[5px] shadow-sm transition-all hover:bg-accent`}
     >
-      {isElse ? "else" : topologyBlockName}
-    </button>
+      {isElse ? "else" : typeof orderOfExecution === "number" ? `Условие - ${orderOfExecution}` : topologyBlockName}
+    </Button>
   );
 }

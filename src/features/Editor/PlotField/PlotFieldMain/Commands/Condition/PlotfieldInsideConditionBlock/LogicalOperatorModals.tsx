@@ -1,178 +1,86 @@
-import { useRef } from "react";
-import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import useConditionBlocks, {
-  AllConditionValueVariationByLogicalOperatorIndexTypes,
-  LogicalOperatorTypes,
-} from "../Context/ConditionContext";
-import useDeleteLogicalOperator from "../../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useDeleteLogicalOperator";
-import useDeleteConditionBlockVariation from "../../../../hooks/Condition/ConditionBlock/BlockVariations/useDeleteConditionBlockVariation";
-import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
-import useUpdateLogicalOperator from "../../../../hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useUpdateLogicalOperator";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import { useState } from "react";
+import { LogicalOperatorTypes } from "../Context/ConditionContext";
 
 const AllLogicalOperators = ["&&", "||"];
 
-type DeleteLogicalOperatorModalTypes = {
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  index: number;
-  suggestToDeleteLogicalOperator: boolean;
-  setSuggestToDeleteLogicalOperator: React.Dispatch<React.SetStateAction<boolean>>;
-  allConditionBlockVariations: AllConditionValueVariationByLogicalOperatorIndexTypes[];
+type LogicalOperatorModalTypes = {
+  currentLogicalOperator: LogicalOperatorTypes;
+  triggerClasses?: string;
+  onClickChangeOperator: (value: LogicalOperatorTypes) => void;
+  onClickDeleteOperator: () => void;
+  onContextMenu?: () => void;
 };
 
-export function DeleteLogicalOperatorModal({
-  index,
-  conditionBlockId,
-  plotfieldCommandId,
-  allConditionBlockVariations,
-  suggestToDeleteLogicalOperator,
-  setSuggestToDeleteLogicalOperator,
-}: DeleteLogicalOperatorModalTypes) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setSuggestToDeleteLogicalOperator,
-    showModal: suggestToDeleteLogicalOperator,
-  });
+export default function LogicalOperatorModal({
+  currentLogicalOperator,
+  triggerClasses,
+  onClickChangeOperator,
+  onClickDeleteOperator,
+  onContextMenu,
+}: LogicalOperatorModalTypes) {
+  const [showModal, setShowModal] = useState(false);
+  const [editOrDelete, setEditOrDelete] = useState<"edit" | "delete">("" as "edit");
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: 2 });
+  const buttonDeleteRef = useModalMovemenetsArrowUpDown({ length: 1 });
 
   return (
-    <aside
-      ref={modalRef}
-      className={`absolute ${
-        suggestToDeleteLogicalOperator ? "" : "hidden"
-      } right-0 z-[10] bg-primary-darker min-w-fit w-full rounded-md p-[.5rem] flex flex-col gap-[1rem] top-0 translate-y-[4rem]`}
-    >
-      <DeleteLogicalOperatorButton
-        index={index}
-        plotfieldCommandId={plotfieldCommandId}
-        conditionBlockId={conditionBlockId}
-        allConditionBlockVariations={allConditionBlockVariations}
-        setSuggestToDeleteLogicalOperator={setSuggestToDeleteLogicalOperator}
-      />
-    </aside>
-  );
-}
+    <Popover open={showModal} onOpenChange={setShowModal}>
+      <PopoverTrigger className={`${triggerClasses ? "" : "self-end"}`} asChild>
+        <Button
+          onClick={() => {
+            setShowModal(true);
+            setEditOrDelete("edit");
+          }}
+          onContextMenu={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setShowModal(true);
+            setEditOrDelete("delete");
 
-type DeleteLogicalOperatorButtonTypes = {
-  index: number;
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  allConditionBlockVariations: AllConditionValueVariationByLogicalOperatorIndexTypes[];
-  setSuggestToDeleteLogicalOperator: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function DeleteLogicalOperatorButton({
-  index,
-  conditionBlockId,
-  plotfieldCommandId,
-  allConditionBlockVariations,
-  setSuggestToDeleteLogicalOperator,
-}: DeleteLogicalOperatorButtonTypes) {
-  const { removeLogicalOperator, removeConditionBlockVariation } = useConditionBlocks();
-  const deleteLogicalOperatorAsync = useDeleteLogicalOperator({ conditionBlockId });
-  const deleteConditionValueVariationsAsync = useDeleteConditionBlockVariation({});
-
-  return (
-    <PlotfieldButton
-      type="button"
-      onClick={() => {
-        setSuggestToDeleteLogicalOperator(false);
-        removeLogicalOperator({ conditionBlockId, index, plotfieldCommandId });
-        deleteLogicalOperatorAsync.mutate({ index });
-
-        if (allConditionBlockVariations?.length > 0) {
-          for (const variation of allConditionBlockVariations) {
-            removeConditionBlockVariation({
-              conditionBlockId,
-              conditionBlockVariationId: variation.conditionBlockVariationId,
-              plotfieldCommandId,
-            });
-            deleteConditionValueVariationsAsync.mutate({
-              conditionBlockVariationIdBody: variation.conditionBlockVariationId,
-              type: variation.type,
-            });
-          }
-        }
-      }}
-    >
-      Удалить
-    </PlotfieldButton>
-  );
-}
-
-type ChangeLogicalOperatorModalTypes = {
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  index: number;
-  suggestToChangeLogicalOperator: boolean;
-  setSuggestToChangeLogicalOperator: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-export function ChangeLogicalOperatorModal({
-  conditionBlockId,
-  index,
-  plotfieldCommandId,
-  setSuggestToChangeLogicalOperator,
-  suggestToChangeLogicalOperator,
-}: ChangeLogicalOperatorModalTypes) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setSuggestToChangeLogicalOperator,
-    showModal: suggestToChangeLogicalOperator,
-  });
-
-  return (
-    <aside
-      ref={modalRef}
-      className={`absolute ${
-        suggestToChangeLogicalOperator ? "" : "hidden"
-      } right-0 z-[10] bg-primary-darker min-w-fit rounded-md p-[.5rem] flex flex-col gap-[1rem] top-0 translate-y-[4rem]`}
-    >
-      {AllLogicalOperators.map((lo) => (
-        <ChangeLogicalOperatorButton
-          key={lo}
-          value={lo as LogicalOperatorTypes}
-          index={index}
-          plotfieldCommandId={plotfieldCommandId}
-          conditionBlockId={conditionBlockId}
-          setSuggestToChangeLogicalOperator={setSuggestToChangeLogicalOperator}
-        />
-      ))}
-    </aside>
-  );
-}
-
-type ChangeLogicalOperatorButtonTypes = {
-  conditionBlockId: string;
-  plotfieldCommandId: string;
-  index: number;
-  value: LogicalOperatorTypes;
-  setSuggestToChangeLogicalOperator: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function ChangeLogicalOperatorButton({
-  index,
-  value,
-  conditionBlockId,
-  plotfieldCommandId,
-  setSuggestToChangeLogicalOperator,
-}: ChangeLogicalOperatorButtonTypes) {
-  const { updateLogicalOperator } = useConditionBlocks();
-  const updateLogicalOperatorAsync = useUpdateLogicalOperator({ conditionBlockId });
-
-  return (
-    <PlotfieldButton
-      type="button"
-      onClick={() => {
-        updateLogicalOperator({ conditionBlockId, index, logicalOperator: value, plotfieldCommandId });
-        setSuggestToChangeLogicalOperator(false);
-        updateLogicalOperatorAsync.mutate({ index, logicalOperator: value });
-      }}
-    >
-      {value}
-    </PlotfieldButton>
+            if (onContextMenu) {
+              onContextMenu();
+            }
+          }}
+          className={`border-[3px] text-text border-border outline-none`}
+        >
+          {currentLogicalOperator === "&&" ? "И" : "Или"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`w-fit flex flex-col gap-[5px]`}>
+        {editOrDelete === "edit" ? (
+          <>
+            {AllLogicalOperators?.map((c, i) => (
+              <Button
+                key={`${c}-${i}`}
+                ref={(el) => (buttonsRef.current[i] = el)}
+                type="button"
+                onClick={() => {
+                  setShowModal(false);
+                  onClickChangeOperator(c as LogicalOperatorTypes);
+                }}
+                className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
+              >
+                {c === "&&" ? "И" : "Или"}
+              </Button>
+            ))}
+          </>
+        ) : (
+          <Button
+            ref={(el) => (buttonDeleteRef.current[0] = el)}
+            type="button"
+            className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
+            onClick={() => {
+              setShowModal(false);
+              onClickDeleteOperator();
+            }}
+          >
+            Удалить
+          </Button>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }

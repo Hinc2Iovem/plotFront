@@ -1,17 +1,18 @@
+import { Button } from "@/components/ui/button";
 import { DraggableProvided } from "@hello-pangea/dnd";
 import { ErrorBoundary } from "react-error-boundary";
-import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
 import { PlotfieldOptimisticCommandTypes } from "../../Context/PlotfieldCommandSlice";
 import CommandAchievementField from "./Achievement/CommandAchievementField";
 import CommandAmbientField from "./Ambient/CommandAmbientField";
 import CommandBackgroundField from "./Background/CommandBackgroundField";
 import PlotfieldBlank from "./Blank/PlotfieldBlank";
 import CommandCallField from "./Call/CommandCallField";
-import CommandChoiceField from "./Choice/CommandChoiceField";
 import CommandCommentField from "./Comment/CommandCommentField";
 import CommandConditionField from "./Condition/CommandConditionField";
 import CommandCutSceneField from "./CutScene/CommandCutSceneField";
 import CommandEffectField from "./Effect/CommandEffectField";
+import CommandElseField from "./Else/CommandElseField";
+import CommandEndField from "./End/CommandEndField";
 import CommandGetItemField from "./GetItem/CommandGetItemField";
 import CommandIfField from "./If/CommandIfField";
 import CommandKeyField from "./Key/CommandKeyField";
@@ -22,9 +23,6 @@ import CommandSayField from "./Say/CommandSayField";
 import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
-import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
-import CommandElseField from "./Else/CommandElseField";
-import CommandEndField from "./End/CommandEndField";
 
 function ErrorFallback({
   error,
@@ -36,23 +34,25 @@ function ErrorFallback({
   resetErrorBoundary: () => void;
 }) {
   return (
-    <div>
-      <h2 className="text-[1.5rem] text-red-400">
+    <div className="bg-background border-border border-[1px] rounded-md p-[5px] w-full">
+      <h2 className="text-[15px] text-red">
         Ошибка в комманде {commandName}: {error.message}
       </h2>
-      <PlotfieldButton onClick={() => resetErrorBoundary()}>Обоновить</PlotfieldButton>
+      <Button variant={"ghost"} className="text-text" onClick={() => resetErrorBoundary()}>
+        Обоновить
+      </Button>
     </div>
   );
 }
 
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
+  currentTopologyBlockId: string;
 } & PlotfieldOptimisticCommandTypes;
 
 export default function PlotfieldItem({
   _id,
   command,
-  topologyBlockId,
   provided,
   characterId,
   characterName,
@@ -63,7 +63,9 @@ export default function PlotfieldItem({
   emotionImg,
   emotionName,
   plotfieldCommandIfId,
+  currentTopologyBlockId,
 }: PlotFieldItemTypes) {
+  const topologyBlockId = currentTopologyBlockId;
   return (
     <li
       {...provided.draggableProps}
@@ -125,11 +127,13 @@ export default function PlotfieldItem({
           />
         ) : command === "end" ? (
           <CommandEndField plotFieldCommandId={_id} />
-        ) : command === "wardrobe" ? (
-          <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
-        ) : command === "choice" ? (
-          <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
-        ) : command === "call" ? (
+        ) : //  : command === "wardrobe" ? (
+        //   <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+        // )
+        //  : command === "choice" ? (
+        //   <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+        // )
+        command === "call" ? (
           <CommandCallField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "condition" ? (
           <CommandConditionField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />

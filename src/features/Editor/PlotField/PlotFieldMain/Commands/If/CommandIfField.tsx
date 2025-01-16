@@ -3,7 +3,6 @@ import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFoc
 import useGetCommandIf from "../../../hooks/If/useGetCommandIf";
 import CommandIfNameField from "./CommandIfNameField";
 import useIfVariations from "./Context/IfContext";
-import IfVariationsField from "./Variations/IfVariationsField";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
@@ -20,7 +19,7 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const [commandIfId, setCommandIfId] = useState("");
-  const { setCommandIf, getAllLogicalOperators } = useIfVariations();
+  const { setCommandIf } = useIfVariations();
 
   useEffect(() => {
     if (commandIf) {
@@ -34,7 +33,7 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
   }, [commandIf]);
 
   return (
-    <div className="flex gap-[1rem] w-full bg-primary-darker rounded-md p-[.5rem] flex-col">
+    <div className="flex gap-[10px] w-full rounded-md flex-col">
       <CommandIfNameField
         plotfieldCommandId={plotFieldCommandId}
         createInsideElse={false}
@@ -43,13 +42,6 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
         isCommandFocused={isCommandFocused}
         nameValue="if"
         setHideCommands={setHideIfCommands}
-        topologyBlockId={topologyBlockId}
-      />
-
-      <IfVariationsField
-        ifId={commandIfId}
-        plotfieldCommandId={plotFieldCommandId}
-        logicalOperators={getAllLogicalOperators({ plotfieldCommandId: plotFieldCommandId })}
         topologyBlockId={topologyBlockId}
       />
     </div>

@@ -22,10 +22,10 @@ import useCreateGetItem from "../hooks/GetItem/useCreateGetItem";
 import useCreateCommandIf from "../hooks/If/useCreateCommandIf";
 import useCreateCommandKey from "../hooks/Key/useCreateCommandKey";
 import useCreateMove from "../hooks/Move/useCreateMove";
-import useCreateCommandMusic from "../hooks/Music/useCreateCommandMusic";
+import useCreateCommandMusic from "../hooks/Music/Command/useCreateCommandMusic";
 import useCreateName from "../hooks/Name/useCreateName";
 import useCreateSayCommandBlank from "../hooks/Say/useCreateSayCommandBlank";
-import useCreateCommandSound from "../hooks/Sound/useCreateCommandSound";
+import useCreateCommandSound from "../hooks/Sound/Command/useCreateCommandSound";
 import useCreateSuit from "../hooks/Suit/useCreateSuit";
 import useUpdateTopologyBlockAmountOfCommands from "../hooks/TopologyBlock/useUpdateTopologyBlockAmountOfCommands";
 import useCreateBlankCommand from "../hooks/useCreateBlankCommand";
@@ -99,7 +99,6 @@ export default function CreatingCommandViaButtonClick({
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId: newPlotFieldCommand.data?._id || "",
-    value,
     topologyBlockId: currentlyFocusedTopologyBlock || "",
   });
 
@@ -189,7 +188,7 @@ export default function CreatingCommandViaButtonClick({
   }) => {
     if (submittedByCharacter && type) {
       createSayCommand.mutate({ type });
-      updateCommandName.mutate({ valueForSay: true });
+      updateCommandName.mutate({ valueForSay: true, value: "say" });
     } else if (!submittedByCharacter) {
       const allCommands: AllPossiblePlotFieldComamndsTypes = value.toLowerCase() as AllPossiblePlotFieldComamndsTypes;
       if (allCommands === "achievement") {
@@ -269,7 +268,7 @@ export default function CreatingCommandViaButtonClick({
       } else if (allCommands === "comment") {
         createComment.mutate({});
       }
-      updateCommandName.mutate({ valueForSay: false });
+      updateCommandName.mutate({ valueForSay: false, value: allCommands });
     }
     updateTopologyBlockAmountOfCommands.mutate();
     setShowAllCommands(false);

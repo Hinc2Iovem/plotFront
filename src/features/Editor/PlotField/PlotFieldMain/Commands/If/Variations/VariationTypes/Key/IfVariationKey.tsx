@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetKeyById from "../../../../../../hooks/Key/useGetKeyById";
+import KeyPromptsModal from "../../../../Condition/PlotfieldInsideConditionBlock/ConditionBlockVariationInput/Key/KeyPromptsModal";
 import IfFieldName from "../shared/IfFieldName";
-import IfVariationKeyField from "./IfVariationKeyField";
-import IfVariationNewKeyModal from "./IfVariationNewKeyModal";
+import useSearch from "@/features/Editor/Context/Search/SearchContext";
+import useUpdateIfKey from "@/features/Editor/PlotField/hooks/If/BlockVariations/patch/useUpdateIfKey";
+import useIfVariations from "../../../Context/IfContext";
 
 type IfVariationKeyTypes = {
   plotfieldCommandId: string;
@@ -18,27 +21,29 @@ export default function IfVariationKey({
   keyId,
   topologyBlockId,
 }: IfVariationKeyTypes) {
-  const [showCreateNewValueModal, setShowCreateNewValueModal] = useState(false);
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
+  const { episodeId } = useParams();
   const [commandKeyId, setCommandKeyId] = useState(keyId || "");
+  const [initKeyId, setInitKeyId] = useState(keyId || "");
+  const { updateIfVariationValue } = useIfVariations();
 
   const [currentlyActive, setCurrentlyActive] = useState(false);
 
   const [currentIfName, setCurrentIfName] = useState("");
-  const [backUpIfName, setBackUpIfName] = useState("");
+  const [initValue, setInitValue] = useState("");
 
   const { data: commandKey } = useGetKeyById({ keyId: commandKeyId });
 
   useEffect(() => {
     if (commandKey) {
       setCurrentIfName(commandKey.text);
-      setBackUpIfName(commandKey.text);
+      setInitValue(commandKey.text);
     }
   }, [commandKey]);
 
   useEffect(() => {
     if (keyId?.trim().length) {
       setCommandKeyId(keyId);
+      setInitKeyId(keyId);
     }
   }, [keyId]);
 
@@ -50,27 +55,49 @@ export default function IfVariationKey({
     type: "ifVariation",
   });
 
+  const updateIf = useUpdateIfKey({
+    ifKeyId: ifVariationId || "",
+  });
+
+  useEffect(() => {
+    if (commandKeyId && commandKeyId !== initKeyId) {
+      setInitKeyId(commandKeyId);
+      setInitValue(currentIfName);
+      updateIf.mutate({
+        keyId: commandKeyId,
+      });
+    }
+    updateIfVariationValue({
+      commandKeyId: commandKeyId,
+      plotfieldCommandId,
+      ifVariationId,
+    });
+  }, [commandKeyId, initKeyId]);
+
+  const { updateValue } = useSearch();
+
+  const updateValues = (value: string) => {
+    if (episodeId) {
+      updateValue({
+        episodeId,
+        commandName: "If - Key",
+        id: ifVariationId,
+        type: "ifVariation",
+        value: value,
+      });
+    }
+  };
+
   return (
     <div className="relative w-full">
-      <IfVariationKeyField
-        ifVariationId={ifVariationId}
-        plotfieldCommandId={plotfieldCommandId}
-        backUpIfName={backUpIfName}
-        currentIfName={currentIfName}
-        highlightRedOnValueNonExisting={highlightRedOnValueNonExisting}
-        setBackUpIfName={setBackUpIfName}
+      <KeyPromptsModal
         setCommandKeyId={setCommandKeyId}
-        setCurrentIfName={setCurrentIfName}
         setCurrentlyActive={setCurrentlyActive}
-        setHighlightRedOnValueOnExisting={setHighlightRedOnValueOnExisting}
-      />
-
-      <IfVariationNewKeyModal
-        ifName={currentIfName}
-        ifKeyId={ifVariationId}
-        setHighlightRedOnValueOnExisting={setHighlightRedOnValueOnExisting}
-        setShowCreateNewValueModal={setShowCreateNewValueModal}
-        showCreateNewValueModal={showCreateNewValueModal}
+        onBlur={() => setCurrentlyActive(false)}
+        currentKeyName={currentIfName}
+        setCurrentKeyName={setCurrentIfName}
+        onChange={(value) => updateValues(value)}
+        initValue={initValue}
       />
 
       <IfFieldName currentlyActive={currentlyActive} text="Ключ" />

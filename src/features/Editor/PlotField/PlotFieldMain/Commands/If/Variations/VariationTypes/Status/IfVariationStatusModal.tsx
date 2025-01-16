@@ -1,12 +1,9 @@
-import { useRef, useState } from "react";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SelectWithBlur from "@/components/ui/selectWithBlur";
 import { AllPossibleStatuses } from "../../../../../../../../../const/STATUSES";
-import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
-import AsideScrollable from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../../../../../../ui/Buttons/PlotfieldButton";
 import { StatusTypes } from "../../../../../../../../../types/StoryData/Status/StatusTypes";
-import useIfVariations from "../../../Context/IfContext";
 import useUpdateIfStatus from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfStatus";
+import useIfVariations from "../../../Context/IfContext";
 
 type IfVariationStatusModalTypes = {
   ifVariationId: string;
@@ -23,54 +20,33 @@ export default function IfVariationStatusModal({
 }: IfVariationStatusModalTypes) {
   const { updateIfVariationValue } = useIfVariations();
 
-  const [showAllStatuses, setShowAllStatuses] = useState(false);
-  const statusModalRef = useRef<HTMLDivElement>(null);
-
   const updateIfStatus = useUpdateIfStatus({ ifStatusId: ifVariationId });
 
-  useOutOfModal({
-    modalRef: statusModalRef,
-    setShowModal: setShowAllStatuses,
-    showModal: showAllStatuses,
-  });
-
   return (
-    <div className="relative w-fit">
-      <PlotfieldButton
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowAllStatuses((prev) => !prev);
-        }}
-        type="button"
-        className={`bg-secondary h-full hover:bg-primary transition-colors text-text-light w-full`}
-      >
-        {status?.trim().length ? status : "Статус"}
-      </PlotfieldButton>
+    <SelectWithBlur
+      onValueChange={(v: StatusTypes) => {
+        setStatus(v);
+        updateIfVariationValue({
+          plotfieldCommandId,
+          status: v,
+          ifVariationId,
+        });
 
-      <AsideScrollable
-        ref={statusModalRef}
-        className={`${showAllStatuses ? "" : "hidden"} w-fit right-0 translate-y-[.5rem]`}
-      >
-        {AllPossibleStatuses.map((l) => (
-          <AsideScrollableButton
-            key={l}
-            onClick={() => {
-              setStatus(l);
-              setShowAllStatuses(false);
-              updateIfVariationValue({
-                ifVariationId,
-                plotfieldCommandId,
-                status: l,
-              });
-
-              updateIfStatus.mutate({ status: l });
-            }}
-            type="button"
-          >
-            {l}
-          </AsideScrollableButton>
-        ))}
-      </AsideScrollable>
-    </div>
+        updateIfStatus.mutate({ status: v });
+      }}
+    >
+      <SelectTrigger className="w-fit h-full text-[14px] py-[0] text-text capitalize border-border border-[3px] hover:bg-accent active:scale-[.99] transition-all">
+        <SelectValue placeholder={status || "Статус"} onBlur={(v) => v.currentTarget.blur()} />
+      </SelectTrigger>
+      <SelectContent>
+        {AllPossibleStatuses.map((pv) => {
+          return (
+            <SelectItem key={pv} value={pv} className={`${pv === status ? "hidden" : ""} capitalize w-full`}>
+              {pv}
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </SelectWithBlur>
   );
 }

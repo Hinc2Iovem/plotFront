@@ -7,7 +7,7 @@ export default function PlotfieldCommandNameField({ className, children, ...prop
   return (
     <p
       className={twMerge(
-        `text-[17px] text-start text-text w-full capitalize px-[10px] py-[5px] rounded-md shadow-md transition-all cursor-default`,
+        `text-[17px] min-w-fit text-start text-text w-full capitalize px-[10px] py-[5px] rounded-md shadow-md transition-all cursor-default`,
         className
       )}
       {...props}

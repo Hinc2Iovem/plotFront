@@ -1,15 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetTranslationCharacteristic from "../../../../../../../../../hooks/Fetching/Translation/useGetTranslationCharacteristic";
 import { ConditionSignTypes } from "../../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput";
 import { isNumeric } from "../../../../../../../../../utils/regExpIsNumeric";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateIfCharacteristic from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacteristic";
 import useIfVariations from "../../../Context/IfContext";
 import IfSignField from "../../IfSignField";
-import IfVariationCharacteristicModal, { ExposedMethodsIfCharacteristic } from "./IfVariationCharacteristicModal";
+import IfVariationCharacteristicModal from "./IfVariationCharacteristicModal";
 
 type IfVariationCharacteristicTypes = {
   plotfieldCommandId: string;
@@ -28,10 +27,6 @@ export default function IfVariationCharacteristic({
   secondCharacteristicId,
   firstCharacteristicId,
 }: IfVariationCharacteristicTypes) {
-  const [showFirstCharacteristicPromptModal, setShowFirstCharacteristicPromptModal] = useState(false);
-  const [showSecondCharacteristicPromptModal, setShowSecondCharacteristicPromptModal] = useState(false);
-  const [hideModal, setHideModal] = useState<"first" | "second" | null>(null);
-
   const { getIfVariationById } = useIfVariations();
   const [currentSign, setCurrentSign] = useState<ConditionSignTypes>(
     getIfVariationById({
@@ -40,29 +35,18 @@ export default function IfVariationCharacteristic({
     })?.sign || ("" as ConditionSignTypes)
   );
 
-  useEffect(() => {
-    if (hideModal === "second") {
-      setShowSecondCharacteristicPromptModal(false);
-    } else if (hideModal === "first") {
-      setShowFirstCharacteristicPromptModal(false);
-    }
-  }, [hideModal]);
-
   return (
-    <div className="flex flex-col gap-[1rem] w-full">
-      <div className="w-full flex gap-[.5rem] flex-shrink flex-wrap">
+    <div className="flex flex-col gap-[10px] w-full">
+      <div className="w-full flex gap-[5px] flex-shrink flex-wrap">
         <CharacteristicInputField
           key={"characteristic-1"}
           plotfieldCommandId={plotfieldCommandId}
-          setShowCharacteristicPromptModal={setShowFirstCharacteristicPromptModal}
-          showCharacteristicPromptModal={showFirstCharacteristicPromptModal}
           fieldType="ifName"
           ifVariationId={ifVariationId}
           currentCharacteristicId={firstCharacteristicId}
-          setHideModal={setHideModal}
           topologyBlockId={topologyBlockId}
         />
-        <div className="h-full">
+        <div className="w-fit">
           <IfSignField
             currentSign={currentSign}
             setCurrentSign={setCurrentSign}
@@ -73,14 +57,11 @@ export default function IfVariationCharacteristic({
         </div>
         <CharacteristicInputField
           key={"characteristic-2"}
-          setShowCharacteristicPromptModal={setShowSecondCharacteristicPromptModal}
-          showCharacteristicPromptModal={showSecondCharacteristicPromptModal}
           plotfieldCommandId={plotfieldCommandId}
           fieldType="ifValue"
           ifVariationId={ifVariationId}
           currentCharacteristicId={secondCharacteristicId}
           value={value}
-          setHideModal={setHideModal}
           topologyBlockId={topologyBlockId}
         />
       </div>
@@ -89,9 +70,6 @@ export default function IfVariationCharacteristic({
 }
 
 type CharacteristicInputFieldTypes = {
-  setShowCharacteristicPromptModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setHideModal: React.Dispatch<React.SetStateAction<"first" | "second" | null>>;
-  showCharacteristicPromptModal: boolean;
   plotfieldCommandId: string;
   ifVariationId: string;
   currentCharacteristicId: string;
@@ -101,9 +79,6 @@ type CharacteristicInputFieldTypes = {
 };
 
 function CharacteristicInputField({
-  setShowCharacteristicPromptModal,
-  setHideModal,
-  showCharacteristicPromptModal,
   plotfieldCommandId,
   fieldType,
   ifVariationId,
@@ -112,9 +87,8 @@ function CharacteristicInputField({
   topologyBlockId,
 }: CharacteristicInputFieldTypes) {
   const { episodeId } = useParams();
-  const [highlightRedOnValueNonExisting, setHighlightRedOnValueOnExisting] = useState(false);
   const [currentIfName, setCurrentIfName] = useState<string | number>(value ? value : "");
-  const [backUpIfName, setBackUpIfName] = useState<string | number>(value ? value : "");
+  const [initValue, setInitValue] = useState<string | number>(value ? value : "");
 
   const [characteristicId, setCharacteristicId] = useState(currentCharacteristicId);
 
@@ -132,7 +106,7 @@ function CharacteristicInputField({
   useEffect(() => {
     if (translatedCharacteristic) {
       setCurrentIfName((translatedCharacteristic.translations || [])[0]?.text);
-      setBackUpIfName((translatedCharacteristic.translations || [])[0]?.text);
+      setInitValue((translatedCharacteristic.translations || [])[0]?.text);
     }
   }, [translatedCharacteristic, characteristicId]);
 
@@ -151,14 +125,6 @@ function CharacteristicInputField({
     }
   }, [currentIfName, fieldType]);
 
-  const inputRef = useRef<ExposedMethodsIfCharacteristic>(null);
-
-  const onBlur = () => {
-    if (inputRef.current) {
-      inputRef.current.updateCharacteristicOnBlur();
-    }
-  };
-
   const { updateValue } = useSearch();
 
   useAddItemInsideSearch({
@@ -169,63 +135,30 @@ function CharacteristicInputField({
     type: "ifVariation",
   });
 
-  const updateValues = (value: string) => {
+  useEffect(() => {
     if (episodeId) {
       updateValue({
         episodeId,
         commandName: "If - Characteristic",
         id: ifVariationId,
-        value: value,
+        value: typeof currentIfName === "string" ? currentIfName : currentIfName.toString(),
         type: "ifVariation",
       });
     }
-  };
+  }, [episodeId, currentIfName]);
 
   return (
-    <div className="w-[40%] flex-grow min-w-[10rem] relative">
-      <PlotfieldInput
-        type="text"
-        placeholder="Характеристика"
-        onBlur={onBlur}
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowCharacteristicPromptModal((prev) => !prev);
-          if (fieldType === "ifName") {
-            setHideModal("second");
-          } else {
-            setHideModal("first");
-          }
-        }}
-        value={currentIfName}
-        onChange={(e) => {
-          if (!showCharacteristicPromptModal) {
-            setShowCharacteristicPromptModal(true);
-            if (fieldType === "ifName") {
-              setHideModal("second");
-            } else {
-              setHideModal("first");
-            }
-          }
-          setHighlightRedOnValueOnExisting(false);
-          setCurrentIfName(e.target.value);
-          updateValues(e.target.value);
-        }}
-        className={`${highlightRedOnValueNonExisting ? " " : ""} border-[3px] border-double border-dark-mid-gray`}
-      />
-
+    <div className="w-[40%] flex-grow min-w-[100px] relative">
       <IfVariationCharacteristicModal
-        currentCharacteristic={currentIfName}
         setCharacteristicId={setCharacteristicId}
-        setBackUpCharacteristic={setBackUpIfName}
-        setCurrentCharacteristic={setCurrentIfName}
-        setShowCharacteristicPromptModal={setShowCharacteristicPromptModal}
-        showCharacteristicPromptModal={showCharacteristicPromptModal}
+        characteristicId={characteristicId}
+        currentCharacteristic={currentIfName}
         ifVariationId={ifVariationId}
+        setCurrentCharacteristic={setCurrentIfName}
         plotfieldCommandId={plotfieldCommandId}
         fieldType={fieldType}
-        backUpCharacteristic={typeof backUpIfName === "string" ? backUpIfName : ""}
-        characteristicId={characteristicId}
-        ref={inputRef}
+        initValue={initValue}
+        setInitValue={setInitValue}
       />
     </div>
   );
