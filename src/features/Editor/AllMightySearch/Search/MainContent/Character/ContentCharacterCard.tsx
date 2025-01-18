@@ -149,9 +149,9 @@ export function ContentCharacterCard({
 
   return (
     <div
-      className={`flex-grow min-w-[25rem] overflow-hidden md:max-w-[35rem] rounded-md shadow-sm bg-primary-darker ${
-        !showBackSide ? "hover:bg-primary flex" : "p-[1rem] pb-[0rem] flex flex-col"
-      } transition-colors h-[35rem] min-h-fit relative`}
+      className={`flex-grow overflow-hidden xl:max-w-[350px] rounded-md shadow-sm bg-accent ${
+        !showBackSide ? "flex min-w-[250px]" : "p-[10px] pb-[0px] flex flex-col min-w-[350px] "
+      } transition-colors h-[350px] min-h-fit relative`}
     >
       {!showBackSide ? (
         <>
@@ -159,22 +159,22 @@ export function ContentCharacterCard({
             <img
               src={currentCharacterImg}
               alt={currentCharacterName}
-              className="w-full h-[25rem] absolute object-contain left-1/2 -translate-x-1/2 translate-y-[4rem]"
+              className="w-[80%] h-[250px] absolute object-contain left-1/2 -translate-x-1/2 translate-y-[40px]"
             />
           ) : (
             <PreviewImage
               imagePreview={imagePreview}
               setPreview={setImagePreview}
-              imgClasses="w-full h-[25rem] object-contain translate-y-[4rem]"
+              imgClasses="w-[80%] h-[250px] object-contain translate-y-[40px]"
             />
           )}
           <p
-            className={`absolute text-[1.3rem] top-0 left-0 px-[1rem] rounded-br-md ${
+            className={`absolute text-[13px] top-0 left-0 px-[10px] rounded-br-md ${
               characterType === "maincharacter"
-                ? "bg-red-500 text-text-light"
+                ? "bg-red  text-white"
                 : characterType === "minorcharacter"
-                ? "bg-blue-600 text-text-light"
-                : "bg-gray-600 text-text-light"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-600 text-white"
             }`}
           >
             {characterTypeToRus}
@@ -183,9 +183,9 @@ export function ContentCharacterCard({
           <div
             className={`${
               character?.nameTag ? "" : "hidden"
-            } absolute top-[0rem] right-[0rem] py-[.5rem] px-[1rem] rounded-bl-full text-text-light bg-primary`}
+            } absolute top-[0rem] right-[0rem] py-[5px] px-[10px] rounded-bl-full`}
           >
-            <p className="text-[1.4rem] translate-x-[.5rem] -translate-y-[.2rem]">{character?.nameTag}</p>
+            <p className="text-[14px] text-paragraph translate-x-[5px] -translate-y-[2px]">{character?.nameTag}</p>
           </div>
 
           <p
@@ -197,7 +197,7 @@ export function ContentCharacterCard({
               setShowBackSide((prev) => !prev);
               setShowSuggestiveModal(false);
             }}
-            className="mt-auto w-full cursor-default text-text-light text-[1.8rem] px-[1rem] py-[.5rem]"
+            className="mt-auto w-full text-heading cursor-pointer hover:opacity-80 transition-opacity text-[18px] px-[10px] py-[5px]"
           >
             {currentCharacterName}
           </p>

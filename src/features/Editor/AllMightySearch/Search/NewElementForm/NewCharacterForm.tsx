@@ -5,14 +5,9 @@ import useCreateCharacter from "../../../../../hooks/Posting/Character/useCreate
 import { TranslationCharacterObjectTypes } from "../../../../../types/Additional/TranslationTypes";
 import { CharacterTypes } from "../../../../../types/StoryData/Character/CharacterTypes";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
-import AsideScrollable from "../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import AsideScrollableButton from "../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
-import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
-import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldTextarea from "../../../../../ui/Textareas/PlotfieldTextarea";
-import PreviewImage from "../../../../../ui/shared/PreviewImage";
 import { NewElementTypes } from "../MainContent/AllMightySearchMainContent";
-import { ALL_CHARACTER_TYPES_RUS, CharacterRusTypes } from "../MainContent/Character/EditingCharacter";
+import CharacterForm from "../MainContent/Character/CharacterForm";
+import { CharacterRusTypes } from "../MainContent/Character/EditingCharacter";
 
 type NewCharacterFormTypes = {
   setNewElement: React.Dispatch<React.SetStateAction<NewElementTypes>>;
@@ -20,13 +15,6 @@ type NewCharacterFormTypes = {
   characterTypeFilter: CharacterTypes | "all";
   debouncedValueFilter: string;
   setShowCreatingNewElement: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-type TempCharacterType = {
-  name: string;
-  description?: string;
-  nameTag?: string;
-  unknownName?: string;
 };
 
 export default function NewCharacterForm({
@@ -54,17 +42,13 @@ export default function NewCharacterForm({
     }
   }, [currentCharacterType]);
 
-  const [showTypes, setShowTypes] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-
   const { data: mainCharacter } = useGetMainCharacterByStoryId({ storyId: storyId || "", language: "russian" });
   const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(null);
-  const [newCharacter, setNewCharacter] = useState<TempCharacterType>({
-    name: "",
-    description: "",
-    nameTag: "",
-    unknownName: "",
-  });
+
+  const [characterName, setCharacterName] = useState<string | undefined>("");
+  const [characterDescription, setCharacterDescription] = useState<string | undefined>("");
+  const [characterUnknownName, setCharacterUnknownName] = useState<string | undefined>("");
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -77,12 +61,12 @@ export default function NewCharacterForm({
     storyId: storyId || "",
     characterType: currentCharacterType,
     debouncedValue: debouncedValueFilter,
-    name: newCharacter.name,
-    description: newCharacter.description,
+    name: characterName || "",
+    description: characterDescription || "",
     language: "russian",
-    nameTag: newCharacter.nameTag,
+    nameTag: "",
     searchCharacterType: characterTypeFilter,
-    unknownName: newCharacter.unknownName,
+    unknownName: characterUnknownName || "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -150,169 +134,22 @@ export default function NewCharacterForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={`${showCreatingNewElement ? "" : "hidden"} w-full flex flex-col gap-[1rem] p-[1rem]`}
-    >
-      <div className="w-full flex gap-[1.5rem] flex-wrap">
-        <div className="flex-grow relative min-w-[25rem]">
-          <PlotfieldInput
-            placeholder="Имя"
-            value={newCharacter.name}
-            onChange={(e) =>
-              setNewCharacter((prev) => ({
-                ...prev,
-                name: e.target.value,
-              }))
-            }
-            className="border-[1px]"
-          />
-          <div className="absolute px-[1rem] py-[.5rem] top-[-1rem] right-[1rem] bg-secondary">
-            <p className="text-text-light text-[1.3rem]">Имя</p>
-          </div>
-        </div>
-        {currentCharacterType === "minorcharacter" ? (
-          <>
-            <div className="flex-grow relative min-w-[25rem]">
-              <PlotfieldInput
-                placeholder="Скрытое Имя"
-                value={newCharacter.unknownName}
-                onChange={(e) =>
-                  setNewCharacter((prev) => ({
-                    ...prev,
-                    unknownName: e.target.value,
-                  }))
-                }
-                className="border-[1px]"
-              />
-              <div className="absolute px-[1rem] py-[.5rem] top-[-1rem] right-[1rem] bg-secondary">
-                <p className="text-text-light text-[1.3rem]">Скрытое Имя</p>
-              </div>
-            </div>
-          </>
-        ) : null}
-      </div>
-
-      {currentCharacterType === "minorcharacter" ? (
-        <div className="relative w-full mt-[.5rem]">
-          <PlotfieldTextarea
-            placeholder="Описание"
-            value={newCharacter.description}
-            onChange={(e) =>
-              setNewCharacter((prev) => ({
-                ...prev,
-                description: e.target.value,
-              }))
-            }
-            className="border-[1px] min-h-[7rem]"
-          />
-          <div className="absolute px-[1rem] py-[.5rem] top-[-1rem] right-[1rem] bg-secondary">
-            <p className="text-text-light text-[1.3rem]">Описание</p>
-          </div>
-        </div>
-      ) : null}
-
-      <div className="flex flex-wrap gap-[1rem] py-[1rem] items-center justify-center">
-        <div className="flex gap-[1rem] flex-grow flex-col min-w-[20rem]">
-          <div className="relative w-full">
-            <PlotfieldButton
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowTypes((prev) => !prev);
-              }}
-              className="bg-primary-darker hover:bg-primary"
-            >
-              {characterTypeRus}
-            </PlotfieldButton>
-            <AsideScrollable
-              ref={modalRef}
-              className={`${showTypes ? "" : "hidden"} translate-y-[.5rem] h-fit gap-[.5rem] py-[1rem]`}
-            >
-              {ALL_CHARACTER_TYPES_RUS.map((ct) => (
-                <NewCharacterFormCharacterTypeButton
-                  mainCharacterAlreadyExists={!!mainCharacter?.characterId}
-                  setCharacterType={setCurrentCharacterType}
-                  setCharacterTypeRus={setCharacterTypeRus}
-                  setShowTypes={setShowTypes}
-                  characterTypeRus={characterTypeRus}
-                  key={ct}
-                  typeRus={ct}
-                />
-              ))}
-            </AsideScrollable>
-          </div>
-          <div className="relative w-full">
-            <PlotfieldInput
-              className="w-full border-[1px]"
-              value={newCharacter.nameTag}
-              onChange={(e) =>
-                setNewCharacter((prev) => ({
-                  ...prev,
-                  nameTag: e.target.value,
-                }))
-              }
-              placeholder="Тэг"
-            />
-            <div className="absolute px-[1rem] py-[.5rem] top-[-1rem] right-[1rem] bg-secondary">
-              <p className="text-text-light text-[1.3rem]">Тэг</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-[20rem] h-[15rem] relative bg-primary rounded-md">
-          <PreviewImage
-            imagePreview={imagePreview}
-            imgClasses="absolute w-[15rem] -translate-x-1/2 left-1/2 object-cover"
-            setPreview={setImagePreview}
-          />
-        </div>
-      </div>
-
-      <div className="flex gap-[1rem] w-full">
-        <PlotfieldButton onClick={() => setShowCreatingNewElement(false)} type="button" className="bg-primary-darker">
-          Отмена
-        </PlotfieldButton>
-        <PlotfieldButton type="submit" className="bg-primary-darker">
-          Создать
-        </PlotfieldButton>
-      </div>
-    </form>
-  );
-}
-
-type NewCharacterFormCharacterTypeButtonTypes = {
-  typeRus: CharacterRusTypes;
-  characterTypeRus: CharacterRusTypes;
-  mainCharacterAlreadyExists: boolean;
-  setShowTypes: React.Dispatch<React.SetStateAction<boolean>>;
-  setCharacterType: React.Dispatch<React.SetStateAction<CharacterTypes>>;
-  setCharacterTypeRus: React.Dispatch<React.SetStateAction<CharacterRusTypes>>;
-};
-
-function NewCharacterFormCharacterTypeButton({
-  typeRus,
-  mainCharacterAlreadyExists,
-  characterTypeRus,
-  setCharacterType,
-  setCharacterTypeRus,
-  setShowTypes,
-}: NewCharacterFormCharacterTypeButtonTypes) {
-  return (
-    <AsideScrollableButton
-      type="button"
-      onClick={() => {
-        const typeToEng: CharacterTypes =
-          typeRus === "ГГ" ? "maincharacter" : typeRus === "Второй План" ? "minorcharacter" : "emptycharacter";
-        setCharacterType(typeToEng);
-        setCharacterTypeRus(typeRus);
-        setShowTypes(false);
-      }}
-      className={`${typeRus === characterTypeRus ? "bg-primary text-text-light" : ""} ${
-        mainCharacterAlreadyExists && typeRus === "ГГ" ? "hidden" : ""
-      } `}
-    >
-      {typeRus}
-    </AsideScrollableButton>
+    <div className={`${showCreatingNewElement ? "" : "hidden"} w-full flex flex-col gap-[10px] p-[10px]`}>
+      <CharacterForm
+        characterDescription={characterDescription}
+        characterName={characterName}
+        characterType={currentCharacterType}
+        characterUnknownName={characterUnknownName}
+        onSubmit={handleSubmit}
+        type={"create"}
+        imagePreview={imagePreview}
+        setCharacterDescription={setCharacterDescription}
+        setCharacterName={setCharacterName}
+        setCharacterType={setCurrentCharacterType}
+        setCharacterUnknownName={setCharacterUnknownName}
+        setImagePreview={setImagePreview}
+        setStarted={setShowCreatingNewElement}
+      />
+    </div>
   );
 }

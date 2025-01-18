@@ -11,6 +11,7 @@ type StoryAttributesSelectAppearanceTypes = {
   currentAppearanceType: TranslationTextFieldNameAppearancePartsTypes | "temp";
   triggerClasses?: string;
   filterOrForm: "filter" | "form";
+  defaultTrigger?: boolean;
 };
 
 export default function StoryAttributesSelectAppearanceType({
@@ -18,6 +19,7 @@ export default function StoryAttributesSelectAppearanceType({
   currentAppearanceType,
   triggerClasses,
   filterOrForm,
+  defaultTrigger = true,
 }: StoryAttributesSelectAppearanceTypes) {
   const toRus: string =
     currentAppearanceType === "accessory"
@@ -65,7 +67,9 @@ export default function StoryAttributesSelectAppearanceType({
     <SelectWithBlur onValueChange={(pv) => handleOnUpdateAppearance(pv as AppearancePartVariationRusTypes)}>
       <SelectTrigger
         className={twMerge(
-          `capitalize flex-grow md:text-[25px] w-full text-heading relative border-border border-[1px] px-[10px] py-[5px]`,
+          `capitalize flex-grow ${
+            defaultTrigger ? "md:text-[25px] text-heading" : "text-white text-[20px]"
+          }  w-full relative border-border border-[1px] px-[10px] py-[5px]`,
           triggerClasses
         )}
       >

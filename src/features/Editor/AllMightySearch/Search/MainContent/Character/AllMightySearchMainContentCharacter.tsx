@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useInView } from "react-intersection-observer";
 import { useParams } from "react-router-dom";
 import useGetMainCharacterByStoryId from "../../../../../../hooks/Fetching/Character/useGetMainCharacterByStoryId";
 import useGetTranslationCharactersByType from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByType";
@@ -10,8 +9,9 @@ import useGetPaginatedTranslationCharacter, {
   AllMightySearchCharacterResultTypes,
 } from "../../../hooks/useGetPaginatedTranslationCharacter";
 import { NewElementTypes } from "../AllMightySearchMainContent";
-import { CharacterEditingForm } from "./EditingCharacter";
+import LoadMoreButton from "../shared/LoadMoreButton";
 import { ContentCharacterCard } from "./ContentCharacterCard";
+import { CharacterEditingForm } from "./EditingCharacter";
 
 type AllMightySearchMainContentCharacterTypes = {
   debouncedValue: string;
@@ -45,7 +45,6 @@ export default function AllMightySearchMainContentCharacter({
   setNewElement,
 }: AllMightySearchMainContentCharacterTypes) {
   const { storyId } = useParams();
-  const { ref, inView } = useInView();
   const [currentPage, setCurrentPage] = useState(1);
 
   const [mainCharacterWasChanged, setMainCharacterWasChanged] = useState(false);
@@ -151,15 +150,6 @@ export default function AllMightySearchMainContentCharacter({
   }, [newElement]);
 
   useEffect(() => {
-    if (inView) {
-      if (hasNextPage) {
-        setCurrentPage((prev) => prev + 1);
-        fetchNextPage();
-      }
-    }
-  }, [inView, hasNextPage, fetchNextPage, currentPage]);
-
-  useEffect(() => {
     if (status === "error") {
       console.error("Character, Error: ", error.message);
     }
@@ -170,9 +160,9 @@ export default function AllMightySearchMainContentCharacter({
       <div
         className={`${currentCategory === "character" ? "" : "hidden"} ${
           startEditing ? "hidden" : ""
-        } h-full flex flex-col gap-[1rem] overflow-auto | containerScroll`}
+        } h-full flex flex-col gap-[10px] overflow-auto | containerScroll`}
       >
-        <div className="flex gap-[1rem] flex-wrap p-[1rem]">
+        <div className="flex flex-wrap gap-[10px] p-[10px]">
           {!debouncedValue?.trim().length
             ? allPaginatedResults?.map((p) =>
                 p?.results?.map((pr) => (
@@ -231,27 +221,16 @@ export default function AllMightySearchMainContentCharacter({
             : null}
         </div>
 
-        <button
-          ref={ref}
-          className={`${debouncedValue?.trim().length ? "hidden" : ""} ${
-            !allPaginatedResults[allPaginatedResults.length - 1]?.next
-              ? "bg-primary-darker text-dark-mid-gray"
-              : "hover:text-text-light  focus-within:text-text-light text-text-light"
-          } text-[1.8rem] mt-[2rem] ml-auto w-fit hover:bg-primary transition-all active:bg-primary-darker rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
-          disabled={!hasNextPage || isFetchingNextPage}
-          onClick={() => {
-            if (hasNextPage) {
-              setCurrentPage((prev) => prev + 1);
-              fetchNextPage();
-            }
-          }}
-        >
-          {!allPaginatedResults[allPaginatedResults.length - 1]?.next
-            ? "Больше персонажей нету"
-            : isFetchingNextPage
-            ? "Загрузка"
-            : "Смотреть Больше"}
-        </button>
+        <LoadMoreButton<AllMightySearchCharacterResultTypes>
+          allPaginatedResults={allPaginatedResults}
+          currentPage={currentPage}
+          debouncedValue={debouncedValue}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          setCurrentPage={setCurrentPage}
+          type="персонажей"
+        />
       </div>
 
       <CharacterEditingForm

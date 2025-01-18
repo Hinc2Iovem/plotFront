@@ -5,6 +5,8 @@ import useUpdateKeyText from "../../../../PlotField/hooks/Key/useUpdateKeyText";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { AllMightySearchKeyResultTypes } from "../../../hooks/useGetPaginatedKey";
 import { TempKeyTypes } from "./AllMightySearchMainContentKey";
+import { toast } from "sonner";
+import { toastErrorStyles } from "@/components/shared/toastStyles";
 
 type EditingKeyFormTypes = {
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
@@ -30,7 +32,7 @@ export function EditingKeyForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentText?.trim().length) {
-      console.error("Can not edit an empty key");
+      toast("Поле пусто", toastErrorStyles);
       return;
     }
 

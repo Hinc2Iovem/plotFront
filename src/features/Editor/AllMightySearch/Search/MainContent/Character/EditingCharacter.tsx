@@ -1,21 +1,16 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import useUpdateCharacter from "../../../../../../hooks/Patching/Character/useUpdateCharacter";
+import useUpdateMainCharacterByStoryId from "../../../../../../hooks/Patching/Character/useUpdateMainCharacterByStoryId";
+import useUpdateCharacterTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacterTranslation";
+import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
+import { CharacterTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
+import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { AllMightySearchCharacterResultTypes } from "../../../hooks/useGetPaginatedTranslationCharacter";
 import { EditingCharacterTypes, MainCharacterTypes } from "./AllMightySearchMainContentCharacter";
-import { useEffect, useRef, useState } from "react";
-import { CharacterTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
-import useUpdateMainCharacterByStoryId from "../../../../../../hooks/Patching/Character/useUpdateMainCharacterByStoryId";
-import useUpdateCharacter from "../../../../../../hooks/Patching/Character/useUpdateCharacter";
-import useUpdateCharacterTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacterTranslation";
-import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
-import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import PreviewImage from "../../../../../../ui/shared/PreviewImage";
-import AsideScrollableButton from "../../../../../../ui/Aside/AsideScrollable/AsideScrollableButton";
+import CharacterForm from "./CharacterForm";
 
 type CharacterEditingFormTypes = {
   startEditing: boolean;
@@ -57,21 +52,6 @@ export function CharacterEditingForm({
 
   const [nameTag, setNameTag] = useState(editingCharacter?.nameTag || "");
   const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(editingCharacter?.img || null);
-
-  const [characterTypeRus, setCharacterTypeRus] = useState<CharacterRusTypes>(
-    characterType === "emptycharacter" ? "Третий План" : characterType === "maincharacter" ? "ГГ" : "Второй План"
-  );
-
-  useEffect(() => {
-    if (characterType) {
-      setCharacterTypeRus(
-        characterType === "emptycharacter" ? "Третий План" : characterType === "maincharacter" ? "ГГ" : "Второй План"
-      );
-    }
-  }, [characterType]);
-
-  const [showTypes, setShowTypes] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCharacterName(editingCharacter?.name);
@@ -201,124 +181,35 @@ export function CharacterEditingForm({
     }
   };
 
-  useOutOfModal({ modalRef, setShowModal: setShowTypes, showModal: showTypes });
-
   return (
     <div className={`${currentCategory === "character" ? "" : "hidden"} ${startEditing ? "" : "hidden"} relative`}>
-      <form
-        onSubmit={(e) => handleSubmit({ e })}
-        className={`${suggestReassigningMainCharacter ? "hidden" : ""} w-full flex flex-col gap-[1rem] p-[1rem]`}
-      >
-        <div className="w-full flex gap-[1.5rem] flex-wrap">
-          <div className="flex-grow relative min-w-[25rem]">
-            <PlotfieldInput
-              placeholder="Имя"
-              value={characterName}
-              onChange={(e) => setCharacterName(e.target.value)}
-              className="border-[1px]"
-            />
-            <div className="absolute px-[1rem] py-[.5rem] top-[-1rem] right-[1rem] bg-secondary">
-              <p className="text-text-light text-[1.3rem]">Имя</p>
-            </div>
-          </div>
-          {editingCharacter?.characterType === "minorcharacter" ? (
-            <>
-              <div className="flex-grow relative min-w-[25rem]">
-                <PlotfieldInput
-                  placeholder="Скрытое Имя"
-                  value={characterUnknownName}
-                  onChange={(e) => setCharacterUnknownName(e.target.value)}
-                  className="border-[1px]"
-                />
-                <div className="absolute px-[1rem] py-[.5rem] top-[-1rem] right-[1rem] bg-secondary">
-                  <p className="text-text-light text-[1.3rem]">Скрытое Имя</p>
-                </div>
-              </div>
-            </>
-          ) : null}
-        </div>
+      <CharacterForm
+        characterDescription={characterDescription || ""}
+        characterName={characterName || ""}
+        characterType={editingCharacter?.characterType || characterType}
+        characterUnknownName={characterUnknownName || ""}
+        handleSubmit={handleSubmit}
+        imagePreview={imagePreview}
+        setCharacterDescription={setCharacterDescription}
+        setCharacterName={setCharacterName}
+        setCharacterType={setCharacterType}
+        setCharacterUnknownName={setCharacterUnknownName}
+        setImagePreview={setImagePreview}
+        setStarted={setStartEditing}
+        type="edit"
+        suggestReassigningMainCharacter={suggestReassigningMainCharacter}
+      />
 
-        {editingCharacter?.characterType === "minorcharacter" ? (
-          <div className="relative w-full mt-[.5rem]">
-            <PlotfieldTextarea
-              placeholder="Описание"
-              value={characterDescription}
-              onChange={(e) => setCharacterDescription(e.target.value)}
-              className="border-[1px] min-h-[7rem]"
-            />
-            <div className="absolute px-[1rem] py-[.5rem] top-[-1rem] right-[1rem] bg-secondary">
-              <p className="text-text-light text-[1.3rem]">Описание</p>
-            </div>
-          </div>
-        ) : null}
-
-        <div className="flex flex-wrap gap-[1rem] py-[1rem] items-center justify-center">
-          <div className="flex gap-[1rem] flex-grow flex-col min-w-[20rem]">
-            <div className="relative w-full">
-              <PlotfieldButton
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowTypes((prev) => !prev);
-                }}
-                className="bg-primary-darker hover:bg-primary"
-              >
-                {characterTypeRus}
-              </PlotfieldButton>
-              <AsideScrollable ref={modalRef} className={`${showTypes ? "" : "hidden"} translate-y-[.5rem]`}>
-                {ALL_CHARACTER_TYPES_RUS.map((ct) => (
-                  <CharacterEditingFormCharacterTypeButton
-                    setCharacterType={setCharacterType}
-                    setCharacterTypeRus={setCharacterTypeRus}
-                    setShowTypes={setShowTypes}
-                    characterTypeRus={characterTypeRus}
-                    key={ct}
-                    typeRus={ct}
-                  />
-                ))}
-              </AsideScrollable>
-            </div>
-            <div className="relative w-full">
-              <PlotfieldInput
-                className="w-full border-[1px]"
-                value={nameTag}
-                onChange={(e) => setNameTag(e.target.value)}
-                placeholder="Тэг"
-              />
-              <div className="absolute px-[1rem] py-[.5rem] top-[-1rem] right-[1rem] bg-secondary">
-                <p className="text-text-light text-[1.3rem]">Тэг</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="w-[20rem] h-[15rem] relative bg-primary rounded-md">
-            <PreviewImage
-              imagePreview={imagePreview}
-              imgClasses="absolute w-[15rem] -translate-x-1/2 left-1/2 object-cover"
-              setPreview={setImagePreview}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-[1rem] w-full">
-          <PlotfieldButton onClick={() => setStartEditing(false)} type="button" className="bg-primary-darker">
-            Отмена
-          </PlotfieldButton>
-          <PlotfieldButton type="submit" className="bg-primary-darker">
-            Сохранить
-          </PlotfieldButton>
-        </div>
-      </form>
-
-      <aside
+      {/* TODO suggest to reassign */}
+      {/* <aside
         className={`${
           suggestReassigningMainCharacter ? "" : "hidden"
-        } bg-secondary z-[10] p-[1rem] flex flex-col gap-[1rem]`}
+        } bg-secondary z-[10] p-[10px] flex flex-col gap-[10px]`}
       >
-        <h2 className="text-text-light text-[2rem] w-full">
+        <h2 className="text-text text-[2rem] w-full">
           У этой истории уже есть главный персонаж, вы уверены что хотите его поменять?
         </h2>
-        <div className="flex gap-[1rem]">
+        <div className="flex gap-[10px]">
           <PlotfieldButton
             onClick={() => setSuggestReassigningMainCharacter(false)}
             type="button"
@@ -334,7 +225,7 @@ export function CharacterEditingForm({
             Да
           </PlotfieldButton>
         </div>
-      </aside>
+      </aside> */}
     </div>
   );
 }
@@ -364,7 +255,7 @@ export function CharacterEditingFormCharacterTypeButton({
         setCharacterTypeRus(typeRus);
         setShowTypes(false);
       }}
-      className={`${typeRus === characterTypeRus ? "bg-primary text-text-light" : ""}`}
+      className={`${typeRus === characterTypeRus ? "bg-primary text-text" : ""}`}
     >
       {typeRus}
     </AsideScrollableButton>

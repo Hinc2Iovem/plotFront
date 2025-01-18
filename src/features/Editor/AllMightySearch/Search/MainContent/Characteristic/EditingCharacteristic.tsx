@@ -1,11 +1,13 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
-import { TempCharacteristicTypes } from "./AllMightySearchMainContentCharacteristic";
-import { AllMightySearchCharacteristicResultTypes } from "../../../hooks/useGetPaginatedTranslationCharacteristic";
 import { useParams } from "react-router-dom";
 import useUpdateCharacteristicTranslation from "../../../../../../hooks/Patching/Translation/useUpdateCharacteristicTranslation";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
+import { AllMightySearchCharacteristicResultTypes } from "../../../hooks/useGetPaginatedTranslationCharacteristic";
+import { TempCharacteristicTypes } from "./AllMightySearchMainContentCharacteristic";
+import { toast } from "sonner";
+import { toastErrorStyles } from "@/components/shared/toastStyles";
 
 type EditingCharacteristicFormTypes = {
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
@@ -36,7 +38,7 @@ export function EditingCharacteristicForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentText?.trim().length) {
-      console.error("Can not edit an empty characteristic");
+      toast("Поле пусто", toastErrorStyles);
       return;
     }
 
@@ -82,16 +84,18 @@ export function EditingCharacteristicForm({
     <div
       className={`${currentCategory === "characteristic" ? "" : "hidden"} ${
         startEditing ? "" : "hidden"
-      } h-full flex flex-col gap-[1rem]`}
+      } h-full flex flex-col gap-[5px]`}
     >
-      <form className="flex gap-[1rem] p-[.5rem]" onSubmit={handleSubmit}>
+      <form className="flex gap-[5px] p-[5px]" onSubmit={handleSubmit}>
         <PlotfieldInput
           value={currentText}
           onChange={(e) => setCurrentText(e.target.value)}
           className="border-[1px]"
           placeholder="Характеристика"
         />
-        <PlotfieldButton className="w-full bg-primary-darker hover:bg-primary max-w-[15rem]">Изменить</PlotfieldButton>
+        <Button className="w-full justify-center text-white text-[20px] bg-brand-gradient hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] transition-all max-w-[150px]">
+          Изменить
+        </Button>
       </form>
     </div>
   );

@@ -38,6 +38,7 @@ export default function AllMightySearch({ setShowAllMightySearch, showAllMightyS
       {showAllMightySearch ? (
         <section className={`flex w-full h-[calc(100vh-23px)] bg-secondary rounded-md relative`}>
           <AllMightySearchSidebar
+            setShowAllMightySearch={setShowAllMightySearch}
             setCurrentCategory={setCurrentCategory}
             setShowContent={setShowContent}
             currentCategory={currentCategory}

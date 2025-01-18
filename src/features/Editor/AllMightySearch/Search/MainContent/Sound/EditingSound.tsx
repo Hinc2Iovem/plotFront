@@ -1,11 +1,13 @@
+import { toastErrorStyles } from "@/components/shared/toastStyles";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import useUpdateSoundText from "../../../../PlotField/hooks/Sound/useUpdateSoundText";
-import { TempSoundTypes } from "./AllMightySearchMainContentSound";
-import { AllMightySearchSoundResultTypes } from "../../../hooks/useGetPaginatedSounds";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import useUpdateSoundText from "../../../../PlotField/hooks/Sound/useUpdateSoundText";
+import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
+import { AllMightySearchSoundResultTypes } from "../../../hooks/useGetPaginatedSounds";
+import { TempSoundTypes } from "./AllMightySearchMainContentSound";
 
 type EditingSoundFormTypes = {
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
@@ -32,7 +34,7 @@ export function EditingSoundForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentText?.trim().length) {
-      console.error("Can not edit an empty sound");
+      toast("Поле пусто", toastErrorStyles);
       return;
     }
 
@@ -60,16 +62,18 @@ export function EditingSoundForm({
     <div
       className={`${currentCategory === "sound" ? "" : "hidden"} ${
         startEditing ? "" : "hidden"
-      } h-full flex flex-col gap-[1rem]`}
+      } h-full flex flex-col gap-[10px]`}
     >
-      <form className="flex gap-[1rem] p-[.5rem]" onSubmit={handleSubmit}>
+      <form className="flex gap-[5px] p-[5px]" onSubmit={handleSubmit}>
         <PlotfieldInput
           value={currentText}
           onChange={(e) => setCurrentText(e.target.value)}
           className="border-[1px]"
           placeholder="Звук"
         />
-        <PlotfieldButton className="w-full bg-primary-darker hover:bg-primary max-w-[15rem]">Изменить</PlotfieldButton>
+        <Button className="w-full justify-center text-white text-[20px] bg-brand-gradient hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] transition-all max-w-[150px]">
+          Изменить
+        </Button>
       </form>
     </div>
   );

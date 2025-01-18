@@ -1,16 +1,16 @@
+import { Button } from "@/components/ui/button";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import useDeleteCharacteristic from "../../../../../../hooks/Deleting/Characteristic/useDeleteCharacteristic";
 import useGetAllCharacteristicsByStoryId from "../../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
-import { useInView } from "react-intersection-observer";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { TranslationCharacterCharacteristicTypes } from "../../../../../../types/Additional/TranslationTypes";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import useGetPaginatedTranslationCharacteristic, {
   AllMightySearchCharacteristicResultTypes,
 } from "../../../hooks/useGetPaginatedTranslationCharacteristic";
-import useDeleteCharacteristic from "../../../../../../hooks/Deleting/Characteristic/useDeleteCharacteristic";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
+import LoadMoreButton from "../shared/LoadMoreButton";
 import { EditingCharacteristicForm } from "./EditingCharacteristic";
 
 type AllMightySearchMainContentCharacteristicTypes = {
@@ -35,7 +35,6 @@ export default function AllMightySearchMainContentCharacteristic({
   setNewElement,
 }: AllMightySearchMainContentCharacteristicTypes) {
   const { storyId } = useParams();
-  const { ref, inView } = useInView();
   const [currentPage, setCurrentPage] = useState(1);
 
   const {
@@ -44,7 +43,6 @@ export default function AllMightySearchMainContentCharacteristic({
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-    error,
   } = useGetPaginatedTranslationCharacteristic({
     language: "russian",
     limit: LIMIT,
@@ -140,29 +138,14 @@ export default function AllMightySearchMainContentCharacteristic({
     }
   }, [newElement]);
 
-  useEffect(() => {
-    if (inView) {
-      if (hasNextPage) {
-        setCurrentPage((prev) => prev + 1);
-        fetchNextPage();
-      }
-    }
-  }, [inView, hasNextPage, fetchNextPage, currentPage]);
-
-  useEffect(() => {
-    if (status === "error") {
-      console.error("Characteristic, Error: ", error.message);
-    }
-  }, [status, error?.message]);
-
   return (
     <>
       <div
         className={`${currentCategory === "characteristic" ? "" : "hidden"} ${
           startEditing ? "hidden" : ""
-        } h-full flex flex-col gap-[1rem] overflow-auto | containerScroll`}
+        } h-full flex flex-col gap-[10px] overflow-auto | containerScroll`}
       >
-        <div className="flex gap-[1rem] flex-wrap p-[1rem]">
+        <div className="flex gap-[10px] flex-wrap p-[10px]">
           {!debouncedValue?.trim().length
             ? allPaginatedResults?.map((p) =>
                 p?.results?.map((pr) => (
@@ -203,27 +186,16 @@ export default function AllMightySearchMainContentCharacteristic({
             : null}
         </div>
 
-        <button
-          ref={ref}
-          className={`${debouncedValue?.trim().length ? "hidden" : ""} ${
-            !allPaginatedResults[allPaginatedResults.length - 1]?.next
-              ? "bg-primary-darker text-dark-mid-gray"
-              : "hover:text-text-light  focus-within:text-text-light text-text-light"
-          } text-[1.8rem] mt-[2rem] ml-auto w-fit hover:bg-primary transition-all active:bg-primary-darker rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
-          disabled={!hasNextPage || isFetchingNextPage}
-          onClick={() => {
-            if (hasNextPage) {
-              setCurrentPage((prev) => prev + 1);
-              fetchNextPage();
-            }
-          }}
-        >
-          {!allPaginatedResults[allPaginatedResults.length - 1]?.next
-            ? "Больше характеристик нету"
-            : isFetchingNextPage
-            ? "Загрузка"
-            : "Смотреть Больше"}
-        </button>
+        <LoadMoreButton<AllMightySearchCharacteristicResultTypes>
+          allPaginatedResults={allPaginatedResults}
+          currentPage={currentPage}
+          debouncedValue={debouncedValue}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          setCurrentPage={setCurrentPage}
+          type="характеристик"
+        />
       </div>
 
       <EditingCharacteristicForm
@@ -263,14 +235,12 @@ function ContentCharacteristicButton({
   setAllPaginatedResults,
 }: ContentCharacteristicButtonTypes) {
   const { storyId } = useParams();
-  const [suggestiveModal, setSuggestiveModal] = useState(false);
+
   const removeCharacteristic = useDeleteCharacteristic({
     characteristicId,
     currentLanguage: "russian",
     storyId: storyId || "",
   });
-
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleRemove = ({ characteristicId }: { characteristicId: string }) => {
     setAllPaginatedResults((prev) =>
@@ -285,27 +255,16 @@ function ContentCharacteristicButton({
     removeCharacteristic.mutate();
   };
 
-  useOutOfModal({ setShowModal: setSuggestiveModal, showModal: suggestiveModal, modalRef });
-
   return (
-    <div ref={modalRef} className="relative flex-grow min-w-[12rem]">
-      <PlotfieldButton
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setSuggestiveModal((prev) => !prev);
-        }}
-        className="text-start w-full bg-primary-darker text-[1.5rem] p-[1rem]"
-      >
-        {characteristicText}
-      </PlotfieldButton>
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <Button className="text-text flex-grow min-w-[75px] bg-accent text-[15px] p-[10px]">
+          {characteristicText}
+        </Button>
+      </ContextMenuTrigger>
 
-      <div
-        className={`${
-          suggestiveModal ? "" : "hidden"
-        } flex flex-col gap-[1rem] bg-secondary p-[1rem] rounded-md shadow-sm shadow-dark-mid-gray absolute top-[4.5rem] w-fit right-[0rem] z-[10] `}
-      >
-        <PlotfieldButton
-          className={`bg-secondary text-[1.7rem]`}
+      <ContextMenuContent>
+        <ContextMenuItem
           onClick={() => {
             setStartEditing(true);
             setEditingCharacteristic({
@@ -316,11 +275,11 @@ function ContentCharacteristicButton({
           }}
         >
           Изменить
-        </PlotfieldButton>
-        <PlotfieldButton className={`bg-secondary text-[1.7rem]`} onClick={() => handleRemove({ characteristicId })}>
+        </ContextMenuItem>
+        <ContextMenuItem className={``} onClick={() => handleRemove({ characteristicId })}>
           Удалить
-        </PlotfieldButton>
-      </div>
-    </div>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }

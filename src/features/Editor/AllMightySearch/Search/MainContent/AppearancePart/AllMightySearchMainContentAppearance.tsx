@@ -1,23 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useInView } from "react-intersection-observer";
+import { Button } from "@/components/ui/button";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { appearancePartColors } from "../../../../../../const/APPEARACE_PARTS";
+import useDeleteAppearancePart from "../../../../../../hooks/Deleting/Appearance/useDeleteAppearancePart";
 import useGetAppearancePartById from "../../../../../../hooks/Fetching/AppearancePart/useGetAppearancePartById";
 import useGetTranslationAppearancePartsByStoryId from "../../../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationAppearancePartTypes } from "../../../../../../types/Additional/TranslationTypes";
-import { AppearancePartVariationRusTypes } from "../../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import PreviewImage from "../../../../../../ui/shared/PreviewImage";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import useGetPaginatedTranslationAppearancePart, {
   AllMightySearchAppearancePartResultTypes,
 } from "../../../hooks/useGetPaginatedTranslationAppearancePart";
+import LoadMoreButton from "../shared/LoadMoreButton";
 import { EditingAppearancePartForm } from "./EditingAppearancePart";
-import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
-import useDeleteAppearancePart from "../../../../../../hooks/Deleting/Appearance/useDeleteAppearancePart";
+import AppearanceItem from "./AppearanceItem";
 
 type AllMightySearchMainContentAppearanceTypes = {
   debouncedValue: string;
@@ -55,7 +52,6 @@ export default function AllMightySearchMainContentAppearance({
   type,
 }: AllMightySearchMainContentAppearanceTypes) {
   const { storyId } = useParams();
-  const { ref, inView } = useInView();
   const [currentPage, setCurrentPage] = useState(1);
 
   const {
@@ -173,15 +169,6 @@ export default function AllMightySearchMainContentAppearance({
   }, [newElement]);
 
   useEffect(() => {
-    if (inView) {
-      if (hasNextPage) {
-        setCurrentPage((prev) => prev + 1);
-        fetchNextPage();
-      }
-    }
-  }, [inView, hasNextPage, fetchNextPage, currentPage]);
-
-  useEffect(() => {
     if (status === "error") {
       console.error("AppearancePart, Error: ", error.message);
     }
@@ -192,9 +179,9 @@ export default function AllMightySearchMainContentAppearance({
       <div
         className={`${currentCategory === "appearance" ? "" : "hidden"} ${
           startEditing ? "hidden" : ""
-        } h-full flex flex-col gap-[1rem] overflow-auto | containerScroll`}
+        } h-full flex flex-col gap-[10px] overflow-auto | containerScroll`}
       >
-        <div className="flex gap-[1rem] flex-wrap p-[1rem] justify-center">
+        <div className="flex gap-[10px] flex-wrap p-[10px] justify-center">
           {!debouncedValue?.trim().length
             ? allPaginatedResults?.map((p) =>
                 p?.results?.map((pr) => (
@@ -243,27 +230,16 @@ export default function AllMightySearchMainContentAppearance({
             : null}
         </div>
 
-        <button
-          ref={ref}
-          className={`${debouncedValue?.trim().length ? "hidden" : ""} ${
-            !allPaginatedResults[allPaginatedResults.length - 1]?.next
-              ? "bg-primary-darker text-dark-mid-gray"
-              : "hover:text-text-light  focus-within:text-text-light text-text-light"
-          } text-[1.8rem] mt-[2rem] ml-auto w-fit hover:bg-primary transition-all active:bg-primary-darker rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
-          disabled={!hasNextPage || isFetchingNextPage}
-          onClick={() => {
-            if (hasNextPage) {
-              setCurrentPage((prev) => prev + 1);
-              fetchNextPage();
-            }
-          }}
-        >
-          {!allPaginatedResults[allPaginatedResults.length - 1]?.next
-            ? "Больше внешнего вида нету"
-            : isFetchingNextPage
-            ? "Загрузка"
-            : "Смотреть Больше"}
-        </button>
+        <LoadMoreButton<AllMightySearchAppearancePartResultTypes>
+          allPaginatedResults={allPaginatedResults}
+          currentPage={currentPage}
+          debouncedValue={debouncedValue}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          setCurrentPage={setCurrentPage}
+          type="одежды"
+        />
       </div>
 
       <EditingAppearancePartForm
@@ -321,24 +297,8 @@ function ContentAppearanceBlock({
     characterId: currentCharacterId,
     language: "russian",
   });
-  const [typeToRus, setTypeToRus] = useState<AppearancePartVariationRusTypes>(
-    type === "accessory"
-      ? "украшение"
-      : type === "art"
-      ? "татуировка"
-      : type === "body"
-      ? "тело"
-      : type === "dress"
-      ? "внешний вид"
-      : type === "hair"
-      ? "волосы"
-      : type === "temp"
-      ? "остальное"
-      : "кожа"
-  );
+
   const [appearanceImg, setAppearanceImg] = useState(appearancePart?.img);
-  const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(null);
-  const [suggestiveModal, setSuggestiveModal] = useState(false);
 
   useEffect(() => {
     if (characterId?.trim().length) {
@@ -386,8 +346,6 @@ function ContentAppearanceBlock({
 
   const removeAppearance = useDeleteAppearancePart({ language: "russian", storyId: storyId || "" });
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
   const handleRemove = ({ appearanceId }: { appearanceId: string }) => {
     setAllPaginatedResults((prev) =>
       prev.map((page) => ({
@@ -417,121 +375,27 @@ function ContentAppearanceBlock({
     }
   }, [updatedAppearancePart, appearanceImg, appearanceId]);
 
-  useEffect(() => {
-    if (type) {
-      setAppearanceType(type);
-      setTypeToRus(
-        type === "accessory"
-          ? "украшение"
-          : type === "art"
-          ? "татуировка"
-          : type === "body"
-          ? "тело"
-          : type === "dress"
-          ? "внешний вид"
-          : type === "hair"
-          ? "волосы"
-          : type === "temp"
-          ? "остальное"
-          : "кожа"
-      );
-    }
-  }, [type]);
-
-  useEffect(() => {
-    if (
-      updatedAppearancePart &&
-      updatedAppearancePart.appearancePartId === appearanceId &&
-      updatedAppearancePart.type !== type
-    ) {
-      setAppearanceType(updatedAppearancePart.type);
-      setTypeToRus(
-        updatedAppearancePart.type === "accessory"
-          ? "украшение"
-          : updatedAppearancePart.type === "art"
-          ? "татуировка"
-          : updatedAppearancePart.type === "body"
-          ? "тело"
-          : updatedAppearancePart.type === "dress"
-          ? "внешний вид"
-          : updatedAppearancePart.type === "hair"
-          ? "волосы"
-          : updatedAppearancePart.type === "temp"
-          ? "остальное"
-          : "кожа"
-      );
-    }
-  }, [updatedAppearancePart, appearanceId, type]);
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  const uploadImg = useUpdateImg({
-    path: "/appearanceParts",
-    preview: imagePreview,
-    id: appearanceId,
-  });
-
-  useEffect(() => {
-    if (imagePreview && isMounted) {
-      uploadImg.mutate({});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imagePreview, isMounted]);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useOutOfModal({ setShowModal: setSuggestiveModal, showModal: suggestiveModal, modalRef });
-
   return (
-    <div
-      ref={modalRef}
-      className="relative bg-primary-darker h-[35rem] flex-grow min-w-[20rem] md:max-w-[35rem] flex flex-col gap-[1rem] p-[.5rem]"
-    >
-      {appearanceImg ? (
-        <img
-          src={appearanceImg}
-          alt={appearanceText}
-          className="w-full h-[50%] absolute object-contain left-1/2 -translate-x-1/2 -translate-y-1/2 top-1/2"
-        />
-      ) : (
-        <PreviewImage
-          imagePreview={imagePreview}
-          setPreview={setImagePreview}
-          imgClasses="w-full h-[50%] object-contain -translate-y-1/2 top-1/2 absolute"
-        />
-      )}
+    <div className="relative h-[350px] flex-grow min-w-[200px] bg-accent rounded-md md:max-w-[350px] flex flex-col gap-[10px]">
+      <AppearanceItem
+        appearanceId={appearanceId}
+        appearanceText={appearanceText}
+        characterName={characterName}
+        setAppearanceType={setAppearanceType}
+        type={type}
+        updatedAppearancePart={updatedAppearancePart}
+        appearanceImg={appearanceImg}
+      />
 
-      <div className="absolute top-[.5rem] right-[.5rem] flex flex-col gap-[.5rem] p-[.5rem] text-right w-[calc(100%-1rem)]">
-        <h3 className="text-[1.7rem] text-text-light bg-primary rounded-md px-[1rem] py-[.5rem]">{characterName}</h3>
-        <p
-          className={`text-[1.5rem] text-text-light ${appearancePartColors[typeToRus]} rounded-md w-fit ml-auto px-[1rem] py-[.5rem]`}
-        >
-          {typeToRus}
-        </p>
-      </div>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <Button className="text-text min-w-[75px] bg-accent text-[20px] p-[10px] hover:opacity-80 transition-all">
+            {appearanceText}
+          </Button>
+        </ContextMenuTrigger>
 
-      <div className="relative mt-auto ">
-        <h2
-          onContextMenu={(e) => {
-            e.preventDefault();
-            setSuggestiveModal((prev) => !prev);
-          }}
-          className={`${
-            suggestiveModal ? "bg-secondary" : "bg-primary"
-          } text-[1.8rem] text-text-light rounded-md px-[1rem] py-[.5rem] transition-all hover:bg-secondary`}
-        >
-          {currentAppearanceText}
-        </h2>
-
-        <div
-          className={`${
-            suggestiveModal ? "" : "hidden"
-          } flex flex-col gap-[1rem] bg-secondary p-[1rem] rounded-md shadow-sm shadow-dark-mid-gray absolute top-[4rem] w-fit right-[0rem] z-[10] `}
-        >
-          <PlotfieldButton
-            className={`bg-secondary text-[1.7rem]`}
+        <ContextMenuContent>
+          <ContextMenuItem
             onClick={() => {
               setStartEditing(true);
               setEditingAppearance({
@@ -546,12 +410,10 @@ function ContentAppearanceBlock({
             }}
           >
             Изменить
-          </PlotfieldButton>
-          <PlotfieldButton className={`bg-secondary text-[1.7rem]`} onClick={() => handleRemove({ appearanceId })}>
-            Удалить
-          </PlotfieldButton>
-        </div>
-      </div>
+          </ContextMenuItem>
+          <ContextMenuItem onClick={() => handleRemove({ appearanceId })}>Удалить</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </div>
   );
 }

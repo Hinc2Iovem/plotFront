@@ -1,13 +1,13 @@
+import { Button } from "@/components/ui/button";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useInView } from "react-intersection-observer";
-import { useEffect, useState, useMemo, useRef } from "react";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
-import useGetAllSoundByStoryId from "../../../../PlotField/hooks/Sound/useGetAllSoundsByStoryId";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import useDeleteSound from "../../../../PlotField/hooks/Sound/useDeleteSound";
-import useGetPaginatedSound, { AllMightySearchSoundResultTypes } from "../../../hooks/useGetPaginatedSounds";
-import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { SoundTypes } from "../../../../../../types/StoryData/Sound/SoundTypes";
+import useDeleteSound from "../../../../PlotField/hooks/Sound/useDeleteSound";
+import useGetAllSoundByStoryId from "../../../../PlotField/hooks/Sound/useGetAllSoundsByStoryId";
+import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
+import useGetPaginatedSound, { AllMightySearchSoundResultTypes } from "../../../hooks/useGetPaginatedSounds";
+import LoadMoreButton from "../shared/LoadMoreButton";
 import { EditingSoundForm } from "./EditingSound";
 
 type AllMightySearchMainContentSoundTypes = {
@@ -31,7 +31,6 @@ export default function AllMightySearchMainContentSound({
   setNewElement,
 }: AllMightySearchMainContentSoundTypes) {
   const { storyId } = useParams();
-  const { ref, inView } = useInView();
   const [currentPage, setCurrentPage] = useState(1);
 
   const [allPaginatedResults, setAllPaginatedResults] = useState<AllMightySearchSoundResultTypes[]>([]);
@@ -99,15 +98,6 @@ export default function AllMightySearchMainContentSound({
   }, [newElement]);
 
   useEffect(() => {
-    if (inView) {
-      if (hasNextPage) {
-        setCurrentPage((prev) => prev + 1);
-        fetchNextPage();
-      }
-    }
-  }, [inView, hasNextPage, fetchNextPage, currentPage]);
-
-  useEffect(() => {
     if (status === "error") {
       console.error("Sound, Error: ", error.message);
     }
@@ -118,9 +108,9 @@ export default function AllMightySearchMainContentSound({
       <div
         className={`${currentCategory === "sound" ? "" : "hidden"} ${
           startEditing ? "hidden" : ""
-        } h-full flex flex-col gap-[1rem] overflow-auto | containerScroll`}
+        } h-full flex flex-col gap-[10px] overflow-auto | containerScroll`}
       >
-        <div className="flex gap-[1rem] flex-wrap p-[1rem]">
+        <div className="flex gap-[10px] flex-wrap p-[10px]">
           {!debouncedValue?.trim().length
             ? allPaginatedResults?.map((p) =>
                 p?.results?.map((pr) => (
@@ -159,27 +149,16 @@ export default function AllMightySearchMainContentSound({
             : null}
         </div>
 
-        <button
-          ref={ref}
-          className={`${debouncedValue?.trim().length ? "hidden" : ""} ${
-            !allPaginatedResults[allPaginatedResults.length - 1]?.next
-              ? "bg-primary-darker text-dark-mid-gray"
-              : "hover:text-text-light  focus-within:text-text-light text-text-light"
-          } text-[1.8rem] mt-[2rem] ml-auto w-fit hover:bg-primary transition-all active:bg-primary-darker rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
-          disabled={!hasNextPage || isFetchingNextPage}
-          onClick={() => {
-            if (hasNextPage) {
-              setCurrentPage((prev) => prev + 1);
-              fetchNextPage();
-            }
-          }}
-        >
-          {!allPaginatedResults[allPaginatedResults.length - 1]?.next
-            ? "Больше звуков нету"
-            : isFetchingNextPage
-            ? "Загрузка"
-            : "Смотреть Больше"}
-        </button>
+        <LoadMoreButton<AllMightySearchSoundResultTypes>
+          allPaginatedResults={allPaginatedResults}
+          currentPage={currentPage}
+          debouncedValue={debouncedValue}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          setCurrentPage={setCurrentPage}
+          type="звуков"
+        />
       </div>
 
       <EditingSoundForm
@@ -217,10 +196,7 @@ function ContentSoundButton({
   setNewElement,
   setAllPaginatedResults,
 }: ContentSoundButtonTypes) {
-  const [suggestiveModal, setSuggestiveModal] = useState(false);
   const removeSound = useDeleteSound({ storyId: storyId || "", soundId });
-
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleRemove = ({ soundId }: { soundId: string }) => {
     setAllPaginatedResults((prev) =>
@@ -235,27 +211,14 @@ function ContentSoundButton({
     removeSound.mutate();
   };
 
-  useOutOfModal({ setShowModal: setSuggestiveModal, showModal: suggestiveModal, modalRef });
-
   return (
-    <div ref={modalRef} className="relative flex-grow min-w-[12rem]">
-      <PlotfieldButton
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setSuggestiveModal((prev) => !prev);
-        }}
-        className="text-start w-full bg-primary-darker text-[1.5rem] p-[1rem]"
-      >
-        {soundText}
-      </PlotfieldButton>
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <Button className="text-text flex-grow min-w-[75px] bg-accent text-[15px] p-[10px]">{soundText}</Button>
+      </ContextMenuTrigger>
 
-      <div
-        className={`${
-          suggestiveModal ? "" : "hidden"
-        } flex flex-col gap-[1rem] bg-secondary p-[1rem] rounded-md shadow-sm shadow-dark-mid-gray absolute top-[4.5rem] w-fit right-[0rem] z-[10] `}
-      >
-        <PlotfieldButton
-          className={`bg-secondary text-[1.7rem]`}
+      <ContextMenuContent>
+        <ContextMenuItem
           onClick={() => {
             setStartEditing(true);
             setEditingSound({
@@ -265,11 +228,9 @@ function ContentSoundButton({
           }}
         >
           Изменить
-        </PlotfieldButton>
-        <PlotfieldButton className={`bg-secondary text-[1.7rem]`} onClick={() => handleRemove({ soundId })}>
-          Удалить
-        </PlotfieldButton>
-      </div>
-    </div>
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => handleRemove({ soundId })}>Удалить</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }

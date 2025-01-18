@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useInView } from "react-intersection-observer";
+import { Button } from "@/components/ui/button";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { MusicTypes } from "../../../../../../types/StoryData/Music/MusicTypes";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useDeleteMusic from "../../../../PlotField/hooks/Music/useDeleteMusic";
 import useGetAllMusicByStoryId from "../../../../PlotField/hooks/Music/useGetAllMusicByStoryId";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import useGetPaginatedMusic, { AllMightySearchMusicResultTypes } from "../../../hooks/useGetPaginatedMusic";
+import LoadMoreButton from "../shared/LoadMoreButton";
 import { EditingMusicForm } from "./EditingMusic";
 
 type AllMightySearchMainContentMusicTypes = {
@@ -31,7 +31,6 @@ export default function AllMightySearchMainContentMusic({
   setNewElement,
 }: AllMightySearchMainContentMusicTypes) {
   const { storyId } = useParams();
-  const { ref, inView } = useInView();
   const [currentPage, setCurrentPage] = useState(1);
 
   const [allPaginatedResults, setAllPaginatedResults] = useState<AllMightySearchMusicResultTypes[]>([]);
@@ -99,15 +98,6 @@ export default function AllMightySearchMainContentMusic({
   }, [newElement]);
 
   useEffect(() => {
-    if (inView) {
-      if (hasNextPage) {
-        setCurrentPage((prev) => prev + 1);
-        fetchNextPage();
-      }
-    }
-  }, [inView, hasNextPage, fetchNextPage, currentPage]);
-
-  useEffect(() => {
     if (status === "error") {
       console.error("Music, Error: ", error.message);
     }
@@ -118,9 +108,9 @@ export default function AllMightySearchMainContentMusic({
       <div
         className={`${currentCategory === "music" ? "" : "hidden"} ${
           startEditing ? "hidden" : ""
-        } h-full flex flex-col gap-[1rem] overflow-auto | containerScroll`}
+        } h-full flex flex-col gap-[10px] overflow-auto | containerScroll`}
       >
-        <div className="flex gap-[1rem] flex-wrap p-[1rem]">
+        <div className="flex gap-[10px] flex-wrap p-[10px]">
           {!debouncedValue?.trim().length
             ? allPaginatedResults?.map((p) =>
                 p?.results?.map((pr) => (
@@ -159,27 +149,16 @@ export default function AllMightySearchMainContentMusic({
             : null}
         </div>
 
-        <button
-          ref={ref}
-          className={`${debouncedValue?.trim().length ? "hidden" : ""} ${
-            !allPaginatedResults[allPaginatedResults.length - 1]?.next
-              ? "bg-primary-darker text-dark-mid-gray"
-              : "hover:text-text-light  focus-within:text-text-light text-text-light"
-          } text-[1.8rem] mt-[2rem] ml-auto w-fit hover:bg-primary transition-all active:bg-primary-darker rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
-          disabled={!hasNextPage || isFetchingNextPage}
-          onClick={() => {
-            if (hasNextPage) {
-              setCurrentPage((prev) => prev + 1);
-              fetchNextPage();
-            }
-          }}
-        >
-          {!allPaginatedResults[allPaginatedResults.length - 1]?.next
-            ? "Больше музыки нету"
-            : isFetchingNextPage
-            ? "Загрузка"
-            : "Смотреть Больше"}
-        </button>
+        <LoadMoreButton<AllMightySearchMusicResultTypes>
+          allPaginatedResults={allPaginatedResults}
+          currentPage={currentPage}
+          debouncedValue={debouncedValue}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          setCurrentPage={setCurrentPage}
+          type="музыки"
+        />
       </div>
 
       <EditingMusicForm
@@ -217,10 +196,7 @@ function ContentMusicButton({
   setNewElement,
   setAllPaginatedResults,
 }: ContentMusicButtonTypes) {
-  const [suggestiveModal, setSuggestiveModal] = useState(false);
   const removeMusic = useDeleteMusic({ storyId: storyId || "", musicId });
-
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleRemove = ({ musicId }: { musicId: string }) => {
     setAllPaginatedResults((prev) =>
@@ -235,27 +211,14 @@ function ContentMusicButton({
     removeMusic.mutate();
   };
 
-  useOutOfModal({ setShowModal: setSuggestiveModal, showModal: suggestiveModal, modalRef });
-
   return (
-    <div ref={modalRef} className="relative flex-grow min-w-[12rem]">
-      <PlotfieldButton
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setSuggestiveModal((prev) => !prev);
-        }}
-        className="text-start w-full bg-primary-darker text-[1.5rem] p-[1rem]"
-      >
-        {musicText}
-      </PlotfieldButton>
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <Button className="text-text flex-grow min-w-[75px] bg-accent text-[15px] p-[10px]">{musicText}</Button>
+      </ContextMenuTrigger>
 
-      <div
-        className={`${
-          suggestiveModal ? "" : "hidden"
-        } flex flex-col gap-[1rem] bg-secondary p-[1rem] rounded-md shadow-sm shadow-dark-mid-gray absolute top-[4.5rem] w-fit right-[0rem] z-[10] `}
-      >
-        <PlotfieldButton
-          className={`bg-secondary text-[1.7rem]`}
+      <ContextMenuContent>
+        <ContextMenuItem
           onClick={() => {
             setStartEditing(true);
             setEditingMusic({
@@ -265,11 +228,9 @@ function ContentMusicButton({
           }}
         >
           Изменить
-        </PlotfieldButton>
-        <PlotfieldButton className={`bg-secondary text-[1.7rem]`} onClick={() => handleRemove({ musicId })}>
-          Удалить
-        </PlotfieldButton>
-      </div>
-    </div>
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => handleRemove({ musicId })}>Удалить</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }

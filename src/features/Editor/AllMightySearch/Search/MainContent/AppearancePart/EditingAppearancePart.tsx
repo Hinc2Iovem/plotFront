@@ -1,18 +1,16 @@
+import { Button } from "@/components/ui/button";
+import StoryAttributesSelectAppearanceType from "@/features/StorySinglePage/StoryAttributesSection/shared/StoryAttributesSelectAppearanceType";
 import { useEffect, useRef, useState } from "react";
-import { AllAppearancePartRusVariations, appearancePartColors } from "../../../../../../const/APPEARACE_PARTS";
+import { appearancePartColors } from "../../../../../../const/APPEARACE_PARTS";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useUpdateAppearancePartTranslation from "../../../../../../hooks/Patching/Translation/useUpdateAppearancePartTranslation";
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { AppearancePartVariationRusTypes } from "../../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
-import AsideScrollable from "../../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PreviewImage from "../../../../../../ui/shared/PreviewImage";
-import PlotfieldCharacterPromptMain, {
-  ExposedMethods,
-} from "../../../../PlotField/PlotFieldMain/Commands/Prompts/Characters/PlotfieldCharacterPromptMain";
+import PlotfieldCharacterPromptMain from "../../../../PlotField/PlotFieldMain/Commands/Prompts/Characters/PlotfieldCharacterPromptMain";
 import { CharacterValueTypes } from "../../../../PlotField/PlotFieldMain/Commands/Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { AllMightySearchAppearancePartResultTypes } from "../../../hooks/useGetPaginatedTranslationAppearancePart";
@@ -192,11 +190,14 @@ export function EditingAppearancePartForm({
     <div
       className={`${currentCategory === "appearance" ? "" : "hidden"} ${
         startEditing ? "" : "hidden"
-      } h-full flex flex-col gap-[1rem]`}
+      } h-full flex flex-col gap-[10px]`}
     >
-      <form className="flex gap-[1rem] flex-col p-[.5rem] items-center" onSubmit={handleSubmit}>
-        <div className="flex flex-wrap gap-[.5rem] flex-col w-[40rem] p-[.5rem] shadow-md rounded-md bg-primary-darker">
-          <div className="relative w-full h-[20rem] bg-secondary rounded-md">
+      <form
+        className="flex gap-[10px] flex-col p-[5px] items-center border-border border-[2px] rounded-md ml-[5px]"
+        onSubmit={handleSubmit}
+      >
+        <div className="flex flex-wrap gap-[5px] flex-col w-full p-[5px] shadow-md rounded-md">
+          <div className="relative w-full h-[200px] bg-accent rounded-md">
             <PreviewImage
               imagePreview={imagePreview}
               setPreview={setImagePreview}
@@ -207,101 +208,27 @@ export function EditingAppearancePartForm({
           <PlotfieldInput
             value={currentText}
             onChange={(e) => setCurrentText(e.target.value)}
-            className="text-[2rem] min-w-[20rem] flex-grow w-auto"
+            className="text-[20px] min-w-[200px] flex-grow w-auto"
             placeholder="Внешний вид"
           />
 
           <AppearanceCharacterField setCharacterValue={setCharacterValue} characterValue={characterValue} />
-          <div className="flex-grow flex items-center gap-[1rem] p-[.5rem]">
-            <div className="relative min-w-[20rem] flex-grow">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowAllTypes((prev) => !prev);
-                }}
-                className={`${appearancePartColors[typeToRus]} text-[1.7rem] w-full min-w-fit text-text-light outline-gray-600 transition-all rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
-              >
-                {typeToRus}
-              </button>
+          <div className="flex-grow flex items-center gap-[10px] p-[5px]">
+            <StoryAttributesSelectAppearanceType
+              filterOrForm="form"
+              currentAppearanceType={currentType}
+              setCurrentAppearanceType={setCurrentType}
+              defaultTrigger={false}
+              triggerClasses={appearancePartColors[typeToRus]}
+            />
 
-              <AsideScrollable
-                ref={modalRef}
-                className={`${showAllTypes ? "" : "hidden"} translate-y-[.5rem] min-w-fit right-0`}
-              >
-                {AllAppearancePartRusVariations.map((rv) => (
-                  <AppearanceAsideButton
-                    key={rv}
-                    typeRus={rv}
-                    currentTypeRus={typeToRus}
-                    setShowAllTypes={setShowAllTypes}
-                    setCurrentType={setCurrentType}
-                    setTypeToRus={setTypeToRus}
-                  />
-                ))}
-              </AsideScrollable>
-            </div>
-
-            <PlotfieldButton className="min-w-[15rem] bg-secondary self-end hover:bg-primary text-[1.9rem]">
+            <Button className="min-w-[150px] justify-center hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] flex-grow bg-brand-gradient text-white self-end text-[20px] transition-all">
               Изменить
-            </PlotfieldButton>
+            </Button>
           </div>
         </div>
       </form>
     </div>
-  );
-}
-
-type AppearanceAsideButtonTypes = {
-  typeRus: AppearancePartVariationRusTypes;
-  currentTypeRus: AppearancePartVariationRusTypes;
-  setShowAllTypes: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrentType: React.Dispatch<React.SetStateAction<TranslationTextFieldNameAppearancePartsTypes | "temp">>;
-  setTypeToRus: React.Dispatch<React.SetStateAction<AppearancePartVariationRusTypes>>;
-};
-
-export function AppearanceAsideButton({
-  typeRus,
-  currentTypeRus,
-  setCurrentType,
-  setShowAllTypes,
-  setTypeToRus,
-}: AppearanceAsideButtonTypes) {
-  const [backgroundColorOnHover, setBackgroundColorOnHover] = useState("bg-secondary");
-
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        const typeToEng: TranslationTextFieldNameAppearancePartsTypes | "temp" =
-          typeRus === "внешний вид"
-            ? "dress"
-            : typeRus === "волосы"
-            ? "hair"
-            : typeRus === "кожа"
-            ? "skin"
-            : typeRus === "остальное"
-            ? "temp"
-            : typeRus === "татуировка"
-            ? "art"
-            : typeRus === "тело"
-            ? "body"
-            : "accessory";
-        setShowAllTypes(false);
-        setCurrentType(typeToEng);
-        setTypeToRus(typeRus);
-      }}
-      onMouseOver={() => setBackgroundColorOnHover(appearancePartColors[typeRus])}
-      onFocus={() => setBackgroundColorOnHover(appearancePartColors[typeRus])}
-      onBlur={() => setBackgroundColorOnHover("be-secondary")}
-      onMouseLeave={() => setBackgroundColorOnHover("bg-secondary")}
-      className={`${
-        currentTypeRus === typeRus ? "hidden" : ""
-      } text-text-light capitalize text-[1.5rem] outline-gray-600 w-full ${backgroundColorOnHover} px-[.5rem] py-[.5rem] rounded-md transition-all focus-within:border-[2px] focus-within:border-white
-    hover:${appearancePartColors[typeRus]} focus-within:${appearancePartColors[typeRus]}`}
-    >
-      {typeRus}
-    </button>
   );
 }
 
@@ -311,74 +238,15 @@ type AppearanceCharacterFieldTypes = {
 };
 
 export function AppearanceCharacterField({ characterValue, setCharacterValue }: AppearanceCharacterFieldTypes) {
-  const [showCharacterModal, setShowCharacterModal] = useState(false);
-
-  const preventClickRef = useRef(false);
-
-  const handleInputClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    // If a double-click has occurred recently, ignore this click
-    if (preventClickRef.current) {
-      return;
-    }
-
-    setShowCharacterModal((prev) => !prev);
-  };
-
-  const inputRef = useRef<ExposedMethods>(null);
-
-  const onBlur = () => {
-    if (inputRef.current) {
-      inputRef.current.updateCharacterNameOnBlur();
-    }
-  };
-
-  const handleInputDoubleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    preventClickRef.current = true;
-
-    setTimeout(() => {
-      preventClickRef.current = false;
-    }, 300);
-
-    setShowCharacterModal(true);
-  };
-
   return (
-    <div className="min-w-[20rem] flex-grow relative flex items-center">
-      <PlotfieldInput
-        onClick={handleInputClick}
-        onDoubleClick={handleInputDoubleClick}
-        value={characterValue.characterName || ""}
-        onBlur={onBlur}
-        onChange={(e) => {
-          setCharacterValue((prev) => ({
-            ...prev,
-            characterName: e.target.value,
-          }));
-          setShowCharacterModal(true);
-        }}
-        placeholder="Персонаж"
-        className="text-[2rem] pr-[4rem]"
-      />
-      {characterValue.imgUrl?.trim().length ? (
-        <img
-          src={characterValue.imgUrl}
-          alt="CharacterImg"
-          className="w-[3.5rem] rounded-md object-contain absolute right-[.2rem]"
-        />
-      ) : null}
-
+    <div className="min-w-[200px] flex-grow relative flex items-center">
       <PlotfieldCharacterPromptMain
         characterName={characterValue.characterName || ""}
         currentCharacterId={characterValue._id || ""}
+        characterValue={characterValue}
         setCharacterValue={setCharacterValue}
-        ref={inputRef}
-        setShowCharacterModal={setShowCharacterModal}
-        showCharacterModal={showCharacterModal}
-        translateAsideValue="translate-y-[10rem]"
+        inputClasses="w-full pr-[35px] text-text md:text-[17px]"
+        imgClasses="w-[30px] object-cover rounded-md right-0 absolute"
       />
     </div>
   );

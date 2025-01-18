@@ -21,6 +21,7 @@ import { fetchAllMightyPaginatedTranslationAchievement } from "../hooks/useGetPa
 import { fetchAllMightyPaginatedTranslationAppearancePart } from "../hooks/useGetPaginatedTranslationAppearancePart";
 import { fetchAllMightyPaginatedTranslationCharacter } from "../hooks/useGetPaginatedTranslationCharacter";
 import { fetchAllMightyPaginatedTranslationCharacteristic } from "../hooks/useGetPaginatedTranslationCharacteristic";
+import NotCategoryButtons from "./NotCategoryButtons";
 
 const AllMightySearchCategories: {
   [key in AllPossibleAllMightySearchCategoriesTypes]: AllPossibleAllMightySearchCategoriesRusTypes;
@@ -42,6 +43,7 @@ type AllMightySearchCategoriesTypes = {
       showSearch: boolean;
     }>
   >;
+  setShowAllMightySearch: React.Dispatch<React.SetStateAction<boolean>>;
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
   showContent: {
     showKeyBinds: boolean;
@@ -54,9 +56,10 @@ export default function AllMightySearchSidebar({
   showContent,
   setCurrentCategory,
   setShowContent,
+  setShowAllMightySearch,
 }: AllMightySearchCategoriesTypes) {
   return (
-    <header className="w-[20%] min-w-fit flex flex-col gap-[10px] justify-between p-[10px] mt-[10px]">
+    <header className="w-[20%] min-w-fit flex flex-col gap-[10px] justify-between p-[10px] pr-0 mt-[10px]">
       <ul className="flex flex-col gap-[10px]">
         {Object.entries(AllMightySearchCategories).map(([key, value]) => (
           <AllMightySearchSidebarCategoryButton
@@ -70,37 +73,12 @@ export default function AllMightySearchSidebar({
         ))}
       </ul>
 
-      <div className="flex flex-col gap-[10px]">
-        <Button
-          onClick={() => {
-            setShowContent(() => ({
-              showKeyBinds: false,
-              showSearch: true,
-            }));
-            setCurrentCategory("" as AllPossibleAllMightySearchCategoriesTypes);
-          }}
-          className={`${
-            showContent.showSearch ? "bg-accent" : "border-border border-[3px]"
-          } text-center text-heading text-[23px] py-[20px] hover:bg-accent focus-within:bg-accent active:scale-[.99] transition-all`}
-        >
-          Поиск
-        </Button>
-
-        <Button
-          onClick={() => {
-            setShowContent(() => ({
-              showKeyBinds: true,
-              showSearch: false,
-            }));
-            setCurrentCategory("" as AllPossibleAllMightySearchCategoriesTypes);
-          }}
-          className={`${
-            showContent.showKeyBinds ? "bg-accent" : "border-border border-[3px]"
-          } text-center text-heading text-[23px] py-[20px] hover:bg-accent focus-within:bg-accent active:scale-[.99] transition-all`}
-        >
-          Бинды
-        </Button>
-      </div>
+      <NotCategoryButtons
+        setCurrentCategory={setCurrentCategory}
+        setShowAllMightySearch={setShowAllMightySearch}
+        setShowContent={setShowContent}
+        showContent={showContent}
+      />
     </header>
   );
 }
@@ -337,9 +315,7 @@ function AllMightySearchSidebarCategoryButton({
         }
       }}
       className={`${
-        valueEng === currentCategory
-          ? "scale-[1.05] bg-accent translate-x-[10px]"
-          : "hover:bg-accent focus-within:bg-accent"
+        valueEng === currentCategory ? "bg-accent translate-x-[10px]" : "hover:bg-accent focus-within:bg-accent"
       } capitalize text-[20px] text-left text-paragraph hover:scale-[1.05] transition-all focus-within:scale-[1.05] focus-within:bg-accent focus-visible:scale-[1] hover:translate-x-[10px] active:translate-x-[10px] focus-within:translate-x-[10px]`}
     >
       {valueRus}

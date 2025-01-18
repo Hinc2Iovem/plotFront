@@ -1,11 +1,13 @@
+import { toastErrorStyles } from "@/components/shared/toastStyles";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import useUpdateMusicText from "../../../../PlotField/hooks/Music/useUpdateMusicText";
-import { TempMusicTypes } from "./AllMightySearchMainContentMusic";
-import { AllMightySearchMusicResultTypes } from "../../../hooks/useGetPaginatedMusic";
-import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
+import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
+import useUpdateMusicText from "../../../../PlotField/hooks/Music/useUpdateMusicText";
+import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
+import { AllMightySearchMusicResultTypes } from "../../../hooks/useGetPaginatedMusic";
+import { TempMusicTypes } from "./AllMightySearchMainContentMusic";
 
 type EditingMusicFormTypes = {
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
@@ -32,7 +34,7 @@ export function EditingMusicForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentText?.trim().length) {
-      console.error("Can not edit an empty music");
+      toast("Поле пусто", toastErrorStyles);
       return;
     }
 
@@ -60,16 +62,18 @@ export function EditingMusicForm({
     <div
       className={`${currentCategory === "music" ? "" : "hidden"} ${
         startEditing ? "" : "hidden"
-      } h-full flex flex-col gap-[1rem]`}
+      } h-full flex flex-col gap-[5px]`}
     >
-      <form className="flex gap-[1rem] p-[.5rem]" onSubmit={handleSubmit}>
+      <form className="flex gap-[5px] p-[5px]" onSubmit={handleSubmit}>
         <PlotfieldInput
           value={currentText}
           onChange={(e) => setCurrentText(e.target.value)}
           className="border-[1px]"
           placeholder="Музыка"
         />
-        <PlotfieldButton className="w-full bg-primary-darker hover:bg-primary max-w-[15rem]">Изменить</PlotfieldButton>
+        <Button className="w-full justify-center text-white text-[20px] bg-brand-gradient hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] transition-all max-w-[150px]">
+          Изменить
+        </Button>
       </form>
     </div>
   );

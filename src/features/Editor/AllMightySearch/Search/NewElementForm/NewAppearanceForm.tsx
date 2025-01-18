@@ -1,17 +1,15 @@
+import { Button } from "@/components/ui/button";
+import StoryAttributesSelectAppearanceType from "@/features/StorySinglePage/StoryAttributesSection/shared/StoryAttributesSelectAppearanceType";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { AllAppearancePartRusVariations, appearancePartColors } from "../../../../../const/APPEARACE_PARTS";
 import useCreateAppearancePartOptimistic from "../../../../../hooks/Posting/AppearancePart/useCreateAppearancePartOptimistic";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationAppearancePartTypes } from "../../../../../types/Additional/TranslationTypes";
-import { AppearancePartVariationRusTypes } from "../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
-import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
-import AsideScrollable from "../../../../../ui/Aside/AsideScrollable/AsideScrollable";
-import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
 import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
 import PreviewImage from "../../../../../ui/shared/PreviewImage";
-import { AppearanceAsideButton, AppearanceCharacterField } from "../MainContent/AppearancePart/EditingAppearancePart";
+import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
 import { CharacterValueTypes } from "../../../PlotField/PlotFieldMain/Commands/Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
+import { AppearanceCharacterField } from "../MainContent/AppearancePart/EditingAppearancePart";
 
 type NewAppearanceFormTypes = {
   showCreatingNewElement: boolean;
@@ -25,9 +23,7 @@ export default function NewAppearanceForm({
   showCreatingNewElement,
 }: NewAppearanceFormTypes) {
   const { storyId } = useParams();
-  const modalRef = useRef<HTMLDivElement>(null);
   const [currentText, setCurrentText] = useState("");
-  const [showAllTypes, setShowAllTypes] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -38,8 +34,6 @@ export default function NewAppearanceForm({
   }, [inputRef, showCreatingNewElement]);
 
   const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(null);
-
-  const [typeToRus, setTypeToRus] = useState<AppearancePartVariationRusTypes>("" as AppearancePartVariationRusTypes);
 
   const [characterValue, setCharacterValue] = useState<CharacterValueTypes>({
     _id: "",
@@ -95,10 +89,12 @@ export default function NewAppearanceForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`${showCreatingNewElement ? "" : "hidden"} flex gap-[1rem] flex-col p-[.5rem] items-center`}
+      className={`${
+        showCreatingNewElement ? "" : "hidden"
+      } flex gap-[10px] flex-col p-[5px] items-center border-border border-[2px] rounded-md ml-[5px]`}
     >
-      <div className="flex flex-wrap gap-[.5rem] flex-col w-[40rem] p-[.5rem] shadow-md rounded-md bg-primary-darker">
-        <div className="relative w-full h-[20rem] bg-secondary rounded-md">
+      <div className="flex flex-wrap gap-[5px] flex-col w-full p-[5px] shadow-md rounded-md">
+        <div className="relative w-full h-[200px] bg-accent rounded-md">
           <PreviewImage
             imagePreview={imagePreview}
             setPreview={setImagePreview}
@@ -110,46 +106,22 @@ export default function NewAppearanceForm({
           ref={inputRef}
           value={currentText}
           onChange={(e) => setCurrentText(e.target.value)}
-          className="text-[2rem] min-w-[20rem] flex-grow w-auto"
+          className="text-[20px] min-w-[200px] flex-grow w-auto"
           placeholder="Внешний вид"
         />
 
         <AppearanceCharacterField characterValue={characterValue} setCharacterValue={setCharacterValue} />
-        <div className="flex-grow flex items-center gap-[1rem] p-[.5rem]">
-          <div className="relative min-w-[20rem] flex-grow">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowAllTypes((prev) => !prev);
-              }}
-              className={`${
-                !typeToRus?.trim().length ? "bg-secondary" : `${appearancePartColors[typeToRus]}`
-              } text-[1.7rem] w-full min-w-fit text-text-light outline-gray-600 transition-all rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
-            >
-              {typeToRus || "Тип"}
-            </button>
+        <div className="flex-grow flex items-center gap-[10px] p-[5px]">
+          <StoryAttributesSelectAppearanceType
+            filterOrForm="form"
+            currentAppearanceType={currentType}
+            setCurrentAppearanceType={setCurrentType}
+            defaultTrigger={false}
+          />
 
-            <AsideScrollable
-              ref={modalRef}
-              className={`${showAllTypes ? "" : "hidden"} translate-y-[.5rem] min-w-fit right-0`}
-            >
-              {AllAppearancePartRusVariations.map((rv) => (
-                <AppearanceAsideButton
-                  key={rv}
-                  typeRus={rv}
-                  currentTypeRus={typeToRus}
-                  setShowAllTypes={setShowAllTypes}
-                  setCurrentType={setCurrentType}
-                  setTypeToRus={setTypeToRus}
-                />
-              ))}
-            </AsideScrollable>
-          </div>
-
-          <PlotfieldButton className="min-w-[15rem] bg-secondary self-end hover:bg-primary text-[1.9rem]">
-            Создать
-          </PlotfieldButton>
+          <Button className="min-w-[150px] justify-center hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] flex-grow bg-brand-gradient text-white self-end text-[20px] transition-all">
+            Изменить
+          </Button>
         </div>
       </div>
     </form>

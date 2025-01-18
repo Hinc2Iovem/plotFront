@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { useEffect, useMemo, useState } from "react";
-import { useInView } from "react-intersection-observer";
 import { useParams } from "react-router-dom";
 import { KeyTypes } from "../../../../../../types/StoryEditor/PlotField/Key/KeyTypes";
 import useDeleteKey from "../../../../PlotField/hooks/Key/useDeleteKey";
@@ -9,6 +8,7 @@ import useGetAllKeysByStoryId from "../../../../PlotField/hooks/Key/useGetAllKey
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import useGetPaginatedKey, { AllMightySearchKeyResultTypes } from "../../../hooks/useGetPaginatedKey";
 import { NewElementTypes } from "../AllMightySearchMainContent";
+import LoadMoreButton from "../shared/LoadMoreButton";
 import { EditingKeyForm } from "./EditingKey";
 
 type AllMightySearchMainContentKeyTypes = {
@@ -32,7 +32,6 @@ export default function AllMightySearchMainContentKey({
   setNewElement,
 }: AllMightySearchMainContentKeyTypes) {
   const { storyId } = useParams();
-  const { ref, inView } = useInView();
   const [currentPage, setCurrentPage] = useState(1);
 
   const [allPaginatedResults, setAllPaginatedResults] = useState<AllMightySearchKeyResultTypes[]>([]);
@@ -100,15 +99,6 @@ export default function AllMightySearchMainContentKey({
   }, [newElement]);
 
   useEffect(() => {
-    if (inView) {
-      if (hasNextPage) {
-        setCurrentPage((prev) => prev + 1);
-        fetchNextPage();
-      }
-    }
-  }, [inView, hasNextPage, fetchNextPage, currentPage]);
-
-  useEffect(() => {
     if (status === "error") {
       console.error("Key, Error: ", error.message);
     }
@@ -160,25 +150,16 @@ export default function AllMightySearchMainContentKey({
             : null}
         </div>
 
-        <Button
-          ref={ref}
-          className={`${debouncedValue?.trim().length ? "hidden" : ""} ${
-            !allPaginatedResults[allPaginatedResults.length - 1]?.next ? "bg-background" : "bg-accent"
-          } text-[18px] text-text mt-[20px] ml-auto w-fit transition-all rounded-md px-[10px] py-[5px] whitespace-nowrap`}
-          disabled={!hasNextPage || isFetchingNextPage}
-          onClick={() => {
-            if (hasNextPage) {
-              setCurrentPage((prev) => prev + 1);
-              fetchNextPage();
-            }
-          }}
-        >
-          {!allPaginatedResults[allPaginatedResults.length - 1]?.next
-            ? "Больше ключей нету"
-            : isFetchingNextPage
-            ? "Загрузка"
-            : "Смотреть Больше"}
-        </Button>
+        <LoadMoreButton<AllMightySearchKeyResultTypes>
+          allPaginatedResults={allPaginatedResults}
+          currentPage={currentPage}
+          debouncedValue={debouncedValue}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          setCurrentPage={setCurrentPage}
+          type="ключей"
+        />
       </div>
 
       <EditingKeyForm
@@ -241,7 +222,6 @@ function ContentKeyButton({
 
       <ContextMenuContent>
         <ContextMenuItem
-          className={``}
           onClick={() => {
             setStartEditing(true);
             setEditingKey({
@@ -252,9 +232,7 @@ function ContentKeyButton({
         >
           Изменить
         </ContextMenuItem>
-        <ContextMenuItem className={``} onClick={() => handleRemove({ keyId })}>
-          Удалить
-        </ContextMenuItem>
+        <ContextMenuItem onClick={() => handleRemove({ keyId })}>Удалить</ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   );

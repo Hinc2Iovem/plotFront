@@ -1,17 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useInView } from "react-intersection-observer";
+import { Button } from "@/components/ui/button";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
+import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import { TranslationAchievementTypes } from "../../../../../../types/Additional/TranslationTypes";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
-import useDeleteAchievement from "../../../../PlotField/hooks/Achievement/useDeleteAchievement";
 import useGetAllTranslationAchievementByStoryId from "../../../../PlotField/hooks/Achievement/Translation/useGetAllTranslationAchievementByStoryId";
+import useDeleteAchievement from "../../../../PlotField/hooks/Achievement/useDeleteAchievement";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
 import useGetPaginatedTranslationAchievement, {
   AllMightySearchAchievementResultTypes,
 } from "../../../hooks/useGetPaginatedTranslationAchievement";
+import LoadMoreButton from "../shared/LoadMoreButton";
 import { EditingAchievementForm } from "./EditingAchievement";
-import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 
 type AllMightySearchMainContentAchievementTypes = {
   debouncedValue: string;
@@ -35,7 +35,6 @@ export default function AllMightySearchMainContentAchievement({
   setNewElement,
 }: AllMightySearchMainContentAchievementTypes) {
   const { storyId } = useParams();
-  const { ref, inView } = useInView();
   const [currentPage, setCurrentPage] = useState(1);
 
   const {
@@ -139,15 +138,6 @@ export default function AllMightySearchMainContentAchievement({
   }, [newElement]);
 
   useEffect(() => {
-    if (inView) {
-      if (hasNextPage) {
-        setCurrentPage((prev) => prev + 1);
-        fetchNextPage();
-      }
-    }
-  }, [inView, hasNextPage, fetchNextPage, currentPage]);
-
-  useEffect(() => {
     if (status === "error") {
       console.error("Achievement, Error: ", error.message);
     }
@@ -158,9 +148,9 @@ export default function AllMightySearchMainContentAchievement({
       <div
         className={`${currentCategory === "achievement" ? "" : "hidden"} ${
           startEditing ? "hidden" : ""
-        } h-full flex flex-col gap-[1rem] overflow-auto | containerScroll`}
+        } h-full flex flex-col gap-[10px] overflow-auto | containerScroll`}
       >
-        <div className="flex gap-[1rem] flex-wrap p-[1rem]">
+        <div className="flex gap-[10px] flex-wrap p-[10px]">
           {!debouncedValue?.trim().length
             ? allPaginatedResults?.map((p) =>
                 p?.results?.map((pr) => (
@@ -201,27 +191,16 @@ export default function AllMightySearchMainContentAchievement({
             : null}
         </div>
 
-        <button
-          ref={ref}
-          className={`${debouncedValue?.trim().length ? "hidden" : ""} ${
-            !allPaginatedResults[allPaginatedResults.length - 1]?.next
-              ? "bg-primary-darker text-dark-mid-gray"
-              : "hover:text-text-light  focus-within:text-text-light text-text-light"
-          } text-[1.8rem] mt-[2rem] ml-auto w-fit hover:bg-primary transition-all active:bg-primary-darker rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
-          disabled={!hasNextPage || isFetchingNextPage}
-          onClick={() => {
-            if (hasNextPage) {
-              setCurrentPage((prev) => prev + 1);
-              fetchNextPage();
-            }
-          }}
-        >
-          {!allPaginatedResults[allPaginatedResults.length - 1]?.next
-            ? "Больше ачивок нету"
-            : isFetchingNextPage
-            ? "Загрузка"
-            : "Смотреть Больше"}
-        </button>
+        <LoadMoreButton<AllMightySearchAchievementResultTypes>
+          allPaginatedResults={allPaginatedResults}
+          currentPage={currentPage}
+          debouncedValue={debouncedValue}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          setCurrentPage={setCurrentPage}
+          type="ачивок"
+        />
       </div>
 
       <EditingAchievementForm
@@ -260,10 +239,7 @@ function ContentAchievementButton({
   setNewElement,
   setAllPaginatedResults,
 }: ContentAchievementButtonTypes) {
-  const [suggestiveModal, setSuggestiveModal] = useState(false);
   const removeAchievement = useDeleteAchievement({});
-
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleRemove = ({ achievementId }: { achievementId: string }) => {
     setAllPaginatedResults((prev) =>
@@ -278,27 +254,14 @@ function ContentAchievementButton({
     removeAchievement.mutate({ bodyAchievementId: achievementId });
   };
 
-  useOutOfModal({ setShowModal: setSuggestiveModal, showModal: suggestiveModal, modalRef });
-
   return (
-    <div ref={modalRef} className="relative flex-grow min-w-[12rem]">
-      <PlotfieldButton
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setSuggestiveModal((prev) => !prev);
-        }}
-        className="text-start w-full bg-primary-darker text-[1.5rem] p-[1rem]"
-      >
-        {achievementText}
-      </PlotfieldButton>
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <Button className="text-text flex-grow min-w-[75px] bg-accent text-[15px] p-[10px]">{achievementText}</Button>
+      </ContextMenuTrigger>
 
-      <div
-        className={`${
-          suggestiveModal ? "" : "hidden"
-        } flex flex-col gap-[1rem] bg-secondary p-[1rem] rounded-md shadow-sm shadow-dark-mid-gray absolute top-[4.5rem] w-fit right-[0rem] z-[10] `}
-      >
-        <PlotfieldButton
-          className={`bg-secondary text-[1.7rem]`}
+      <ContextMenuContent>
+        <ContextMenuItem
           onClick={() => {
             setStartEditing(true);
             setEditingAchievement({
@@ -309,11 +272,11 @@ function ContentAchievementButton({
           }}
         >
           Изменить
-        </PlotfieldButton>
-        <PlotfieldButton className={`bg-secondary text-[1.7rem]`} onClick={() => handleRemove({ achievementId })}>
+        </ContextMenuItem>
+        <ContextMenuItem className={``} onClick={() => handleRemove({ achievementId })}>
           Удалить
-        </PlotfieldButton>
-      </div>
-    </div>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
