@@ -1,9 +1,10 @@
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetRelationshipOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetRelationshipOption";
-import PlotfieldCharacterPromptMain, { ExposedMethods } from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
+import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import { CharacterValueTypes } from "../../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 import usePrepareCharacterDataOptionRelationship from "./usePrepareCharacterDataOptionRelationship";
 
@@ -23,11 +24,7 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
     imgUrl: null,
   });
 
-  const theme = localStorage.getItem("theme");
-
   usePrepareCharacterDataOptionRelationship({ characterValue, setCharacterValue });
-
-  const [showAllCharacters, setShowAllCharacters] = useState(false);
 
   const [amountOfPoints, setAmountOfPoints] = useState(optionRelationship?.amountOfPoints || "");
 
@@ -44,14 +41,6 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
   const updateOptionRelationship = useUpdateChoiceOption({
     choiceOptionId,
   });
-
-  const inputRef = useRef<ExposedMethods>(null);
-
-  const onBlurCharacter = () => {
-    if (inputRef.current) {
-      inputRef.current.updateCharacterNameOnBlur();
-    }
-  };
 
   const preventRerender = useRef(false);
 
@@ -75,76 +64,44 @@ export default function OptionRelationshipBlock({ choiceOptionId, debouncedValue
 
   const { updateValue } = useSearch();
 
-  const updateValues = () => {
+  const updateValues = (value: string) => {
     if (episodeId) {
       updateValue({
         episodeId,
         commandName: `Choice - Relationship`,
         id: choiceOptionId,
-        value: `${debouncedValue} ${
-          typeof characterValue.characterName === "string" ? characterValue.characterName : ""
-        } ${amountOfPoints}`,
+        value: `${debouncedValue} ${value} ${amountOfPoints}`,
         type: "choiceOption",
       });
     }
   };
 
   useEffect(() => {
-    updateValues;
+    updateValues(characterValue.characterName || "");
   }, [episodeId]);
 
   return (
-    <div className="self-end w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap mt-[.5rem]">
+    <div className="w-full flex flex-col gap-[5px]">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          setShowAllCharacters(false);
         }}
-        className="w-full relative flex gap-[.5rem]"
+        className="w-full relative flex gap-[5px]"
       >
-        <input
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowAllCharacters(true);
-          }}
-          value={characterValue.characterName || ""}
-          onChange={(e) => {
-            setShowAllCharacters(true);
-            setCharacterValue((prev) => ({
-              ...prev,
-              characterName: e.target.value,
-            }));
-          }}
-          onBlur={onBlurCharacter}
-          placeholder="Имя Персонажа"
-          className={`w-full text-[1.4rem] ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light bg-secondary rounded-md px-[1rem] py-[.5rem] shadow-md`}
-        />
-
-        <img
-          src={characterValue.imgUrl || ""}
-          alt="CharacterImg"
-          className={`${
-            characterValue.imgUrl?.trim().length ? "" : "hidden"
-          } w-[3rem] absolute object-cover rounded-md right-0`}
-        />
         <PlotfieldCharacterPromptMain
-          setShowCharacterModal={setShowAllCharacters}
-          showCharacterModal={showAllCharacters}
-          translateAsideValue="translate-y-[3.5rem]"
           characterName={characterValue.characterName || ""}
           currentCharacterId={characterValue._id || ""}
+          characterValue={characterValue}
           setCharacterValue={setCharacterValue}
-          ref={inputRef}
+          onChange={(value) => updateValues(value)}
+          inputClasses="w-full pr-[35px] text-text md:text-[17px]"
+          imgClasses="w-[30px] object-cover rounded-md right-0 absolute"
         />
       </form>
-      <input
+      <PlotfieldInput
         type="text"
         placeholder="Очки отношений"
-        className={`flex-grow text-[1.3rem] px-[1rem] py-[.5rem] text-text-light ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } rounded-md shadow-md`}
+        className={`flex-grow px-[10px] py-[5px] text-text rounded-md shadow-md`}
         value={amountOfPoints || ""}
         onBlur={onBlur}
         onChange={(e) => setAmountOfPoints(+e.target.value)}

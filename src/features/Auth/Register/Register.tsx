@@ -54,7 +54,7 @@ export default function Register() {
         } else if (error.response?.status === 401) {
           toast("Wrong Username or Password", toastErrorStyles);
         } else {
-          toast("Something Went Wrong", toastErrorStyles);
+          toast(`${error.message}`, toastErrorStyles);
         }
       }
     }

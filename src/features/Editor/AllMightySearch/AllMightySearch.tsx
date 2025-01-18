@@ -36,8 +36,7 @@ export default function AllMightySearch({ setShowAllMightySearch, showAllMightyS
   return (
     <>
       {showAllMightySearch ? (
-        <section className={`flex w-full h-[calc(100vh-2.30rem)] bg-secondary relative`}>
-          <CloseAllMightySearchButton setShowAllMightySearch={setShowAllMightySearch} />
+        <section className={`flex w-full h-[calc(100vh-23px)] bg-secondary rounded-md relative`}>
           <AllMightySearchSidebar
             setCurrentCategory={setCurrentCategory}
             setShowContent={setShowContent}
@@ -52,22 +51,5 @@ export default function AllMightySearch({ setShowAllMightySearch, showAllMightyS
         </section>
       ) : null}
     </>
-  );
-}
-
-type CloseAllMightySearchButtonTypes = {
-  setShowAllMightySearch: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-function CloseAllMightySearchButton({ setShowAllMightySearch }: CloseAllMightySearchButtonTypes) {
-  const theme = localStorage.getItem("theme");
-
-  return (
-    <button
-      onClick={() => setShowAllMightySearch(false)}
-      className={`w-[2.5rem] h-[1rem] shadow-inner ${
-        theme === "light" ? "shadow-secondary-darker hover:shadow-md" : "shadow-gray-700 hover:scale-[1.03]"
-      } transition-shadow rounded-md absolute top-[.5rem] right-[.5rem]`}
-    ></button>
   );
 }

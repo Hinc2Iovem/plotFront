@@ -1,22 +1,24 @@
 import { useRef, useState } from "react";
-import search from "../../assets/images/Editor/search.png";
-import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
-import useHandleResizeOfEditorWindows from "../../hooks/helpers/Plotfield/ResizeWindow/useHandleResizeOfEditorWindows";
-import useResizeEditorWindow from "../../hooks/helpers/Plotfield/ResizeWindow/useResizeEditorWindow";
-import AllMightySearch from "./AllMightySearch/AllMightySearch";
+import search from "@/assets/images/Editor/search.png";
 import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
 import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
 import Flowchart from "./Flowchart/Flowchart";
-import PlotField from "./PlotField/PlotField";
 import "./Flowchart/FlowchartStyles.css";
+import PlotField from "./PlotField/PlotField";
+import AllMightySearch from "./AllMightySearch/AllMightySearch";
+import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "@/const/COMMANDS_CREATED_BY_KEY_COMBINATION";
+import useHandleResizeOfEditorWindows from "@/hooks/helpers/Plotfield/ResizeWindow/useHandleResizeOfEditorWindows";
+import useResizeEditorWindow from "@/hooks/helpers/Plotfield/ResizeWindow/useResizeEditorWindow";
 
 export default function EditorMain() {
   const [command, setCommand] = useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
     "" as PossibleCommandsCreatedByCombinationOfKeysTypes
   );
+  // TODO here should be null, changed for demo purposes only
   const [hideFlowchartFromScriptwriter, setHideFlowchartFromScriptwriter] = useState<boolean | null>(null);
   const [showAllMightySearch, setShowAllMightySearch] = useState(false);
 
+  console.log(setShowAllMightySearch);
   const [expansionDivDirection, setExpansionDivDirection] = useState("" as "right" | "left");
 
   const keyCombinationToExpandPlotField = useHandleResizeOfEditorWindows({

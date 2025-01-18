@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import useGetTranslationCharacterById from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useGetCharacterById from "../../../../../../../hooks/Fetching/Character/useGetCharacterById";
+import useGetTranslationCharacterById from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import useGetCommandChoiceTranslation from "../../../../hooks/Choice/useGetCommandChoiceTranslation";
-import { EmotionValueTypes } from "../../Prompts/Emotions/PlotfieldEmotionPromptMain";
-import { CharacterValueTypes } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
+import {
+  CharacterValueTypes,
+  EmotionTypes,
+} from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 type AssignInitialValueChoiceTypes = {
   characterId: string;
@@ -26,9 +28,9 @@ export default function useAssignInitialValueChoice({
     imgUrl: null,
   });
 
-  const [emotionValue, setEmotionValue] = useState<EmotionValueTypes>({
-    emotionId: characterEmotionId || null,
-    emotionImg: null,
+  const [emotionValue, setEmotionValue] = useState<EmotionTypes>({
+    _id: characterEmotionId || null,
+    imgUrl: null,
     emotionName: null,
   });
 
@@ -67,7 +69,7 @@ export default function useAssignInitialValueChoice({
       setEmotionValue((prev) => ({
         ...prev,
         emotionName: currentEmotion?.emotionName || "",
-        emotionImg: currentEmotion?.imgUrl || "",
+        imgUrl: currentEmotion?.imgUrl || "",
       }));
     }
   }, [currentCharacter, characterEmotionId]);

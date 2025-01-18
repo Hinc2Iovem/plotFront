@@ -32,9 +32,8 @@ export default function FormEmotion({
   emotions,
 }: FormEmotionTypes) {
   const preventRerender = useRef<boolean>(false);
-
-  const { updateEmotionName } = usePlotfieldCommands();
-
+  const { updateEmotionName, updateEmotionProperties } = usePlotfieldCommands();
+  const [initValue, setInitValue] = useState(emotionValue.emotionName || "");
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     plotFieldCommandId,
     plotFieldCommandSayId,
@@ -55,16 +54,24 @@ export default function FormEmotion({
         <AllEmotionsModal
           emotionName={emotionValue.emotionName || ""}
           setEmotionValue={setEmotionValue}
-          setShowCreateEmotionModal={setShowCreateEmotionModal}
           onChange={(value) => {
             updateEmotionName({
               emotionName: value,
               id: plotFieldCommandId,
             });
           }}
+          initValue={initValue}
           emotions={emotions}
           emotionValue={emotionValue}
-          plotFieldCommandId={plotFieldCommandId}
+          onSubmit={({ emotionValue }) => {
+            updateEmotionProperties({
+              emotionId: emotionValue?._id || "",
+              emotionImg: emotionValue?.imgUrl || "",
+              emotionName: emotionValue?.emotionName || "",
+              id: plotFieldCommandId,
+            });
+            setInitValue(emotionValue.emotionName);
+          }}
         />
       </div>
       <CommandSayCreateEmotionFieldModal
@@ -82,26 +89,31 @@ export default function FormEmotion({
 
 type AllEmotionsModalTypes = {
   emotions: EmotionsTypes[];
-  plotFieldCommandId: string;
   emotionName: string;
+  initValue: string;
   emotionValue: EmotionTypes;
-  onChange: (value: string) => void;
+  inputClasses?: string;
+  imgClasses?: string;
+  containerClasses?: string;
+  onChange?: (value: string) => void;
+  onSubmit?: ({ emotionValue }: { emotionValue: EmotionsTypes }) => void;
   setEmotionValue: React.Dispatch<React.SetStateAction<EmotionTypes>>;
-  setShowCreateEmotionModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function AllEmotionsModal({
   emotions,
   emotionValue,
   emotionName,
+  initValue,
+  containerClasses,
+  imgClasses,
+  inputClasses,
   setEmotionValue,
-  setShowCreateEmotionModal,
-  plotFieldCommandId,
   onChange,
+  onSubmit,
 }: AllEmotionsModalTypes) {
   {
     const [showAllEmotions, setShowAllEmotions] = useState(false);
-    const { updateEmotionProperties } = usePlotfieldCommands();
 
     const allEmotions = useMemo(() => {
       const res = [...emotions];
@@ -117,26 +129,27 @@ export function AllEmotionsModal({
         console.log("Заполните поле");
         return;
       }
+
+      if (initValue === emotionName) {
+        return;
+      }
+
       if (allEmotions.map((e) => e.emotionName?.toLowerCase().includes(emotionName?.trim()?.toLowerCase() || ""))) {
         const currentEmotion = emotions.find(
           (e) => e.emotionName?.trim().toLowerCase() === emotionName?.trim()?.toLowerCase()
         );
 
-        setEmotionValue({
-          _id: currentEmotion?._id || null,
-          emotionName: currentEmotion?.emotionName || null,
-          imgUrl: currentEmotion?.imgUrl || null,
-        });
+        if (currentEmotion) {
+          setEmotionValue({
+            _id: currentEmotion?._id || null,
+            emotionName: currentEmotion?.emotionName || null,
+            imgUrl: currentEmotion?.imgUrl || null,
+          });
 
-        updateEmotionProperties({
-          emotionId: currentEmotion?._id || "",
-          emotionImg: currentEmotion?.imgUrl || "",
-          emotionName: currentEmotion?.emotionName || "",
-          id: plotFieldCommandId,
-        });
-      } else {
-        setShowCreateEmotionModal(true);
-        return;
+          if (onSubmit) {
+            onSubmit({ emotionValue: currentEmotion });
+          }
+        }
       }
     };
 
@@ -145,7 +158,10 @@ export function AllEmotionsModal({
     return (
       <Popover open={showAllEmotions} onOpenChange={setShowAllEmotions}>
         <PopoverTrigger asChild>
-          <form onSubmit={(e) => e.preventDefault()} className="w-full flex justify-between items-center">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className={`${containerClasses ? containerClasses : "w-full flex justify-between items-center"}`}
+          >
             <PlotfieldInput
               value={emotionValue?.emotionName || ""}
               placeholder="Эмоция"
@@ -159,7 +175,7 @@ export function AllEmotionsModal({
                   onChange(e.target.value);
                 }
               }}
-              className="h-[50px] pr-[50px] text-text md:text-[17px]"
+              className={`${inputClasses ? inputClasses : "h-[50px] pr-[50px] text-text md:text-[17px]"}`}
               onBlur={updateEmotionNameOnBlur}
             />
 
@@ -167,7 +183,9 @@ export function AllEmotionsModal({
               <img
                 src={emotionValue.imgUrl || ""}
                 alt={"EmotionImg"}
-                className="w-[40px] object-cover top-[5px] right-[3px] rounded-md absolute"
+                className={`${
+                  imgClasses ? imgClasses : "w-[40px] object-cover top-[5px] right-[3px] rounded-md absolute"
+                }`}
               />
             ) : null}
           </form>

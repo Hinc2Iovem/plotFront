@@ -25,7 +25,7 @@ export default function ProfileLeftSide({
   storiesType,
   expandedTranslationSide,
 }: ProfileLeftSideTypes) {
-  const { userId: staffId } = useGetDecodedJWTValues();
+  const { userId: staffId, roles } = useGetDecodedJWTValues();
   const { data: staff } = useGetStaffMember({ staffId: staffId ?? "" });
 
   const [imagePreview, setPreview] = useState<string | ArrayBuffer | null>(null);
@@ -55,7 +55,7 @@ export default function ProfileLeftSide({
         expandedTranslationSide ? "hidden" : ""
       } flex gap-[10px] sm:flex-col sm:w-[210px] w-full flex-shrink-0 flex-wrap sm:h-[calc(100vh-20px)]`}
     >
-      <div className={`w-full relative rounded-md shadow-sm border-[5px] border-accent`}>
+      <div className={`w-full relative rounded-md shadow-sm border-[5px] border-accent min-h-[200px]`}>
         {staff?.imgUrl ? (
           <img src={staff.imgUrl} alt="AvatarImg" className="w-full h-full object-cover" />
         ) : (
@@ -68,7 +68,9 @@ export default function ProfileLeftSide({
         )}
       </div>
       <div
-        className={`flex flex-col gap-[5px] flex-grow border-[1px] border-border rounded-md p-[10px] justify-center`}
+        className={`flex flex-col gap-[5px] border-[1px] border-border rounded-md p-[10px] ${
+          roles?.includes("translator") ? "" : "justify-center flex-grow"
+        }`}
       >
         <div className="w-full rounded-md">
           <h3 className="text-[15px] text-center text-text bg-secondary px-[10px] py-[5px] rounded-md">

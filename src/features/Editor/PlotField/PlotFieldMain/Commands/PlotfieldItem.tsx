@@ -23,6 +23,8 @@ import CommandSayField from "./Say/CommandSayField";
 import CommandSoundField from "./Sound/CommandSoundField";
 import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
+import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
+import CommandChoiceField from "./Choice/CommandChoiceField";
 
 function ErrorFallback({
   error,
@@ -66,6 +68,7 @@ export default function PlotfieldItem({
   currentTopologyBlockId,
 }: PlotFieldItemTypes) {
   const topologyBlockId = currentTopologyBlockId;
+
   return (
     <li
       {...provided.draggableProps}
@@ -127,13 +130,11 @@ export default function PlotfieldItem({
           />
         ) : command === "end" ? (
           <CommandEndField plotFieldCommandId={_id} />
-        ) : //  : command === "wardrobe" ? (
-        //   <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
-        // )
-        //  : command === "choice" ? (
-        //   <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
-        // )
-        command === "call" ? (
+        ) : command === "wardrobe" ? (
+          <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+        ) : command === "choice" ? (
+          <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+        ) : command === "call" ? (
           <CommandCallField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "condition" ? (
           <CommandConditionField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />

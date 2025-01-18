@@ -118,7 +118,7 @@ function CharacteristicInputField({
   const { episodeId } = useParams();
   const [currentConditionName, setCurrentConditionName] = useState<string | number>(value ? value : "");
   const [initValue, setInitValue] = useState<string | number>(value ? value : "");
-
+  const [update, setUpdate] = useState(false);
   const [characteristicId, setCharacteristicId] = useState(currentCharacteristicId);
 
   const { data: translatedCharacteristic } = useGetTranslationCharacteristic({
@@ -177,18 +177,31 @@ function CharacteristicInputField({
     }
   }, [currentConditionName, episodeId]);
 
+  useEffect(() => {
+    if (update) {
+      updateConditionBlockVariationValue({
+        conditionBlockId,
+        plotfieldCommandId,
+        conditionBlockVariationId,
+        characteristicId,
+      });
+
+      updateConditionBlock.mutate({
+        characteristicId: fieldType === "conditionName" ? characteristicId : null,
+        secondCharacteristicId: fieldType === "conditionValue" ? characteristicId : null,
+      });
+      setUpdate(false);
+    }
+  }, [update]);
   return (
     <div className="w-[40%] flex-grow min-w-[100px] relative">
-      <ConditionVariationCharacteristicModal
+      <ConditionVariationCharacteristicModal<string | number>
         currentCharacteristic={currentConditionName}
         setCharacteristicId={setCharacteristicId}
         setCurrentCharacteristic={setCurrentConditionName}
-        conditionBlockId={conditionBlockId}
-        conditionBlockVariationId={conditionBlockVariationId}
-        plotfieldCommandId={plotfieldCommandId}
-        fieldType={fieldType}
         initValue={initValue}
         setInitValue={setInitValue}
+        setUpdate={setUpdate}
       />
     </div>
   );

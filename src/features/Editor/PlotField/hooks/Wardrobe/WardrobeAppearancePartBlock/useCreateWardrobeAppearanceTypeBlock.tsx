@@ -3,7 +3,7 @@ import { axiosCustomized } from "../../../../../../api/axios";
 
 type CreateWardrobeAppearanceTypeTypes = {
   commandWardrobeId: string;
-  appearancePartId: string;
+  appearancePartId?: string;
 };
 
 export default function useCreateWardrobeAppearanceTypeBlock({
@@ -12,10 +12,12 @@ export default function useCreateWardrobeAppearanceTypeBlock({
 }: CreateWardrobeAppearanceTypeTypes) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () =>
+    mutationFn: async ({ appearancePartBodyId }: { appearancePartBodyId?: string }) => {
+      const currentAppearancePartId = appearancePartBodyId?.trim().length ? appearancePartBodyId : appearancePartId;
       await axiosCustomized.post(
-        `/plotFieldCommands/wardrobes/${commandWardrobeId}/appearanceParts/${appearancePartId}`
-      ),
+        `/plotFieldCommands/wardrobes/${commandWardrobeId}/appearanceParts/${currentAppearancePartId}`
+      );
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["commandWardrobe", commandWardrobeId, "appearanceTypes"],

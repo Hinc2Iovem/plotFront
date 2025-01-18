@@ -75,7 +75,9 @@ export default function PlotFieldMain({
   return (
     <main
       className={`${showAllCommands ? "hidden" : ""} ${
-        renderedAsSubPlotfield ? "h-fit max-h-[calc(100vh-80px)] bg-secondary p-[5px]" : "h-[calc(100vh-80px)]"
+        renderedAsSubPlotfield
+          ? "h-fit max-h-[calc(100vh-80px)] border-border border-[3px] rounded-md p-[5px]"
+          : "h-[calc(100vh-80px)]"
       } mt-[5px] overflow-y-auto | containerScroll px-[5px]`}
     >
       <DragDropContext onDragEnd={handleOnDragEnd}>

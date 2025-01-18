@@ -1,13 +1,12 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { TranslationTextFieldName } from "../../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import useUpdateChoiceTranslation from "../../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateChoiceTranslation";
+import { TranslationTextFieldNameChoiceTypes } from "../../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
+import { TextStyleTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import PlotfieldInput from "../../../../../../../ui/Inputs/PlotfieldInput";
-import TextSettingsModal from "../../../../../components/TextSettingsModal";
 import useSearch from "../../../../../Context/Search/SearchContext";
 import { checkTextStyle } from "../../../../utils/checkTextStyleTextSide";
-import { useParams } from "react-router-dom";
-import { TextStyleTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import { TranslationTextFieldName } from "../../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
-import { TranslationTextFieldNameChoiceTypes } from "../../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 
 type ChoiceQuestionFieldSectionTypes = {
   question: string;
@@ -82,17 +81,6 @@ export default function ChoiceQuestionFieldSection({
             : ""
         }`}
         placeholder="Вопрос"
-      />
-      <TextSettingsModal
-        plotfieldCommandId={plotFieldCommandId}
-        translateY="translate-y-[-11rem]"
-        setShowModal={setShowSettingsModal}
-        setTextValue={setQuestion}
-        showModal={showSettingsModal}
-        showTextSideRow={false}
-        showTextStyleRow={true}
-        currentTextStyle={currentTextStyle}
-        setCurrentTextStyle={setCurrentTextStyle}
       />
     </form>
   );

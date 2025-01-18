@@ -1,8 +1,15 @@
+import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { useParams } from "react-router-dom";
+import { fetchAllTranslationAppearanceParts } from "../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
+import { fetchAllTranslationCharacteristics } from "../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
+import { getTranslationCharactersByType } from "../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByType";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
-import PlotfieldButton from "../../../../ui/Buttons/PlotfieldButton";
+import { fetchAllTranslationAchievements } from "../../PlotField/hooks/Achievement/Translation/useGetAllTranslationAchievementByStoryId";
+import { fetchAllKeys } from "../../PlotField/hooks/Key/useGetAllKeysByStoryId";
+import { fetchAllMusic } from "../../PlotField/hooks/Music/useGetAllMusicByStoryId";
+import { fetchAllSound } from "../../PlotField/hooks/Sound/useGetAllSoundsByStoryId";
 import {
   AllPossibleAllMightySearchCategoriesRusTypes,
   AllPossibleAllMightySearchCategoriesTypes,
@@ -14,13 +21,6 @@ import { fetchAllMightyPaginatedTranslationAchievement } from "../hooks/useGetPa
 import { fetchAllMightyPaginatedTranslationAppearancePart } from "../hooks/useGetPaginatedTranslationAppearancePart";
 import { fetchAllMightyPaginatedTranslationCharacter } from "../hooks/useGetPaginatedTranslationCharacter";
 import { fetchAllMightyPaginatedTranslationCharacteristic } from "../hooks/useGetPaginatedTranslationCharacteristic";
-import { fetchAllSound } from "../../PlotField/hooks/Sound/useGetAllSoundsByStoryId";
-import { fetchAllMusic } from "../../PlotField/hooks/Music/useGetAllMusicByStoryId";
-import { fetchAllTranslationAchievements } from "../../PlotField/hooks/Achievement/Translation/useGetAllTranslationAchievementByStoryId";
-import { fetchAllTranslationCharacteristics } from "../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
-import { fetchAllTranslationAppearanceParts } from "../../../../hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
-import { getTranslationCharactersByType } from "../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharactersByType";
-import { fetchAllKeys } from "../../PlotField/hooks/Key/useGetAllKeysByStoryId";
 
 const AllMightySearchCategories: {
   [key in AllPossibleAllMightySearchCategoriesTypes]: AllPossibleAllMightySearchCategoriesRusTypes;
@@ -56,8 +56,8 @@ export default function AllMightySearchSidebar({
   setShowContent,
 }: AllMightySearchCategoriesTypes) {
   return (
-    <header className="w-[20%] min-w-fit flex flex-col gap-[1rem] justify-between p-[1rem] mt-[1rem]">
-      <ul className="flex flex-col gap-[1rem]">
+    <header className="w-[20%] min-w-fit flex flex-col gap-[10px] justify-between p-[10px] mt-[10px]">
+      <ul className="flex flex-col gap-[10px]">
         {Object.entries(AllMightySearchCategories).map(([key, value]) => (
           <AllMightySearchSidebarCategoryButton
             key={key}
@@ -70,8 +70,8 @@ export default function AllMightySearchSidebar({
         ))}
       </ul>
 
-      <div className="flex flex-col gap-[1rem]">
-        <PlotfieldButton
+      <div className="flex flex-col gap-[10px]">
+        <Button
           onClick={() => {
             setShowContent(() => ({
               showKeyBinds: false,
@@ -79,12 +79,14 @@ export default function AllMightySearchSidebar({
             }));
             setCurrentCategory("" as AllPossibleAllMightySearchCategoriesTypes);
           }}
-          className={`${showContent.showSearch ? "bg-primary" : ""} text-center text-[2.3rem]`}
+          className={`${
+            showContent.showSearch ? "bg-accent" : "border-border border-[3px]"
+          } text-center text-heading text-[23px] py-[20px] hover:bg-accent focus-within:bg-accent active:scale-[.99] transition-all`}
         >
           Поиск
-        </PlotfieldButton>
+        </Button>
 
-        <PlotfieldButton
+        <Button
           onClick={() => {
             setShowContent(() => ({
               showKeyBinds: true,
@@ -92,10 +94,12 @@ export default function AllMightySearchSidebar({
             }));
             setCurrentCategory("" as AllPossibleAllMightySearchCategoriesTypes);
           }}
-          className={`${showContent.showKeyBinds ? "bg-primary" : ""} text-center text-[2.3rem]`}
+          className={`${
+            showContent.showKeyBinds ? "bg-accent" : "border-border border-[3px]"
+          } text-center text-heading text-[23px] py-[20px] hover:bg-accent focus-within:bg-accent active:scale-[.99] transition-all`}
         >
           Бинды
-        </PlotfieldButton>
+        </Button>
       </div>
     </header>
   );
@@ -298,7 +302,7 @@ function AllMightySearchSidebarCategoryButton({
   };
 
   return (
-    <PlotfieldButton
+    <Button
       onClick={() => {
         setShowContent(() => ({
           showKeyBinds: false,
@@ -333,10 +337,12 @@ function AllMightySearchSidebarCategoryButton({
         }
       }}
       className={`${
-        valueEng === currentCategory ? "scale-[1.05] bg-primary translate-x-[1rem]" : ""
-      } capitalize text-[2rem] text-left hover:scale-[1.05] transition-all focus-within:scale-[1.05] focus-within:bg-primary focus-visible:scale-[1] hover:translate-x-[1rem] active:translate-x-[1rem] focus-within:translate-x-[1rem]`}
+        valueEng === currentCategory
+          ? "scale-[1.05] bg-accent translate-x-[10px]"
+          : "hover:bg-accent focus-within:bg-accent"
+      } capitalize text-[20px] text-left text-paragraph hover:scale-[1.05] transition-all focus-within:scale-[1.05] focus-within:bg-accent focus-visible:scale-[1] hover:translate-x-[10px] active:translate-x-[10px] focus-within:translate-x-[10px]`}
     >
       {valueRus}
-    </PlotfieldButton>
+    </Button>
   );
 }

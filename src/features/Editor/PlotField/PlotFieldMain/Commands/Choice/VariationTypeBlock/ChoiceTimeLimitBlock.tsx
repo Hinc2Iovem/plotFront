@@ -1,10 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
-import { ChoiceVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import useUpdateChoice from "../../../../hooks/Choice/useUpdateChoice";
-import useGetChoiceOptionById from "../../../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
 import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
+import { ChoiceVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import PlotfieldInput from "../../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../../../ui/Buttons/PlotfieldButton";
+import useGetChoiceOptionById from "../../../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
+import useUpdateChoice from "../../../../hooks/Choice/useUpdateChoice";
 
 type ChoiceTimeLimitBlockTypes = {
   choiceId: string;
@@ -62,10 +62,11 @@ export default function ChoiceTimeLimitBlock({
     showModal: showChoiceDefaultTimeLimitBlockModal,
   });
   return (
-    <div className={`flex ${choiceVariationTypes === "timelimit" ? "" : "hidden"} gap-[.5rem] w-full flex-wrap`}>
+    <div className={`flex ${choiceVariationTypes === "timelimit" ? "" : "hidden"} gap-[5px]  flex-wrap`}>
       <PlotfieldInput
         type="text"
-        className="flex-grow"
+        placeholder="20(в секундах)"
+        className="flex-grow border-border border-[1px] rounded-md"
         value={timeLimit || ""}
         onBlur={onBlur}
         onChange={(e) => setTimeLimit(+e.target.value)}
@@ -73,30 +74,30 @@ export default function ChoiceTimeLimitBlock({
 
       {!insidePlotfield ? (
         <>
-          <PlotfieldButton
+          <Button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               setShowChoiceVariationTypesModal(false);
               setShowChoiceDefaultTimeLimitBlockModal((prev) => !prev);
             }}
-            className="w-[calc(100%-5.5rem)]"
+            className="w-[calc(100%-55px)]"
           >
             {typeof currentChoiceOptionOrder === "number" ? currentChoiceOptionOrder : "Дефолтный Выбор"}
-          </PlotfieldButton>
+          </Button>
           <aside
             ref={modalRef}
             className={`${
               showChoiceDefaultTimeLimitBlockModal ? "" : "hidden"
-            } translate-y-[3.8rem] absolute z-10 flex flex-col gap-[1rem] bg-primary  rounded-md shadow-md w-full min-w-fit p-[.5rem]`}
+            } translate-y-[3.8rem] absolute z-10 flex flex-col gap-[1rem] bg-primary  rounded-md shadow-md w-full min-w-fit p-[5px]`}
           >
             {(currentChoiceOptionOrder && amountOfOptions > 1) || (!currentChoiceOptionOrder && amountOfOptions > 0) ? (
               [...Array.from({ length: amountOfOptions })]?.map((_, i) => (
-                <button
+                <Button
                   key={i}
                   className={`${
                     i === currentChoiceOptionOrder ? "hidden" : ""
-                  } text-start outline-gray-300 whitespace-nowrap text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
+                  } text-start outline-gray-300 whitespace-nowrap text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[5px]`}
                   onClick={() => {
                     setShowChoiceVariationTypesModal(false);
                     setShowChoiceDefaultTimeLimitBlockModal(false);
@@ -108,18 +109,18 @@ export default function ChoiceTimeLimitBlock({
                   }}
                 >
                   {i}
-                </button>
+                </Button>
               ))
             ) : (
-              <button
-                className={`text-start outline-gray-300 text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[.5rem]`}
+              <Button
+                className={`text-start outline-gray-300 text-[1.3rem] rounded-md shadow-md bg-secondary  px-[1rem] py-[5px]`}
                 onClick={() => {
                   setShowChoiceVariationTypesModal(false);
                   setShowChoiceDefaultTimeLimitBlockModal(false);
                 }}
               >
                 Пусто
-              </button>
+              </Button>
             )}
           </aside>
         </>

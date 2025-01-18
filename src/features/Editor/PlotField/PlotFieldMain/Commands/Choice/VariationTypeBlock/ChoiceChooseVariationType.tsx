@@ -1,16 +1,14 @@
-import { useRef } from "react";
-import useOutOfModal from "../../../../../../../hooks/UI/useOutOfModal";
-import useUpdateChoice from "../../../../hooks/Choice/useUpdateChoice";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SelectWithBlur from "@/components/ui/selectWithBlur";
+import { useEffect, useState } from "react";
 import {
   ChoiceVariations,
   ChoiceVariationsTypes,
 } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
+import useUpdateChoice from "../../../../hooks/Choice/useUpdateChoice";
 
 type ChoiceChooseVariationTypes = {
   choiceId: string;
-  showChoiceVariationTypesModal: boolean;
-  setShowChoiceMultipleModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowChoiceVariationTypesModal: React.Dispatch<React.SetStateAction<boolean>>;
   setChoiceVariationTypes: React.Dispatch<React.SetStateAction<ChoiceVariationsTypes>>;
   choiceVariationTypes: ChoiceVariationsTypes;
 };
@@ -18,63 +16,36 @@ type ChoiceChooseVariationTypes = {
 export default function ChoiceChooseVariationType({
   choiceId,
   choiceVariationTypes,
-  showChoiceVariationTypesModal,
-  setShowChoiceVariationTypesModal,
-  setShowChoiceMultipleModal,
   setChoiceVariationTypes,
 }: ChoiceChooseVariationTypes) {
-  const theme = localStorage.getItem("theme");
-
+  const [value, setValue] = useState(choiceVariationTypes ? choiceVariationTypes : "Тип Выбора");
   const updateChoice = useUpdateChoice({ choiceId });
-  const choiceVariationRef = useRef<HTMLDivElement>(null);
 
-  useOutOfModal({
-    modalRef: choiceVariationRef,
-    setShowModal: setShowChoiceVariationTypesModal,
-    showModal: showChoiceVariationTypesModal,
-  });
-
+  useEffect(() => {
+    setValue(choiceVariationTypes);
+  }, [choiceVariationTypes]);
   return (
-    <div className="relative flex-grow">
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowChoiceMultipleModal(false);
-          setShowChoiceVariationTypesModal((prev) => !prev);
-        }}
-        className={`w-full text-text-light text-start ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } h-full whitespace-nowrap text-[1.4rem] bg-secondary rounded-md shadow-md px-[1rem] py-[.5rem]`}
-      >
-        {choiceVariationTypes ? choiceVariationTypes : "Тип Выбора"}
-      </button>
-
-      <aside
-        ref={choiceVariationRef}
-        className={`${
-          showChoiceVariationTypesModal ? "" : "hidden"
-        } translate-y-[.5rem] absolute flex flex-col gap-[1rem] bg-primary-darker rounded-md shadow-md z-[2] min-w-fit w-full p-[.5rem]`}
-      >
-        {ChoiceVariations.map((cv) => (
-          <button
-            key={cv}
-            className={`${
-              cv === choiceVariationTypes ? "hidden" : ""
-            } w-full text-text-dark hover:text-text-light text-start hover:bg-primary-darker focus-within:text-text-light focus-within:bg-primary-darker ${
-              theme === "light" ? "outline-gray-300" : "outline-gray-600"
-            } text-[1.3rem] hover:scale-[1.01] rounded-md shadow-md bg-secondary px-[1rem] py-[.5rem]`}
-            onClick={() => {
-              setChoiceVariationTypes(cv);
-              setShowChoiceVariationTypesModal(false);
-              if (cv === "common") {
-                updateChoice.mutate({ choiceType: "common" });
-              }
-            }}
-          >
-            {cv}
-          </button>
-        ))}
-      </aside>
-    </div>
+    <SelectWithBlur
+      onValueChange={(v: ChoiceVariationsTypes) => {
+        setChoiceVariationTypes(v);
+        setValue(v);
+        if (v === "common") {
+          updateChoice.mutate({ choiceType: "common" });
+        }
+      }}
+    >
+      <SelectTrigger className="min-w-[150px] w-auto bg-accent hover:bg-secondary focus-within:bg-secondary transition-all h-full capitalize flex-grow text-text relative">
+        <SelectValue placeholder={value} onBlur={(v) => v.currentTarget.blur()} className={`text-[15px] w-full`} />
+      </SelectTrigger>
+      <SelectContent>
+        {ChoiceVariations.map((pv) => {
+          return (
+            <SelectItem key={pv} value={pv} className={`${pv === value ? "hidden" : ""} capitalize w-full`}>
+              {pv}
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </SelectWithBlur>
   );
 }

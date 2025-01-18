@@ -10,17 +10,16 @@ import EpisodeEditor from "./features/Editor/EpisodeEditor";
 import Emotion from "./features/Emotion/Emotion";
 import Missing from "./features/Missing/Missing";
 import Profile from "./features/Profile/Profile";
+import KeyBinds from "./features/StorySinglePage/KeyBinds/KeyBinds";
 import StorySinglePage from "./features/StorySinglePage/StorySinglePage";
 import Wardrobe from "./features/Wardrobe/Wardrobe";
 import AuthLayout from "./layouts/AuthLayout";
 import ProfileLayout from "./layouts/ProfileLayout";
 import StoryLayout from "./layouts/StoryLayout";
-import KeyBinds from "./features/StorySinglePage/KeyBinds/KeyBinds";
 import useHandleTheme from "./hooks/helpers/shared/useHandleTheme";
 
 export default function App() {
-  useHandleTheme();
-
+  useHandleTheme({});
   return (
     <AuthProvider>
       <Routes>

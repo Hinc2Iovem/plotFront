@@ -1,94 +1,45 @@
-import { useEffect, useRef, useState } from "react";
-import PlotfieldInput from "../../../../../../../ui/Inputs/PlotfieldInput";
+import { useEffect, useState } from "react";
 import useGetCharacterWithTranslation from "../../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
 import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
-import PlotfieldCharacterPromptMain, { ExposedMethods } from "../../Prompts/Characters/PlotfieldCharacterPromptMain";
-import CommandWardrobeCreateCharacter from "./CommandWardrobeCreateCharacter";
+import PlotfieldCharacterPromptMain from "../../Prompts/Characters/PlotfieldCharacterPromptMain";
+import { CharacterValueTypes } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 type CommandWardrobeCharacterTypes = {
-  setShowAppearancePartVariationModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowCharacterModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowAppearancePartModal: React.Dispatch<React.SetStateAction<boolean>>;
   characterId: string;
   commandWardrobeId: string;
-  showCharacterModal: boolean;
 };
 
-export default function CommandWardrobeCharacter({
-  characterId,
-  showCharacterModal,
-  setShowAppearancePartModal,
-  setShowAppearancePartVariationModal,
-  setShowCharacterModal,
-  commandWardrobeId,
-}: CommandWardrobeCharacterTypes) {
+export default function CommandWardrobeCharacter({ characterId, commandWardrobeId }: CommandWardrobeCharacterTypes) {
   // TODO suggesting isn't implemented
-  const [suggestCreateCharacterModal, setSuggestCreateCharacterModal] = useState(false);
 
   const { characterValue, setCharacterValue } = useGetCharacterWithTranslation({ currentCharacterId: characterId });
-  const inputRef = useRef<ExposedMethods>(null);
-
-  const onBlur = () => {
-    if (inputRef.current) {
-      inputRef.current.updateCharacterNameOnBlur();
-    }
-  };
+  const [initValue, setInitValue] = useState<CharacterValueTypes>({
+    _id: characterId,
+    characterName: "",
+    imgUrl: "",
+  });
 
   const updateWardrobeCharacterId = useUpdateWardrobeCurrentDressedAndCharacterId({
     commandWardrobeId,
   });
 
   useEffect(() => {
-    if (characterValue._id?.trim().length && characterId !== characterValue._id) {
-      updateWardrobeCharacterId.mutate({ characterId });
+    if (characterValue._id?.trim().length && initValue._id !== characterValue._id) {
+      updateWardrobeCharacterId.mutate({ characterId: characterValue._id });
+      setInitValue(characterValue);
     }
-  }, [characterValue._id, characterId]);
+  }, [characterValue._id]);
 
   return (
-    <>
-      <form className="w-full relative flex gap-[.5rem]">
-        <PlotfieldInput
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowAppearancePartModal(false);
-            setShowAppearancePartVariationModal(false);
-            setShowCharacterModal((prev) => !prev);
-          }}
-          onBlur={onBlur}
-          value={characterValue.characterName || ""}
-          onChange={(e) => {
-            setShowCharacterModal(true);
-            setCharacterValue((prev) => ({
-              ...prev,
-              characterName: e.target.value,
-            }));
-          }}
-          placeholder="Имя Персонажа"
-        />
-
-        <img
-          src={characterValue.imgUrl || ""}
-          alt="CharacterImg"
-          className={`${
-            characterValue.imgUrl?.trim().length ? "" : "hidden"
-          } w-[3rem] object-cover rounded-md right-0 top-[1.5px] absolute`}
-        />
-        <PlotfieldCharacterPromptMain
-          translateAsideValue="translate-y-[3.5rem]"
-          setShowCharacterModal={setShowCharacterModal}
-          showCharacterModal={showCharacterModal}
-          characterName={characterValue.characterName || ""}
-          currentCharacterId={characterValue._id || ""}
-          setCharacterValue={setCharacterValue}
-          ref={inputRef}
-        />
-      </form>
-      <CommandWardrobeCreateCharacter
+    <form className="w-full relative flex gap-[.5rem]">
+      <PlotfieldCharacterPromptMain
         characterName={characterValue.characterName || ""}
-        commandWardrobeId={commandWardrobeId}
-        setShowModal={setSuggestCreateCharacterModal}
-        showModal={suggestCreateCharacterModal}
+        currentCharacterId={characterValue._id || ""}
+        setCharacterValue={setCharacterValue}
+        characterValue={characterValue}
+        inputClasses="w-full pr-[35px] text-text md:text-[17px]"
+        imgClasses="w-[30px] object-cover rounded-md right-0 absolute"
       />
-    </>
+    </form>
   );
 }

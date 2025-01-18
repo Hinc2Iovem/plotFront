@@ -5,8 +5,9 @@ import useCreateTopologyBlock from "../PlotField/hooks/TopologyBlock/useCreateTo
 import useGetAllTopologyBlockConnectionsByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlockConnectionsByEpisodeId";
 import useGetAllTopologyBlocksByEpisodeId from "../PlotField/hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import FlowchartArrowList from "./FlowchartArrowList";
-import "./FlowchartStyles.css";
 import FlowchartTopologyBlockRemake from "./FlowchartTopologyBlockRemake";
+import "./FlowchartStyles.css";
+import { Button } from "@/components/ui/button";
 
 type FlowChartTypes = {
   setScale: React.Dispatch<React.SetStateAction<number>>;
@@ -29,6 +30,7 @@ export default function Flowchart({
   const { data: allTopologyBlocks } = useGetAllTopologyBlocksByEpisodeId({
     episodeId: episodeId || "",
   });
+
   const { data: allConnections } = useGetAllTopologyBlockConnectionsByEpisodeId({ episodeId: episodeId || "" });
 
   const boundsRef = useRef<HTMLDivElement>(null);
@@ -61,6 +63,7 @@ export default function Flowchart({
   const createTopologyBlock = useCreateTopologyBlock({
     episodeId: episodeId || "",
   });
+
   return (
     <section
       ref={boundsRef}
@@ -68,7 +71,7 @@ export default function Flowchart({
        ${hideFlowchartFromScriptwriter ? "hidden" : ""}
        ${command === "expandFlowchart" || expansionDivDirection === "left" ? "w-full" : "w-1/2"} ${
         command === "expandFlowchart" || !command ? "" : "hidden"
-      } overflow-auto rounded-md shadow-md relative bg-primary-darker | containerScroll`}
+      } overflow-auto rounded-md shadow-md relative | containerScroll`}
     >
       <div
         style={{
@@ -82,18 +85,18 @@ export default function Flowchart({
           : null}
         {allConnections ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />) : null}
       </div>
-      <button
+      <Button
         onClick={() => createTopologyBlock.mutate()}
-        className={`fixed bottom-[1.5rem] ${
-          command !== "expandFlowchart" ? "left-[calc(50%+.6rem)]" : "left-[2rem]"
-        } z-[10] px-[1rem] py-[.5rem] text-text-light bg-secondary rounded-md shadow-sm text-[1.4rem]`}
+        className={`fixed bottom-[15px] ${
+          command !== "expandFlowchart" ? "left-[calc(50%+.6rem)]" : "left-[20px]"
+        } hover:shadow-md hover:shadow-brand-gradient-left active:scale-[.99] transition-all z-[10] px-[10px] py-[5px] text-text bg-brand-gradient rounded-md shadow-sm text-[14px]`}
       >
         Создать Блок
-      </button>
+      </Button>
 
       <div className="absolute top-0 bottom-0 right-0 left-0 min-w-[500rem] min-h-[500rem] z-[1]">
-        <div className="absolute bg-secondary left-[calc(50%-.2rem)] h-full w-[.4rem]"></div>
-        <div className="absolute bg-secondary left-[calc(50%-.2rem)] h-full w-[.4rem] rotate-90"></div>
+        <div className="absolute bg-secondary left-[calc(50%-2px)] h-full w-[4px]"></div>
+        <div className="absolute bg-secondary left-[calc(50%-2px)] h-full w-[4px] rotate-90"></div>
       </div>
     </section>
   );

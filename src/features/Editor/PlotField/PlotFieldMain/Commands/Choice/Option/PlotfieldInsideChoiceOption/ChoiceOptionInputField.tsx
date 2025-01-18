@@ -1,34 +1,36 @@
-import { useEffect } from "react";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import React, { useEffect } from "react";
 import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import { ChoiceOptionVariationsTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useUpdateChoiceOptionTranslationText from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
-import useGetTopologyBlockById from "../../../../../hooks/TopologyBlock/useGetTopologyBlockById";
 import useChoiceOptions from "../../Context/ChoiceContext";
+import { Button } from "@/components/ui/button";
 
 type ChoiceOptionInputFieldTypes = {
-  topologyBlockId: string;
   choiceOptionId: string;
   choiceId: string;
   option: string;
   plotfieldCommandId: string;
   type: ChoiceOptionVariationsTypes;
+  setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsFocusedBackground: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function ChoiceOptionInputField({
-  topologyBlockId,
   type,
   option,
   choiceId,
   choiceOptionId,
   plotfieldCommandId,
+  setShowOptionPlot,
+  setIsFocusedBackground,
 }: ChoiceOptionInputFieldTypes) {
   const { updateChoiceOptionText, getChoiceOptionText, getCurrentlyOpenChoiceOptionPlotId } = useChoiceOptions();
-  const theme = localStorage.getItem("theme");
   const debouncedValue = useDebounce({
     delay: 700,
     value: getChoiceOptionText({ choiceId, choiceOptionId }),
   });
-  const { data: topologyBlock } = useGetTopologyBlockById({ topologyBlockId });
+
   const updateChoiceOption = useUpdateChoiceOptionTranslationText({
     choiceOptionId,
     option: debouncedValue,
@@ -49,9 +51,9 @@ export default function ChoiceOptionInputField({
         choiceOptionId === getCurrentlyOpenChoiceOptionPlotId({ plotfieldCommandId: plotfieldCommandId })
           ? ""
           : "hidden"
-      }  flex flex-col gap-[.5rem]`}
+      }  flex gap-[5px]`}
     >
-      <input
+      <PlotfieldInput
         type="text"
         placeholder="Ответ"
         value={getChoiceOptionText({ choiceId, choiceOptionId })}
@@ -62,13 +64,20 @@ export default function ChoiceOptionInputField({
             optionText: e.target.value,
           });
         }}
-        className={`${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } text-[1.5rem] text-text-light bg-secondary rounded-md shadow-sm px-[1rem] py-[.5rem] w-[calc(100%-2.5rem)] focus-within:shadow-inner transition-shadow`}
+        className={`text-[15px] text-text rounded-md shadow-sm px-[10px] py-[5px] w-full focus-within:shadow-inner transition-shadow`}
       />
-      <p className="bg-secondary rounded-md shadow-sm text-[1.3rem] text-text-light px-[1rem] py-[.5rem]">
-        {topologyBlock?.name}
-      </p>
+
+      <Button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowOptionPlot(false);
+          setIsFocusedBackground(false);
+        }}
+        className="text-text bg-accent hover:opacity-80 transition-opacity"
+      >
+        Обратно
+      </Button>
     </div>
   );
 }

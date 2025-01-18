@@ -21,7 +21,7 @@ export default function AllMightySearchMain({ currentCategory, setCurrentCategor
   }, [currentCategory]);
 
   return (
-    <main className="flex-grow p-[1rem] mt-[1.5rem] flex flex-col gap-[1rem]">
+    <main className="flex-grow p-[10px] mt-[10px] flex flex-col gap-[10px]">
       <AllMightySearchMainForm
         currentCategory={currentCategory}
         searchValue={searchValue}
@@ -55,7 +55,7 @@ function AllMightySearchMainNewElementButton({
     <div className="w-full flex justify-between">
       <button
         onClick={() => setShowCreatingNewElement((prev) => !prev)}
-        className="w-[3rem] rounded-md p-[.1rem] ml-auto bg-primary hover:scale-[1.05] transition-all active:scale-[1]"
+        className="w-[30px] rounded-md p-[1px] ml-auto bg-brand-gradient hover:scale-[1.05] transition-all active:scale-[1]"
       >
         <img src={showCreatingNewElement ? reject : plus} alt={showCreatingNewElement ? "x" : "+"} className="w-full" />
       </button>
@@ -77,17 +77,17 @@ function AllMightySearchMainForm({ currentCategory, searchValue, setSearchValue 
       inputRef.current.focus();
     }
   }, [inputRef, currentCategory]);
+
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="flex gap-[.5rem] w-full">
+    <form onSubmit={(e) => e.preventDefault()} className="w-full">
       <PlotfieldInput
         ref={inputRef}
         type="text"
         name="mainInput"
         id="mainInput"
-        outlineNone={true}
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
-        className="flex-grow px-[1rem] py-[.5rem] rounded-md text-[1.5rem] shadow-inner shadow-dark-mid-gray focus-within:shadow-gray-500"
+        className="flex-grow text-[15px]"
       />
     </form>
   );

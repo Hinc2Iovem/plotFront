@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetPremiumOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetPremiumOption";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 
 type OptionPremiumBlockTypes = {
   choiceOptionId: string;
@@ -15,7 +16,6 @@ export default function OptionPremiumBlock({ choiceOptionId, debouncedValue }: O
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
   const [priceAmethysts, setPriceAmethysts] = useState(optionPremium?.priceAmethysts || "");
-  const theme = localStorage.getItem("theme");
 
   useEffect(() => {
     if (optionPremium) {
@@ -55,13 +55,11 @@ export default function OptionPremiumBlock({ choiceOptionId, debouncedValue }: O
   }, [episodeId]);
 
   return (
-    <div className="self-end flex-grow w-full px-[.5rem]">
-      <input
+    <div className="self-end flex-grow w-full">
+      <PlotfieldInput
         type="text"
         placeholder="Аметисты"
-        className={`w-full text-[1.3rem] px-[1rem] py-[.5rem] text-text-light ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } rounded-md shadow-md`}
+        className={`w-full px-[10px] py-[5px] text-text rounded-md shadow-md`}
         value={priceAmethysts || ""}
         onBlur={onBlur}
         onChange={(e) => setPriceAmethysts(+e.target.value)}

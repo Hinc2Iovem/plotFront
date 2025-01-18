@@ -1,14 +1,13 @@
+import { toastErrorStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
-import useCreateStory from "../../../../hooks/Posting/Story/useCreateStory";
-import SyncLoad from "../../../../ui/Loaders/SyncLoader";
-import PreviewImage from "../../../../ui/shared/PreviewImage";
-import { handleUploadeImg } from "../../../../utils/handleUploadImg";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { toastErrorStyles } from "@/components/shared/toastStyles";
+import useCreateStory from "../../../../hooks/Posting/Story/useCreateStory";
+import PreviewImage from "../../../../ui/shared/PreviewImage";
+import { handleUploadeImg } from "../../../../utils/handleUploadImg";
 
 export default function CreateStory() {
   const [storyTitle, setStoryTitle] = useState("");
@@ -27,6 +26,8 @@ export default function CreateStory() {
     title: storyTitle,
   });
 
+  console.log(imgUploading);
+
   useEffect(() => {
     if (preview) {
       setImgUploading(true);
@@ -44,8 +45,6 @@ export default function CreateStory() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preview]);
-
-  console.log(showDialog);
 
   const handleCreateStory = async () => {
     if (!storyTitle.trim().length || !storyDescription.trim().length || !storyGenre.trim().length) {
@@ -119,11 +118,11 @@ export default function CreateStory() {
             Создать
           </Button>
         </form>
-        <SyncLoad
+        {/* <SyncLoad
           className="bg-secondary shadow-md rounded-sm top-[1rem] right-[1rem]"
           conditionToLoading={imgUploading}
           conditionToStart={!imgUploading}
-        />
+        /> */}
       </DialogContent>
     </Dialog>
   );

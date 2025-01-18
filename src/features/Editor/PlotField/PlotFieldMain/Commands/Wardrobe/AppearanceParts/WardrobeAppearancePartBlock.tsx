@@ -68,21 +68,21 @@ export default function WardrobeAppearancePartBlock({
     <div
       className={`${
         showFullName ? "z-10" : ""
-      } w-full h-[10rem] max-h-[10rem] flex flex-col bg-secondary rounded-md gap-[.5rem] shadow-md hover:scale-[1.01] relative`}
+      } w-full h-[150px] max-h-[150px] flex flex-col bg-secondary rounded-md gap-[5px] shadow-md hover:scale-[1.01] relative`}
     >
       {appearancePartImg ? (
         <img
           src={(appearancePartImg as string) || ""}
           alt="AppearancePartImg"
-          className="w-full object-contain h-[7rem] translate-y-[.5rem]"
+          className="w-full object-contain h-[7rem] translate-y-[5px]"
         />
       ) : (
         <PreviewImageSmallIcons
           imagePreview={imagePreview}
-          imgClasses="w-full object-contain h-full translate-y-[.5rem]"
+          imgClasses="w-full object-contain h-full translate-y-[5px]"
           setPreview={setPreview}
           divClasses="relative w-full h-[7rem]"
-          imgNotExistingClasses="w-[50%] translate-x-1/2 translate-y-[.5rem] top-[.5rem] rounded-md h-full object-contain"
+          imgNotExistingClasses="w-[50%] translate-x-1/2 translate-y-[5px] top-[5px] rounded-md h-full object-contain"
         />
       )}
       <h4
@@ -91,7 +91,7 @@ export default function WardrobeAppearancePartBlock({
             setShowFullName(true);
           }
         }}
-        className="text-[1.4rem] whitespace-nowrap px-[1rem] text-text-light w-full"
+        className="text-[20px] whitespace-nowrap px-[10px] text-paragraph w-full"
       >
         {appearancePartName?.trim().length > 13 ? appearancePartName.substring(0, 9) + "..." : appearancePartName}
       </h4>
@@ -103,7 +103,7 @@ export default function WardrobeAppearancePartBlock({
         }}
         className={`${
           showFullName ? "" : "hidden"
-        } absolute bottom-[0rem] text-text-light bg-secondary w-fit whitespace-nowrap rounded-md shadow-sm shadow-gray-400 text-[1.4rem] p-[.5rem]`}
+        } absolute bottom-[0rem] text-paragraph bg-secondary w-fit whitespace-nowrap rounded-md text-[17px] p-[5px]`}
       >
         {appearancePartName}
       </aside>

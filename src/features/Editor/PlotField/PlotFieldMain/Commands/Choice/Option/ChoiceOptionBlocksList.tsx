@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ChoiceOptionVariationsTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useGetAllChoiceOptionsByChoiceId from "../../../../hooks/Choice/ChoiceOption/useGetChoiceAllChoiceOptionsByChoiceId";
 import useChoiceOptions from "../Context/ChoiceContext";
-import ChoiceOptionBlock from "./ChoiceOptionBlock";
+import ChoiceOptionBlock from "./OptionBlock/ChoiceOptionBlock";
 import PlotfieldInsideChoiceOption from "./PlotfieldInsideChoiceOption/PlotfieldInsideChoiceOption";
 import useUpdateCurrentlyOpenChoiceOptionOnMount from "../../../../hooks/Choice/helpers/useUpdateCurrentlyOpenChoiceOptionOnMount";
 
@@ -62,37 +62,40 @@ export default function ChoiceOptionBlocksList({
   });
 
   return (
-    <section
-      className={`w-full ${
-        showOptionPlot || isFocusedBackground
-          ? ""
-          : "grid grid-cols-[repeat(auto-fill,minmax(23rem,1fr))] gap-[1rem] items-center"
-      } bg-primary rounded-md shadow-md p-[.5rem]`}
-    >
-      <PlotfieldInsideChoiceOption
-        choiceId={choiceId}
-        showOptionPlot={showOptionPlot}
-        plotfieldCommandId={plotFieldCommandId}
-        setShowOptionPlot={setShowOptionPlot}
-        setIsFocusedBackground={setIsFocusedBackground}
-        isFocusedBackground={isFocusedBackground}
-        currentTopologyBlockId={currentTopologyBlockId}
-      />
-
-      {getAllChoiceOptionsByPlotfieldCommandId({ plotfieldCommandId: plotFieldCommandId })?.map((co) => (
-        <ChoiceOptionBlock
-          key={co.choiceOptionId}
-          isFocusedBackground={isFocusedBackground}
-          showOptionPlot={showOptionPlot}
+    <>
+      <div className={`${showOptionPlot ? "bg-secondary w-full h-[15px] rounded-md" : ""}`}></div>
+      <section
+        className={`w-full ${
+          showOptionPlot || isFocusedBackground
+            ? ""
+            : "grid grid-cols-[repeat(auto-fill,minmax(295px,1fr))] gap-[10px] items-center"
+        } bg-primary rounded-md shadow-md `}
+      >
+        <PlotfieldInsideChoiceOption
           choiceId={choiceId}
-          plotFieldCommandId={plotFieldCommandId}
-          currentTopologyBlockId={currentTopologyBlockId}
-          amountOfOptions={amountOfOptions}
+          showOptionPlot={showOptionPlot}
+          plotfieldCommandId={plotFieldCommandId}
           setShowOptionPlot={setShowOptionPlot}
-          updated={updated}
-          {...co}
+          setIsFocusedBackground={setIsFocusedBackground}
+          isFocusedBackground={isFocusedBackground}
+          currentTopologyBlockId={currentTopologyBlockId}
         />
-      ))}
-    </section>
+
+        {getAllChoiceOptionsByPlotfieldCommandId({ plotfieldCommandId: plotFieldCommandId })?.map((co) => (
+          <ChoiceOptionBlock
+            key={co.choiceOptionId}
+            isFocusedBackground={isFocusedBackground}
+            showOptionPlot={showOptionPlot}
+            choiceId={choiceId}
+            plotFieldCommandId={plotFieldCommandId}
+            currentTopologyBlockId={currentTopologyBlockId}
+            amountOfOptions={amountOfOptions}
+            setShowOptionPlot={setShowOptionPlot}
+            updated={updated}
+            {...co}
+          />
+        ))}
+      </section>
+    </>
   );
 }

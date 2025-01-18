@@ -5,36 +5,29 @@ import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllCharacteristicsByStoryId from "../../../../../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
-import useUpdateConditionCharacteristic from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
-import useConditionBlocks from "../../../Context/ConditionContext";
 
-type CharacteristicsPromptModalTypes = {
-  setCurrentCharacteristic: React.Dispatch<React.SetStateAction<string | number>>;
+type CharacteristicsPromptModalTypes<T> = {
+  setCurrentCharacteristic: React.Dispatch<React.SetStateAction<T>>;
   setCharacteristicId: React.Dispatch<React.SetStateAction<string>>;
-  currentCharacteristic: string | number;
-  plotfieldCommandId: string;
-  conditionBlockId: string;
-  conditionBlockVariationId: string;
-  fieldType: "conditionName" | "conditionValue";
-  initValue: string | number;
-  setInitValue: React.Dispatch<React.SetStateAction<string | number>>;
+  currentCharacteristic: T;
+  initValue: T;
+  inputClasses?: string;
+  setInitValue: React.Dispatch<React.SetStateAction<T>>;
+  setUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ConditionVariationCharacteristicModal = ({
+function ConditionVariationCharacteristicModal<T>({
   setCurrentCharacteristic,
   setCharacteristicId,
   currentCharacteristic,
-  plotfieldCommandId,
-  conditionBlockId,
-  conditionBlockVariationId,
-  fieldType,
   initValue,
+  inputClasses,
   setInitValue,
-}: CharacteristicsPromptModalTypes) => {
+  setUpdate,
+}: CharacteristicsPromptModalTypes<T>) {
   const { storyId } = useParams();
   const [showCharacteristicModal, setShowCharacteristicModal] = useState(false);
   const currentInput = useRef<HTMLInputElement>(null);
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
 
   const { data: characteristics } = useGetAllCharacteristicsByStoryId({
     storyId: storyId || "",
@@ -43,7 +36,7 @@ const ConditionVariationCharacteristicModal = ({
 
   const memoizedCharacteristics = useMemo(() => {
     if (!characteristics || typeof currentCharacteristic === "number") return [];
-    if (currentCharacteristic?.trim().length) {
+    if (typeof currentCharacteristic === "string" && currentCharacteristic?.trim().length) {
       return characteristics.filter((c) =>
         c.translations.filter(
           (ct) =>
@@ -55,10 +48,6 @@ const ConditionVariationCharacteristicModal = ({
       return characteristics;
     }
   }, [currentCharacteristic, characteristics]);
-
-  const updateConditionBlock = useUpdateConditionCharacteristic({
-    conditionBlockCharacteristicId: conditionBlockVariationId,
-  });
 
   const updateCharacteristicOnBlur = () => {
     if (initValue === currentCharacteristic) {
@@ -72,9 +61,9 @@ const ConditionVariationCharacteristicModal = ({
       if (existingCharacteristic) {
         handleSubmit({
           characteristicId: existingCharacteristic.characteristicId,
-          currentCharacteristic:
-            (existingCharacteristic.translations || []).find((t) => t.textFieldName === "characterCharacteristic")
-              ?.text || "",
+          currentCharacteristic: ((existingCharacteristic.translations || []).find(
+            (t) => t.textFieldName === "characterCharacteristic"
+          )?.text || "") as T,
         });
       } else {
         // TODO suggest to create
@@ -86,7 +75,7 @@ const ConditionVariationCharacteristicModal = ({
     characteristicId,
     currentCharacteristic,
   }: {
-    currentCharacteristic: string;
+    currentCharacteristic: T;
     characteristicId: string;
   }) => {
     if (initValue === currentCharacteristic) {
@@ -97,17 +86,8 @@ const ConditionVariationCharacteristicModal = ({
     setCharacteristicId(characteristicId);
 
     setInitValue(currentCharacteristic);
-    updateConditionBlockVariationValue({
-      conditionBlockId,
-      plotfieldCommandId,
-      conditionBlockVariationId,
-      characteristicId,
-    });
 
-    updateConditionBlock.mutate({
-      characteristicId: fieldType === "conditionName" ? characteristicId : null,
-      secondCharacteristicId: fieldType === "conditionValue" ? characteristicId : null,
-    });
+    setUpdate(true);
   };
 
   const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedCharacteristics.length });
@@ -118,12 +98,12 @@ const ConditionVariationCharacteristicModal = ({
         <div>
           <PlotfieldInput
             ref={currentInput}
-            value={currentCharacteristic}
+            value={typeof currentCharacteristic === "string" ? currentCharacteristic : ""}
             onChange={(e) => {
-              setCurrentCharacteristic(e.target.value);
+              setCurrentCharacteristic(e.target.value as T);
             }}
             onBlur={updateCharacteristicOnBlur}
-            className={`w-full text-text md:text-[17px] border-border border-[3px]`}
+            className={`${inputClasses ? inputClasses : " w-full text-text md:text-[17px] border-border border-[3px]"}`}
             placeholder="Характеристика"
           />
         </div>
@@ -136,7 +116,10 @@ const ConditionVariationCharacteristicModal = ({
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
               onClick={() => {
-                handleSubmit({ currentCharacteristic: c.translations[0]?.text, characteristicId: c.characteristicId });
+                handleSubmit({
+                  currentCharacteristic: c.translations[0]?.text as T,
+                  characteristicId: c.characteristicId,
+                });
                 setShowCharacteristicModal(false);
               }}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
@@ -158,6 +141,6 @@ const ConditionVariationCharacteristicModal = ({
       </PopoverContent>
     </Popover>
   );
-};
+}
 
 export default ConditionVariationCharacteristicModal;

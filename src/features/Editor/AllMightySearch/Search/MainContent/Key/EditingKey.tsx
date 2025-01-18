@@ -1,10 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import useUpdateKeyText from "../../../../PlotField/hooks/Key/useUpdateKeyText";
-import { TempKeyTypes } from "./AllMightySearchMainContentKey";
-import { AllMightySearchKeyResultTypes } from "../../../hooks/useGetPaginatedKey";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
+import useUpdateKeyText from "../../../../PlotField/hooks/Key/useUpdateKeyText";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
+import { AllMightySearchKeyResultTypes } from "../../../hooks/useGetPaginatedKey";
+import { TempKeyTypes } from "./AllMightySearchMainContentKey";
 
 type EditingKeyFormTypes = {
   currentCategory: AllPossibleAllMightySearchCategoriesTypes;
@@ -58,16 +58,18 @@ export function EditingKeyForm({
     <div
       className={`${currentCategory === "key" ? "" : "hidden"} ${
         startEditing ? "" : "hidden"
-      } h-full flex flex-col gap-[1rem]`}
+      } h-full flex flex-col gap-[5px]`}
     >
-      <form className="flex gap-[1rem] p-[.5rem]" onSubmit={handleSubmit}>
+      <form className="flex gap-[5px] p-[5px]" onSubmit={handleSubmit}>
         <PlotfieldInput
           value={currentText}
           onChange={(e) => setCurrentText(e.target.value)}
           className="border-[1px]"
           placeholder="Ключ"
         />
-        <PlotfieldButton className="w-full bg-primary-darker hover:bg-primary max-w-[15rem]">Изменить</PlotfieldButton>
+        <Button className="w-full text-white text-[20px] bg-brand-gradient hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] transition-all max-w-[150px]">
+          Изменить
+        </Button>
       </form>
     </div>
   );

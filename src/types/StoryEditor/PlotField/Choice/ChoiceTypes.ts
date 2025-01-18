@@ -6,18 +6,18 @@ export const ChoiceOptionVariations: ChoiceOptionVariationsTypes[] = [
   "relationship",
   "characteristic",
 ];
-
-export type ChoiceOptionVariationsTypes =
-  | "premium"
-  | "common"
-  | "characteristic"
-  | "relationship";
-
-export const ChoiceVariations: ChoiceVariationsTypes[] = [
-  "common",
-  "timelimit",
-  "multiple",
+export const ChoiceOptionVariationsRus: ChoiceOptionVariationsRusTypes[] = [
+  "обычный",
+  "премиум",
+  "отношения",
+  "характеристика",
 ];
+
+export type ChoiceOptionVariationsTypes = "premium" | "common" | "characteristic" | "relationship";
+
+export type ChoiceOptionVariationsRusTypes = "премиум" | "обычный" | "характеристика" | "отношения";
+
+export const ChoiceVariations: ChoiceVariationsTypes[] = ["common", "timelimit", "multiple"];
 
 export type TextStyleTypes = "default" | "italic" | "bold" | "underscore";
 

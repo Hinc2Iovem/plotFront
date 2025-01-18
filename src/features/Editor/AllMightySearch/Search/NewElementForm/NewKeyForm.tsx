@@ -1,10 +1,12 @@
+import { toastErrorStyles, toastSuccessStyles } from "@/components/shared/toastStyles";
+import { Button } from "@/components/ui/button";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
+import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
 import useCreateNewKeyAsValue from "../../../PlotField/hooks/Key/useCreateNewKeyAsValue";
 import { NewElementTypes } from "../MainContent/AllMightySearchMainContent";
-import PlotfieldInput from "../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldButton from "../../../../../ui/Buttons/PlotfieldButton";
 
 type NewKeyFormTypes = {
   setNewElement: React.Dispatch<React.SetStateAction<NewElementTypes>>;
@@ -33,7 +35,7 @@ export default function NewKeyForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!value?.trim().length) {
-      console.log("Can not crete an empty key");
+      toast("Заполните поле", toastErrorStyles);
       return;
     }
     const keyId = generateMongoObjectId();
@@ -45,19 +47,22 @@ export default function NewKeyForm({
 
     setShowCreatingNewElement(false);
     createNewKey.mutate({ keyId, keyName: value });
+    toast("Новый ключ был создан", toastSuccessStyles);
     setValue("");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-[1rem]">
+    <form onSubmit={handleSubmit} className="flex gap-[5px]">
       <PlotfieldInput
         value={value}
         ref={inputRef}
         onChange={(e) => setValue(e.target.value)}
-        className="border-[.1rem]"
+        className="border-[2px]"
         placeholder="Ключ"
       />
-      <PlotfieldButton className="w-fit self-end bg-primary-darker ">Создать</PlotfieldButton>
+      <Button className="w-fit text-white self-end bg-brand-gradient hover:shadow-sm hover:shadow-brand-gradient-left active:scale-[.99] transition-all max-w-[150px]">
+        Создать
+      </Button>
     </form>
   );
 }

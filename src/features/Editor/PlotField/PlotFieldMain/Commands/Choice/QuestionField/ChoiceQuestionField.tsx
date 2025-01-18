@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TextStyleTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import ButtonHoverPromptModal from "../../../../../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
-import plus from "../../../../../../../assets/images/shared/add.png";
 import useAddItemInsideSearch from "../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
-import useUpdateChoice from "../../../../hooks/Choice/useUpdateChoice";
 import CreateChoiceOptionTypeModal from "../Option/CreateChoiceOptionTypeModal";
 import ChoiceQuestionFieldSection from "./ChoiceQuestionFieldSection";
 import QuestionFieldCharacterAuthorSection from "./QuestionFieldCharacterAuthorSection";
@@ -28,8 +25,6 @@ export default function ChoiceQuestionField({
   plotFieldCommandId,
   textStyle,
 }: ChoiceQuestionFieldTypes) {
-  const [initialCharacterEmotionId] = useState(characterEmotionId);
-  const [showCreateChoiceOptionModal, setShowCreateChoiceOptionModal] = useState(false);
   const [question, setQuestion] = useState("");
   const { allEmotions, setEmotionValue, setCharacterValue, emotionValue, characterValue } = useAssignInitialValueChoice(
     {
@@ -40,15 +35,6 @@ export default function ChoiceQuestionField({
       setQuestion,
     }
   );
-
-  const updateChoice = useUpdateChoice({ choiceId });
-
-  useEffect(() => {
-    if (initialCharacterEmotionId !== emotionValue.emotionId && emotionValue.emotionId?.trim().length) {
-      updateChoice.mutate({ characterEmotionId: emotionValue.emotionId });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [emotionValue.emotionId]);
 
   useAddItemInsideSearch({
     commandName: "Choice",
@@ -61,7 +47,7 @@ export default function ChoiceQuestionField({
   });
 
   return (
-    <div className="w-full flex-grow flex gap-[1rem] bg-primary rounded-md shadow-md p-[.5rem] flex-wrap items-center">
+    <div className="w-full flex-grow flex gap-[5px] bg-primary rounded-md shadow-md flex-wrap items-center">
       <QuestionFieldCharacterAuthorSection
         choiceId={choiceId}
         isAuthor={isAuthor}
@@ -72,37 +58,22 @@ export default function ChoiceQuestionField({
         setEmotionValue={setEmotionValue}
       />
 
-      <ChoiceQuestionFieldSection
-        characterName={characterValue.characterName}
-        isAuthor={isAuthor}
-        plotFieldCommandId={plotFieldCommandId}
-        question={question}
-        setQuestion={setQuestion}
-        textStyle={textStyle}
-        topologyBlockId={topologyBlockId}
-      />
-
-      <div className="relative ml-auto">
-        <ButtonHoverPromptModal
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowCreateChoiceOptionModal((prev) => !prev);
-          }}
-          variant={"rectangle"}
-          contentName="Создать Ответ"
-          positionByAbscissa="right"
-          asideClasses="text-[1.4rem] text-text-light"
-          className="bg-secondary rounded-md shadow-md p-[.2rem]"
-        >
-          <img src={plus} alt="Add" className="w-[3rem] object-contain" />
-        </ButtonHoverPromptModal>
+      <div className="w-full flex gap-[5px] flex-wrap">
+        {/* TODO here onContextMenu */}
+        <ChoiceQuestionFieldSection
+          characterName={characterValue.characterName}
+          isAuthor={isAuthor}
+          plotFieldCommandId={plotFieldCommandId}
+          question={question}
+          setQuestion={setQuestion}
+          textStyle={textStyle}
+          topologyBlockId={topologyBlockId}
+        />
 
         <CreateChoiceOptionTypeModal
           plotFieldCommandId={plotFieldCommandId}
           topologyBlockId={topologyBlockId}
           plotFieldCommandChoiceId={choiceId}
-          setShowCreateChoiceOptionModal={setShowCreateChoiceOptionModal}
-          showCreateChoiceOptionModal={showCreateChoiceOptionModal}
         />
       </div>
     </div>

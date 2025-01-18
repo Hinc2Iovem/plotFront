@@ -1,39 +1,26 @@
-import { useEffect, useRef } from "react";
-import PlotfieldCharacterPromptMain, { ExposedMethods } from "../../Prompts/Characters/PlotfieldCharacterPromptMain";
-import { CharacterValueTypes } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
+import { useEffect, useRef, useState } from "react";
 import useUpdateChoice from "../../../../hooks/Choice/useUpdateChoice";
-import PlotfieldInput from "../../../../../../../ui/Inputs/PlotfieldInput";
+import PlotfieldCharacterPromptMain from "../../Prompts/Characters/PlotfieldCharacterPromptMain";
+import { CharacterValueTypes } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 type ChoiceQuestionCharacterFieldTypes = {
-  setShowAllCharacters: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowAllEmotions: React.Dispatch<React.SetStateAction<boolean>>;
   setCharacterValue: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
-  showAllCharacters: boolean;
   characterValue: CharacterValueTypes;
   choiceId: string;
 };
 
 export default function ChoiceQuestionCharacterField({
-  showAllCharacters,
   choiceId,
-  setShowAllCharacters,
-  setShowAllEmotions,
   characterValue,
   setCharacterValue,
 }: ChoiceQuestionCharacterFieldTypes) {
   const preventRerender = useRef(false);
-  const inputRef = useRef<ExposedMethods>(null);
-
+  const [initValue, setInitValue] = useState<CharacterValueTypes>(characterValue);
   const updateChoice = useUpdateChoice({ choiceId });
 
-  const handleBlur = () => {
-    if (inputRef.current) {
-      inputRef.current?.updateCharacterNameOnBlur();
-    }
-  };
-
   useEffect(() => {
-    if (characterValue._id && preventRerender.current) {
+    if (characterValue._id && preventRerender.current && characterValue._id !== initValue._id) {
+      setInitValue(characterValue);
       updateChoice.mutate({ characterId: characterValue._id });
     }
     return () => {
@@ -45,43 +32,16 @@ export default function ChoiceQuestionCharacterField({
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        setShowAllCharacters(false);
       }}
-      className="w-full relative flex gap-[.5rem] bg-primary rounded-md"
+      className="flex-grow min-w-[200px]"
     >
-      <PlotfieldInput
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowAllCharacters(true);
-          setShowAllEmotions(false);
-        }}
-        onBlur={handleBlur}
-        value={characterValue.characterName || ""}
-        onChange={(e) => {
-          setShowAllCharacters(true);
-          setCharacterValue((prev) => ({
-            ...prev,
-            characterName: e.target.value,
-          }));
-        }}
-        placeholder="Имя Персонажа"
-      />
-
-      <img
-        src={characterValue?.imgUrl || ""}
-        alt="CharacterImg"
-        className={`${
-          characterValue.imgUrl?.trim().length ? "" : "hidden"
-        } w-[3rem] object-cover top-[1.5px] rounded-md right-0 absolute`}
-      />
       <PlotfieldCharacterPromptMain
-        setShowCharacterModal={setShowAllCharacters}
-        showCharacterModal={showAllCharacters}
-        translateAsideValue={"translate-y-[3.5rem]"}
         characterName={characterValue.characterName || ""}
         currentCharacterId={characterValue._id || ""}
         setCharacterValue={setCharacterValue}
-        ref={inputRef}
+        characterValue={characterValue}
+        inputClasses="w-full pr-[35px] text-text md:text-[17px]"
+        imgClasses="w-[30px] object-cover rounded-md right-0 absolute"
       />
     </form>
   );

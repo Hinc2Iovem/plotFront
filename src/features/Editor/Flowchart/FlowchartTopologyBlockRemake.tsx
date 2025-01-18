@@ -24,7 +24,6 @@ export default function FlowchartTopologyBlock({
   const { setItem } = useTypedSessionStorage<SessionStorageKeys>();
 
   const { coordinates, setCoordinates } = useCoordinates();
-  const theme = localStorage.getItem("theme");
   const topologyBlockRef = useRef<HTMLDivElement>(null);
   const [localCoordinates, setLocalCoordinates] = useState<{
     coordinatesX: number;
@@ -115,10 +114,8 @@ export default function FlowchartTopologyBlock({
             }}
             ref={topologyBlockRef}
             className={` ${
-              currentTopologyBlock._id === _id
-                ? `${theme === "light" ? "bg-green-300 text-text-dark " : "bg-green-500 text-text-light"}`
-                : "bg-secondary "
-            } text-text-light z-[10] w-[10rem] text-[2rem] rounded-md shadow-md absolute px-[1rem] py-[.5rem] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
+              currentTopologyBlock._id === _id ? `border-border border-[3px]` : "bg-secondary "
+            } text-text z-[10] w-[100px] text-[20px] rounded-md shadow-md absolute px-[10px] py-[5px] active:cursor-move cursor-default whitespace-nowrap min-w-fit`}
           >
             {name}
           </div>

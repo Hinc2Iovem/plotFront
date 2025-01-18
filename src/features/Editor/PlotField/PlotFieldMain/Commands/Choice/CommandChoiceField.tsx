@@ -3,6 +3,7 @@ import { ChoiceVariationsTypes } from "../../../../../../types/StoryEditor/PlotF
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useCheckIfShowingPlotfieldInsideChoiceOnMount from "../../../hooks/Choice/helpers/useCheckIfShowingPlotfieldInsideChoiceOnMount";
 
+import { Button } from "@/components/ui/button";
 import useGetCommandChoice from "../../../hooks/Choice/useGetCommandChoice";
 import useUpdateChoiceIsAuthor from "../../../hooks/Choice/useUpdateChoiceIsAuthor";
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
@@ -66,26 +67,29 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
   }, [commandChoice]);
 
   return (
-    <div className="flex gap-[1rem] w-full flex-wrap bg-primary-darker rounded-md p-[.5rem] sm:flex-row flex-col sm:items-start">
-      <div className="sm:w-[20%] min-w-[100px] relative">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-dark-dark-blue" : "bg-secondary"}`}>
-          {nameValue}
-        </PlotfieldCommandNameField>
+    <div className="flex gap-[5px] w-full flex-wrap rounded-md flex-col sm:items-start">
+      <div className="flex gap-[5px] w-full flex-wrap">
+        <div className="min-w-[100px] relative flex-grow">
+          <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} h-full`}>
+            {nameValue}
+          </PlotfieldCommandNameField>
+        </div>
+
+        <div className="flex-grow">
+          <ChoiceVariationTypeBlock
+            choiceVariationTypes={choiceVariationTypes}
+            setChoiceVariationTypes={setChoiceVariationTypes}
+            setExitBlockId={setExitBlockId}
+            setTimeLimit={setTimeLimit}
+            choiceId={commandChoiceId}
+            exitBlockId={exitBlockId}
+            timeLimit={timeLimit}
+            amountOfOptions={amountOfOptions || 0}
+            timeLimitDefaultOptionId={timeLimitDefaultOptionId}
+            insidePlotfield={true}
+          />
+        </div>
       </div>
-
-      <ChoiceVariationTypeBlock
-        choiceVariationTypes={choiceVariationTypes}
-        setChoiceVariationTypes={setChoiceVariationTypes}
-        setExitBlockId={setExitBlockId}
-        setTimeLimit={setTimeLimit}
-        choiceId={commandChoiceId}
-        exitBlockId={exitBlockId}
-        timeLimit={timeLimit}
-        amountOfOptions={amountOfOptions || 0}
-        timeLimitDefaultOptionId={timeLimitDefaultOptionId}
-        insidePlotfield={true}
-      />
-
       <UpdateIsAuthorButton commandChoiceId={commandChoiceId} isAuthor={isAuthor} setIsAuthor={setIsAuthor} />
 
       <ChoiceQuestionField
@@ -121,8 +125,6 @@ type UpdateIsAuthorButtonTypes = {
 };
 
 function UpdateIsAuthorButton({ commandChoiceId, isAuthor, setIsAuthor }: UpdateIsAuthorButtonTypes) {
-  const theme = localStorage.getItem("theme");
-
   const updateChoiceIsAuthor = useUpdateChoiceIsAuthor({
     choiceId: commandChoiceId,
   });
@@ -135,22 +137,18 @@ function UpdateIsAuthorButton({ commandChoiceId, isAuthor, setIsAuthor }: Update
     }
   }, [updateChoiceIsAuthor]);
   return (
-    <button
+    <Button
       onClick={() => {
         setIsAuthor((prev) => !prev);
         setDisabledBtn(true);
         updateChoiceIsAuthor.mutate({ isAuthor: !isAuthor });
       }}
       disabled={disabledBtn}
-      className={`rounded-md ${
-        isAuthor
-          ? `${theme === "light" ? "bg-green-300" : "bg-green-400"} text-text-dark`
-          : "bg-secondary text-gray-700"
-      } ${disabledBtn ? "cursor-not-allowed" : ""} ${
-        theme === "light" ? "outline-gray-300" : "outline-gray-600"
-      } text-text-light flex-grow shadow-md text-[1.3rem] px-[1rem] py-[.5rem] outline-gray-300`}
+      className={`rounded-md ${isAuthor ? `bg-green` : "bg-accent"} ${
+        disabledBtn ? "cursor-not-allowed" : ""
+      } text-text shadow-md w-full px-[10px] py-[5px] hover:opacity-80 focus-within:opacity-80 active:scale-[.99] transition-all`}
     >
       Автор
-    </button>
+    </Button>
   );
 }

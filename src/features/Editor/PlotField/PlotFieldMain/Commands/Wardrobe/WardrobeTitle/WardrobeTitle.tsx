@@ -3,6 +3,9 @@ import PlotfieldInput from "../../../../../../../ui/Inputs/PlotfieldInput";
 import useSearch from "../../../../../Context/Search/SearchContext";
 import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
 import useUpdateWardrobeTranslationText from "../../../../hooks/Wardrobe/useUpdateWardrobeTranslationText";
+import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import useGetCommandWardrobeTranslation from "@/features/Editor/PlotField/hooks/Wardrobe/useGetCommandWardrobeTranslation";
 
 type WardrobeTitleTypes = {
   plotFieldCommandId: string;
@@ -28,7 +31,19 @@ export default function WardrobeTitle({
   const { episodeId } = useParams();
   const { updateValue } = useSearch();
 
-  const theme = localStorage.getItem("theme");
+  const { data: translatedWardrobe } = useGetCommandWardrobeTranslation({
+    commandId: plotFieldCommandId || "",
+  });
+
+  useEffect(() => {
+    if (translatedWardrobe && !wardrobeTitle.trim().length) {
+      translatedWardrobe.translations?.map((tw) => {
+        if (tw.textFieldName === "commandWardrobeTitle") {
+          setWardrobeTitle(tw.text);
+        }
+      });
+    }
+  }, [translatedWardrobe]);
 
   const updateWardrobeTranslatedTitle = useUpdateWardrobeTranslationText({
     commandId: plotFieldCommandId,
@@ -55,7 +70,7 @@ export default function WardrobeTitle({
   };
 
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow flex gap-[1rem]">
+    <form onSubmit={(e) => e.preventDefault()} className="flex-grow flex gap-[5px]">
       <PlotfieldInput
         value={wardrobeTitle}
         type="text"
@@ -63,7 +78,7 @@ export default function WardrobeTitle({
         placeholder="Название гардероба"
         onChange={(e) => setWardrobeTitle(e.target.value)}
       />
-      <button
+      <Button
         type="button"
         disabled={updateWardrobeIsCurrentlyDressed.isPending}
         onClick={(e) => {
@@ -73,22 +88,12 @@ export default function WardrobeTitle({
           });
           e.currentTarget.blur();
         }}
-        className={`text-[1.4rem] rounded-md shadow-md ${
-          isCurrentlyDressed
-            ? `${
-                theme === "light"
-                  ? "bg-green-300 text-text-dark"
-                  : "bg-green-400 text-text-light hover:bg-secondary hover:text-text-light focus-within:bg-secondary focus-within:text-text-light"
-              }`
-            : `${
-                theme === "light"
-                  ? "bg-secondary text-black"
-                  : "hover:bg-green-400 hover:text-text-light bg-secondary text-text-light focus-within:bg-green-400 focus-within:text-text-light"
-              }`
-        } px-[1rem] whitespace-nowrap ${theme === "light" ? "outline-gray-300" : "outline-gray-600"}`}
+        className={`text-[17px] rounded-md shadow-sm hover:scale-[1.01] ${
+          isCurrentlyDressed ? "bg-green hover:shadow-green" : "bg-orange hover:shadow-orange"
+        } px-[10px] text-text whitespace-nowrap hover:opacity-80 active:scale-[0.99] transition-all`}
       >
         {isCurrentlyDressed ? "Надето" : "Не надето"}
-      </button>
+      </Button>
     </form>
   );
 }

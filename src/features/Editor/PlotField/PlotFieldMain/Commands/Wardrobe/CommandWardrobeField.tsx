@@ -1,17 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import rejectImg from "../../../../../../assets/images/shared/rejectWhite.png";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
+import { useEffect, useState } from "react";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandWardrobe from "../../../hooks/Wardrobe/useGetCommandWardrobe";
-import useGetCommandWardrobeTranslation from "../../../hooks/Wardrobe/useGetCommandWardrobeTranslation";
-import useGetAllWardrobeAppearancePartBlocks from "../../../hooks/Wardrobe/WardrobeAppearancePartBlock/useGetAllWardrobeAppearancePartBlocks";
-import WardrobeAppearanceNames from "./WardrobeAppearanceNames/WardrobeAppearanceNames";
-import WardrobeAppearancePartBlock from "./AppearanceParts/WardrobeAppearancePartBlock";
-import WardrobeTitle from "./WardrobeTitle/WardrobeTitle";
-import WardrobeCharacterAppearancePartForm from "./AppearanceParts/WardrobeCharacterAppearancePartForm";
 import "../Prompts/promptStyles.css";
+import WardrobeAppearance from "./AppearanceParts/WardrobeAppearance";
+import WardrobeTitle from "./WardrobeTitle/WardrobeTitle";
 
 type CommandWardrobeFieldTypes = {
   plotFieldCommandId: string;
@@ -29,7 +23,6 @@ export default function CommandWardrobeField({
   const [commandWardrobeId, setCommandWardrobeId] = useState("");
   const [characterId, setCharacterId] = useState("");
   const [isCurrentlyDressed, setIsCurrentlyDressed] = useState<boolean>(false);
-  const [showAllAppearancePartBlocks, setShowAllAppearancePartBlocks] = useState(false);
   const { data: commandWardrobe } = useGetCommandWardrobe({
     plotFieldCommandId,
   });
@@ -37,32 +30,6 @@ export default function CommandWardrobeField({
   const [allAppearanceNames, setAllAppearanceNames] = useState<string[]>([]);
 
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
-
-  const appearancePartsRef = useRef<HTMLDivElement>(null);
-
-  const { data: translatedWardrobe } = useGetCommandWardrobeTranslation({
-    commandId: plotFieldCommandId || "",
-  });
-
-  const { data: allAppearancePartBlocks } = useGetAllWardrobeAppearancePartBlocks({ commandWardrobeId });
-
-  useEffect(() => {
-    if (commandWardrobe) {
-      setCommandWardrobeId(commandWardrobe._id);
-      setIsCurrentlyDressed(commandWardrobe?.isCurrentDressed || false);
-      setCharacterId(commandWardrobe?.characterId || "");
-    }
-  }, [commandWardrobe]);
-
-  useEffect(() => {
-    if (translatedWardrobe && !wardrobeTitle.trim().length) {
-      translatedWardrobe.translations?.map((tw) => {
-        if (tw.textFieldName === "commandWardrobeTitle") {
-          setWardrobeTitle(tw.text);
-        }
-      });
-    }
-  }, [translatedWardrobe]);
 
   useAddItemInsideSearch({
     commandName: nameValue || "wardrobe",
@@ -72,16 +39,20 @@ export default function CommandWardrobeField({
     type: "command",
   });
 
-  useOutOfModal({
-    modalRef: appearancePartsRef,
-    showModal: showAllAppearancePartBlocks,
-    setShowModal: setShowAllAppearancePartBlocks,
-  });
+  useEffect(() => {
+    if (commandWardrobe) {
+      setCommandWardrobeId(commandWardrobe._id);
+      setIsCurrentlyDressed(commandWardrobe?.isCurrentDressed || false);
+      setCharacterId(commandWardrobe?.characterId || "");
+    }
+  }, [commandWardrobe]);
 
   return (
-    <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col relative">
-      <div className="sm:w-[20%] min-w-[100px] relative">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
+    <div className="flex gap-[5px] w-full rounded-md p-[5px] flex-col relative">
+      <div className="min-w-[100px] flex-grow">
+        <PlotfieldCommandNameField
+          className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} text-[30px] text-center`}
+        >
           {nameValue}
         </PlotfieldCommandNameField>
       </div>
@@ -96,31 +67,11 @@ export default function CommandWardrobeField({
         wardrobeTitle={wardrobeTitle}
       />
 
-      <WardrobeCharacterAppearancePartForm commandWardrobeId={commandWardrobeId} characterId={characterId} />
-
-      <WardrobeAppearanceNames
-        allAppearanceNames={allAppearanceNames}
-        setShowAllAppearancePartBlocks={setShowAllAppearancePartBlocks}
+      <WardrobeAppearance
+        characterId={characterId}
+        commandWardrobeId={commandWardrobeId}
+        setAllAppearanceNames={setAllAppearanceNames}
       />
-
-      <div
-        ref={appearancePartsRef}
-        className={`${
-          showAllAppearancePartBlocks ? "" : "hidden"
-        } bottom-0 left-0 flex flex-col w-full bg-primary-darker rounded-md p-[.5rem] max-h-[17rem] absolute`}
-      >
-        <button
-          onClick={() => setShowAllAppearancePartBlocks(false)}
-          className="w-[3rem] rounded-full self-end outline-gray-500"
-        >
-          <img src={rejectImg} alt="X" className="w-full" />
-        </button>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-[1rem] w-full h-[13rem] overflow-y-auto p-[.5rem] | containerScroll">
-          {allAppearancePartBlocks?.map((a) => (
-            <WardrobeAppearancePartBlock key={a._id} {...a} setAllAppearanceNames={setAllAppearanceNames} />
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

@@ -29,26 +29,22 @@ export default function ChoiceVariationTypeBlock({
   timeLimitDefaultOptionId,
   insidePlotfield = false,
 }: ChoiceVariationTypeBlockTypes) {
-  const [showChoiceMultipleModal, setShowChoiceMultipleModal] = useState(false);
   const [showChoiceDefaultTimeLimitBlockModal, setShowChoiceDefaultTimeLimitBlockModal] = useState(false);
 
-  const [showChoiceVariationTypesModal, setShowChoiceVariationTypesModal] = useState(false);
+  const [, setShowChoiceVariationTypesModal] = useState(false);
 
   return (
-    <>
+    <div className="flex gap-[5px] min-w-[300px] flex-wrap">
       <ChoiceChooseVariationType
         choiceId={choiceId}
         choiceVariationTypes={choiceVariationTypes}
         setChoiceVariationTypes={setChoiceVariationTypes}
-        setShowChoiceMultipleModal={setShowChoiceMultipleModal}
-        setShowChoiceVariationTypesModal={setShowChoiceVariationTypesModal}
-        showChoiceVariationTypesModal={showChoiceVariationTypesModal}
       />
 
       <form
         className={`${
           choiceVariationTypes === "common" || !choiceVariationTypes?.trim().length ? "hidden" : ""
-        } flex-grow shadow-md bg-primary rounded-md relative`}
+        } flex-grow shadow-md rounded-md relative`}
         onSubmit={(e) => e.preventDefault()}
       >
         <ChoiceTimeLimitBlock
@@ -63,16 +59,14 @@ export default function ChoiceVariationTypeBlock({
           amountOfOptions={amountOfOptions}
           timeLimitDefaultOptionId={timeLimitDefaultOptionId}
         />
+
         <ChoiceMultipleBlock
           choiceId={choiceId}
           choiceVariationTypes={choiceVariationTypes}
           exitBlockId={exitBlockId}
           setExitBlockId={setExitBlockId}
-          setShowChoiceMultipleModal={setShowChoiceMultipleModal}
-          setShowChoiceVariationTypesModal={setShowChoiceVariationTypesModal}
-          showChoiceMultipleModal={showChoiceMultipleModal}
         />
       </form>
-    </>
+    </div>
   );
 }

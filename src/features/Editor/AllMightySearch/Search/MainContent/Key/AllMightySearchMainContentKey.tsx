@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { KeyTypes } from "../../../../../../types/StoryEditor/PlotField/Key/KeyTypes";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import useDeleteKey from "../../../../PlotField/hooks/Key/useDeleteKey";
 import useGetAllKeysByStoryId from "../../../../PlotField/hooks/Key/useGetAllKeysByStoryId";
 import { AllPossibleAllMightySearchCategoriesTypes } from "../../../AllMightySearch";
@@ -119,9 +119,9 @@ export default function AllMightySearchMainContentKey({
       <div
         className={`${currentCategory === "key" ? "" : "hidden"} ${
           startEditing ? "hidden" : ""
-        } h-full flex flex-col gap-[1rem] overflow-auto | containerScroll`}
+        } h-full flex flex-col gap-[10px] overflow-auto | containerScroll`}
       >
-        <div className="flex gap-[1rem] flex-wrap p-[1rem]">
+        <div className="flex gap-[10px] flex-wrap p-[10px]">
           {!debouncedValue?.trim().length
             ? allPaginatedResults?.map((p) =>
                 p?.results?.map((pr) => (
@@ -160,13 +160,11 @@ export default function AllMightySearchMainContentKey({
             : null}
         </div>
 
-        <button
+        <Button
           ref={ref}
           className={`${debouncedValue?.trim().length ? "hidden" : ""} ${
-            !allPaginatedResults[allPaginatedResults.length - 1]?.next
-              ? "bg-primary-darker text-dark-mid-gray"
-              : "hover:text-text-light  focus-within:text-text-light text-text-light"
-          } text-[1.8rem] mt-[2rem] ml-auto w-fit hover:bg-primary transition-all active:bg-primary-darker rounded-md px-[1rem] py-[.5rem] whitespace-nowrap`}
+            !allPaginatedResults[allPaginatedResults.length - 1]?.next ? "bg-background" : "bg-accent"
+          } text-[18px] text-text mt-[20px] ml-auto w-fit transition-all rounded-md px-[10px] py-[5px] whitespace-nowrap`}
           disabled={!hasNextPage || isFetchingNextPage}
           onClick={() => {
             if (hasNextPage) {
@@ -180,7 +178,7 @@ export default function AllMightySearchMainContentKey({
             : isFetchingNextPage
             ? "Загрузка"
             : "Смотреть Больше"}
-        </button>
+        </Button>
       </div>
 
       <EditingKeyForm
@@ -220,10 +218,7 @@ function ContentKeyButton({
   setNewElement,
   setAllPaginatedResults,
 }: ContentKeyButtonTypes) {
-  const [suggestiveModal, setSuggestiveModal] = useState(false);
   const removeKey = useDeleteKey({ storyId: storyId || "", page, limit });
-
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const handleRemove = ({ keyId }: { keyId: string }) => {
     setAllPaginatedResults((prev) =>
@@ -238,27 +233,15 @@ function ContentKeyButton({
     removeKey.mutate({ keyId });
   };
 
-  useOutOfModal({ setShowModal: setSuggestiveModal, showModal: suggestiveModal, modalRef });
-
   return (
-    <div ref={modalRef} className="relative flex-grow min-w-[7.5rem]">
-      <PlotfieldButton
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setSuggestiveModal((prev) => !prev);
-        }}
-        className="text-start w-full bg-primary-darker text-[1.5rem] p-[1rem]"
-      >
-        {keyText}
-      </PlotfieldButton>
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <Button className="text-text flex-grow min-w-[75px] bg-accent text-[15px] p-[10px]">{keyText}</Button>
+      </ContextMenuTrigger>
 
-      <div
-        className={`${
-          suggestiveModal ? "" : "hidden"
-        } flex flex-col gap-[1rem] bg-secondary p-[1rem] rounded-md shadow-sm shadow-dark-mid-gray absolute top-[4.5rem] w-fit right-[0rem] z-[10] `}
-      >
-        <PlotfieldButton
-          className={`bg-secondary text-[1.7rem]`}
+      <ContextMenuContent>
+        <ContextMenuItem
+          className={``}
           onClick={() => {
             setStartEditing(true);
             setEditingKey({
@@ -268,11 +251,11 @@ function ContentKeyButton({
           }}
         >
           Изменить
-        </PlotfieldButton>
-        <PlotfieldButton className={`bg-secondary text-[1.7rem]`} onClick={() => handleRemove({ keyId })}>
+        </ContextMenuItem>
+        <ContextMenuItem className={``} onClick={() => handleRemove({ keyId })}>
           Удалить
-        </PlotfieldButton>
-      </div>
-    </div>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }

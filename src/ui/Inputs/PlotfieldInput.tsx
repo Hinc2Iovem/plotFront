@@ -23,7 +23,7 @@ const PlotfieldInput = forwardRef<HTMLInputElement, PlotFieldInputTypes & Plotfi
       <Input
         ref={resolvedRef}
         className={twMerge(
-          `w-full md:text-[17px] text-text rounded-md px-[10px] py-[5px] transition-shadow`,
+          `w-full md:text-[17px] text-text border-border rounded-md px-[10px] py-[5px] transition-shadow`,
           className
         )}
         {...props}

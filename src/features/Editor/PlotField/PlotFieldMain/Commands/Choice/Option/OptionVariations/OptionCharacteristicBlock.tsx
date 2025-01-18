@@ -5,7 +5,8 @@ import useDebounce from "../../../../../../../../hooks/utilities/useDebounce";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import useUpdateChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOption";
 import useGetCharacteristicOption from "../../../../../hooks/Choice/ChoiceOptionVariation/useGetCharacteristicOption";
-import PlotfieldCharacteristicPromptMain from "../../../Prompts/Characteristics/PlotfieldCharacteristicPromptMain";
+import ConditionVariationCharacteristicModal from "../../../Condition/PlotfieldInsideConditionBlock/ConditionBlockVariationInput/Characteristic/ConditionVariationCharacteristicModal";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 
 type OptionCharacteristicBlockTypes = {
   choiceOptionId: string;
@@ -18,7 +19,9 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
     plotFieldCommandChoiceOptionId: choiceOptionId,
   });
   const [characteristicId, setCharacteristicId] = useState("");
+  const [update, setUpdate] = useState(false);
   const theme = localStorage.getItem("theme");
+
   useEffect(() => {
     if (optionCharacteristic) {
       setCharacteristicId(optionCharacteristic.characterCharacteristicId);
@@ -31,13 +34,14 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
   });
 
   const [characteristicName, setCharacteristicName] = useState("");
-  const [showAllCharacteristics, setShowAllCharacteristics] = useState(false);
+  const [initValue, setInitValue] = useState("");
 
   useEffect(() => {
     if (translatedCharacteristic) {
       translatedCharacteristic.translations.map((tc) => {
         if (tc.textFieldName === "characterCharacteristic") {
           setCharacteristicName(tc.text);
+          setInitValue(tc.text);
         }
       });
     }
@@ -79,14 +83,16 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
   };
 
   useEffect(() => {
-    updateValues();
-    if (characteristicId?.trim().length) {
-      updateOptionCharacteristic.mutate({
-        characterCharacteristicId: characteristicId,
-      });
+    if (update) {
+      updateValues();
+      if (characteristicId?.trim().length) {
+        updateOptionCharacteristic.mutate({
+          characterCharacteristicId: characteristicId,
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characteristicId]);
+  }, [update]);
 
   useEffect(() => {
     if (episodeId) {
@@ -95,33 +101,22 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
   }, [episodeId]);
 
   return (
-    <div className="self-end sm:w-fit w-full px-[.5rem] flex gap-[1rem] flex-grow flex-wrap">
+    <div className="w-full flex gap-[5px] flex-grow flex-wrap">
       <div className="relative flex-grow">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowAllCharacteristics((prev) => !prev);
-          }}
-          className={`w-full ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light text-[1.3rem] px-[1rem] py-[.5rem] rounded-md shadow-md`}
-          type="button"
-        >
-          {characteristicName || "Характеристики"}
-        </button>
-        <PlotfieldCharacteristicPromptMain
+        <ConditionVariationCharacteristicModal<string>
+          currentCharacteristic={characteristicName}
+          initValue={initValue}
           setCharacteristicId={setCharacteristicId}
-          setCharacteristicName={setCharacteristicName}
-          setShowCharacteristicModal={setShowAllCharacteristics}
-          showCharacteristicModal={showAllCharacteristics}
+          setCurrentCharacteristic={setCharacteristicName}
+          setInitValue={setInitValue}
+          setUpdate={setUpdate}
+          inputClasses="w-full text-text md:text-[17px] border-border border-[1px]"
         />
       </div>
-      <input
+      <PlotfieldInput
         type="text"
         placeholder="Очки характеристики"
-        className={`flex-grow text-[1.3rem] px-[1rem] py-[.5rem] text-text-light ${
-          theme === "light" ? "outline-gray-300" : "outline-gray-600"
-        } rounded-md shadow-md`}
+        className={`flex-grow text-[13px] px-[10px] py-[5px] text-text rounded-md shadow-md`}
         value={amountOfPoints || ""}
         onBlur={onBlur}
         onChange={(e) => setAmountOfPoints(+e.target.value)}

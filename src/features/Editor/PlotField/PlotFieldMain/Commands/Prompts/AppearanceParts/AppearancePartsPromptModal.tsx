@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useGetTranslationAppearancePartsByStoryId from "@/hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import { TranslationTextFieldNameAppearancePartsTypes } from "@/types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -10,6 +11,8 @@ type AppearancePartsPromptModalTypes = {
   currentAppearancePartName: string;
   initialValue: string;
   appearancePartId: string;
+  inputClasses?: string;
+  appearanceType?: TranslationTextFieldNameAppearancePartsTypes | "temp";
   setCurrentAppearancePartName: React.Dispatch<React.SetStateAction<string>>;
   setAppearancePartId: React.Dispatch<React.SetStateAction<string>>;
   setInitialValue: React.Dispatch<React.SetStateAction<string>>;
@@ -23,6 +26,8 @@ export default function AppearancePartsPromptModal({
   appearancePartId,
   currentAppearancePartName,
   initialValue,
+  inputClasses,
+  appearanceType,
   setAppearancePartId,
   setCurrentAppearancePartName,
   setInitialValue,
@@ -43,14 +48,16 @@ export default function AppearancePartsPromptModal({
   const memoizedAppearanceParts = useMemo(() => {
     if (!appearanceParts) return [];
 
-    if (currentAppearancePartName) {
-      return appearanceParts?.filter((p) =>
-        p?.translations[0].text?.toLowerCase().includes(currentAppearancePartName?.toLowerCase())
-      );
-    } else {
-      return appearanceParts;
-    }
-  }, [currentAppearancePartName, appearanceParts]);
+    return appearanceParts.filter((p) => {
+      const matchesName =
+        !currentAppearancePartName ||
+        p.translations[0]?.text?.toLowerCase().includes(currentAppearancePartName.toLowerCase());
+
+      const matchesType = !appearanceType?.trim() || p.type === appearanceType;
+
+      return matchesName && matchesType;
+    });
+  }, [currentAppearancePartName, appearanceType, appearanceParts]);
 
   const updateAppearancePartOnBlur = () => {
     if (initialValue === currentAppearancePartName) {
@@ -72,14 +79,15 @@ export default function AppearancePartsPromptModal({
   };
 
   const handleUpdatingValues = ({ id, name }: { id: string; name: string }) => {
+    setAppearancePartId(id);
+    setCurrentAppearancePartName(name);
+    setShowAppearanceModal(false);
+
     if (appearancePartId !== id) {
       if (onValueUpdating) {
         onValueUpdating({ appearancePartId: id });
       }
     }
-    setAppearancePartId(id);
-    setCurrentAppearancePartName(name);
-    setShowAppearanceModal(false);
   };
 
   const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedAppearanceParts.length });
@@ -109,7 +117,9 @@ export default function AppearancePartsPromptModal({
                 onBlur();
               }
             }}
-            className={`w-full text-text md:text-[17px] border-border border-[3px]`}
+            className={`${
+              inputClasses?.trim().length ? inputClasses : "w-full text-text md:text-[17px] border-border border-[3px]"
+            }`}
             placeholder="Внешний Вид"
           />
         </div>

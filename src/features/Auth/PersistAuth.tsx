@@ -36,7 +36,7 @@ export default function PersistLogin() {
       ) : (
         <>
           <Outlet />
-          <Toaster />
+          <Toaster className="bottom-[10px] right-[10px]" />
         </>
       )}
     </>
