@@ -9,6 +9,7 @@ import React from "react";
 type CharacterFormTypes = {
   setStarted: React.Dispatch<React.SetStateAction<boolean>>;
   setCharacterName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setCharacterNameTag: React.Dispatch<React.SetStateAction<string | undefined>>;
   setCharacterUnknownName: React.Dispatch<React.SetStateAction<string | undefined>>;
   setCharacterDescription: React.Dispatch<React.SetStateAction<string | undefined>>;
   setImagePreview: React.Dispatch<React.SetStateAction<string | null | ArrayBuffer>>;
@@ -17,6 +18,7 @@ type CharacterFormTypes = {
   characterUnknownName?: string;
   characterDescription?: string;
   characterName?: string;
+  characterNameTag?: string;
   imagePreview: string | null | ArrayBuffer;
   characterType: CharacterTypes;
   type: "create" | "edit";
@@ -33,12 +35,14 @@ type CharacterFormTypes = {
 export default function CharacterForm({
   characterDescription,
   characterName,
+  characterNameTag,
   characterType,
   characterUnknownName,
   imagePreview,
   handleSubmit,
   setCharacterDescription,
   setCharacterName,
+  setCharacterNameTag,
   setCharacterType,
   setCharacterUnknownName,
   setImagePreview,
@@ -94,7 +98,7 @@ export default function CharacterForm({
             placeholder="Описание"
             value={characterDescription}
             onChange={(e) => setCharacterDescription(e.target.value)}
-            className="border-[1px] border-border min-h-[7rem]"
+            className="border-[1px] border-border min-h-[70px]"
           />
           <div className="absolute px-[10px] py-[5px] top-[-10px] right-[10px] bg-secondary">
             <p className="text-text text-[13px]">Описание</p>
@@ -102,18 +106,34 @@ export default function CharacterForm({
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-[5px] py-[5px] items-center justify-center">
-        <SelectCharacterType<CharacterTypes>
-          onValueChange={(value) => {
-            setCharacterType(value);
-          }}
-          triggerClasses="text-text border-border"
-          valueClasses=""
-          withAll={false}
-          characterType={characterType}
-        />
+      <div className="flex flex-wrap md:gap-[30px] gap-[5px] py-[5px] items-center justify-center w-full">
+        <div className="w-[calc(50%-2.5px)] flex flex-col gap-[5px]">
+          <SelectCharacterType<CharacterTypes>
+            onValueChange={(value) => {
+              setCharacterType(value);
+            }}
+            triggerClasses="text-text border-border"
+            valueClasses=""
+            withAll={false}
+            characterType={characterType}
+          />
+          {characterType === "minorcharacter" ? (
+            <div className="relative w-full ">
+              <PlotfieldInput
+                placeholder="Тэг"
+                type="text"
+                value={characterNameTag}
+                onChange={(e) => setCharacterNameTag(e.target.value)}
+                className="border-[1px] border-border w-full"
+              />
+              <div className="absolute px-[10px] py-[5px] top-[-10px] right-[10px] bg-secondary">
+                <p className="text-text text-[13px]">Тэг</p>
+              </div>
+            </div>
+          ) : null}
+        </div>
 
-        <div className="w-[200px] h-[150px] relative bg-primary rounded-md">
+        <div className="w-[200px] h-[150px] relative bg-primary rounded-md bg-accent">
           <PreviewImage
             imagePreview={imagePreview}
             imgClasses="absolute w-[150px] -translate-x-1/2 left-1/2 object-cover"

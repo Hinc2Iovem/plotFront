@@ -27,7 +27,7 @@ export default function PlotfieldSearch({ setShowAllMightySearch }: PlotfieldSea
     <main className="flex-grow p-[10px] flex flex-col mt-[10px] gap-[10px]">
       <PlotfieldSearchForm searchValue={searchValue} setSearchValue={setSearchValue} />
       <div className="flex flex-col gap-[10px] h-full overflow-auto | containerScroll">
-        <h5 className={`${amountOfResults > 0 ? "" : "hidden"} text-text-light text-[1.3rem]`}>
+        <h5 className={`${amountOfResults > 0 ? "" : "hidden"} text-text opacity-60 text-[13px]`}>
           Количество результатов: {amountOfResults}
         </h5>
         {getSearchResults({ episodeId: episodeId || "", value: debouncedValue }).map((sr) => (
@@ -61,8 +61,8 @@ function PlotfieldSearchResultsItem({
   };
 
   return (
-    <div className="flex flex-col p-[5px] rounded-md bg-primary-darker gap-[25px]">
-      <div className="flex w-full justify-between">
+    <div className="flex flex-col p-[5px] rounded-md bg-accent gap-[25px]">
+      <div className="flex w-full justify-between items-center">
         <h2
           onMouseOver={handlePrefetchPlotfieldCommands}
           onFocus={handlePrefetchPlotfieldCommands}
@@ -72,11 +72,11 @@ function PlotfieldSearchResultsItem({
             setItem("altArrowLeft", currentTopologyBlock._id);
             setCurrentTopologyBlock({ _id: topologyBlockId });
           }}
-          className="capitalize cursor-pointer text-[1.6rem] text-text-light bg-secondary py-[.3rem] px-[10px] rounded-md"
+          className="capitalize cursor-pointer hover:underline text-[20px] text-text py-[3px] px-[10px] rounded-md"
         >
           {commandName}
         </h2>
-        <h3 className="capitalize text-[15px] text-text-light bg-secondary py-[.3rem] px-[10px] rounded-md">
+        <h3 className="capitalize text-[15px] cursor-default text-text opacity-70 bg-secondary py-[3px] px-[10px] rounded-md">
           {data?.name}
         </h3>
       </div>
@@ -92,7 +92,7 @@ function PlotfieldSearchResultsItem({
             setCurrentTopologyBlock({ _id: topologyBlockId });
           }}
         >
-          <p className="text-text-light text-[1.4rem] w-full text-ellipsis text-start hover:opacity-90 transition-all">
+          <p className="text-text opacity-70 text-[18px] hover:underline w-full text-ellipsis text-start hover:opacity-90 transition-all">
             {text}
           </p>
         </button>
@@ -125,6 +125,7 @@ function PlotfieldSearchForm({ searchValue, setSearchValue }: PlotfieldSearchFor
         id="plotfieldSearchInput"
         placeholder="Патрик"
         value={searchValue}
+        autoComplete="off"
         onChange={(e) => {
           setSearchValue(e.target.value);
           setItem("plotfieldSearch", e.target.value);

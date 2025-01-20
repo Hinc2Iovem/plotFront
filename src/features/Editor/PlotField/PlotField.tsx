@@ -4,23 +4,14 @@ import useNavigation from "../Context/Navigation/NavigationContext";
 import usePlotfieldCommands from "./Context/PlotFieldContext";
 import useGetTopologyBlockById from "./hooks/TopologyBlock/useGetTopologyBlockById";
 import PlotFieldMain from "./PlotFieldMain/PlotFieldMain";
-import PlotfieldHeader from "./PlotFieldHeader/PlotfieldHeader";
 
 type PlotFieldProps = {
   command: PossibleCommandsCreatedByCombinationOfKeysTypes;
-  hideFlowchartFromScriptwriter: boolean;
+  showUtils: boolean;
   expansionDivDirection: "right" | "left";
-  setHideFlowchartFromScriptwriter: React.Dispatch<React.SetStateAction<boolean | null>>;
-  setExpansionDivDirection: React.Dispatch<React.SetStateAction<"right" | "left">>;
 };
 
-export default function PlotField({
-  command,
-  hideFlowchartFromScriptwriter,
-  expansionDivDirection,
-  setHideFlowchartFromScriptwriter,
-  setExpansionDivDirection,
-}: PlotFieldProps) {
+export default function PlotField({ command, showUtils, expansionDivDirection }: PlotFieldProps) {
   const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
   const { setCurrentAmountOfCommands } = usePlotfieldCommands();
 
@@ -43,7 +34,9 @@ export default function PlotField({
     <section
       className={`${command === "expandPlotField" || expansionDivDirection === "right" ? "w-full" : " w-1/2"} ${
         command === "expandPlotField" || !command ? "" : "hidden"
-      } flex-grow flex-shrink-0 border-border border-[1px] rounded-md shadow-md min-h-[200px] h-full relative p-[10px]`}
+      } flex-grow ${
+        showUtils ? "" : "flex-shrink-0"
+      } border-border border-[1px] rounded-md shadow-md min-h-[200px] h-full relative p-[10px]`}
     >
       {/* {topologyBlockData ? (
         <PlotfieldHeader

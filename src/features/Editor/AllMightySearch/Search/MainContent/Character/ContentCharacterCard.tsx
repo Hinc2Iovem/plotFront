@@ -1,13 +1,14 @@
+import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { useEffect, useState } from "react";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
-import { CharacterTypes, EmotionsTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
-import { AllMightySearchCharacterResultTypes } from "../../../hooks/useGetPaginatedTranslationCharacter";
-import { NewElementTypes } from "../AllMightySearchMainContent";
-import { EditingCharacterTypes, FinedCharacteristicTypes } from "./AllMightySearchMainContentCharacter";
 import useGetAllCharacteristicsByStoryId from "../../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
 import useEscapeOfModal from "../../../../../../hooks/UI/useEscapeOfModal";
+import { CharacterTypes, EmotionsTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
 import PreviewImage from "../../../../../../ui/shared/PreviewImage";
+import { AllMightySearchCharacterResultTypes } from "../../../hooks/useGetPaginatedTranslationCharacter";
+import { NewElementTypes } from "../AllMightySearchMainContent";
+import { EditingCharacterTypes, FinedCharacteristicTypes } from "./AllMightySearchMainContentCharacter";
 import { CharacterCardBackSide } from "./CharacterCardBackSide";
 import { SuggestiveModal } from "./SuggestiveModal";
 
@@ -98,8 +99,6 @@ export function ContentCharacterCard({
   const characterTypeToRus =
     characterType === "maincharacter" ? "ГГ" : characterType === "minorcharacter" ? "Второй План" : "Третий План";
 
-  const [showSuggestiveModal, setShowSuggestiveModal] = useState(false);
-
   const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
   const [showBackSide, setShowBackSide] = useState(false);
 
@@ -154,54 +153,65 @@ export function ContentCharacterCard({
       } transition-colors h-[350px] min-h-fit relative`}
     >
       {!showBackSide ? (
-        <>
-          {currentCharacterImg ? (
-            <img
-              src={currentCharacterImg}
-              alt={currentCharacterName}
-              className="w-[80%] h-[250px] absolute object-contain left-1/2 -translate-x-1/2 translate-y-[40px]"
-            />
-          ) : (
-            <PreviewImage
-              imagePreview={imagePreview}
-              setPreview={setImagePreview}
-              imgClasses="w-[80%] h-[250px] object-contain translate-y-[40px]"
-            />
-          )}
-          <p
-            className={`absolute text-[13px] top-0 left-0 px-[10px] rounded-br-md ${
-              characterType === "maincharacter"
-                ? "bg-red  text-white"
-                : characterType === "minorcharacter"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-600 text-white"
-            }`}
-          >
-            {characterTypeToRus}
-          </p>
+        <ContextMenu>
+          <ContextMenuTrigger className="relative h-full w-full flex">
+            {currentCharacterImg ? (
+              <img
+                src={currentCharacterImg}
+                alt={currentCharacterName}
+                className="w-[80%] h-[250px] absolute object-contain left-1/2 -translate-x-1/2 translate-y-[40px]"
+              />
+            ) : (
+              <PreviewImage
+                imagePreview={imagePreview}
+                setPreview={setImagePreview}
+                imgClasses="w-[80%] h-[250px] object-contain translate-y-[40px]"
+              />
+            )}
+            <p
+              className={`absolute text-[13px] top-0 left-0 px-[10px] rounded-br-md ${
+                characterType === "maincharacter"
+                  ? "bg-red  text-white"
+                  : characterType === "minorcharacter"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-600 text-white"
+              }`}
+            >
+              {characterTypeToRus}
+            </p>
 
-          <div
-            className={`${
-              character?.nameTag ? "" : "hidden"
-            } absolute top-[0rem] right-[0rem] py-[5px] px-[10px] rounded-bl-full`}
-          >
-            <p className="text-[14px] text-paragraph translate-x-[5px] -translate-y-[2px]">{character?.nameTag}</p>
-          </div>
+            <div
+              className={`${
+                character?.nameTag ? "" : "hidden"
+              } absolute top-[0rem] right-[0rem] py-[5px] px-[10px] rounded-bl-full`}
+            >
+              <p className="text-[14px] text-paragraph translate-x-[5px] -translate-y-[2px]">{character?.nameTag}</p>
+            </div>
 
-          <p
-            onContextMenu={(e) => {
-              e.preventDefault();
-              setShowSuggestiveModal((prev) => !prev);
-            }}
-            onClick={() => {
-              setShowBackSide((prev) => !prev);
-              setShowSuggestiveModal(false);
-            }}
-            className="mt-auto w-full text-heading cursor-pointer hover:opacity-80 transition-opacity text-[18px] px-[10px] py-[5px]"
-          >
-            {currentCharacterName}
-          </p>
-        </>
+            <p
+              onClick={() => {
+                setShowBackSide((prev) => !prev);
+              }}
+              className="mt-auto w-full text-heading cursor-pointer hover:opacity-80 transition-opacity text-[18px] px-[10px] py-[5px]"
+            >
+              {currentCharacterName}
+            </p>
+          </ContextMenuTrigger>
+          <SuggestiveModal
+            setEditingCharacter={setEditingCharacter}
+            setStartEditing={setStartEditing}
+            characterId={characterId}
+            newElement={newElement}
+            characterDescription={currentCharacterDescription}
+            characterUnknownName={currentCharacterUnknownName}
+            characterImg={currentCharacterImg}
+            characterName={currentCharacterName}
+            characterType={currentCharacterType}
+            nameTag={currentCharacterNameTag}
+            setAllPaginatedResults={setAllPaginatedResults}
+            setNewElement={setNewElement}
+          />
+        </ContextMenu>
       ) : (
         <>
           <CharacterCardBackSide
@@ -218,24 +228,6 @@ export function ContentCharacterCard({
           />
         </>
       )}
-
-      <SuggestiveModal
-        showBackSide={showBackSide}
-        setEditingCharacter={setEditingCharacter}
-        setStartEditing={setStartEditing}
-        showSuggestiveModal={showSuggestiveModal}
-        characterId={characterId}
-        newElement={newElement}
-        characterDescription={currentCharacterDescription}
-        characterUnknownName={currentCharacterUnknownName}
-        characterImg={currentCharacterImg}
-        characterName={currentCharacterName}
-        characterType={currentCharacterType}
-        nameTag={currentCharacterNameTag}
-        setShowSuggestiveModal={setShowSuggestiveModal}
-        setAllPaginatedResults={setAllPaginatedResults}
-        setNewElement={setNewElement}
-      />
     </div>
   );
 }

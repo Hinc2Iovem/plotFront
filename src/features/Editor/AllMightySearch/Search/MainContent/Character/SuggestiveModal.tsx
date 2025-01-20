@@ -1,17 +1,13 @@
-import { useRef } from "react";
+import { ContextMenuContent, ContextMenuItem } from "@/components/ui/context-menu";
 import { useParams } from "react-router-dom";
 import useDeleteCharacter from "../../../../../../hooks/Deleting/Character/useDeleteCharacter";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationCharacterTypes } from "../../../../../../types/Additional/TranslationTypes";
 import { CharacterTypes } from "../../../../../../types/StoryData/Character/CharacterTypes";
-import PlotfieldButton from "../../../../../../ui/Buttons/PlotfieldButton";
 import { AllMightySearchCharacterResultTypes } from "../../../hooks/useGetPaginatedTranslationCharacter";
 import { NewElementTypes } from "../AllMightySearchMainContent";
 import { EditingCharacterTypes } from "./AllMightySearchMainContentCharacter";
 
 type SuggestiveModalTypes = {
-  showBackSide: boolean;
-  showSuggestiveModal: boolean;
   characterId: string;
   characterName: string;
   characterDescription: string;
@@ -22,14 +18,11 @@ type SuggestiveModalTypes = {
   newElement: NewElementTypes;
   setAllPaginatedResults: React.Dispatch<React.SetStateAction<AllMightySearchCharacterResultTypes[]>>;
   setNewElement: React.Dispatch<React.SetStateAction<NewElementTypes>>;
-  setShowSuggestiveModal: React.Dispatch<React.SetStateAction<boolean>>;
   setEditingCharacter: React.Dispatch<React.SetStateAction<EditingCharacterTypes | null>>;
   setStartEditing: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export function SuggestiveModal({
-  showBackSide,
-  showSuggestiveModal,
   characterId,
   newElement,
   characterName,
@@ -42,10 +35,8 @@ export function SuggestiveModal({
   setNewElement,
   setEditingCharacter,
   setStartEditing,
-  setShowSuggestiveModal,
 }: SuggestiveModalTypes) {
   const { storyId } = useParams();
-  const modalRef = useRef<HTMLDivElement>(null);
 
   const deleteCharacter = useDeleteCharacter({
     characterId,
@@ -66,8 +57,6 @@ export function SuggestiveModal({
     }
 
     deleteCharacter.mutate();
-
-    setShowSuggestiveModal(false);
   };
 
   const handleEdit = () => {
@@ -81,30 +70,19 @@ export function SuggestiveModal({
       unknownName: characterUnknownName,
     });
     setStartEditing(true);
-    setShowSuggestiveModal(false);
   };
 
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowSuggestiveModal,
-    showModal: showSuggestiveModal,
-  });
   return (
-    <aside
-      ref={modalRef}
-      className={`${showBackSide ? "hidden" : ""} ${showSuggestiveModal ? "" : "hidden"}
-    w-full flex gap-[.5rem] p-[.5rem] rounded-md bg-primary-darker absolute bottom-0
-    `}
-    >
-      <PlotfieldButton
+    <ContextMenuContent>
+      <ContextMenuItem
         onClick={(e) => {
           e.stopPropagation();
           handleEdit();
         }}
       >
         Изменить
-      </PlotfieldButton>
-      <PlotfieldButton onClick={handleDelete}>Удалить</PlotfieldButton>
-    </aside>
+      </ContextMenuItem>
+      <ContextMenuItem onClick={handleDelete}>Удалить</ContextMenuItem>
+    </ContextMenuContent>
   );
 }

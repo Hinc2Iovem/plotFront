@@ -7,7 +7,6 @@ import { CharacterTypes } from "../../../../../types/StoryData/Character/Charact
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
 import { NewElementTypes } from "../MainContent/AllMightySearchMainContent";
 import CharacterForm from "../MainContent/Character/CharacterForm";
-import { CharacterRusTypes } from "../MainContent/Character/EditingCharacter";
 
 type NewCharacterFormTypes = {
   setNewElement: React.Dispatch<React.SetStateAction<NewElementTypes>>;
@@ -29,25 +28,13 @@ export default function NewCharacterForm({
     characterTypeFilter !== "all" ? characterTypeFilter : ("minorcharacter" as CharacterTypes)
   );
 
-  const [characterTypeRus, setCharacterTypeRus] = useState<CharacterRusTypes>("" as CharacterRusTypes);
-  useEffect(() => {
-    if (currentCharacterType) {
-      setCharacterTypeRus(
-        currentCharacterType === "emptycharacter"
-          ? "Третий План"
-          : currentCharacterType === "maincharacter"
-          ? "ГГ"
-          : "Второй План"
-      );
-    }
-  }, [currentCharacterType]);
-
   const { data: mainCharacter } = useGetMainCharacterByStoryId({ storyId: storyId || "", language: "russian" });
   const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(null);
 
   const [characterName, setCharacterName] = useState<string | undefined>("");
   const [characterDescription, setCharacterDescription] = useState<string | undefined>("");
   const [characterUnknownName, setCharacterUnknownName] = useState<string | undefined>("");
+  const [characterNameTag, setCharacterNameTag] = useState<string | undefined>("");
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -71,7 +58,7 @@ export default function NewCharacterForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCharacter.name.trim().length) {
+    if (!characterName?.trim().length) {
       console.log("Can not crete an empty character");
       return;
     }
@@ -93,13 +80,13 @@ export default function NewCharacterForm({
 
     translations.push({
       _id: nameId,
-      amountOfWords: newCharacter.name.length,
-      text: newCharacter.name,
+      amountOfWords: characterName?.length,
+      text: characterName,
       textFieldName: "characterName",
     });
 
     if (currentCharacterType === "minorcharacter") {
-      if (!newCharacter.description?.trim().length || !newCharacter.unknownName?.trim().length) {
+      if (!characterDescription?.trim().length || !characterUnknownName?.trim().length) {
         console.error("Name, description and unknown name are required");
         return;
       }
@@ -107,14 +94,14 @@ export default function NewCharacterForm({
       translations.push(
         {
           _id: unknownNameId,
-          amountOfWords: newCharacter.unknownName.length,
-          text: newCharacter.unknownName,
+          amountOfWords: characterUnknownName.length,
+          text: characterUnknownName,
           textFieldName: "characterUnknownName",
         },
         {
           _id: descriptionId,
-          amountOfWords: newCharacter.description.length,
-          text: newCharacter.description,
+          amountOfWords: characterDescription.length,
+          text: characterDescription,
           textFieldName: "characterDescription",
         }
       );
@@ -138,6 +125,7 @@ export default function NewCharacterForm({
       <CharacterForm
         characterDescription={characterDescription}
         characterName={characterName}
+        characterNameTag={characterNameTag}
         characterType={currentCharacterType}
         characterUnknownName={characterUnknownName}
         onSubmit={handleSubmit}
@@ -145,6 +133,7 @@ export default function NewCharacterForm({
         imagePreview={imagePreview}
         setCharacterDescription={setCharacterDescription}
         setCharacterName={setCharacterName}
+        setCharacterNameTag={setCharacterNameTag}
         setCharacterType={setCurrentCharacterType}
         setCharacterUnknownName={setCharacterUnknownName}
         setImagePreview={setImagePreview}

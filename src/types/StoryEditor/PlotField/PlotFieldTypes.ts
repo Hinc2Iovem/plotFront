@@ -16,6 +16,34 @@ export type PlotFieldCommandIfTypes = {
   commandOrder: number;
 };
 
+export type AllPossiblePlotFieldComamndsSaySubVariationsTypes =
+  | "achievement"
+  | "ambient"
+  | "background"
+  | "blank"
+  | "call"
+  | "choice"
+  | "if"
+  | "else"
+  | "end"
+  | "condition"
+  | "cutscene"
+  | "effect"
+  | "getitem"
+  | "key"
+  | "move"
+  | "music"
+  | "name"
+  | "author"
+  | "character"
+  | "hint"
+  | "notify"
+  | "sound"
+  | "suit"
+  | "wait"
+  | "comment"
+  | "wardrobe";
+
 export type AllPossiblePlotFieldComamndsTypes =
   | "achievement"
   | "ambient"

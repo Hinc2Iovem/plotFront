@@ -1,14 +1,15 @@
-import { useRef, useState } from "react";
-import search from "@/assets/images/Editor/search.png";
-import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
-import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
-import Flowchart from "./Flowchart/Flowchart";
-import "./Flowchart/FlowchartStyles.css";
-import PlotField from "./PlotField/PlotField";
-import AllMightySearch from "./AllMightySearch/AllMightySearch";
+import editorUtils from "@/assets/images/Editor/editorUtils.png";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "@/const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 import useHandleResizeOfEditorWindows from "@/hooks/helpers/Plotfield/ResizeWindow/useHandleResizeOfEditorWindows";
 import useResizeEditorWindow from "@/hooks/helpers/Plotfield/ResizeWindow/useResizeEditorWindow";
+import { useRef, useState } from "react";
+import AllMightySearch from "./AllMightySearch/AllMightySearch";
+import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
+import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
+import Flowchart from "./Flowchart/Flowchart";
+import PlotField from "./PlotField/PlotField";
+import "./Flowchart/FlowchartStyles.css";
+import UtilsSidebar from "./UtilsSidebar/UtilsSidebar";
 
 export default function EditorMain() {
   const [command, setCommand] = useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
@@ -17,6 +18,7 @@ export default function EditorMain() {
   // TODO here should be null, changed for demo purposes only
   const [hideFlowchartFromScriptwriter, setHideFlowchartFromScriptwriter] = useState<boolean | null>(null);
   const [showAllMightySearch, setShowAllMightySearch] = useState(false);
+  const [showUtils, setShowUtils] = useState(false);
 
   console.log(setShowAllMightySearch);
   const [expansionDivDirection, setExpansionDivDirection] = useState("" as "right" | "left");
@@ -40,15 +42,11 @@ export default function EditorMain() {
       {typeof hideFlowchartFromScriptwriter === "boolean" && (
         <main
           ref={containerRef}
-          className={`flex w-full ${showAllMightySearch ? "hidden" : ""} h-[calc(100vh-23px)] justify-center relative`}
+          className={`flex w-full ${showAllMightySearch ? "hidden" : ""} ${
+            showUtils ? "w-[calc(100vw-20px)]" : "max-w-[1480px] mx-auto"
+          } h-[calc(100vh-23px)] justify-center relative`}
         >
-          <PlotField
-            expansionDivDirection={expansionDivDirection}
-            hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
-            setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
-            setExpansionDivDirection={setExpansionDivDirection}
-            command={command}
-          />
+          <PlotField expansionDivDirection={expansionDivDirection} showUtils={showUtils} command={command} />
           {!command.trim().length ? (
             <DraggableExpansionDiv
               setCommand={setCommand}
@@ -78,11 +76,17 @@ export default function EditorMain() {
           </CoordinatesProvider>
 
           <button
-            onClick={() => setShowAllMightySearch(true)}
-            className="absolute bottom-[0px] right-[0px] w-[35px] rounded-full "
+            onClick={() => setShowUtils(true)}
+            className={`${showUtils ? "hidden" : ""} absolute bottom-[0px] right-[0px] w-[35px] rounded-full z-[10]`}
           >
-            <img src={search} alt="Поиск" className="w-full hover:scale-[1.05] transition-all" />
+            <img src={editorUtils} alt="Утилиты" className="w-full hover:scale-[1.05] transition-all" />
           </button>
+
+          <UtilsSidebar
+            setShowAllMightySearch={setShowAllMightySearch}
+            setShowUtils={setShowUtils}
+            showUtils={showUtils}
+          />
         </main>
       )}
 

@@ -41,6 +41,7 @@ export function CharacterEditingForm({
 }: CharacterEditingFormTypes) {
   const { storyId } = useParams();
   const [characterName, setCharacterName] = useState(editingCharacter?.name);
+  const [characterNameTag, setCharacterNameTag] = useState(editingCharacter?.nameTag);
   const [characterDescription, setCharacterDescription] = useState(editingCharacter?.description);
   const [characterUnknownName, setCharacterUnknownName] = useState(editingCharacter?.unknownName);
 
@@ -55,6 +56,7 @@ export function CharacterEditingForm({
 
   useEffect(() => {
     setCharacterName(editingCharacter?.name);
+    setCharacterNameTag(editingCharacter?.nameTag);
     setCharacterDescription(editingCharacter?.description);
     setCharacterUnknownName(editingCharacter?.unknownName);
     setCharacterType(editingCharacter?.characterType || ("" as CharacterTypes));
@@ -198,6 +200,8 @@ export function CharacterEditingForm({
         setStarted={setStartEditing}
         type="edit"
         suggestReassigningMainCharacter={suggestReassigningMainCharacter}
+        setCharacterNameTag={setCharacterNameTag}
+        characterNameTag={characterNameTag}
       />
 
       {/* TODO suggest to reassign */}
