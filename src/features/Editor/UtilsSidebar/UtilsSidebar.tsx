@@ -58,6 +58,13 @@ export default function UtilsSidebar({ setShowAllMightySearch, setShowUtils, sho
             История Удалений
           </Button>
         </div>
+
+        <Button
+          onClick={() => setShowUtils(false)}
+          className="text-text text-[20px] hover:bg-accent w-fit active:scale-[.99] transition-all"
+        >
+          Закрыть
+        </Button>
       </div>
     </div>
   );

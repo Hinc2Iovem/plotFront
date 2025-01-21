@@ -2,6 +2,7 @@ import useCreateAchievementViaKeyCombination from "./allHooks/useCreateAchieveme
 import useCreateAmbientViaKeyCombination from "./allHooks/useCreateAmbientViaKeyCombination";
 import useCreateAuthorViaKeyCombination from "./allHooks/useCreateAuthorViaKeyCombination";
 import useCreateBackgroundViaKeyCombination from "./allHooks/useCreateBackgroundViaKeyCombination";
+import useCreateBlankViaKeyCombination from "./allHooks/useCreateBlankViaKeyCombination";
 import useCreateCallViaKeyCombination from "./allHooks/useCreateCallViaKeyCombination";
 import useCreateCertainCharacterViaKeyCombination from "./allHooks/useCreateCertainCharacterViaKeyCombination";
 import useCreateCharacterViaKeyCombination from "./allHooks/useCreateCharacterViaKeyCombination";
@@ -30,6 +31,8 @@ type HandleAllCommandsCreatedViaKeyCombinationTypes = {
 export default function useHandleAllCommandsCreatedViaKeyCombination({
   topologyBlockId,
 }: HandleAllCommandsCreatedViaKeyCombinationTypes) {
+  useCreateBlankViaKeyCombination({ topologyBlockId });
+
   useCreateAchievementViaKeyCombination({ topologyBlockId });
 
   useCreateAmbientViaKeyCombination({ topologyBlockId });
