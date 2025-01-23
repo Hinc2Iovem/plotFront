@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
+import { preventCreatingCommandsWhenFocus } from "../Plotfield/preventCreatingCommandsWhenFocus";
 
 type CheckKeysCombinationExpandTypes = {
   setCommand: React.Dispatch<React.SetStateAction<PossibleCommandsCreatedByCombinationOfKeysTypes>>;
@@ -15,8 +16,13 @@ export default function useCheckKeysCombinationExpandPlotField({
   command,
 }: CheckKeysCombinationExpandTypes) {
   useEffect(() => {
+    if (!preventCreatingCommandsWhenFocus()) {
+      return;
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.key?.toLowerCase() === "v" || event.key?.toLowerCase() === "м") && event.altKey) {
+      const key = event.key?.toLowerCase();
+      if ((key === "v" || key === "м") && event.altKey) {
         if (command === "expandPlotField") {
           setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
           setExpansionDivDirection("" as "left" | "right");
@@ -34,7 +40,7 @@ export default function useCheckKeysCombinationExpandPlotField({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [command]);
+  }, [command, setCommand, setHideFlowchartFromScriptwriter, setExpansionDivDirection]);
 
   return command;
 }

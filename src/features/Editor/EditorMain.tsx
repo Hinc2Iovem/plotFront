@@ -20,7 +20,6 @@ export default function EditorMain() {
   const [showAllMightySearch, setShowAllMightySearch] = useState(false);
   const [showUtils, setShowUtils] = useState(false);
 
-  console.log(setShowAllMightySearch);
   const [expansionDivDirection, setExpansionDivDirection] = useState("" as "right" | "left");
 
   const keyCombinationToExpandPlotField = useHandleResizeOfEditorWindows({

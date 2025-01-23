@@ -1,14 +1,15 @@
+import { toastSuccessStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import { MusicTypes } from "@/types/StoryData/Music/MusicTypes";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import useUpdateCommandMusic from "../../../hooks/Music/Command/useUpdateCommandSound";
 import useCreateMusic from "../../../hooks/Music/useCreateMusic";
 import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
-import { toastSuccessStyles } from "@/components/shared/toastStyles";
 
 type AllMusicModalTypes = {
   musicName: string;
@@ -20,7 +21,7 @@ type AllMusicModalTypes = {
   onChange: (value: string) => void;
 };
 
-const AllMusicModal = ({
+export default function AllMusicModal({
   storyId,
   musicName,
   commandMusicId,
@@ -28,30 +29,22 @@ const AllMusicModal = ({
   setMusicName,
   setInitValue,
   onChange,
-}: AllMusicModalTypes) => {
+}: AllMusicModalTypes) {
   const [showMusicModal, setShowMusicModal] = useState(false);
   const { data: allMusic } = useGetAllMusicByStoryId({
     storyId: storyId || "",
   });
 
   const allMusicFilteredMemoized = useMemo(() => {
-    const res = [...(allMusic || [])];
-    if (musicName) {
-      const filtered = res?.filter((a) => a.musicName.toLowerCase().includes(musicName.toLowerCase())) || [];
-      return filtered.map((f) => f.musicName.toLowerCase());
-    } else {
-      return res.map((r) => r.musicName.toLowerCase());
-    }
+    if (!musicName) return allMusic?.map((a) => a.musicName.toLowerCase()) || [];
+    return allMusic?.filter((a) => a.musicName.toLowerCase().includes(musicName.toLowerCase())) || [];
   }, [allMusic, musicName]);
 
-  const allMusicMemoized = useMemo(() => {
-    return (
-      allMusic?.map((a) => ({
-        musicName: a.musicName.toLowerCase(),
-        id: a._id,
-      })) || []
-    );
-  }, [allMusic]);
+  const allMusicMemoized =
+    allMusic?.map((a) => ({
+      musicName: a.musicName.toLowerCase(),
+      id: a._id,
+    })) || [];
 
   const updateMusic = useUpdateCommandMusic();
 
@@ -92,8 +85,13 @@ const AllMusicModal = ({
       }
     }
   };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useModalMovemenetsArrowUpDown({
+    length: allMusicFilteredMemoized.length,
+    showModal: showMusicModal,
+  });
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allMusicFilteredMemoized.length });
+  console.log("allMusicFilteredMemoized:", allMusicFilteredMemoized);
 
   return (
     <Popover open={showMusicModal} onOpenChange={setShowMusicModal}>
@@ -118,21 +116,30 @@ const AllMusicModal = ({
         </form>
       </PopoverTrigger>
 
-      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
+      <PopoverContent
+        ref={containerRef}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className={`flex-grow flex flex-col gap-[5px]`}
+      >
         {allMusicFilteredMemoized.length ? (
           allMusicFilteredMemoized.map((mm, i) => (
             <Button
-              key={mm + i}
+              key={musicName ? (mm as MusicTypes)._id : (mm as string) + i}
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
               onClick={() => {
-                setMusicName(mm);
-                handleUpdatingMusicState({ mm, create: false });
+                if (musicName.trim().length) {
+                  setMusicName((mm as MusicTypes).musicName);
+                  handleUpdatingMusicState({ mm: (mm as MusicTypes).musicName, create: false });
+                } else {
+                  setMusicName(mm as string);
+                  handleUpdatingMusicState({ mm: mm as string, create: false });
+                }
                 setShowMusicModal(false);
               }}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >
-              {mm}
+              {musicName ? (mm as MusicTypes).musicName : (mm as string)}
             </Button>
           ))
         ) : (
@@ -150,6 +157,4 @@ const AllMusicModal = ({
       </PopoverContent>
     </Popover>
   );
-};
-
-export default AllMusicModal;
+}

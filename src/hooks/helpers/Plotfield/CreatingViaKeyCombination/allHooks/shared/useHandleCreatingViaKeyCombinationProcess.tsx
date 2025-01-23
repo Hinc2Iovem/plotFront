@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { preventCreatingCommandsWhenFocus } from "../../../preventCreatingCommandsWhenFocus";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import usePlotfieldCommands from "../../../../../../features/Editor/PlotField/Context/PlotFieldContext";
@@ -45,20 +45,22 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
     episodeId: episodeId || "",
   });
 
-  useEffect(() => {
-    const pressedKeys = new Set<string>();
-    const handleKeyDown = (event: KeyboardEvent) => {
+  const pressedKeys = useRef<Set<string>>(new Set());
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
       const allowed = preventCreatingCommandsWhenFocus();
       if (!allowed) {
-        // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key?.toLowerCase());
+
+      const key = event.key?.toLowerCase();
+      if (key) pressedKeys.current.add(key);
 
       if (
-        pressedKeys.has("shift") &&
-        ((pressedKeys.has(firstEngLetter) && pressedKeys.has(secondEngLetter)) ||
-          (pressedKeys.has(firstRusLetter) && pressedKeys.has(secondRusLetter)))
+        pressedKeys.current.has("shift") &&
+        ((pressedKeys.current.has(firstEngLetter) && pressedKeys.current.has(secondEngLetter)) ||
+          (pressedKeys.current.has(firstRusLetter) && pressedKeys.current.has(secondRusLetter)))
       ) {
         const _id = generateMongoObjectId();
         const createCommandObject = createCommandData
@@ -71,7 +73,6 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
         createCommand.mutate(createCommandObject as T);
 
         const focusedTopologyBlockId = getItem("focusedTopologyBlock");
-
         const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;
 
         addItemInUndoSessionStorage({
@@ -80,9 +81,6 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
           topologyBlockId: currentTopologyBlockId,
           type: "created",
         });
-
-        // TODO I think it's not the brightest idea to check if current command inside if using isElse because command condition has isElse too
-        // TODO better to check by current parentType
 
         const commandIf = commandName === "if" ? (createCommandObject as CreateCommandIfBodyTypes) : null;
 
@@ -106,13 +104,31 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
           sayType,
         });
       }
-    };
+    },
+    [
+      firstEngLetter,
+      firstRusLetter,
+      secondEngLetter,
+      secondRusLetter,
+      topologyBlockId,
+      createCommand,
+      createCommandData,
+      createPlotfield,
+      getItem,
+      commandName,
+      currentlyFocusedCommandId,
+      episodeId,
+      getCurrentAmountOfCommands,
+      sayType,
+    ]
+  );
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key?.toLowerCase());
-      pressedKeys.clear();
-    };
+  const handleKeyUp = useCallback((event: KeyboardEvent) => {
+    const key = event.key?.toLowerCase();
+    if (key) pressedKeys.current.delete(key);
+  }, []);
 
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
@@ -120,20 +136,5 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [
-    topologyBlockId,
-    createCommand,
-    getItem,
-    commandName,
-    createCommandData,
-    createPlotfield,
-    currentlyFocusedCommandId,
-    firstEngLetter,
-    firstRusLetter,
-    secondEngLetter,
-    secondRusLetter,
-    getCurrentAmountOfCommands,
-    episodeId,
-    sayType,
-  ]);
+  }, [handleKeyDown, handleKeyUp]);
 }

@@ -1,5 +1,5 @@
 import { UseMutationResult } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import useNavigation from "../../../../../../features/Editor/Context/Navigation/NavigationContext";
 import usePlotfieldCommands from "../../../../../../features/Editor/PlotField/Context/PlotFieldContext";
 import { OmittedCommandNames } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
@@ -35,81 +35,91 @@ export default function useHandleDuplicationProcess({
   const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
   const { getCommandByPlotfieldCommandId, getCurrentAmountOfCommands } = usePlotfieldCommands();
 
+  const isValidForDuplication = useCallback(() => {
+    if (currentlyFocusedCommandId.commandName !== commandName) {
+      console.log(`Not an ${commandName}`);
+      return false;
+    }
+
+    if (currentlyFocusedCommandId.type !== "command") {
+      console.log("Can not copy topologyBlock, try to copy a command");
+      return false;
+    }
+    return true;
+  }, [currentlyFocusedCommandId, commandName]);
+
+  const handleDuplication = useCallback(() => {
+    const currentFocusedTopologyBlockId = getItem(`focusedTopologyBlock`);
+    const currentCommand = getCommandByPlotfieldCommandId({
+      plotfieldCommandId: currentlyFocusedCommandId._id,
+      topologyBlockId: currentFocusedTopologyBlockId || topologyBlockId,
+    });
+
+    const _id = generateMongoObjectId();
+    const currentTopologyBlockId = currentFocusedTopologyBlockId?.trim().length
+      ? currentFocusedTopologyBlockId
+      : topologyBlockId;
+
+    addItemInUndoSessionStorage({
+      _id,
+      episodeId: episodeId || "",
+      topologyBlockId: currentTopologyBlockId,
+      type: "created",
+    });
+
+    createCommand.mutate({
+      plotfieldCommandId: _id,
+      topologyBlockId: currentTopologyBlockId,
+      characterId: currentCommand?.characterId,
+      characterName: currentCommand?.characterName,
+      commandName: currentCommand?.command,
+      emotionName: currentCommand?.emotionName,
+      plotfieldCommandIfId: currentCommand?.plotfieldCommandIfId,
+      isElse: currentCommand?.isElse,
+      sayType: currentCommand?.sayType,
+      commandOrder:
+        typeof currentlyFocusedCommandId.commandOrder === "number"
+          ? currentlyFocusedCommandId?.commandOrder + 1
+          : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId }),
+      characterImg: currentCommand?.characterImg,
+      commandSide: currentCommand?.commandSide,
+      emotionId: currentCommand?.emotionId,
+      emotionImg: currentCommand?.emotionImg,
+    });
+  }, [
+    episodeId,
+    topologyBlockId,
+    createCommand,
+    currentlyFocusedCommandId,
+    getItem,
+    getCommandByPlotfieldCommandId,
+    getCurrentAmountOfCommands,
+  ]);
+
   useEffect(() => {
     const pressedKeys = new Set<string>();
+
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key?.toLowerCase();
-      if (pressedKeys.has(key)) return;
+      if (pressedKeys.has(key)) return; // Avoid repeating key press
       pressedKeys.add(key);
 
-      if (
-        pressedKeys.has("control") &&
-        (pressedKeys.has("v") || pressedKeys.has("м")) &&
-        document.activeElement?.tagName !== "INPUT"
-      ) {
+      if (pressedKeys.has("control") && (pressedKeys.has("v") || pressedKeys.has("м"))) {
         event.preventDefault();
 
         const allowed = preventCreatingCommandsWhenFocus();
         if (!allowed) {
-          // console.log("You are inside input element");
-          return;
+          return; // Exit early if command creation isn't allowed
         }
 
-        if (currentlyFocusedCommandId.commandName !== commandName) {
-          console.log(`Not an ${commandName}`);
-          return;
+        if (isValidForDuplication()) {
+          handleDuplication();
         }
-
-        if (currentlyFocusedCommandId.type !== "command") {
-          console.log("Can not copy topologyBlock, try to copy a command");
-          return;
-        }
-
-        const currentFocusedTopologyBlockId = getItem(`focusedTopologyBlock`);
-
-        const currentCommand = getCommandByPlotfieldCommandId({
-          plotfieldCommandId: currentlyFocusedCommandId._id,
-          topologyBlockId: currentFocusedTopologyBlockId || topologyBlockId,
-        });
-
-        const _id = generateMongoObjectId();
-
-        const currentTopologyBlockId = currentFocusedTopologyBlockId?.trim().length
-          ? currentFocusedTopologyBlockId
-          : topologyBlockId;
-
-        addItemInUndoSessionStorage({
-          _id,
-          episodeId: episodeId || "",
-          topologyBlockId: currentTopologyBlockId,
-          type: "created",
-        });
-
-        createCommand.mutate({
-          plotfieldCommandId: _id,
-          topologyBlockId: currentTopologyBlockId,
-          characterId: currentCommand?.characterId,
-          characterName: currentCommand?.characterName,
-          commandName: currentCommand?.command,
-          emotionName: currentCommand?.emotionName,
-          plotfieldCommandIfId: currentCommand?.plotfieldCommandIfId,
-          isElse: currentCommand?.isElse,
-          sayType: currentCommand?.sayType,
-          commandOrder:
-            typeof currentlyFocusedCommandId.commandOrder === "number"
-              ? currentlyFocusedCommandId?.commandOrder + 1
-              : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId }),
-          characterImg: currentCommand?.characterImg,
-          commandSide: currentCommand?.commandSide,
-          emotionId: currentCommand?.emotionId,
-          emotionImg: currentCommand?.emotionImg,
-        });
       }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
       pressedKeys.delete(event.key?.toLowerCase());
-      pressedKeys.clear();
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -119,14 +129,5 @@ export default function useHandleDuplicationProcess({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [
-    commandName,
-    createCommand,
-    currentlyFocusedCommandId,
-    episodeId,
-    getCommandByPlotfieldCommandId,
-    getCurrentAmountOfCommands,
-    topologyBlockId,
-    getItem,
-  ]);
+  }, [isValidForDuplication, handleDuplication]);
 }

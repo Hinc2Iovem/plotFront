@@ -1,50 +1,53 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type ModalMovemenetsArrowUpDownTypes = {
   length: number;
+  showModal: boolean;
 };
 
-export default function useModalMovemenetsArrowUpDown({ length }: ModalMovemenetsArrowUpDownTypes) {
+export default function useModalMovemenetsArrowUpDown({ length, showModal }: ModalMovemenetsArrowUpDownTypes) {
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const focusedIndexRef = useRef<number>(-1);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
       const key = event.key?.toLowerCase();
 
-      if (key === "arrowdown" || key === "arrowup") {
-        event.preventDefault();
+      if (key !== "arrowdown" && key !== "arrowup") return;
 
-        const currentIndex = buttonsRef.current.findIndex((button) => button === document.activeElement);
+      event.preventDefault();
 
-        if (!buttonsRef.current.length) {
-          return;
-        }
+      if (!buttonsRef.current.length) return;
 
-        if (currentIndex < 0) {
-          buttonsRef.current[0]?.focus();
-        } else if (key === "arrowdown") {
-          if (currentIndex === length - 1) {
-            buttonsRef.current[0]?.focus();
-          } else {
-            const nextIndex = (currentIndex + 1) % length;
-            buttonsRef.current[nextIndex]?.focus();
-          }
-        } else if (key === "arrowup") {
-          if (currentIndex === 0) {
-            buttonsRef.current[length - 1]?.focus();
-          } else {
-            const prevIndex = (currentIndex - 1 + length) % length;
-            buttonsRef.current[prevIndex]?.focus();
-          }
-        }
+      let currentIndex = focusedIndexRef.current;
+      if (currentIndex < 0 || document.activeElement !== buttonsRef.current[currentIndex]) {
+        currentIndex = buttonsRef.current.findIndex((button) => button === document.activeElement);
+        focusedIndexRef.current = currentIndex;
       }
-    };
+
+      if (key === "arrowdown") {
+        const nextIndex = (currentIndex + 1) % length;
+        buttonsRef.current[nextIndex]?.focus();
+        focusedIndexRef.current = nextIndex;
+      } else if (key === "arrowup") {
+        const prevIndex = (currentIndex - 1 + length) % length;
+        buttonsRef.current[prevIndex]?.focus();
+        focusedIndexRef.current = prevIndex;
+      }
+    },
+    [length]
+  );
+
+  useEffect(() => {
+    if (!showModal) {
+      return;
+    }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [length]);
+  }, [handleKeyDown, showModal]);
 
   return buttonsRef;
 }

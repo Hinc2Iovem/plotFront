@@ -133,7 +133,10 @@ const PlotfieldCharacterPromptMain = ({
     }
   };
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredCharacters.length });
+  const buttonsRef = useModalMovemenetsArrowUpDown({
+    length: filteredCharacters.length,
+    showModal: showCharacterModal,
+  });
 
   return (
     <Popover open={showCharacterModal} onOpenChange={setShowCharacterModal}>

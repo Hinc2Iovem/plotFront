@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
+import { preventCreatingCommandsWhenFocus } from "../Plotfield/preventCreatingCommandsWhenFocus";
 
 export default function useCheckKeysCombinationCreateBlankCommand() {
   const [command, setCommand] = useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
@@ -7,19 +8,25 @@ export default function useCheckKeysCombinationCreateBlankCommand() {
   );
 
   useEffect(() => {
+    if (!preventCreatingCommandsWhenFocus()) {
+      return;
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey && (event.key?.toLowerCase() === "m" || event.key?.toLowerCase() === "ь")) {
-        setCommand("blankPlotFieldCommand");
+      const key = event.key?.toLowerCase();
+      if (event.ctrlKey && (key === "m" || key === "ь")) {
+        if (command !== "blankPlotFieldCommand") {
+          setCommand("blankPlotFieldCommand");
+        }
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
+      document.removeEventListener("keydown", handleKeyDown);
     };
-  });
+  }, [command]);
 
   return command;
 }

@@ -6,8 +6,8 @@ import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/us
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandMusic from "../../../hooks/Music/Command/useGetCommandMusic";
 import useGetMusicById from "../../../hooks/Music/useGetMusicById";
-import AllMusicModal from "./AllMusicModal";
 import "../Prompts/promptStyles.css";
+import AllMusicModal from "./AllMusicModal";
 
 type CommandMusicFieldTypes = {
   plotFieldCommandId: string;

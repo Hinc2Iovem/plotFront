@@ -2,18 +2,27 @@ import { useEffect } from "react";
 import useTypedSessionStorage, {
   SessionStorageKeys,
 } from "../../../../../hooks/helpers/shared/SessionStorage/useTypedSessionStorage";
+import { preventCreatingCommandsWhenFocus } from "@/hooks/helpers/Plotfield/preventCreatingCommandsWhenFocus";
 
 export default function useHandleDeletionOfCommand() {
   const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
+
   useEffect(() => {
-    const pressedKeys = new Set();
+    if (!preventCreatingCommandsWhenFocus()) {
+      return;
+    }
+
+    let isCtrlPressed = false;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key?.toLowerCase();
-      if (pressedKeys.has(key)) return;
-      pressedKeys.add(key);
 
-      if (pressedKeys.has("control") && key === "backspace") {
+      if (key === "control") {
+        isCtrlPressed = true;
+        return;
+      }
+
+      if (isCtrlPressed && key === "backspace") {
         event.preventDefault();
         const currentCommand = getItem("focusedCommand")?.split("-");
 
@@ -36,17 +45,17 @@ export default function useHandleDeletionOfCommand() {
       }
     };
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key?.toLowerCase());
-      pressedKeys.clear();
-      pressedKeys.clear();
+      if (event.key?.toLowerCase() === "control") {
+        isCtrlPressed = false;
+      }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [getItem]);
 }

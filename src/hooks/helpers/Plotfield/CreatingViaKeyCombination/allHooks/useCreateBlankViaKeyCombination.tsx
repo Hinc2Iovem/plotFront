@@ -1,4 +1,4 @@
-import useNavigation from "@/features/Editor/Context/Navigation/NavigationContext";
+import useNavigation, { CurrentlyFocusedCommandTypes } from "@/features/Editor/Context/Navigation/NavigationContext";
 import usePlotfieldCommands from "@/features/Editor/PlotField/Context/PlotFieldContext";
 import useCreateBlankCommand from "@/features/Editor/PlotField/hooks/useCreateBlankCommand";
 import useTypedSessionStorage, {
@@ -7,7 +7,7 @@ import useTypedSessionStorage, {
 import { addItemInUndoSessionStorage } from "@/hooks/helpers/UndoRedo/addItemInUndoSessionStorage";
 import { AllPossiblePlotFieldComamndsTypes } from "@/types/StoryEditor/PlotField/PlotFieldTypes";
 import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { preventCreatingCommandsWhenFocus } from "../../preventCreatingCommandsWhenFocus";
 
@@ -26,19 +26,18 @@ export default function useCreateBlankViaKeyCombination({ topologyBlockId }: Cre
     episodeId: episodeId || "",
   });
 
-  useEffect(() => {
-    const pressedKeys = new Set<string>();
-    const handleKeyDown = (event: KeyboardEvent) => {
+  const pressedKeys = useRef<Set<string>>(new Set());
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
       const allowed = preventCreatingCommandsWhenFocus();
       if (!allowed) {
-        // console.log("You are inside input element");
         return;
       }
-      pressedKeys.add(event.key?.toLowerCase());
 
-      if (pressedKeys.has("shift") && (pressedKeys.has("n") || pressedKeys.has("т"))) {
-        console.log("here");
+      pressedKeys.current.add(event.key?.toLowerCase());
 
+      if (pressedKeys.current.has("shift") && (pressedKeys.current.has("n") || pressedKeys.current.has("т"))) {
         const _id = generateMongoObjectId();
         const focusedTopologyBlockId = getItem("focusedTopologyBlock");
         const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;
@@ -50,32 +49,30 @@ export default function useCreateBlankViaKeyCombination({ topologyBlockId }: Cre
           type: "created",
         });
 
-        // TODO I think it's not the brightest idea to check if current command inside if using isElse because command condition has isElse too
-        // TODO better to check by current parentType
+        const plotfieldCommandIfId = getPlotfieldCommandIfId(currentlyFocusedCommandId);
+        const getNextCommandOrder = (currentCommand: CurrentlyFocusedCommandTypes, currentTopologyBlockId: string) => {
+          return typeof currentCommand.commandOrder === "number"
+            ? currentCommand.commandOrder + 1
+            : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId });
+        };
 
         createPlotfield.mutate({
           _id,
           topologyBlockId: currentTopologyBlockId,
           isElse: currentlyFocusedCommandId?.isElse,
-          plotfieldCommandIfId:
-            currentlyFocusedCommandId.commandName === "if" ||
-            (currentlyFocusedCommandId.commandName as AllPossiblePlotFieldComamndsTypes) === "else" ||
-            (typeof currentlyFocusedCommandId.isElse === "boolean" && currentlyFocusedCommandId.parentId)
-              ? currentlyFocusedCommandId?.parentId
-              : "",
-          commandOrder:
-            typeof currentlyFocusedCommandId.commandOrder === "number"
-              ? currentlyFocusedCommandId?.commandOrder + 1
-              : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId }),
+          plotfieldCommandIfId,
+          commandOrder: getNextCommandOrder(currentlyFocusedCommandId, currentTopologyBlockId),
         });
       }
-    };
+    },
+    [topologyBlockId, createPlotfield, getItem, currentlyFocusedCommandId, getCurrentAmountOfCommands, episodeId]
+  );
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key?.toLowerCase());
-      pressedKeys.clear();
-    };
+  const handleKeyUp = useCallback((event: KeyboardEvent) => {
+    pressedKeys.current.delete(event.key?.toLowerCase());
+  }, []);
 
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
@@ -83,5 +80,13 @@ export default function useCreateBlankViaKeyCombination({ topologyBlockId }: Cre
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [topologyBlockId, createPlotfield, getItem, currentlyFocusedCommandId, getCurrentAmountOfCommands, episodeId]);
+  }, [handleKeyDown, handleKeyUp]);
+
+  function getPlotfieldCommandIfId(currentCommand: CurrentlyFocusedCommandTypes) {
+    return currentCommand.commandName === "if" ||
+      (currentCommand.commandName as AllPossiblePlotFieldComamndsTypes) === "else" ||
+      (typeof currentCommand.isElse === "boolean" && currentCommand.parentId)
+      ? currentCommand?.parentId
+      : "";
+  }
 }

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import useCreateSayWithCertainCharacter from "../../../../../features/Editor/PlotField/hooks/Say/useCreateSayWithCertainCharacter";
 import { generateMongoObjectId } from "../../../../../utils/generateMongoObjectId";
@@ -36,26 +36,30 @@ export default function useCreateCertainCharacterViaKeyCombination({
   const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
   const { getCurrentAmountOfCommands } = usePlotfieldCommands();
 
-  useEffect(() => {
-    const pressedKeys = new Set<string>();
+  const pressedKeys = useRef(new Set<string>());
 
-    const handleKeyDown = (event: KeyboardEvent) => {
+  const getSavedValue = useCallback(
+    (numberPressed: number) => {
+      const keyByStory = `story-${storyId}-c-${numberPressed}`;
+      const keyByEpisode = `episode-${episodeId}-c-${numberPressed}`;
+      return localStorage.getItem(keyByEpisode) || localStorage.getItem(keyByStory);
+    },
+    [storyId, episodeId]
+  );
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
       const allowed = preventCreatingCommandsWhenFocus();
-      if (!allowed) {
-        // console.log("You are inside input element");
-        return;
-      }
-      pressedKeys.add(event.key?.toLowerCase());
+      if (!allowed) return;
 
-      if ((pressedKeys.has("c") || pressedKeys.has("с")) && Object.keys(allPossibleNumbers).includes(event.key)) {
-        const numberPressed = Object.entries(allPossibleNumbers).find((key) => key[0] === event.key)?.[1];
+      const pressedKey = event.key?.toLowerCase();
+      pressedKeys.current.add(event.key?.toLowerCase());
 
-        const keyByStory = `story-${storyId}-c-${numberPressed}`;
-        const keyByEpisode = `episode-${episodeId}-c-${numberPressed}`;
-
-        const savedValue = localStorage.getItem(keyByEpisode)
-          ? localStorage.getItem(keyByEpisode)
-          : localStorage.getItem(keyByStory);
+      if (
+        (pressedKeys.current.has("c") || pressedKeys.current.has("с")) &&
+        Object.keys(allPossibleNumbers).includes(event.key)
+      ) {
+        const numberPressed = allPossibleNumbers[pressedKey as keyof typeof allPossibleNumbers];
+        const savedValue = getSavedValue(numberPressed);
 
         if (!savedValue) {
           console.log("You haven't assigned any characters yet.");
@@ -94,13 +98,23 @@ export default function useCreateCertainCharacterViaKeyCombination({
                 }),
         });
       }
-    };
+    },
+    [
+      episodeId,
+      topologyBlockId,
+      createCharacter,
+      currentlyFocusedCommandId,
+      getItem,
+      getCurrentAmountOfCommands,
+      getSavedValue,
+    ]
+  );
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key?.toLowerCase());
-      pressedKeys.clear();
-    };
+  const handleKeyUp = useCallback((event: KeyboardEvent) => {
+    pressedKeys.current.delete(event.key?.toLowerCase());
+  }, []);
 
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
@@ -108,5 +122,5 @@ export default function useCreateCertainCharacterViaKeyCombination({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [handleKeyDown, handleKeyUp]);
 }
