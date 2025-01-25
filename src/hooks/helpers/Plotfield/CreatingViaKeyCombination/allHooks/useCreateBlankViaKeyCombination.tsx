@@ -37,7 +37,11 @@ export default function useCreateBlankViaKeyCombination({ topologyBlockId }: Cre
 
       pressedKeys.current.add(event.key?.toLowerCase());
 
-      if (pressedKeys.current.has("shift") && (pressedKeys.current.has("n") || pressedKeys.current.has("т"))) {
+      if (
+        pressedKeys.current.has("shift") &&
+        (pressedKeys.current.has("n") || pressedKeys.current.has("т")) &&
+        pressedKeys.current.size === 2
+      ) {
         const _id = generateMongoObjectId();
         const focusedTopologyBlockId = getItem("focusedTopologyBlock");
         const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;

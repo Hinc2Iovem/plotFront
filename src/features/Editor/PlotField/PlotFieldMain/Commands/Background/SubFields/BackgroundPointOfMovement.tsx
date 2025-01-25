@@ -1,38 +1,53 @@
+import { toastErrorStyles } from "@/components/shared/toastStyles";
+import useUpdateBackgroundText from "@/features/Editor/PlotField/hooks/Background/useUpdateBackgroundText";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
 type BackgroundPointOfMovementTypes = {
   setMoveValue: React.Dispatch<React.SetStateAction<string>>;
-  setShowNotificationModal: React.Dispatch<React.SetStateAction<boolean>>;
   moveValue: string;
-  showNotificationModal: boolean;
+  commandBackgroundId: string;
 };
 
 export default function BackgroundPointOfMovement({
   moveValue,
+  commandBackgroundId,
   setMoveValue,
-  setShowNotificationModal,
-  showNotificationModal,
 }: BackgroundPointOfMovementTypes) {
-  const theme = localStorage.getItem("theme");
+  const [localMoveValue, setLocalMoveValue] = useState(moveValue || "");
+
+  useEffect(() => {
+    setLocalMoveValue(moveValue);
+  }, [moveValue]);
+
+  const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
+
+  const updateBackgroundText = useUpdateBackgroundText({
+    pointOfMovement: localMoveValue,
+    backgroundId: commandBackgroundId,
+  });
+
+  const handleOnBlur = () => {
+    if (localMoveValue?.trim().length) {
+      if (regexCheckDecimalNumberBetweenZeroAndOne.test(localMoveValue)) {
+        setMoveValue(localMoveValue);
+        updateBackgroundText.mutate();
+      } else {
+        toast(` Значение должно быть десятичным числом в промежутке от 0.0 до 1.0`, toastErrorStyles);
+      }
+    }
+  };
+
   return (
-    <>
-      <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
-        <input
-          value={moveValue || ""}
-          type="text"
-          className={`w-full ${
-            theme === "light" ? "outline-gray-300" : "outline-gray-600"
-          } text-text-light text-[1.6rem] px-[1rem] py-[.5rem] rounded-md shadow-md sm:max-h-[20rem] max-h-[40rem]`}
-          placeholder="Движение по локации"
-          onChange={(e) => setMoveValue(e.target.value)}
-        />
-      </form>
-      <aside
-        onClick={() => setShowNotificationModal(false)}
-        className={`${
-          showNotificationModal ? "" : "hidden"
-        } absolute translate-y-[170%] right-0 bg-secondary shadow-md rounded-md border-red-400 border-[2px] border-dashed w-[70%] text-[1.4rem] p-[.5rem] text-right text-red-300`}
-      >
-        Значение должно быть десятичным числом в промежутке от 0.0 до 1.0
-      </aside>
-    </>
+    <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
+      <PlotfieldInput
+        value={localMoveValue || ""}
+        type="text"
+        placeholder="Движение по локации"
+        onChange={(e) => setLocalMoveValue(e.target.value)}
+        onBlur={handleOnBlur}
+      />
+    </form>
   );
 }

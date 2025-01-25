@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { toast } from "sonner";
 import { axiosCustomized } from "../../../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { CommandAchievementTypes } from "../../../../../../types/StoryEditor/PlotField/Achievement/AchievementTypes";
-import axios from "axios";
-import { toast } from "sonner";
 import ActionButton from "./ActionButton";
 
 type UpdateCommandAchievementTypes = {
@@ -46,8 +46,8 @@ export default function useUpdateCommandAchievement({
                 setCurrentAchievement={setCurrentAchievement}
               />
             ),
-            duration: 5000,
-            className: "flex items-center justify-between",
+
+            className: `flex items-center justify-between`,
           });
         } else {
           toast("Что-то пошло не так");

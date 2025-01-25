@@ -1,24 +1,17 @@
 import { useEffect, useState } from "react";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandWardrobe from "../../../hooks/Wardrobe/useGetCommandWardrobe";
-import "../Prompts/promptStyles.css";
+import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
 import WardrobeAppearance from "./AppearanceParts/WardrobeAppearance";
 import WardrobeTitle from "./WardrobeTitle/WardrobeTitle";
+import "../Prompts/promptStyles.css";
 
 type CommandWardrobeFieldTypes = {
   plotFieldCommandId: string;
-  command: string;
   topologyBlockId: string;
 };
 
-export default function CommandWardrobeField({
-  plotFieldCommandId,
-  command,
-  topologyBlockId,
-}: CommandWardrobeFieldTypes) {
-  const [nameValue] = useState<string>(command ?? "Wardrobe");
+export default function CommandWardrobeField({ plotFieldCommandId, topologyBlockId }: CommandWardrobeFieldTypes) {
   const [wardrobeTitle, setWardrobeTitle] = useState("");
   const [commandWardrobeId, setCommandWardrobeId] = useState("");
   const [characterId, setCharacterId] = useState("");
@@ -29,10 +22,8 @@ export default function CommandWardrobeField({
 
   const [allAppearanceNames, setAllAppearanceNames] = useState<string[]>([]);
 
-  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
-
   useAddItemInsideSearch({
-    commandName: nameValue || "wardrobe",
+    commandName: "wardrobe",
     id: plotFieldCommandId,
     text: `${wardrobeTitle} ${allAppearanceNames.map((an) => `${an}`).join(" ")}`,
     topologyBlockId,
@@ -49,13 +40,8 @@ export default function CommandWardrobeField({
 
   return (
     <div className="flex gap-[5px] w-full rounded-md p-[5px] flex-col relative">
-      <div className="min-w-[100px] flex-grow">
-        <PlotfieldCommandNameField
-          className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} text-[30px] text-center`}
-        >
-          {nameValue}
-        </PlotfieldCommandNameField>
-      </div>
+      <FocusedPlotfieldCommandNameField nameValue={"wardrobe"} plotFieldCommandId={plotFieldCommandId} />
+
       <WardrobeTitle
         allAppearanceNames={allAppearanceNames}
         commandWardrobeId={commandWardrobeId}

@@ -33,6 +33,8 @@ export default function EpisodeEditor() {
   usePopulateSearch({ currentTopologyBlockId: currentTopologyBlock._id });
   useInitializeCurrentlyFocusedCommandOnReload();
 
+  console.log("lol");
+
   return (
     <section className="p-[10px] mx-auto flex flex-col gap-[10px] | containerScroll">
       {/* <EditorHeader setShowHeader={setShowHeader} showHeader={showHeader} /> */}

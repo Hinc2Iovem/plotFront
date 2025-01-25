@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandIf from "../../../hooks/If/useGetCommandIf";
 import CommandIfNameField from "./CommandIfNameField";
 import useIfVariations from "./Context/IfContext";
 
 type CommandIfFieldTypes = {
   plotFieldCommandId: string;
-  command: string;
   topologyBlockId: string;
 };
 
@@ -15,9 +13,6 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
   const { data: commandIf } = useGetCommandIf({
     plotFieldCommandId,
   });
-
-  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
-
   const [commandIfId, setCommandIfId] = useState("");
   const { setCommandIf } = useIfVariations();
 
@@ -39,7 +34,6 @@ export default function CommandIfField({ plotFieldCommandId, topologyBlockId }: 
         createInsideElse={false}
         commandIfId={commandIfId}
         hideCommands={hideIfCommands}
-        isCommandFocused={isCommandFocused}
         nameValue="if"
         setHideCommands={setHideIfCommands}
         topologyBlockId={topologyBlockId}

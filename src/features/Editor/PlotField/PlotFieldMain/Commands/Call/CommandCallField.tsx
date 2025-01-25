@@ -7,34 +7,28 @@ import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { SelectContent } from "@radix-ui/react-select";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandCall from "../../../hooks/Call/useGetCommandCall";
 import useUpdateCallCommandIndex from "../../../hooks/Call/useUpdateCallCommandIndex";
 import useUpdateCallText from "../../../hooks/Call/useUpdateCallText";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetAllTopologyBlocksByEpisodeId from "../../../hooks/TopologyBlock/useGetAllTopologyBlocksByEpisodeId";
 import useGetTopologyBlockById from "../../../hooks/TopologyBlock/useGetTopologyBlockById";
+import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
 
 type CommandCallFieldTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
-  command: string;
 };
 
-export default function CommandCallField({ plotFieldCommandId, topologyBlockId, command }: CommandCallFieldTypes) {
+export default function CommandCallField({ plotFieldCommandId, topologyBlockId }: CommandCallFieldTypes) {
   const { episodeId } = useParams();
   const { updateValue } = useSearch();
-
-  const [nameValue] = useState<string>(command ?? "Call");
 
   const { data: commandCall } = useGetCommandCall({
     plotFieldCommandId,
     topologyBlockId,
   });
-
-  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const [commandCallId, setCommandCallId] = useState("");
   const [targetBlockId, setTargetBlockId] = useState("");
@@ -46,7 +40,7 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
   });
 
   useAddItemInsideSearch({
-    commandName: nameValue || "call",
+    commandName: "call",
     id: plotFieldCommandId,
     text: "",
     topologyBlockId,
@@ -86,11 +80,8 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId, 
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[100px] relative">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
-          {nameValue}
-        </PlotfieldCommandNameField>
-      </div>
+      <FocusedPlotfieldCommandNameField nameValue={"call"} plotFieldCommandId={plotFieldCommandId} />
+
       <div className="flex gap-[5px] flex-grow">
         <ChooseTopologyBlock
           callId={commandCallId}

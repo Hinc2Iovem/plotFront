@@ -1,10 +1,8 @@
-import { useEffect, useRef } from "react";
+import useGetCurrentFocusedElement from "@/features/Editor/PlotField/hooks/helpers/useGetCurrentFocusedElement";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import useUpdateNameOrEmotion from "../../../../../hooks/Say/useUpdateNameOrEmotion";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import { CharacterValueTypes, EmotionTypes } from "./CommandSayCharacterFieldItem";
-import CommandSayCreateCharacterFieldModal from "./ModalCreateCharacter/CommandSayCreateCharacterFieldModal";
-import useGetCurrentFocusedElement from "@/features/Editor/PlotField/hooks/helpers/useGetCurrentFocusedElement";
 
 type FormCharacterTypes = {
   plotFieldCommandSayId: string;
@@ -19,50 +17,53 @@ type FormCharacterTypes = {
 export default function FormCharacter({
   plotFieldCommandId,
   plotFieldCommandSayId,
-  setShowCreateCharacterModal,
+  characterValue,
   setEmotionValue,
   setCharacterValue,
-  characterValue,
-  showCreateCharacterModal,
 }: FormCharacterTypes) {
-  const preventRerender = useRef<boolean>(false);
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
-  const { updateCharacterName } = usePlotfieldCommands();
+  const { updateCharacterName, updateCharacterProperties, updateEmotionProperties } = usePlotfieldCommands();
 
   const updateNameOrEmotion = useUpdateNameOrEmotion({
     plotFieldCommandId,
     plotFieldCommandSayId,
   });
 
-  useEffect(() => {
-    if (characterValue._id && preventRerender.current) {
-      updateNameOrEmotion.mutate({ characterBodyId: characterValue._id });
+  const handleOnBlur = (value: CharacterValueTypes) => {
+    updateCharacterName({
+      id: plotFieldCommandId,
+      characterName: value.characterName || "",
+    });
+    setCharacterValue(value);
+    updateNameOrEmotion.mutate({ characterBodyId: value._id || "" });
+    if (setEmotionValue) {
+      setEmotionValue({
+        _id: null,
+        emotionName: null,
+        imgUrl: null,
+      });
+      updateEmotionProperties({
+        emotionId: "",
+        emotionName: "",
+        id: plotFieldCommandId || "",
+        emotionImg: "",
+      });
     }
-    return () => {
-      preventRerender.current = true;
-    };
-  }, [characterValue]);
+    updateCharacterProperties({
+      characterId: value?._id || "",
+      characterName: value.characterName || "",
+      id: plotFieldCommandId || "",
+      characterImg: value?.imgUrl || "",
+    });
+  };
 
   return (
     <>
       <div className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} rounded-md w-full relative`}>
-        <PlotfieldCharacterPromptMain
-          onChange={(value) => {
-            updateCharacterName({
-              id: plotFieldCommandId,
-              characterName: value,
-            });
-          }}
-          characterValue={characterValue}
-          plotfieldCommandId={plotFieldCommandId}
-          setCharacterValue={setCharacterValue}
-          setEmotionValue={setEmotionValue}
-          characterName={characterValue.characterName || ""}
-          currentCharacterId={characterValue?._id || ""}
-        />
+        <PlotfieldCharacterPromptMain onBlur={(value) => handleOnBlur(value)} initCharacterValue={characterValue} />
       </div>
-      <CommandSayCreateCharacterFieldModal
+      {/* <CommandSayCreateCharacterFieldModal
         characterName={characterValue.characterName || ""}
         characterId={characterValue?._id || ""}
         commandSayId={plotFieldCommandSayId}
@@ -70,7 +71,7 @@ export default function FormCharacter({
         setShowModal={setShowCreateCharacterModal}
         showModal={showCreateCharacterModal}
         setCharacterValue={setCharacterValue}
-      />
+      /> */}
     </>
   );
 }

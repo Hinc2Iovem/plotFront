@@ -1,14 +1,14 @@
+import command from "@/assets/images/Editor/command.png";
+import plus from "@/assets/images/shared/add.png";
 import { Button } from "@/components/ui/button";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
+import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
+import { useParams } from "react-router-dom";
+import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
+import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
 import useIfVariations, { IfVariationTypes } from "./Context/IfContext";
 import CreateIfVariationButton from "./CreateIfVariationButton";
 import { IfVariationInputField } from "./Variations/IfVariationInputField";
 import useRefineAndAssignVariations from "./Variations/useRefineAndAssignVariations";
-import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
-import command from "@/assets/images/Editor/command.png";
-import plus from "@/assets/images/shared/add.png";
-import { useParams } from "react-router-dom";
-import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
 
 type CommandIfNameFieldTypes = {
   topologyBlockId: string;
@@ -16,7 +16,7 @@ type CommandIfNameFieldTypes = {
   plotfieldCommandId: string;
   setHideCommands: React.Dispatch<React.SetStateAction<boolean>>;
   hideCommands: boolean;
-  isCommandFocused: boolean;
+
   createInsideElse: boolean;
   nameValue: "if" | "else";
 };
@@ -26,7 +26,6 @@ export default function CommandIfNameField({
   commandIfId,
   plotfieldCommandId,
   nameValue,
-  isCommandFocused,
   hideCommands,
   createInsideElse,
   setHideCommands,
@@ -76,13 +75,8 @@ export default function CommandIfNameField({
 
   return (
     <div className="min-w-[100px] w-full relative flex flex-col items-center gap-[10px]">
-      <div className="flex w-full">
-        <PlotfieldCommandNameField
-          className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} text-text text-[25px] text-center`}
-        >
-          {nameValue}
-        </PlotfieldCommandNameField>
-      </div>
+      <FocusedPlotfieldCommandNameField nameValue={"if"} plotFieldCommandId={plotfieldCommandId} />
+
       <div className="px-[5px] flex gap-[5px] w-full">
         <CreateIfVariationButton ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />
         <div className={`flex gap-[5px] w-full rounded-md flex-wrap`}>

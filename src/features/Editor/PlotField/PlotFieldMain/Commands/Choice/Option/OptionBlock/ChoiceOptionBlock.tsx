@@ -1,17 +1,15 @@
-import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
-import { useEffect, useRef, useState } from "react";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOutOfModal from "../../../../../../../../hooks/UI/useOutOfModal";
 import useAddItemInsideSearch from "../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useDeleteChoiceOption from "../../../../../hooks/Choice/ChoiceOption/useDeleteChoiceOption";
 import useGetChoiceOptionById from "../../../../../hooks/Choice/ChoiceOption/useGetChoiceOptionById";
-import useUpdateChoiceOptionTranslationText from "../../../../../hooks/Choice/ChoiceOption/useUpdateChoiceOptionTranslationText";
 import useChoiceOptions, { ChoiceOptionItemTypes } from "../../Context/ChoiceContext";
+import ChoiceOptionAnswerInput from "./ChoiceOptionAnswerInput";
 import ChoiceOptionShowPlot from "./ChoiceOptionShowPlot";
 import OptionSelectSexualOrientationBlock from "./OptionSelectSexualOrientationBlock";
 import OptionVariationFields from "./OptionVariationFields";
 import TopologyBlockSelectOrderField from "./TopologyBlockSelectOrderField";
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 
 type ChoiceOptionBlockTypes = {
   setShowOptionPlot: React.Dispatch<React.SetStateAction<boolean>>;
@@ -38,26 +36,8 @@ export default function ChoiceOptionBlock({
 }: ChoiceOptionBlockTypes) {
   const { episodeId } = useParams();
 
-  const {
-    updateChoiceOptionText,
-    getChoiceOptionText,
-    getChoiceOptionById,
-    updateChoiceOptionOrder,
-    updateChoiceOptionTopologyBlockId,
-  } = useChoiceOptions();
-
-  const [showAllSexualOrientationBlocks, setShowAllSexualOrientationBlocks] = useState(false);
-
-  const [suggestDeleting, setSuggestDeleting] = useState(false);
-  const deleteRef = useRef<HTMLDivElement | null>(null);
-
-  const buttonDeleteRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (buttonDeleteRef.current) {
-      buttonDeleteRef.current.focus();
-    }
-  }, [suggestDeleting]);
+  const { getChoiceOptionText, getChoiceOptionById, updateChoiceOptionOrder, updateChoiceOptionTopologyBlockId } =
+    useChoiceOptions();
 
   const { data: choiceOption } = useGetChoiceOptionById({ choiceOptionId });
   const [sexualOrientationType, setSexualOrientationType] = useState("");
@@ -87,14 +67,6 @@ export default function ChoiceOptionBlock({
     topologyBlockId: currentTopologyBlockId,
   });
 
-  const updateOptionTextTranslation = useUpdateChoiceOptionTranslationText({
-    choiceOptionId,
-    option: getChoiceOptionText({ choiceId, choiceOptionId }),
-    type: optionType,
-    choiceId: plotFieldCommandId,
-    language: "russian",
-  });
-
   useAddItemInsideSearch({
     commandName: `Choice - ${optionType}`,
     id: choiceOptionId,
@@ -103,28 +75,7 @@ export default function ChoiceOptionBlock({
     type: "choiceOption",
   });
 
-  const onBlur = () => {
-    updateOptionTextTranslation.mutate();
-  };
-
-  useOutOfModal({
-    modalRef: deleteRef,
-    setShowModal: setSuggestDeleting,
-    showModal: suggestDeleting,
-  });
   const [overflow, setOverflow] = useState(true);
-
-  useEffect(() => {
-    if (showAllSexualOrientationBlocks) {
-      const timer = setTimeout(() => {
-        setOverflow(false);
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-
-    setOverflow(true);
-  }, [showAllSexualOrientationBlocks]);
 
   return (
     <div
@@ -134,19 +85,11 @@ export default function ChoiceOptionBlock({
     >
       <ContextMenu>
         <ContextMenuTrigger className="w-full flex justify-between flex-col h-full gap-[20px]">
-          <PlotfieldInput
-            type="text"
-            value={getChoiceOptionText({ choiceId, choiceOptionId })}
-            onChange={(e) => {
-              updateChoiceOptionText({
-                choiceId,
-                id: choiceOptionId,
-                optionText: e.target.value,
-              });
-            }}
-            onBlur={onBlur}
-            placeholder="Ответ"
-            className={`w-full text-[13px] text-text rounded-md shadow-md bg-secondary px-[10px]`}
+          <ChoiceOptionAnswerInput
+            choiceId={choiceId}
+            choiceOptionId={choiceOptionId}
+            optionType={optionType}
+            plotFieldCommandId={plotFieldCommandId}
           />
 
           <div className="p-[2px] flex flex-col gap-[10px]">
@@ -164,8 +107,7 @@ export default function ChoiceOptionBlock({
             <div className="flex justify-between w-full">
               <div className={`${overflow ? "overflow-hidden" : ""} w-[calc(50%+5px)]`}>
                 <OptionSelectSexualOrientationBlock
-                  setShowAllSexualOrientationBlocks={setShowAllSexualOrientationBlocks}
-                  showAllSexualOrientationBlocks={showAllSexualOrientationBlocks}
+                  setOverflow={setOverflow}
                   choiceOptionId={choiceOptionId}
                   sexualOrientation={sexualOrientationType}
                 />

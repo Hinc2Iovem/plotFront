@@ -11,16 +11,10 @@ import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFoc
 type CommandCommentFieldTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
-  command: string;
 };
 
-export default function CommandCommentField({
-  plotFieldCommandId,
-  topologyBlockId,
-  command,
-}: CommandCommentFieldTypes) {
+export default function CommandCommentField({ plotFieldCommandId, topologyBlockId }: CommandCommentFieldTypes) {
   const { episodeId } = useParams();
-  const [nameValue] = useState<string>(command ?? "Comment");
 
   const { data: commandComment } = useGetCommandComment({
     plotFieldCommandId,
@@ -46,7 +40,7 @@ export default function CommandCommentField({
   const { updateValue } = useSearch();
 
   useAddItemInsideSearch({
-    commandName: nameValue || "comment",
+    commandName: "comment",
     id: plotFieldCommandId,
     text: comment,
     topologyBlockId,
@@ -70,7 +64,7 @@ export default function CommandCommentField({
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
       <div className="sm:w-[20%] min-w-[100px] w-full relative">
         <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
-          {nameValue}
+          comment
         </PlotfieldCommandNameField>
       </div>
 

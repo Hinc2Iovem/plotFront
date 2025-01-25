@@ -1,5 +1,6 @@
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SelectWithBlur from "@/components/ui/selectWithBlur";
+import { useEffect, useState } from "react";
 import { CommandSayVariationTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import useGetCurrentFocusedElement from "../../../../../hooks/helpers/useGetCurrentFocusedElement";
@@ -24,6 +25,7 @@ export default function SayFieldItemVariationType({
   setSayVariationType,
   textValue,
 }: SayFieldItemVariationTypeTypes) {
+  const [, setRerender] = useState(false);
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
   const { updateValue } = useSearch();
   const handleOnUpdateNameValue = (pv: string) => {
@@ -41,6 +43,12 @@ export default function SayFieldItemVariationType({
     }
   };
 
+  useEffect(() => {
+    if (sayVariationType) {
+      setRerender((prev) => !prev);
+    }
+  }, [sayVariationType]);
+
   const updateCommandSayNameValue = useUpdateCommandSayType({
     plotFieldCommandId,
     plotFieldCommandSayId,
@@ -53,7 +61,7 @@ export default function SayFieldItemVariationType({
         updateCommandSayNameValue.mutate(v as CommandSayVariationTypes);
       }}
     >
-      <SelectTrigger className="sm:w-[20%] min-w-[150px] capitalize flex-grow w-full text-text relative">
+      <SelectTrigger className="sm:w-[20%] min-w-[150px] sm:max-w-[200px] capitalize w-full text-text">
         <SelectValue
           placeholder={sayVariationType}
           onBlur={(v) => v.currentTarget.blur()}

@@ -1,15 +1,15 @@
+import { toastSuccessStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef } from "react";
-import useCreateAchievementInsideCommandAchievement from "../CommandAchievement/useCreateAchievementInsideCommandAchievement";
 import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { toastSuccessStyles } from "@/components/shared/toastStyles";
+import useCreateKeyInsideCommandKey from "./useCreateKeyInsideCommandKey";
 
 type ActionButtonTypes = {
   plotfieldCommandId: string;
   text: string;
-  setCurrentAchievement: React.Dispatch<
+  setCurrentKey: React.Dispatch<
     React.SetStateAction<{
       textValue: string;
       id: string;
@@ -17,11 +17,10 @@ type ActionButtonTypes = {
   >;
 };
 
-export default function ActionButton({ plotfieldCommandId, text, setCurrentAchievement }: ActionButtonTypes) {
+export default function ActionButton({ plotfieldCommandId, text, setCurrentKey }: ActionButtonTypes) {
   const { storyId } = useParams();
   const ref = useRef<HTMLButtonElement>(null);
-  const createAchievement = useCreateAchievementInsideCommandAchievement({
-    language: "russian",
+  const createKey = useCreateKeyInsideCommandKey({
     plotFieldCommandId: plotfieldCommandId,
   });
 
@@ -35,10 +34,10 @@ export default function ActionButton({ plotfieldCommandId, text, setCurrentAchie
     <Button
       onClick={() => {
         toast.dismiss();
-        const achievementId = generateMongoObjectId();
-        setCurrentAchievement({ id: achievementId, textValue: text });
-        createAchievement.mutate({ achievementId, storyId: storyId || "", text });
-        toast("Ачивка создана", toastSuccessStyles);
+        const keyId = generateMongoObjectId();
+        setCurrentKey({ id: keyId, textValue: text });
+        createKey.mutate({ keyId, storyId: storyId || "", text });
+        toast("Ключ создан", toastSuccessStyles);
       }}
       className={`outline focus-within:bg-accent hover:bg-accent transition-all`}
       ref={ref}

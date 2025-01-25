@@ -1,4 +1,4 @@
-import { useState } from "react";
+import useUpdateChoice from "@/features/Editor/PlotField/hooks/Choice/useUpdateChoice";
 import { EmotionsTypes } from "../../../../../../../types/StoryData/Character/CharacterTypes";
 import {
   CharacterValueTypes,
@@ -6,7 +6,6 @@ import {
 } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 import { AllEmotionsModal } from "../../Say/CommandSayFieldItem/Character/FormEmotion";
 import ChoiceQuestionCharacterField from "./ChoiceQuestionCharacterField";
-import useUpdateChoice from "@/features/Editor/PlotField/hooks/Choice/useUpdateChoice";
 
 type QuestionFieldCharacterAuthorSectionTypes = {
   isAuthor: boolean;
@@ -16,6 +15,7 @@ type QuestionFieldCharacterAuthorSectionTypes = {
   allEmotions: EmotionsTypes[];
   setCharacterValue: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
   setEmotionValue: React.Dispatch<React.SetStateAction<EmotionTypes>>;
+  setCharacterId: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function QuestionFieldCharacterAuthorSection({
@@ -26,8 +26,8 @@ export default function QuestionFieldCharacterAuthorSection({
   allEmotions,
   setCharacterValue,
   setEmotionValue,
+  setCharacterId,
 }: QuestionFieldCharacterAuthorSectionTypes) {
-  const [emotionInitValue, setEmotionInitValue] = useState(emotionValue.emotionName || "");
   const updateChoice = useUpdateChoice({ choiceId });
 
   return (
@@ -38,25 +38,24 @@ export default function QuestionFieldCharacterAuthorSection({
             choiceId={choiceId}
             characterValue={characterValue}
             setCharacterValue={setCharacterValue}
+            setCharacterId={setCharacterId}
           />
 
           <AllEmotionsModal
             inputClasses="w-full pr-[35px] text-text md:text-[17px]"
-            imgClasses="w-[30px] object-cover rounded-md right-0 absolute"
-            containerClasses="flex-grow min-w-[200px]"
-            emotionName={emotionValue.emotionName || ""}
-            emotionValue={emotionValue}
+            imgClasses="w-[30px] object-cover rounded-md top-1/2 -translate-y-1/2 right-[3px] absolute"
+            containerClasses="flex-grow min-w-[200px] relative"
             emotions={allEmotions}
-            initValue={emotionInitValue}
-            setEmotionValue={setEmotionValue}
-            onSubmit={({ emotionValue }) => {
+            initEmotionValue={emotionValue}
+            onBlur={(emotionValue) => {
               setEmotionValue({
                 _id: emotionValue._id,
                 imgUrl: emotionValue.imgUrl || "",
                 emotionName: emotionValue.emotionName,
               });
-              setEmotionInitValue(emotionValue.emotionName);
-              updateChoice.mutate({ characterEmotionId: emotionValue._id });
+
+              setEmotionValue(emotionValue);
+              updateChoice.mutate({ characterEmotionId: emotionValue._id || "" });
             }}
           />
         </>

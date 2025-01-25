@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UnknownCharacterValueTypes } from "../../Prompts/Characters/PlotfieldUnknownCharacterPromptMain";
+import { UnknownCharacterValueTypes } from "../../Prompts/Characters/UnknownCharacters/PlotfieldUnknownCharacterPromptMain";
 import useGetCharacterById from "../../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useGetTranslationCharacterById from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 

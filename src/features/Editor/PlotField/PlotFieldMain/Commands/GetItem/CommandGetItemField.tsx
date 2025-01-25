@@ -4,25 +4,18 @@ import { TranslationTextFieldName } from "../../../../../../const/TRANSLATION_TE
 import useUpdateGetItemTranslation from "../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateGetItemTranslation";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
 import PlotfieldTextarea from "../../../../../../ui/Textareas/PlotfieldTextarea";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetSingleGetItemTranslation from "../../../hooks/GetItem/useGetSingleGetItemTranslation";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
 
 type CommandGetItemFieldTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
-  command: string;
 };
 
-export default function CommandGetItemField({
-  topologyBlockId,
-  plotFieldCommandId,
-  command,
-}: CommandGetItemFieldTypes) {
+export default function CommandGetItemField({ topologyBlockId, plotFieldCommandId }: CommandGetItemFieldTypes) {
   const { episodeId } = useParams();
-  const [nameValue] = useState<string>(command ?? "GetItem");
   const [initValues, setInitValues] = useState({
     name: "",
     description: "",
@@ -31,8 +24,6 @@ export default function CommandGetItemField({
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
-
-  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const { data: getItem } = useGetSingleGetItemTranslation({
     plotFieldCommandId,
@@ -74,7 +65,7 @@ export default function CommandGetItemField({
   const { updateValue } = useSearch();
 
   useAddItemInsideSearch({
-    commandName: nameValue || "getItem",
+    commandName: "getItem",
     id: plotFieldCommandId,
     text: `${itemName} ${itemDescription} ${buttonText}`,
     topologyBlockId,
@@ -103,7 +94,7 @@ export default function CommandGetItemField({
     if (episodeId) {
       updateValue({
         episodeId,
-        commandName: nameValue || "getItem",
+        commandName: "getItem",
         id: plotFieldCommandId,
         value: `${itemName} ${itemDescription} ${buttonText}`,
         type: "command",
@@ -114,11 +105,8 @@ export default function CommandGetItemField({
   return (
     <div className="w-full border-border border-[1px] rounded-md p-[5px] flex flex-col gap-[5px]">
       <div className="flex flex-wrap gap-[5px] w-full sm:flex-row flex-col">
-        <div className="sm:w-[20%] min-w-[100px] relative">
-          <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
-            {nameValue}
-          </PlotfieldCommandNameField>
-        </div>
+        <FocusedPlotfieldCommandNameField nameValue={"getItem"} plotFieldCommandId={plotFieldCommandId} />
+
         <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow flex sm:flex-row flex-col gap-[5px]">
           <PlotfieldInput
             value={itemName}

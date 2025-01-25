@@ -1,28 +1,23 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCharacterWithTranslation from "../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
 import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
+import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
 import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 
 type CommandSuitFieldTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
-  command: string;
 };
 
-export default function CommandSuitField({ plotFieldCommandId, command, topologyBlockId }: CommandSuitFieldTypes) {
+export default function CommandSuitField({ plotFieldCommandId, topologyBlockId }: CommandSuitFieldTypes) {
   const { episodeId } = useParams();
-  const [nameValue] = useState<string>(command ?? "Suit");
   const [initTextValue, setInitTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
-
-  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const { data: commandSuit } = useGetCommandSuit({
     plotFieldCommandId,
@@ -30,7 +25,6 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
 
   const [commandSuitId, setCommandSuitId] = useState("");
 
-  const [initCharacterId, steInitCharacterId] = useState("");
   const { characterValue, setCharacterValue } = useGetCharacterWithTranslation({
     currentCharacterId: commandSuit?.characterId,
   });
@@ -42,7 +36,6 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
         ...prev,
         _id: commandSuit?.characterId || "",
       }));
-      steInitCharacterId(commandSuit?.characterId || "");
       setTextValue(commandSuit?.suitName);
       setInitTextValue(commandSuit?.suitName);
     }
@@ -51,7 +44,7 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
   const { updateValue } = useSearch();
 
   useAddItemInsideSearch({
-    commandName: nameValue || "suit",
+    commandName: "suit",
     id: plotFieldCommandId,
     text: textValue,
     topologyBlockId,
@@ -80,11 +73,6 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
       });
     }
   };
-  useEffect(() => {
-    if (characterValue._id) {
-      updateValues();
-    }
-  }, [characterValue._id]);
 
   const onBlurSuitName = () => {
     if (initTextValue !== textValue) {
@@ -95,28 +83,17 @@ export default function CommandSuitField({ plotFieldCommandId, command, topology
     }
   };
 
-  useEffect(() => {
-    if (characterValue._id && initCharacterId !== characterValue._id) {
-      updateSuitText.mutate();
-      steInitCharacterId(characterValue._id);
-    }
-  }, [characterValue]);
-
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col relative">
-      <div className="sm:w-[20%] min-w-[100px] relative">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
-          {nameValue}
-        </PlotfieldCommandNameField>
-      </div>
+      <FocusedPlotfieldCommandNameField nameValue={"suit"} plotFieldCommandId={plotFieldCommandId} />
 
       <PlotfieldCharacterPromptMain
-        characterName={characterValue.characterName || ""}
-        currentCharacterId={characterValue._id || ""}
-        setCharacterValue={setCharacterValue}
-        characterValue={characterValue}
-        onChange={(value) => updateValues(value)}
-        plotfieldCommandId={plotFieldCommandId}
+        initCharacterValue={characterValue}
+        onBlur={(value) => {
+          setCharacterValue(value);
+          updateValues(value.characterName || "");
+          updateSuitText.mutate();
+        }}
         inputClasses="w-full pr-[35px] text-text md:text-[17px]"
         imgClasses="w-[30px] object-cover rounded-md right-0 absolute"
       />

@@ -11,20 +11,32 @@ import "../OptionRaibowBtnStyles.css";
 type OptionSelectSexualOrientationBlockTypes = {
   sexualOrientation: string;
   choiceOptionId: string;
-  showAllSexualOrientationBlocks: boolean;
-  setShowAllSexualOrientationBlocks: React.Dispatch<React.SetStateAction<boolean>>;
+  setOverflow: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function OptionSelectSexualOrientationBlock({
   sexualOrientation,
   choiceOptionId,
-  setShowAllSexualOrientationBlocks,
-  showAllSexualOrientationBlocks,
+  setOverflow,
 }: OptionSelectSexualOrientationBlockTypes) {
   const [currentSexualOrientationBlockName, setCurrentSexualOrientationBlockName] = useState(
     sexualOrientation || "combined"
   );
   const [showCurrentBlock, setShowCurrentBlock] = useState(false);
+
+  const [showAllSexualOrientationBlocks, setShowAllSexualOrientationBlocks] = useState(false);
+
+  useEffect(() => {
+    if (showAllSexualOrientationBlocks) {
+      const timer = setTimeout(() => {
+        setOverflow(false);
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+
+    setOverflow(true);
+  }, [showAllSexualOrientationBlocks]);
 
   useEffect(() => {
     if (sexualOrientation) {
@@ -35,6 +47,12 @@ export default function OptionSelectSexualOrientationBlock({
   const updateOptionSexualOrientationBlock = useUpdateChoiceOptionSexualOrientation({
     choiceOptionId,
   });
+
+  useEffect(() => {
+    if (!showAllSexualOrientationBlocks) {
+      setShowCurrentBlock(false);
+    }
+  }, [showAllSexualOrientationBlocks]);
 
   return (
     <SelectWithBlur
@@ -50,7 +68,11 @@ export default function OptionSelectSexualOrientationBlock({
       }}
     >
       <SelectTrigger
-        onMouseLeave={() => setShowCurrentBlock(false)}
+        onMouseLeave={() => {
+          if (!showAllSexualOrientationBlocks) {
+            setShowCurrentBlock(false);
+          }
+        }}
         onMouseOver={() => setShowCurrentBlock(true)}
         className={`relative w-fit translate-y-[30px] ${
           showCurrentBlock ? "translate-y-[0]" : ""

@@ -1,29 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCommandEffect from "../../../hooks/Effect/useGetCommandEffect";
 import useUpdateEffectText from "../../../hooks/Effect/useUpdateEffectText";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
 
 type CommandEffectFieldTypes = {
   plotFieldCommandId: string;
-  command: string;
   topologyBlockId: string;
 };
 
-export default function CommandEffectField({ plotFieldCommandId, command, topologyBlockId }: CommandEffectFieldTypes) {
+export default function CommandEffectField({ plotFieldCommandId, topologyBlockId }: CommandEffectFieldTypes) {
   const { episodeId } = useParams();
-  const [nameValue] = useState<string>(command ?? "Effect");
   const [initTextValue, setInitTextValue] = useState("");
   const [textValue, setTextValue] = useState("");
   const { data: commandEffect } = useGetCommandEffect({
     plotFieldCommandId,
   });
-
-  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const currentInput = useRef<HTMLInputElement | null>(null);
 
@@ -45,7 +40,7 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
   const { updateValue } = useSearch();
 
   useAddItemInsideSearch({
-    commandName: nameValue || "effect",
+    commandName: "effect",
     id: plotFieldCommandId,
     text: textValue,
     topologyBlockId,
@@ -73,11 +68,8 @@ export default function CommandEffectField({ plotFieldCommandId, command, topolo
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[100px] relative">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
-          {nameValue}
-        </PlotfieldCommandNameField>
-      </div>
+      <FocusedPlotfieldCommandNameField nameValue={"effect"} plotFieldCommandId={plotFieldCommandId} />
+
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
         <PlotfieldInput
           ref={currentInput}

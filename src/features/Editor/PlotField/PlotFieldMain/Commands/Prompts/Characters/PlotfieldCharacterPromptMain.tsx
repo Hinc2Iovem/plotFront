@@ -2,50 +2,47 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllCharactersByStoryId from "../../../../../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
 import useGetTranslationCharacters from "../../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
-import usePlotfieldCommands from "../../../../Context/PlotFieldContext";
-import {
-  CharacterValueTypes,
-  EmotionTypes,
-} from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
-import PlotfieldCharactersPrompt from "./PlotfieldCharactersPrompt";
-
-export type ExposedMethods = {
-  updateCharacterNameOnBlur: () => void;
-};
+import { CharacterValueTypes } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 type PlotfieldCharacterPromptMainTypes = {
-  characterName: string;
-  plotfieldCommandId?: string;
-  currentCharacterId: string;
   inputClasses?: string;
   imgClasses?: string;
   containerClasses?: string;
-  characterValue: CharacterValueTypes;
-  setCharacterValue: React.Dispatch<React.SetStateAction<CharacterValueTypes>>;
-  setEmotionValue?: React.Dispatch<React.SetStateAction<EmotionTypes>>;
-  onChange?: (value: string) => void;
+  initCharacterValue: CharacterValueTypes;
+  onBlur: (value: CharacterValueTypes) => void;
 };
 
 const PlotfieldCharacterPromptMain = ({
-  setCharacterValue,
-  setEmotionValue,
-  currentCharacterId,
-  characterValue,
-  onChange,
-  characterName,
-  plotfieldCommandId,
+  onBlur,
+  initCharacterValue,
   inputClasses,
   imgClasses,
   containerClasses,
 }: PlotfieldCharacterPromptMainTypes) => {
   const { storyId } = useParams();
   const [showCharacterModal, setShowCharacterModal] = useState(false);
-  const { updateCharacterProperties, updateEmotionProperties } = usePlotfieldCommands();
   const currentInput = useRef<HTMLInputElement>(null);
+
+  const [characterValue, setCharacterValue] = useState<CharacterValueTypes>(
+    initCharacterValue || {
+      _id: "",
+      characterName: "",
+      imgUrl: "",
+    }
+  );
+
+  useEffect(() => {
+    if (initCharacterValue && !characterValue._id?.trim().length) {
+      setCharacterValue(initCharacterValue);
+    }
+  }, [initCharacterValue, characterValue._id]);
+
+  const [initCharacterName, setInitCharacterName] = useState(initCharacterValue.characterName);
+
   const { data: allTranslatedCharacters } = useGetTranslationCharacters({
     storyId: storyId || "",
     language: "russian",
@@ -73,9 +70,9 @@ const PlotfieldCharacterPromptMain = ({
 
   const filteredCharacters = useMemo(() => {
     if (combinedCharacters) {
-      if (characterName?.trim().length) {
+      if (characterValue?.characterName?.trim().length) {
         return combinedCharacters.filter((cc) =>
-          cc?.characterName?.toLowerCase().includes(characterName?.trim()?.toLowerCase())
+          cc?.characterName?.toLowerCase().includes(characterValue?.characterName?.trim()?.toLowerCase() || "")
         );
       } else {
         return combinedCharacters;
@@ -83,17 +80,22 @@ const PlotfieldCharacterPromptMain = ({
     } else {
       return [];
     }
-  }, [combinedCharacters, characterName]);
+  }, [combinedCharacters, characterValue]);
 
-  const updateCharacterNameOnBlur = () => {
-    if (!characterName?.trim().length) {
+  const updateCharacterNameOnBlur = (value?: CharacterValueTypes) => {
+    const localCharacterValue = value?._id ? value : characterValue;
+    if (localCharacterValue.characterName?.trim().length && initCharacterName === localCharacterValue.characterName) {
       return;
     }
+
     const tranlsatedCharacter = allTranslatedCharacters?.find((tc) =>
       tc.translations?.find(
-        (tct) => tct.textFieldName === "characterName" && tct.text?.toLowerCase() === characterName?.toLowerCase()
+        (tct) =>
+          tct.textFieldName === "characterName" &&
+          tct.text?.toLowerCase() === localCharacterValue?.characterName?.toLowerCase()
       )
     );
+
     if (!tranlsatedCharacter) {
       // TODO give possibility to create a new character here
       console.log("Non-existing character");
@@ -102,40 +104,19 @@ const PlotfieldCharacterPromptMain = ({
 
     const character = allCharacters?.find((c) => c._id === tranlsatedCharacter?.characterId);
 
-    if (currentCharacterId?.trim().length && currentCharacterId !== character?._id) {
-      if (setEmotionValue) {
-        setEmotionValue({
-          _id: null,
-          emotionName: null,
-          imgUrl: null,
-        });
-        updateEmotionProperties({
-          emotionId: "",
-          emotionName: "",
-          id: plotfieldCommandId || "",
-          emotionImg: "",
-        });
-      }
+    const characterObj = {
+      _id: character?._id || null,
+      characterName: tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || null,
+      imgUrl: character?.img || null,
+    };
 
-      setCharacterValue({
-        _id: character?._id || null,
-        characterName:
-          tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || null,
-        imgUrl: character?.img || null,
-      });
-
-      updateCharacterProperties({
-        characterId: character?._id || "",
-        characterName: tranlsatedCharacter?.translations?.find((t) => t.textFieldName === "characterName")?.text || "",
-        id: plotfieldCommandId || "",
-        characterImg: character?.img || "",
-      });
-    }
+    onBlur(characterObj);
+    setCharacterValue(characterObj);
+    setInitCharacterName(characterObj.characterName);
   };
 
   const buttonsRef = useModalMovemenetsArrowUpDown({
     length: filteredCharacters.length,
-    showModal: showCharacterModal,
   });
 
   return (
@@ -153,11 +134,8 @@ const PlotfieldCharacterPromptMain = ({
                 ...prev,
                 characterName: e.target.value,
               }));
-              if (onChange) {
-                onChange(e.target.value);
-              }
             }}
-            onBlur={updateCharacterNameOnBlur}
+            onBlur={() => updateCharacterNameOnBlur()}
             className={`${inputClasses ? inputClasses : "h-[50px] w-full pr-[50px] text-text md:text-[17px]"}`}
             placeholder="Имя Персонажа"
           />
@@ -174,25 +152,40 @@ const PlotfieldCharacterPromptMain = ({
       <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
         {filteredCharacters?.length ? (
           filteredCharacters?.map((c, i) => (
-            <PlotfieldCharactersPrompt
+            <Button
               key={`${c.characterId}-${i}`}
               ref={(el) => (buttonsRef.current[i] = el)}
-              setShowCharacterModal={setShowCharacterModal}
-              plotfieldCommandId={plotfieldCommandId}
-              setCharacterValue={setCharacterValue}
-              setEmotionValue={setEmotionValue}
-              currentCharacterId={currentCharacterId}
-              {...c}
-            />
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+
+                const obj = {
+                  _id: c?.characterId,
+                  characterName: c?.characterName,
+                  imgUrl: c?.characterImg,
+                };
+                setCharacterValue(obj);
+                updateCharacterNameOnBlur(obj);
+                setShowCharacterModal(false);
+              }}
+              className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
+            >
+              <p className="text-[16px] rounded-md">
+                {c.characterName.length > 20 ? c.characterName.substring(0, 20) + "..." : c.characterName}
+              </p>
+              {c.characterImg ? (
+                <img src={c.characterImg || ""} alt="CharacterImg" className="w-[30px] rounded-md" />
+              ) : null}
+            </Button>
           ))
-        ) : !filteredCharacters?.length ? (
+        ) : (
           <Button
             type="button"
             className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
           >
             Пусто
           </Button>
-        ) : null}
+        )}
       </PopoverContent>
     </Popover>
   );

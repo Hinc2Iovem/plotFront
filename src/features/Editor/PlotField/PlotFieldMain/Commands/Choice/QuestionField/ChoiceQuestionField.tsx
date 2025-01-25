@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { TextStyleTypes } from "../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import useAddItemInsideSearch from "../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import CreateChoiceOptionTypeModal from "../Option/CreateChoiceOptionTypeModal";
@@ -13,11 +13,13 @@ type ChoiceQuestionFieldTypes = {
   choiceId: string;
   plotFieldCommandId: string;
   topologyBlockId: string;
+  setCharacterId: React.Dispatch<React.SetStateAction<string>>;
   textStyle: TextStyleTypes;
 };
 
 export default function ChoiceQuestionField({
   characterId,
+  setCharacterId,
   characterEmotionId,
   isAuthor,
   choiceId,
@@ -56,6 +58,7 @@ export default function ChoiceQuestionField({
         emotionValue={emotionValue}
         setCharacterValue={setCharacterValue}
         setEmotionValue={setEmotionValue}
+        setCharacterId={setCharacterId}
       />
 
       <div className="w-full flex gap-[5px] flex-wrap">

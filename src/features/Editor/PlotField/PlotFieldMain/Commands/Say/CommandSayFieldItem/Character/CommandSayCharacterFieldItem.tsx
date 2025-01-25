@@ -65,6 +65,14 @@ export default function CommandSayCharacterFieldItem({
     imgUrl: characterImg || null,
   });
 
+  useEffect(() => {
+    setCharacterValue((prev) => ({
+      _id: currentCharacterId ? currentCharacterId : prev._id,
+      characterName: characterName ? characterName : prev.characterName,
+      imgUrl: characterImg ? characterImg : prev.imgUrl,
+    }));
+  }, [currentCharacterId, characterName, characterImg]);
+
   const [showCreateCharacterModal, setShowCreateCharacterModal] = useState(false);
   const [showCreateEmotionModal, setShowCreateEmotionModal] = useState(false);
 
@@ -74,8 +82,8 @@ export default function CommandSayCharacterFieldItem({
   const [allEmotions, setAllEmotions] = useState<EmotionsTypes[]>([]);
 
   usePrepareInitialStateCommandSay({
-    characterId: characterValue?._id ? characterValue._id : currentCharacterId,
-    characterName: characterValue.characterName || "",
+    characterId: characterValue?._id || "",
+    characterName: characterValue.characterName || characterName,
     emotionId: emotionValue._id || "",
     emotionName: emotionValue.emotionName || "",
     episodeId: episodeId || "",
@@ -118,9 +126,6 @@ export default function CommandSayCharacterFieldItem({
           plotFieldCommandId={plotFieldCommandId}
           setEmotionValue={setEmotionValue}
           plotFieldCommandSayId={plotFieldCommandSayId}
-          setShowCreateEmotionModal={setShowCreateEmotionModal}
-          showCreateEmotionModal={showCreateEmotionModal}
-          characterId={characterValue._id || ""}
         />
       </div>
 

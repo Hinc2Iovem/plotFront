@@ -1,26 +1,23 @@
 import { useEffect, useState } from "react";
 import { ChoiceVariationsTypes } from "../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useCheckIfShowingPlotfieldInsideChoiceOnMount from "../../../hooks/Choice/helpers/useCheckIfShowingPlotfieldInsideChoiceOnMount";
 
 import { Button } from "@/components/ui/button";
 import useGetCommandChoice from "../../../hooks/Choice/useGetCommandChoice";
 import useUpdateChoiceIsAuthor from "../../../hooks/Choice/useUpdateChoiceIsAuthor";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
 import ChoiceOptionBlocksList from "./Option/ChoiceOptionBlocksList";
 import ChoiceQuestionField from "./QuestionField/ChoiceQuestionField";
 import ChoiceVariationTypeBlock from "./VariationTypeBlock/ChoiceVariationTypeBlock";
 
 type CommandChoiceFieldTypes = {
   plotFieldCommandId: string;
-  command: string;
   topologyBlockId: string;
 };
 
-export default function CommandChoiceField({ plotFieldCommandId, command, topologyBlockId }: CommandChoiceFieldTypes) {
+export default function CommandChoiceField({ plotFieldCommandId, topologyBlockId }: CommandChoiceFieldTypes) {
   const [timeLimit, setTimeLimit] = useState<number>(0);
   const [exitBlockId, setExitBlockId] = useState("");
-  const [nameValue] = useState<string>(command ?? "Choice");
   const [commandChoiceId, setCommandChoiceId] = useState("");
   const [amountOfOptions, setAmountOfOptions] = useState<number>();
   const [timeLimitDefaultOptionId, setTimeLimitDefaultOptionId] = useState("");
@@ -34,7 +31,6 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
 
   const [isFocusedBackground, setIsFocusedBackground] = useState(false);
   const [showOptionPlot, setShowOptionPlot] = useState(false);
-  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   // TODO ubrat
   useCheckIfShowingPlotfieldInsideChoiceOnMount({
@@ -69,11 +65,7 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
   return (
     <div className="flex gap-[5px] w-full flex-wrap rounded-md flex-col sm:items-start">
       <div className="flex gap-[5px] w-full flex-wrap">
-        <div className="min-w-[100px] relative flex-grow">
-          <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} h-full`}>
-            {nameValue}
-          </PlotfieldCommandNameField>
-        </div>
+        <FocusedPlotfieldCommandNameField nameValue={"choice"} plotFieldCommandId={plotFieldCommandId} />
 
         <div className="flex-grow">
           <ChoiceVariationTypeBlock
@@ -93,6 +85,7 @@ export default function CommandChoiceField({ plotFieldCommandId, command, topolo
       <UpdateIsAuthorButton commandChoiceId={commandChoiceId} isAuthor={isAuthor} setIsAuthor={setIsAuthor} />
 
       <ChoiceQuestionField
+        setCharacterId={setCharacterId}
         textStyle={commandChoice?.textStyle || "default"}
         topologyBlockId={topologyBlockId}
         plotFieldCommandId={plotFieldCommandId}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { TranslationTextFieldName } from "../../../../../../../const/TRANSLATION_TEXT_FIELD_NAMES";
 import useUpdateChoiceTranslation from "../../../../../../../hooks/Patching/Translation/PlotfieldCoomands/useUpdateChoiceTranslation";
@@ -29,6 +29,11 @@ export default function ChoiceQuestionFieldSection({
 }: ChoiceQuestionFieldSectionTypes) {
   const { episodeId } = useParams();
 
+  const [localQuestion, setLocalQuestion] = useState(question || "");
+  useEffect(() => {
+    setLocalQuestion(question);
+  }, [question]);
+
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
 
@@ -42,6 +47,10 @@ export default function ChoiceQuestionFieldSection({
 
   // TODO I do not add emotion name to search, that's wierd, need to fix it here and on backend side
   const onBlur = () => {
+    if (question === localQuestion && localQuestion.trim().length) {
+      return;
+    }
+
     if (episodeId) {
       updateValue({
         episodeId,
@@ -52,10 +61,11 @@ export default function ChoiceQuestionFieldSection({
       });
 
       updateChoiceTranslation.mutate({
-        text: question,
+        text: localQuestion,
         textFieldName: TranslationTextFieldName.ChoiceQuestion as TranslationTextFieldNameChoiceTypes,
       });
 
+      setQuestion(localQuestion);
       checkTextStyle({ debouncedValue: question, setCurrentTextStyle });
     }
   };
@@ -64,13 +74,13 @@ export default function ChoiceQuestionFieldSection({
     <form className="flex-grow relative" onSubmit={(e) => e.preventDefault()}>
       <PlotfieldInput
         type="text"
-        value={question}
+        value={localQuestion}
         onContextMenu={(e) => {
           e.preventDefault();
           setShowSettingsModal((prev) => !prev);
         }}
         onBlur={onBlur}
-        onChange={(e) => setQuestion(e.target.value)}
+        onChange={(e) => setLocalQuestion(e.target.value)}
         className={`${
           currentTextStyle === "underscore"
             ? "underline"

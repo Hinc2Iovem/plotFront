@@ -1,25 +1,15 @@
 import { useEffect, useState } from "react";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useGetCommandCondition from "../../../hooks/Condition/useGetCommandCondition";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import ConditionBlocksList from "./ConditionBlocksList";
-import CreateConditionValueTypeModal from "./CreateConditionValueTypeModal";
 import usePopulateStateWithConditionBlocks from "./hooks/usePopulateStateWithConditionBlocks";
-import { Button } from "@/components/ui/button";
+import ConditionPlotfieldCommandNameField from "./ConditionPlotfieldCommandNameField";
 
 type CommandConditionFieldTypes = {
   plotFieldCommandId: string;
-  command: string;
   topologyBlockId: string;
 };
 
-export default function CommandConditionField({
-  plotFieldCommandId,
-  command,
-  topologyBlockId,
-}: CommandConditionFieldTypes) {
-  const [nameValue] = useState<string>(command ?? "Condition");
-
+export default function CommandConditionField({ plotFieldCommandId, topologyBlockId }: CommandConditionFieldTypes) {
   const [isFocusedBackground, setIsFocusedBackground] = useState(false);
   const [showConditionBlockPlot, setShowConditionBlockPlot] = useState(false);
 
@@ -28,9 +18,6 @@ export default function CommandConditionField({
   //   setIsFocusedBackground,
   //   setShowConditionBlockPlot,
   // });
-
-  const currentlyFocusedCommand = useGetCurrentFocusedElement();
-  const isCommandFocused = currentlyFocusedCommand._id === plotFieldCommandId;
 
   const [commandConditionId, setCommandConditionId] = useState("");
 
@@ -47,31 +34,13 @@ export default function CommandConditionField({
   usePopulateStateWithConditionBlocks({ commandConditionId, plotFieldCommandId });
   return (
     <div className="flex gap-[10px] w-full rounded-md p-[5px] flex-col relative">
-      <div className="min-w-[100px] flex-grow w-full relative flex items-start gap-[10px]">
-        <PlotfieldCommandNameField
-          className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} text-[30px] text-center`}
-        >
-          {nameValue}
-        </PlotfieldCommandNameField>
-
-        {showConditionBlockPlot ? (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowConditionBlockPlot(false);
-              setIsFocusedBackground(false);
-            }}
-            className="w-fit text-text border-border border-[1px] hover:bg-accent hover:shadow-accent active:scale-[.99] bg-secondary rounded-md shadow-sm absolute right-[5px] top-1/2 -translate-y-1/2 hover:shadow-md transition-shadow"
-          >
-            Назад
-          </Button>
-        ) : (
-          <CreateConditionValueTypeModal
-            commandConditionId={commandConditionId}
-            plotfieldCommandId={plotFieldCommandId}
-          />
-        )}
-      </div>
+      <ConditionPlotfieldCommandNameField
+        commandConditionId={commandConditionId}
+        plotFieldCommandId={plotFieldCommandId}
+        setIsFocusedBackground={setIsFocusedBackground}
+        setShowConditionBlockPlot={setShowConditionBlockPlot}
+        showConditionBlockPlot={showConditionBlockPlot}
+      />
 
       <ConditionBlocksList
         commandConditionId={commandConditionId}

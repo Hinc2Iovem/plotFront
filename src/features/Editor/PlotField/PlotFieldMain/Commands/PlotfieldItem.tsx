@@ -95,33 +95,33 @@ export default function PlotfieldItem({
             commandSide={commandSide}
           />
         ) : command === "achievement" ? (
-          <CommandAchievementField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+          <CommandAchievementField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "ambient" ? (
-          <CommandAmbientField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandAmbientField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "cutscene" ? (
-          <CommandCutSceneField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandCutSceneField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "effect" ? (
-          <CommandEffectField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandEffectField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "key" ? (
-          <CommandKeyField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandKeyField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "move" ? (
-          <CommandMoveField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandMoveField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "music" ? (
-          <CommandMusicField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandMusicField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "sound" ? (
-          <CommandSoundField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandSoundField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "suit" ? (
-          <CommandSuitField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandSuitField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "wait" ? (
-          <CommandWaitField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandWaitField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "name" ? (
-          <CommandNameField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandNameField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "background" ? (
-          <CommandBackgroundField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandBackgroundField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "getitem" ? (
-          <CommandGetItemField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+          <CommandGetItemField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "if" ? (
-          <CommandIfField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+          <CommandIfField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "else" ? (
           <CommandElseField
             topologyBlockId={topologyBlockId}
@@ -131,15 +131,15 @@ export default function PlotfieldItem({
         ) : command === "end" ? (
           <CommandEndField plotFieldCommandId={_id} />
         ) : command === "wardrobe" ? (
-          <CommandWardrobeField topologyBlockId={topologyBlockId} command={command} plotFieldCommandId={_id} />
+          <CommandWardrobeField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "choice" ? (
-          <CommandChoiceField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+          <CommandChoiceField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "call" ? (
-          <CommandCallField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+          <CommandCallField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "condition" ? (
-          <CommandConditionField command={command} topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+          <CommandConditionField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "comment" ? (
-          <CommandCommentField command={command} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <CommandCommentField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : null}
       </ErrorBoundary>
     </li>

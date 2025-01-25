@@ -35,7 +35,10 @@ import { preventMovingUpAndDownWhenModalOpen } from "../../preventMovingUpAndDow
 // ---and on contextMenu when chosen
 
 export default function useHandleNavigationThroughCommands() {
-  const { setCurrentlyFocusedCommandId, currentlyFocusedCommandId, currentTopologyBlock } = useNavigation();
+  const setCurrentlyFocusedCommandId = useNavigation((state) => state.setCurrentlyFocusedCommandId);
+  const currentlyFocusedCommandId = useNavigation((state) => state.currentlyFocusedCommandId);
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
+
   const { setItem, getItem, hasItem, removeItem } = useTypedSessionStorage<SessionStorageKeys>();
   const {
     getCommandsByTopologyBlockId,

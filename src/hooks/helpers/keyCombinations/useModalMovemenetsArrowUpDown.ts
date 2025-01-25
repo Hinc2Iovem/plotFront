@@ -2,10 +2,9 @@ import { useCallback, useEffect, useRef } from "react";
 
 type ModalMovemenetsArrowUpDownTypes = {
   length: number;
-  showModal: boolean;
 };
 
-export default function useModalMovemenetsArrowUpDown({ length, showModal }: ModalMovemenetsArrowUpDownTypes) {
+export default function useModalMovemenetsArrowUpDown({ length }: ModalMovemenetsArrowUpDownTypes) {
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const focusedIndexRef = useRef<number>(-1);
 
@@ -39,15 +38,11 @@ export default function useModalMovemenetsArrowUpDown({ length, showModal }: Mod
   );
 
   useEffect(() => {
-    if (!showModal) {
-      return;
-    }
-
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [handleKeyDown, showModal]);
+  }, [handleKeyDown]);
 
   return buttonsRef;
 }

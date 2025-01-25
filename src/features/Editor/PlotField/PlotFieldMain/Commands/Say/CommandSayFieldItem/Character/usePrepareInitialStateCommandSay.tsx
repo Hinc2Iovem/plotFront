@@ -83,7 +83,7 @@ export default function usePrepareInitialStateCommandSay({
       });
 
       setCharacterValue((prev) => ({
-        _id: prev._id,
+        _id: currentCharacter._id || prev._id,
         characterName: prev.characterName ? prev.characterName : characterName,
         imgUrl: currentCharacter?.img || characterImg || "",
       }));
@@ -116,5 +116,5 @@ export default function usePrepareInitialStateCommandSay({
         });
       }
     }
-  }, [currentCharacter]);
+  }, [currentCharacter, characterId]);
 }

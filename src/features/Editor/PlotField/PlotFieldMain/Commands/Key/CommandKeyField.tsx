@@ -1,37 +1,37 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
-import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useUpdateCommandKey from "../../../hooks/Key/update/useUpdateCommandKey";
 import useGetKeyByPlotfieldCommandId from "../../../hooks/Key/useGetKeyByPlotfieldCommandId";
-import useUpdateKeyText from "../../../hooks/Key/useUpdateKeyText";
-import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
 
 type CommandKeyFieldTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
-  command: string;
 };
 
-export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, command }: CommandKeyFieldTypes) {
+export default function CommandKeyField({ plotFieldCommandId, topologyBlockId }: CommandKeyFieldTypes) {
   const { episodeId } = useParams();
-  const [nameValue] = useState<string>(command ?? "Key");
   const [initTextValue, setInitTextValue] = useState("");
-  const [textValue, setTextValue] = useState("");
+  const [currentKey, setCurrentKey] = useState({
+    textValue: "",
+    id: "",
+  });
   const { data: commandKey } = useGetKeyByPlotfieldCommandId({
     plotFieldCommandId,
   });
-  const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const currentInput = useRef<HTMLInputElement | null>(null);
 
-  const [commandKeyId, setCommandKeyId] = useState("");
-
   useEffect(() => {
     if (commandKey) {
-      setCommandKeyId(commandKey._id);
-      setTextValue(commandKey?.text || "");
+      setCurrentKey((prev) => ({
+        ...prev,
+        id: commandKey?._id || "",
+        textValue: commandKey.text || "",
+      }));
       setInitTextValue(commandKey?.text || "");
     }
   }, [commandKey]);
@@ -39,44 +39,57 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId, c
   const { updateValue } = useSearch();
 
   useAddItemInsideSearch({
-    commandName: nameValue || "key",
+    commandName: "key",
     id: plotFieldCommandId,
-    text: textValue,
+    text: currentKey.textValue,
     topologyBlockId,
     type: "command",
   });
 
-  const updateKeyText = useUpdateKeyText({
-    keyId: commandKeyId,
-    text: textValue,
+  const { mutate: updateKeyText, isSuccess } = useUpdateCommandKey({
+    plotFieldCommandId,
+    setCurrentKey,
   });
 
   const onBlur = () => {
-    if (initTextValue === textValue) {
+    if (initTextValue === currentKey.textValue) {
       return;
     }
     if (episodeId) {
-      updateValue({ episodeId, commandName: "key", id: plotFieldCommandId, type: "command", value: textValue });
+      updateValue({
+        episodeId,
+        commandName: "key",
+        id: plotFieldCommandId,
+        type: "command",
+        value: currentKey.textValue,
+      });
     }
-    updateKeyText.mutate();
-    setInitTextValue(textValue);
+
+    updateKeyText({ text: currentKey.textValue });
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      setInitTextValue(currentKey.textValue);
+    }
+  }, [isSuccess]);
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[100px] relative">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
-          {nameValue}
-        </PlotfieldCommandNameField>
-      </div>
+      <FocusedPlotfieldCommandNameField nameValue={"key"} plotFieldCommandId={plotFieldCommandId} />
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
         <PlotfieldInput
           ref={currentInput}
           onBlur={onBlur}
-          value={textValue}
+          value={currentKey.textValue}
           type="text"
           placeholder="Кий"
-          onChange={(e) => setTextValue(e.target.value)}
+          onChange={(e) =>
+            setCurrentKey((prev) => ({
+              ...prev,
+              textValue: e.target.value,
+            }))
+          }
         />
       </form>
     </div>

@@ -1,38 +1,41 @@
-import { toastSuccessStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 import { MusicTypes } from "@/types/StoryData/Music/MusicTypes";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
-import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
-import { useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
-import useUpdateCommandMusic from "../../../hooks/Music/Command/useUpdateCommandSound";
-import useCreateMusic from "../../../hooks/Music/useCreateMusic";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
+import { toast } from "sonner";
+import { toastNotificationStyles } from "@/components/shared/toastStyles";
 
-type AllMusicModalTypes = {
+export type InitMusicValueTypes = {
+  musicId: string;
   musicName: string;
-  storyId: string;
-  initValue: string;
-  commandMusicId: string;
-  setMusicName: React.Dispatch<React.SetStateAction<string>>;
-  setInitValue: React.Dispatch<React.SetStateAction<string>>;
-  onChange: (value: string) => void;
 };
 
-export default function AllMusicModal({
-  storyId,
-  musicName,
-  commandMusicId,
-  initValue,
-  setMusicName,
-  setInitValue,
-  onChange,
-}: AllMusicModalTypes) {
+type AllMusicModalTypes = {
+  initMusicValue: InitMusicValueTypes;
+  onBlur: (value: InitMusicValueTypes) => void;
+};
+
+export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalTypes) {
+  const { storyId } = useParams();
+
+  const [initValue, setInitValue] = useState(initMusicValue.musicName || "");
+  const [musicName, setMusicName] = useState(initMusicValue.musicName || "");
+
+  useEffect(() => {
+    if (initMusicValue) {
+      setMusicName(initMusicValue.musicName || "");
+      setInitValue(initMusicValue.musicName || "");
+    }
+  }, [initMusicValue]);
+
   const [showMusicModal, setShowMusicModal] = useState(false);
   const { data: allMusic } = useGetAllMusicByStoryId({
     storyId: storyId || "",
+    enabled: !!storyId,
   });
 
   const allMusicFilteredMemoized = useMemo(() => {
@@ -40,19 +43,20 @@ export default function AllMusicModal({
     return allMusic?.filter((a) => a.musicName.toLowerCase().includes(musicName.toLowerCase())) || [];
   }, [allMusic, musicName]);
 
-  const allMusicMemoized =
-    allMusic?.map((a) => ({
-      musicName: a.musicName.toLowerCase(),
-      id: a._id,
-    })) || [];
+  const allMusicMemoized = useMemo(() => {
+    return (
+      allMusic?.map((a) => ({
+        musicName: a.musicName.toLowerCase(),
+        id: a._id,
+      })) || []
+    );
+  }, [allMusic]);
 
-  const updateMusic = useUpdateCommandMusic();
+  // const createMusic = useCreateMusic({
+  //   storyId,
+  // });
 
-  const createMusic = useCreateMusic({
-    storyId,
-  });
-
-  const handleUpdatingMusicState = async ({ create, mm }: { mm?: string; create: boolean }) => {
+  const handleUpdatingMusicState = async ({ mm }: { mm?: string }) => {
     const value = mm?.trim().length ? mm : musicName;
     if (!value?.trim().length) {
       console.log("Заполните поле");
@@ -66,32 +70,23 @@ export default function AllMusicModal({
     const foundMusic = allMusicMemoized?.find((s) => s.musicName.trim().toLowerCase() === value.trim().toLowerCase());
 
     setInitValue(value);
-    if (value.trim().length) {
-      if (!foundMusic?.id) {
-        if (showMusicModal) {
-          if (create) {
-            toast(`Звук был создан`, toastSuccessStyles);
-            const musicId = generateMongoObjectId();
-            await createMusic.mutateAsync({ musicId, musicName });
-            await updateMusic.mutateAsync({ commandMusicId, musicId });
-            return;
-          }
-          // when onBlur and jumping to a modal
-          return;
-        }
-      } else {
-        // just updated music command
-        updateMusic.mutate({ commandMusicId, musicId: foundMusic.id });
-      }
+    if (!foundMusic?.id) {
+      // toast(`Звук был создан`, toastSuccessStyles);
+      // const musicId = generateMongoObjectId();
+      // await createMusic.mutateAsync({ musicId, musicName });
+      // await updateMusic.mutateAsync({ commandMusicId, musicId });
+      toast("Музыка не найдена, хотите создать?", toastNotificationStyles);
+      return;
+      // when onBlur and jumping to a modal
+    } else {
+      onBlur({ musicId: foundMusic.id, musicName: foundMusic.musicName });
+      // just updated music command
     }
   };
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonsRef = useModalMovemenetsArrowUpDown({
     length: allMusicFilteredMemoized.length,
-    showModal: showMusicModal,
   });
-
-  console.log("allMusicFilteredMemoized:", allMusicFilteredMemoized);
 
   return (
     <Popover open={showMusicModal} onOpenChange={setShowMusicModal}>
@@ -107,10 +102,8 @@ export default function AllMusicModal({
             onChange={(e) => {
               setShowMusicModal(true);
               setMusicName(e.target.value);
-              if (onChange) {
-                onChange(e.target.value);
-              }
             }}
+            onBlur={() => handleUpdatingMusicState({})}
             placeholder="Музыка"
           />
         </form>
@@ -130,10 +123,10 @@ export default function AllMusicModal({
               onClick={() => {
                 if (musicName.trim().length) {
                   setMusicName((mm as MusicTypes).musicName);
-                  handleUpdatingMusicState({ mm: (mm as MusicTypes).musicName, create: false });
+                  handleUpdatingMusicState({ mm: (mm as MusicTypes).musicName });
                 } else {
                   setMusicName(mm as string);
-                  handleUpdatingMusicState({ mm: mm as string, create: false });
+                  handleUpdatingMusicState({ mm: mm as string });
                 }
                 setShowMusicModal(false);
               }}
@@ -146,12 +139,12 @@ export default function AllMusicModal({
           <Button
             type="button"
             onClick={() => {
-              handleUpdatingMusicState({ mm: musicName, create: true });
+              handleUpdatingMusicState({ mm: musicName });
               setShowMusicModal(false);
             }}
             className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
           >
-            {musicName?.trim().length ? "Создать" : "Пусто"}
+            Пусто
           </Button>
         )}
       </PopoverContent>
