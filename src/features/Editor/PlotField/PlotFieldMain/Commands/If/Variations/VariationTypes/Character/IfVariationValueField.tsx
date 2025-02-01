@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useUpdateIfCharacter from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacter";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput";
 import IfFieldName from "../shared/IfFieldName";
 
@@ -21,7 +21,7 @@ export default function IfVariationValueField({
   setCurrentIfValue,
   setShowCharacterPromptModal,
 }: IfValueFieldTypes) {
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
 
   const [currentlyActive, setCurrentlyActive] = useState(false);
 

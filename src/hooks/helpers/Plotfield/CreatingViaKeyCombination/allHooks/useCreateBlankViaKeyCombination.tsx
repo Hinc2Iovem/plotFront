@@ -18,65 +18,96 @@ type CreateBlankViaKeyCombinationTypes = {
 export default function useCreateBlankViaKeyCombination({ topologyBlockId }: CreateBlankViaKeyCombinationTypes) {
   const { episodeId } = useParams();
   const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
-
   const { getCurrentAmountOfCommands } = usePlotfieldCommands();
   const { currentlyFocusedCommandId } = useNavigation();
   const createPlotfield = useCreateBlankCommand({
     topologyBlockId,
     episodeId: episodeId || "",
   });
+  // const pressedKeys = useRef<Set<string>>(new Set());
 
-  const pressedKeys = useRef<Set<string>>(new Set());
+  // const handleKeyDown = useCallback(
+  //   (event: KeyboardEvent) => {
+  //     if (!preventCreatingCommandsWhenFocus()) return;
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const allowed = preventCreatingCommandsWhenFocus();
-      if (!allowed) {
-        return;
-      }
+  //     const key = event.key.toLowerCase();
+  //     pressedKeys.current.add(key);
 
-      pressedKeys.current.add(event.key?.toLowerCase());
+  //     console.log("Key down:", key, "Pressed keys:", Array.from(pressedKeys.current));
 
-      if (
-        pressedKeys.current.has("shift") &&
-        (pressedKeys.current.has("n") || pressedKeys.current.has("т")) &&
-        pressedKeys.current.size === 2
-      ) {
-        const _id = generateMongoObjectId();
-        const focusedTopologyBlockId = getItem("focusedTopologyBlock");
-        const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;
+  //     if (
+  //       pressedKeys.current.has("shift") &&
+  //       (pressedKeys.current.has("n") || pressedKeys.current.has("т")) &&
+  //       pressedKeys.current.size === 2
+  //     ) {
+  //       console.log("Shortcut detected: Shift + N (or Т)");
+  //       handleCreateBlankCommand();
+  //     }
+  //   },
+  //   [] // No dependencies needed
+  // );
 
-        addItemInUndoSessionStorage({
-          _id,
-          episodeId: episodeId || "",
-          topologyBlockId: currentTopologyBlockId,
-          type: "created",
-        });
+  // const handleKeyUp = useCallback((event: KeyboardEvent) => {
+  //   const key = event.key.toLowerCase();
+  //   pressedKeys.current.delete(key);
 
-        const plotfieldCommandIfId = getPlotfieldCommandIfId(currentlyFocusedCommandId);
-        const getNextCommandOrder = (currentCommand: CurrentlyFocusedCommandTypes, currentTopologyBlockId: string) => {
-          return typeof currentCommand.commandOrder === "number"
-            ? currentCommand.commandOrder + 1
-            : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId });
-        };
+  //   console.log("Key up:", key, "Remaining keys:", Array.from(pressedKeys.current));
+  // }, []);
 
-        createPlotfield.mutate({
-          _id,
-          topologyBlockId: currentTopologyBlockId,
-          isElse: currentlyFocusedCommandId?.isElse,
-          plotfieldCommandIfId,
-          commandOrder: getNextCommandOrder(currentlyFocusedCommandId, currentTopologyBlockId),
-        });
-      }
-    },
-    [topologyBlockId, createPlotfield, getItem, currentlyFocusedCommandId, getCurrentAmountOfCommands, episodeId]
-  );
+  // const handleCreateBlankCommand = useCallback(() => {
+  //   const _id = generateMongoObjectId();
+  //   const focusedTopologyBlockId = getItem("focusedTopologyBlock");
+  //   const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;
 
-  const handleKeyUp = useCallback((event: KeyboardEvent) => {
-    pressedKeys.current.delete(event.key?.toLowerCase());
-  }, []);
+  //   console.log("Creating blank command:", {
+  //     _id,
+  //     topologyBlockId: currentTopologyBlockId,
+  //     episodeId,
+  //   });
+
+  //   addItemInUndoSessionStorage({
+  //     _id,
+  //     episodeId: episodeId || "",
+  //     topologyBlockId: currentTopologyBlockId,
+  //     type: "created",
+  //   });
+
+  //   const plotfieldCommandIfId = getPlotfieldCommandIfId(currentlyFocusedCommandId);
+  //   const getNextCommandOrder = (currentCommand: CurrentlyFocusedCommandTypes, currentTopologyBlockId: string) => {
+  //     return typeof currentCommand.commandOrder === "number"
+  //       ? currentCommand.commandOrder + 1
+  //       : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId });
+  //   };
+
+  //   console.log("Sending mutation:", {
+  //     _id,
+  //     topologyBlockId: currentTopologyBlockId,
+  //     commandOrder: getNextCommandOrder(currentlyFocusedCommandId, currentTopologyBlockId),
+  //   });
+
+  //   createPlotfield.mutate({
+  //     _id,
+  //     topologyBlockId: currentTopologyBlockId,
+  //     isElse: currentlyFocusedCommandId?.isElse,
+  //     plotfieldCommandIfId,
+  //     commandOrder: getNextCommandOrder(currentlyFocusedCommandId, currentTopologyBlockId),
+  //   });
+
+  //   pressedKeys.current.clear();
+  // }, [createPlotfield, episodeId, currentlyFocusedCommandId, getCurrentAmountOfCommands, getItem, topologyBlockId]);
 
   useEffect(() => {
+    const pressedKeys = new Set();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      pressedKeys.add(event.key.toLowerCase());
+    };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      pressedKeys.clear();
+      console.log("pressedKeys: ", pressedKeys);
+    };
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
@@ -84,7 +115,7 @@ export default function useCreateBlankViaKeyCombination({ topologyBlockId }: Cre
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [handleKeyDown, handleKeyUp]);
+  }, []);
 
   function getPlotfieldCommandIfId(currentCommand: CurrentlyFocusedCommandTypes) {
     return currentCommand.commandName === "if" ||

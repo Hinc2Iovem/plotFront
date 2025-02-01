@@ -1,11 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import SelectWithBlur from "@/components/ui/selectWithBlur";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
-import { SelectContent } from "@radix-ui/react-select";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSearch from "../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
@@ -123,41 +120,85 @@ function ChooseReferencedCommandIndex({
   setCurrentReferencedCommandIndex,
 }: ChooseReferencedCommandIndexTypes) {
   const updateCommandIndex = useUpdateCallCommandIndex({ callId });
+  const currentInput = useRef<HTMLInputElement>(null);
+  const [showAllReferences, setShowAllReferences] = useState(false);
+
+  const updateReferenceOnBlur = () => {
+    if (typeof currentReferencedCommandIndex === "number" && currentReferencedCommandIndex <= amountOfCommands) {
+      onSelect(currentReferencedCommandIndex);
+      updateCommandIndex.mutate({ commandIndex: currentReferencedCommandIndex });
+    }
+  };
+
+  const allReferences = useMemo(() => {
+    const refs = [...Array.from({ length: amountOfCommands }, (_, i) => i.toString())];
+    if (typeof currentReferencedCommandIndex === "number") {
+      return refs.filter((r) => r.includes(currentReferencedCommandIndex.toString()));
+    }
+    return refs;
+  }, [amountOfCommands, currentReferencedCommandIndex]);
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allReferences.length || 0 });
 
   return (
-    <SelectWithBlur onValueChange={(value) => onSelect(+value)}>
-      <SelectTrigger disabled={amountOfCommands <= 0} className="text-text w-[200px] opacity-80 relative">
-        <SelectValue
-          placeholder={
-            typeof currentReferencedCommandIndex === "number"
-              ? `Ссылаться на команду - ${currentReferencedCommandIndex}`
-              : "Ссылаться на команду"
-          }
-          onBlur={(v) => v.currentTarget.blur()}
-          className={`capitalize text-text text-[17px] py-[5px] px-[1px]`}
-        />
-      </SelectTrigger>
-      <SelectContent className="w-full">
+    <Popover open={showAllReferences} onOpenChange={setShowAllReferences}>
+      <PopoverTrigger asChild>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setShowAllReferences(false);
+          }}
+          className="flex justify-between items-center relative w-[70px]"
+        >
+          <PlotfieldInput
+            ref={currentInput}
+            value={typeof currentReferencedCommandIndex === "number" ? currentReferencedCommandIndex : ""}
+            onChange={(e) => {
+              setShowAllReferences(true);
+              if (e.target.value === "0") {
+                setCurrentReferencedCommandIndex(0);
+              } else {
+                setCurrentReferencedCommandIndex(+e.target.value || null);
+              }
+            }}
+            onBlur={updateReferenceOnBlur}
+            className={`w-full text-text md:text-[17px]`}
+            placeholder={"Ссылаться на команду"}
+          />
+        </form>
+      </PopoverTrigger>
+
+      <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`w-[70px] flex flex-col gap-[5px]`}>
         {(typeof currentReferencedCommandIndex === "number" && amountOfCommands > 1) ||
-        (typeof currentReferencedCommandIndex !== "number" && amountOfCommands > 0)
-          ? [...Array.from({ length: amountOfCommands })]?.map((_, i) => {
-              return (
-                <SelectItem
-                  key={"command" + "-" + i}
-                  value={`${i}`}
-                  onSelect={() => {
-                    setCurrentReferencedCommandIndex(i);
-                    updateCommandIndex.mutate({ commandIndex: i });
-                  }}
-                  className={`${currentReferencedCommandIndex === i ? "hidden" : ""} text-text`}
-                >
-                  {i}
-                </SelectItem>
-              );
-            })
-          : null}
-      </SelectContent>
-    </SelectWithBlur>
+        (typeof currentReferencedCommandIndex !== "number" && amountOfCommands > 0) ? (
+          allReferences?.map((r) => (
+            <Button
+              key={`reference-${Number(r)}`}
+              ref={(el) => (buttonsRef.current[Number(r)] = el)}
+              type="button"
+              onClick={() => {
+                onSelect(Number(r));
+                setCurrentReferencedCommandIndex(Number(r));
+                setShowAllReferences(false);
+                updateCommandIndex.mutate({ commandIndex: Number(r) });
+              }}
+              className={`${
+                currentReferencedCommandIndex === Number(r) ? "hidden" : ""
+              } whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all text-[16px]`}
+            >
+              {r}
+            </Button>
+          ))
+        ) : (
+          <Button
+            type="button"
+            className={`text-start focus-within:bg-accent border-border border-[1px] text-text text-[16px] px-[10px] py-[5px] hover:bg-accent transition-all rounded-md`}
+          >
+            Пусто
+          </Button>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }
 

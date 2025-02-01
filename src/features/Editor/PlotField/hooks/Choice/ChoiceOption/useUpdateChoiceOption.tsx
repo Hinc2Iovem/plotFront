@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../../api/axios";
 
 type UpdateChoiceOptionTypes = {
@@ -13,9 +13,8 @@ type UpdateChoiceOptionOnMutationTypes = {
   characterId?: string;
 };
 
-export default function useUpdateChoiceOption({
-  choiceOptionId,
-}: UpdateChoiceOptionTypes) {
+export default function useUpdateChoiceOption({ choiceOptionId }: UpdateChoiceOptionTypes) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       amountOfPoints,
@@ -24,15 +23,17 @@ export default function useUpdateChoiceOption({
       option,
       priceAmethysts,
     }: UpdateChoiceOptionOnMutationTypes) =>
-      await axiosCustomized.patch(
-        `/plotFieldCommands/choices/options/${choiceOptionId}`,
-        {
-          option,
-          priceAmethysts,
-          characterId,
-          amountOfPoints,
-          characterCharacteristicId,
-        }
-      ),
+      await axiosCustomized.patch(`/plotFieldCommands/choices/options/${choiceOptionId}`, {
+        option,
+        priceAmethysts,
+        characterId,
+        amountOfPoints,
+        characterCharacteristicId,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["option", "relationship", choiceOptionId],
+      });
+    },
   });
 }

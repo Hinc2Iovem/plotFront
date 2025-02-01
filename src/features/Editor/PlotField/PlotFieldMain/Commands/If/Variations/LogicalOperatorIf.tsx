@@ -1,5 +1,5 @@
 import useUpdateLogicalOperator from "@/features/Editor/PlotField/hooks/If/BlockVariations/logicalOperator/useUpdateLogicalOperator";
-import useIfVariations, {
+import useCommandIf, {
   AllIfValueVariationByLogicalOperatorIndexTypes,
   LogicalOperatorTypes,
 } from "../Context/IfContext";
@@ -21,12 +21,12 @@ export default function LogicalOperatorIf({
   index,
   plotfieldCommandId,
 }: LogicalOperatorIfTypes) {
-  const { updateLogicalOperator, getAllIfValueVariationByLogicalOperatorIndex } = useIfVariations();
+  const { updateLogicalOperator, getAllIfValueVariationByLogicalOperatorIndex } = useCommandIf();
   const updateLogicalOperatorAsync = useUpdateLogicalOperator({ ifId });
 
   const [allIfVariations, setAllIfVariations] = useState<AllIfValueVariationByLogicalOperatorIndexTypes[]>([]);
 
-  const { removeLogicalOperator, removeIfVariation } = useIfVariations();
+  const { removeLogicalOperator, removeIfVariation } = useCommandIf();
   const deleteLogicalOperatorAsync = useDeleteLogicalOperator({ ifId });
   const deleteIfValueVariationsAsync = useDeleteIfVariation({});
 

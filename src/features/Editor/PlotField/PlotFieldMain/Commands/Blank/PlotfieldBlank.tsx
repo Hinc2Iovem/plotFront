@@ -248,6 +248,9 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
         id: plotFieldCommandId,
         newCommand: commandName,
         topologyBlockId,
+        plotfieldCommandElseId,
+        plotfieldCommandIfElseEndId,
+        plotfieldCommandIfId,
       });
       if (episodeId) {
         addItem({

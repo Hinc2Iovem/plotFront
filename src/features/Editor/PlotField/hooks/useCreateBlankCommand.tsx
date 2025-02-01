@@ -8,6 +8,7 @@ import { CommandSayVariationTypes } from "../../../../types/StoryEditor/PlotFiel
 import usePlotfieldCommands from "../Context/PlotFieldContext";
 import usePlotfieldCommandPossiblyBeingUndo from "../Context/CommandsPossiblyBeingUndo/PlotfieldCommandsPossiblyBeingUndo";
 import useSearch from "../../Context/Search/SearchContext";
+import useCommandIf from "../PlotFieldMain/Commands/If/Context/IfContext";
 
 type NewCommandTypes = {
   _id: string;
@@ -34,6 +35,7 @@ export default function useCreateBlankCommand({
   const { addCommand, updateCommandInfo } = usePlotfieldCommands();
   const { addItem } = useSearch();
   const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
+  const { updateCommandIfInfo } = useCommandIf();
 
   const queryClient = useQueryClient();
   // TODO need to add here if checks, what command creates, and create according state, for example, if commandIf, we will create command else and command end with it
@@ -61,6 +63,13 @@ export default function useCreateBlankCommand({
       const currentTopologyBlockId = newCommand?.topologyBlockId?.trim().length
         ? newCommand.topologyBlockId
         : topologyBlockId;
+
+      // if context(tracing amount of commands)
+      updateCommandIfInfo({
+        addOrMinus: "add",
+        isElse: typeof newCommand.isElse === "boolean" ? newCommand.isElse : false,
+        plotfieldCommandIfId: newCommand.plotfieldCommandIfId || "",
+      });
 
       // search
       addItem({

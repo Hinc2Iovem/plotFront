@@ -9,10 +9,19 @@ type GetCharacterWithTranslationTypes = {
 
 export default function useGetCharacterWithTranslation({ currentCharacterId }: GetCharacterWithTranslationTypes) {
   const [characterValue, setCharacterValue] = useState<CharacterValueTypes>({
-    _id: currentCharacterId || null,
-    characterName: null,
-    imgUrl: null,
+    _id: currentCharacterId || "",
+    characterName: "",
+    imgUrl: "",
   });
+
+  useEffect(() => {
+    if (!characterValue._id?.trim().length) {
+      setCharacterValue((prev) => ({
+        ...prev,
+        _id: currentCharacterId || "",
+      }));
+    }
+  }, [currentCharacterId, characterValue._id]);
 
   const { data: currentCharacter } = useGetCharacterById({ characterId: characterValue._id || "" });
   const { data: translatedCharacter } = useGetTranslationCharacterById({

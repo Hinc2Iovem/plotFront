@@ -5,7 +5,7 @@ import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateIfStatus from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfStatus";
 import useGetCharacterWithTranslation from "../../../../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 import IfVariationStatusCharacterField from "./IfVariationStatusCharacterField";
 import IfVariationStatusModal from "./IfVariationStatusModal";
 
@@ -29,7 +29,7 @@ export default function IfVariationStatus({
     typeof currentStatus === "string" ? currentStatus : ("" as StatusTypes)
   );
 
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
 
   const updateIfStatus = useUpdateIfStatus({ ifStatusId: ifVariationId });
 

@@ -316,6 +316,8 @@ export const createPlotfieldCommandSlice: StateCreator<
       );
       const currentCommand = updatedCommands.find((c) => c._id === id);
       if (newCommand === "if" && currentCommand) {
+        console.log("double fuck: ", plotfieldCommandElseId, plotfieldCommandIfElseEndId);
+
         const newElseCommand: PlotfieldOptimisticCommandTypes = {
           _id: plotfieldCommandElseId || "",
           command: "else",
@@ -332,7 +334,11 @@ export const createPlotfieldCommandSlice: StateCreator<
         };
 
         const updatedCommandsBesideIf = existingTopologyBlock.commands.map((c) =>
-          c._id !== id && c.commandOrder > currentCommand.commandOrder ? { ...c, commandOrder: c.commandOrder + 2 } : c
+          c._id !== id && c.commandOrder > currentCommand.commandOrder
+            ? { ...c, commandOrder: c.commandOrder + 2 }
+            : c._id === id
+            ? { ...c, command: newCommand }
+            : c
         );
 
         return {

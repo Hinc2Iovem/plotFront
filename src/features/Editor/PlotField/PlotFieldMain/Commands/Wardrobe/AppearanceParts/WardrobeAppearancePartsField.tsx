@@ -6,9 +6,13 @@ import AppearancePartsPromptModal from "../../Prompts/AppearanceParts/Appearance
 
 type WardrobeAppearancePartsFieldTypes = {
   commandWardrobeId: string;
+  characterId: string;
 };
 
-export default function WardrobeAppearancePartsField({ commandWardrobeId }: WardrobeAppearancePartsFieldTypes) {
+export default function WardrobeAppearancePartsField({
+  commandWardrobeId,
+  characterId,
+}: WardrobeAppearancePartsFieldTypes) {
   const [appearancePartId, setAppearancePartId] = useState("");
 
   const [appearanceName, setAppearanceName] = useState("");
@@ -35,6 +39,7 @@ export default function WardrobeAppearancePartsField({ commandWardrobeId }: Ward
           appearancePartId={appearancePartId}
           currentAppearancePartName={appearanceName}
           initialValue={initValue}
+          characterId={characterId}
           setAppearancePartId={setAppearancePartId}
           setCurrentAppearancePartName={setAppearanceName}
           setInitialValue={setInitValue}

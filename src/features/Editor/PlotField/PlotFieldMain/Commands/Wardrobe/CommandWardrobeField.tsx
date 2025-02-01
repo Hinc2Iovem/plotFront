@@ -40,7 +40,12 @@ export default function CommandWardrobeField({ plotFieldCommandId, topologyBlock
 
   return (
     <div className="flex gap-[5px] w-full rounded-md p-[5px] flex-col relative">
-      <FocusedPlotfieldCommandNameField nameValue={"wardrobe"} plotFieldCommandId={plotFieldCommandId} />
+      <FocusedPlotfieldCommandNameField
+        classes="w-full"
+        nameValue={"wardrobe"}
+        paraghClasses="text-center text-[27px]"
+        plotFieldCommandId={plotFieldCommandId}
+      />
 
       <WardrobeTitle
         allAppearanceNames={allAppearanceNames}
@@ -56,6 +61,7 @@ export default function CommandWardrobeField({ plotFieldCommandId, topologyBlock
       <WardrobeAppearance
         characterId={characterId}
         commandWardrobeId={commandWardrobeId}
+        setCharacterId={setCharacterId}
         setAllAppearanceNames={setAllAppearanceNames}
       />
     </div>

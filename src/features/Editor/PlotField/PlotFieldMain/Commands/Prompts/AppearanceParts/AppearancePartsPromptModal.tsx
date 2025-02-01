@@ -11,6 +11,7 @@ type AppearancePartsPromptModalTypes = {
   currentAppearancePartName: string;
   initialValue: string;
   appearancePartId: string;
+  characterId?: string;
   inputClasses?: string;
   appearanceType?: TranslationTextFieldNameAppearancePartsTypes | "temp";
   setCurrentAppearancePartName: React.Dispatch<React.SetStateAction<string>>;
@@ -28,6 +29,7 @@ export default function AppearancePartsPromptModal({
   initialValue,
   inputClasses,
   appearanceType,
+  characterId,
   setAppearancePartId,
   setCurrentAppearancePartName,
   setInitialValue,
@@ -45,10 +47,17 @@ export default function AppearancePartsPromptModal({
     language: "russian",
   });
 
-  const memoizedAppearanceParts = useMemo(() => {
-    if (!appearanceParts) return [];
+  const memoizedByCharacterId = useMemo(() => {
+    if (characterId) {
+      return appearanceParts?.filter((a) => a.characterId === characterId);
+    }
+    return appearanceParts || [];
+  }, [characterId, appearanceParts]);
 
-    return appearanceParts.filter((p) => {
+  const memoizedAppearanceParts = useMemo(() => {
+    if (!memoizedByCharacterId) return [];
+
+    return memoizedByCharacterId.filter((p) => {
       const matchesName =
         !currentAppearancePartName ||
         p.translations[0]?.text?.toLowerCase().includes(currentAppearancePartName.toLowerCase());
@@ -57,7 +66,7 @@ export default function AppearancePartsPromptModal({
 
       return matchesName && matchesType;
     });
-  }, [currentAppearancePartName, appearanceType, appearanceParts]);
+  }, [currentAppearancePartName, appearanceType, memoizedByCharacterId]);
 
   const updateAppearancePartOnBlur = () => {
     if (initialValue === currentAppearancePartName) {

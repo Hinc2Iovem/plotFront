@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import useGetAllIfVariationsByIfId, {
   IfVariationResponseTypes,
 } from "../../../../hooks/If/BlockVariations/useGetAllIfVariationsByIfId";
-import useIfVariations, { IfVariationTypes } from "../Context/IfContext";
+import useCommandIf, { IfVariationTypes } from "../Context/IfContext";
 import { StatusTypes } from "../../../../../../../types/StoryData/Status/StatusTypes";
 
 type RefineAndAssignVariationsTypes = {
@@ -11,7 +11,7 @@ type RefineAndAssignVariationsTypes = {
 };
 
 export default function useRefineAndAssignVariations({ ifId, plotfieldCommandId }: RefineAndAssignVariationsTypes) {
-  const { setIfVariations } = useIfVariations();
+  const { setIfVariations } = useCommandIf();
 
   const { data: variations } = useGetAllIfVariationsByIfId({ ifId });
 

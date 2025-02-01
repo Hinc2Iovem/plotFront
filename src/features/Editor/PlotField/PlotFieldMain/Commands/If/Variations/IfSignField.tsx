@@ -8,7 +8,7 @@ import {
   ConditionSignTypes,
   ConditionValueVariationType,
 } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import useIfVariations from "../Context/IfContext";
+import useCommandIf from "../Context/IfContext";
 
 type IfSignFieldTypes = {
   plotfieldCommandId: string;
@@ -25,34 +25,36 @@ export default function IfSignField({
   currentSign,
   setCurrentSign,
 }: IfSignFieldTypes) {
-  const { updateIfVariationSign } = useIfVariations();
+  const { updateIfVariationSign } = useCommandIf();
   const updateValueCharacter = useUpdateIfCharacter({ ifCharacterId: ifVariationId });
   const updateValueCharacteristic = useUpdateIfCharacteristic({
     ifCharacteristicId: ifVariationId,
   });
   const updateValueRetry = useUpdateIfRetry({ ifRetryId: ifVariationId });
 
-  return (
-    <SelectWithBlur
-      onValueChange={(v: ConditionSignTypes) => {
-        if (type === "character") {
-          updateValueCharacter.mutate({ sign: currentSign });
-        } else if (type === "characteristic") {
-          updateValueCharacteristic.mutate({ sign: currentSign });
-        } else if (type === "retry") {
-          updateValueRetry.mutate({ sign: currentSign });
-        }
+  const updateSign = (v: ConditionSignTypes) => {
+    if (AllConditionSigns.includes(v)) {
+      if (type === "character") {
+        updateValueCharacter.mutate({ sign: v });
+      } else if (type === "characteristic") {
+        updateValueCharacteristic.mutate({ sign: v });
+      } else if (type === "retry") {
+        updateValueRetry.mutate({ sign: v });
+      }
 
-        updateIfVariationSign({
-          sign: currentSign,
-          ifVariationId,
-          plotFieldCommandId: plotfieldCommandId,
-        });
-        setCurrentSign(v);
-      }}
-    >
+      updateIfVariationSign({
+        sign: v,
+        ifVariationId,
+        plotFieldCommandId: plotfieldCommandId,
+      });
+      setCurrentSign(v);
+    }
+  };
+
+  return (
+    <SelectWithBlur onValueChange={(v: ConditionSignTypes) => updateSign(v)}>
       <SelectTrigger className="text-text border-border border-[3px] hover:bg-accent active:scale-[.99] transition-all">
-        <SelectValue placeholder={currentSign || "Знак"} onBlur={(v) => v.currentTarget.blur()} />
+        <SelectValue placeholder={currentSign || "Знак"} />
       </SelectTrigger>
       <SelectContent>
         {AllConditionSigns.map((pv) => {

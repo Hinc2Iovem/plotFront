@@ -3,7 +3,7 @@ import SelectWithBlur from "@/components/ui/selectWithBlur";
 import { AllPossibleStatuses } from "../../../../../../../../../const/STATUSES";
 import { StatusTypes } from "../../../../../../../../../types/StoryData/Status/StatusTypes";
 import useUpdateIfStatus from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfStatus";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 
 type IfVariationStatusModalTypes = {
   ifVariationId: string;
@@ -18,7 +18,7 @@ export default function IfVariationStatusModal({
   setStatus,
   status,
 }: IfVariationStatusModalTypes) {
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
 
   const updateIfStatus = useUpdateIfStatus({ ifStatusId: ifVariationId });
 

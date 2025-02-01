@@ -5,7 +5,7 @@ import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateIfLanguage from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfLanguage";
 import SelectLanguage from "../../../../Condition/PlotfieldInsideConditionBlock/ConditionBlockVariationInput/Language/SelectLanguage";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 
 type IfVariationLanguageTypes = {
   currentLanguage: CurrentlyAvailableLanguagesTypes | null;
@@ -25,7 +25,7 @@ export default function IfVariationLanguage({
     typeof currentLanguage === "string" ? currentLanguage : ("" as CurrentlyAvailableLanguagesTypes)
   );
 
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
 
   const updateIfLanguage = useUpdateIfLanguage({ ifLanguageId: ifVariationId });
 

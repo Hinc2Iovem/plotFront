@@ -65,6 +65,7 @@ export default function PlotfieldItem({
   emotionImg,
   emotionName,
   plotfieldCommandIfId,
+  commandOrder,
   currentTopologyBlockId,
 }: PlotFieldItemTypes) {
   const topologyBlockId = currentTopologyBlockId;
@@ -121,9 +122,10 @@ export default function PlotfieldItem({
         ) : command === "getitem" ? (
           <CommandGetItemField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "if" ? (
-          <CommandIfField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
+          <CommandIfField topologyBlockId={topologyBlockId} commandOrder={commandOrder} plotFieldCommandId={_id} />
         ) : command === "else" ? (
           <CommandElseField
+            commandOrder={commandOrder}
             topologyBlockId={topologyBlockId}
             plotfieldCommandIfId={plotfieldCommandIfId || ""}
             plotFieldCommandId={_id}
@@ -142,6 +144,7 @@ export default function PlotfieldItem({
           <CommandCommentField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : null}
       </ErrorBoundary>
+      <div className="bg-red text-white text-[20px] w-[40px] text-center rounded-md">{commandOrder}</div>
     </li>
   );
 }

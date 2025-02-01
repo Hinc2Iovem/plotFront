@@ -6,7 +6,7 @@ import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateIfAppearance from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfAppearance";
 import AppearancePartsPromptModal from "../../../../Prompts/AppearanceParts/AppearancePartsPromptModal";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 import IfFieldName from "../shared/IfFieldName";
 
 type IfVariationAppearanceTypes = {
@@ -26,7 +26,7 @@ export default function IfVariationAppearance({
 }: IfVariationAppearanceTypes) {
   const { episodeId } = useParams();
 
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
 
   const [currentIfName, setCurrentIfName] = useState("");
   const [initValue, setInitValue] = useState("");
@@ -70,7 +70,7 @@ export default function IfVariationAppearance({
   });
 
   return (
-    <div className="relative w-full flex gap-[.5rem]">
+    <div className="relative w-full flex gap-[5px]">
       <div className="flex-grow relative">
         <AppearancePartsPromptModal
           onValueUpdating={({ appearancePartId }) => {

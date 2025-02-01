@@ -1,7 +1,7 @@
 import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
 import useAddNewLogicalOperator from "../../../hooks/If/BlockVariations/logicalOperator/useAddNewLogicalOperator";
 import useAddNewIfVariation from "../../../hooks/If/BlockVariations/useAddNewIfVariation";
-import useIfVariations from "./Context/IfContext";
+import useCommandIf from "./Context/IfContext";
 import CreateVariationButton from "../../components/CreateVariationButton";
 import { ConditionValueVariationType } from "@/types/StoryEditor/PlotField/Condition/ConditionTypes";
 
@@ -11,7 +11,7 @@ type CreateIfVariationButtonTypes = {
 };
 
 export default function CreateIfVariationButton({ ifId, plotfieldCommandId }: CreateIfVariationButtonTypes) {
-  const { addIfVariation, getAmountOfIfVariations, addNewLogicalOperator } = useIfVariations();
+  const { addIfVariation, getAmountOfIfVariations, addNewLogicalOperator } = useCommandIf();
 
   const createifVariation = useAddNewIfVariation({ ifId });
   const addLogicalOperator = useAddNewLogicalOperator({ ifId });

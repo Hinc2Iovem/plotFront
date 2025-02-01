@@ -4,7 +4,7 @@ import useSearch from "../../../../../Context/Search/SearchContext";
 import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
 import useUpdateWardrobeTranslationText from "../../../../hooks/Wardrobe/useUpdateWardrobeTranslationText";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useGetCommandWardrobeTranslation from "@/features/Editor/PlotField/hooks/Wardrobe/useGetCommandWardrobeTranslation";
 
 type WardrobeTitleTypes = {
@@ -30,6 +30,13 @@ export default function WardrobeTitle({
 }: WardrobeTitleTypes) {
   const { episodeId } = useParams();
   const { updateValue } = useSearch();
+  const [localTitle, setLocalTitle] = useState(wardrobeTitle || "");
+
+  useEffect(() => {
+    if (wardrobeTitle) {
+      setLocalTitle(wardrobeTitle);
+    }
+  }, [wardrobeTitle]);
 
   const { data: translatedWardrobe } = useGetCommandWardrobeTranslation({
     commandId: plotFieldCommandId || "",
@@ -65,6 +72,7 @@ export default function WardrobeTitle({
         type: "command",
         value: `${wardrobeTitle} ${allAppearanceNames.map((an) => `${an}`).join(" ")}`,
       });
+      setWardrobeTitle(localTitle);
       updateWardrobeTranslatedTitle.mutate();
     }
   };
@@ -72,11 +80,11 @@ export default function WardrobeTitle({
   return (
     <form onSubmit={(e) => e.preventDefault()} className="flex-grow flex gap-[5px]">
       <PlotfieldInput
-        value={wardrobeTitle}
+        value={localTitle}
         type="text"
         onBlur={onBlur}
         placeholder="Название гардероба"
-        onChange={(e) => setWardrobeTitle(e.target.value)}
+        onChange={(e) => setLocalTitle(e.target.value)}
       />
       <Button
         type="button"

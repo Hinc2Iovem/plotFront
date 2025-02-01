@@ -36,12 +36,10 @@ const PlotfieldCharacterPromptMain = ({
   );
 
   useEffect(() => {
-    if (initCharacterValue && !characterValue._id?.trim().length) {
+    if (initCharacterValue) {
       setCharacterValue(initCharacterValue);
     }
   }, [initCharacterValue, characterValue._id]);
-
-  const [initCharacterName, setInitCharacterName] = useState(initCharacterValue.characterName);
 
   const { data: allTranslatedCharacters } = useGetTranslationCharacters({
     storyId: storyId || "",
@@ -84,7 +82,10 @@ const PlotfieldCharacterPromptMain = ({
 
   const updateCharacterNameOnBlur = (value?: CharacterValueTypes) => {
     const localCharacterValue = value?._id ? value : characterValue;
-    if (localCharacterValue.characterName?.trim().length && initCharacterName === localCharacterValue.characterName) {
+    if (
+      localCharacterValue.characterName?.trim().length &&
+      initCharacterValue.characterName === localCharacterValue.characterName
+    ) {
       return;
     }
 
@@ -112,7 +113,6 @@ const PlotfieldCharacterPromptMain = ({
 
     onBlur(characterObj);
     setCharacterValue(characterObj);
-    setInitCharacterName(characterObj.characterName);
   };
 
   const buttonsRef = useModalMovemenetsArrowUpDown({
@@ -164,7 +164,6 @@ const PlotfieldCharacterPromptMain = ({
                   characterName: c?.characterName,
                   imgUrl: c?.characterImg,
                 };
-                setCharacterValue(obj);
                 updateCharacterNameOnBlur(obj);
                 setShowCharacterModal(false);
               }}

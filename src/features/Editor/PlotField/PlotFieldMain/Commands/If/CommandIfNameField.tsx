@@ -1,14 +1,16 @@
 import command from "@/assets/images/Editor/command.png";
 import plus from "@/assets/images/shared/add.png";
 import { Button } from "@/components/ui/button";
+import PlotfieldCommandNameField from "@/ui/Texts/PlotfieldCommandNameField";
 import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
 import { useParams } from "react-router-dom";
+import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
 import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
-import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
-import useIfVariations, { IfVariationTypes } from "./Context/IfContext";
+import useCommandIf from "./Context/IfContext";
 import CreateIfVariationButton from "./CreateIfVariationButton";
 import { IfVariationInputField } from "./Variations/IfVariationInputField";
 import useRefineAndAssignVariations from "./Variations/useRefineAndAssignVariations";
+import { IfVariationTypes } from "./Context/IfVariationSlice";
 
 type CommandIfNameFieldTypes = {
   topologyBlockId: string;
@@ -23,42 +25,16 @@ type CommandIfNameFieldTypes = {
 
 export default function CommandIfNameField({
   topologyBlockId,
-  commandIfId,
   plotfieldCommandId,
-  nameValue,
-  hideCommands,
-  createInsideElse,
-  setHideCommands,
+  commandIfId,
 }: CommandIfNameFieldTypes) {
   const { episodeId } = useParams();
 
-  // const { getCurrentAmountOfCommands } = usePlotfieldCommands();
-
-  // const createBlankCommand = useCreateBlankCommand({
-  //   topologyBlockId,
-  //   episodeId: episodeId || "",
-  // });
-
-  // const handleCreateCommand = (isElse: boolean) => {
-  //   const _id = generateMongoObjectId();
-
-  //   const commandOrder = getCurrentAmountOfCommands({
-  //     topologyBlockId,
-  //   });
-
-  //   createBlankCommand.mutate({
-  //     commandOrder: commandOrder,
-  //     _id,
-  //     commandName: "" as AllPossiblePlotFieldComamndsTypes,
-  //     isElse: isElse,
-  //     topologyBlockId,
-  //     plotfieldCommandIfId: commandIfId,
-  //   });
-  // };
+  const { getCurrentAmountOfIfCommands } = useCommandIf();
 
   useRefineAndAssignVariations({ ifId: commandIfId, plotfieldCommandId });
 
-  const { getAllIfVariationsByPlotfieldCommandId, getAllLogicalOperators } = useIfVariations();
+  const { getAllIfVariationsByPlotfieldCommandId, getAllLogicalOperators } = useCommandIf();
 
   const createCommand = useCreateBlankCommand({
     topologyBlockId: topologyBlockId || "",
@@ -70,13 +46,24 @@ export default function CommandIfNameField({
     createCommand.mutate({
       _id,
       topologyBlockId: topologyBlockId || "",
+      commandOrder: getCurrentAmountOfIfCommands({ isElse: false, plotfieldCommandIfId: commandIfId }),
+      plotfieldCommandIfId: commandIfId,
+      isElse: false,
     });
   };
 
+  const currentlyFocusedCommand = useGetCurrentFocusedElement();
+  const isCommandFocused = currentlyFocusedCommand._id === plotfieldCommandId;
+
   return (
     <div className="min-w-[100px] w-full relative flex flex-col items-center gap-[10px]">
-      <FocusedPlotfieldCommandNameField nameValue={"if"} plotFieldCommandId={plotfieldCommandId} />
-
+      <div className="min-w-[100px] flex-grow w-full relative flex items-start gap-[10px]">
+        <PlotfieldCommandNameField
+          className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} text-[30px] text-center`}
+        >
+          If
+        </PlotfieldCommandNameField>
+      </div>
       <div className="px-[5px] flex gap-[5px] w-full">
         <CreateIfVariationButton ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />
         <div className={`flex gap-[5px] w-full rounded-md flex-wrap`}>

@@ -4,7 +4,7 @@ import { ConditionSignTypes } from "../../../../../../../../../types/StoryEditor
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetCharacterWithTranslation from "../../../../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 import IfSignField from "../../IfSignField";
 import IfVariationCharacterField from "./IfVariationCharacterField";
 import IfVariationValueField from "./IfVariationValueField";
@@ -24,7 +24,7 @@ export default function IfVariationCharacter({
 }: IfVariationCharacterTypes) {
   const { episodeId } = useParams();
   const [showCharacterPromptModal, setShowCharacterPromptModal] = useState(false);
-  const { getIfVariationById } = useIfVariations();
+  const { getIfVariationById } = useCommandIf();
   const [currentSign, setCurrentSign] = useState<ConditionSignTypes>(
     getIfVariationById({
       plotfieldCommandId,

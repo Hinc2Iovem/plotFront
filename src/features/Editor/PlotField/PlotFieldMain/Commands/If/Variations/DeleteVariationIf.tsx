@@ -1,5 +1,5 @@
 import { ConditionValueVariationType } from "@/types/StoryEditor/PlotField/Condition/ConditionTypes";
-import useIfVariations from "../Context/IfContext";
+import useCommandIf from "../Context/IfContext";
 import useDeleteIfVariation from "@/features/Editor/PlotField/hooks/If/BlockVariations/useDeleteIfVariation";
 import DeleteVariationModal from "../../Condition/PlotfieldInsideConditionBlock/DeleteVariation/DeleteVariationModal";
 
@@ -20,7 +20,7 @@ export default function DeleteVariationIf({
   variationType,
   setSuggestDeletingVariation,
 }: DeleteVariationIfTypes) {
-  const { removeIfVariation, getAmountOfIfVariations } = useIfVariations();
+  const { removeIfVariation, getAmountOfIfVariations } = useCommandIf();
   const deleteVariationAsync = useDeleteIfVariation({
     ifVariationIdParams: ifVariationId,
   });

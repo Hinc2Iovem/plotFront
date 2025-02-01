@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { CharacterValueTypes } from "../../../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 import useUpdateIfStatus from "@/features/Editor/PlotField/hooks/If/BlockVariations/patch/useUpdateIfStatus";
 import PlotfieldCharacterPromptMain from "../../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 
@@ -22,7 +22,7 @@ export default function IfVariationStatusCharacterField({
     characterName: characterValue.characterName,
     imgUrl: characterValue.imgUrl,
   });
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
   const preventRerender = useRef(false);
 
   const updateIfStatus = useUpdateIfStatus({ ifStatusId: ifVariationId });

@@ -6,7 +6,7 @@ import { isNumeric } from "../../../../../../../../../utils/regExpIsNumeric";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateIfCharacteristic from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacteristic";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 import IfSignField from "../../IfSignField";
 import IfVariationCharacteristicModal from "./IfVariationCharacteristicModal";
 
@@ -27,7 +27,7 @@ export default function IfVariationCharacteristic({
   secondCharacteristicId,
   firstCharacteristicId,
 }: IfVariationCharacteristicTypes) {
-  const { getIfVariationById } = useIfVariations();
+  const { getIfVariationById } = useCommandIf();
   const [currentSign, setCurrentSign] = useState<ConditionSignTypes>(
     getIfVariationById({
       plotfieldCommandId,
@@ -97,7 +97,7 @@ function CharacteristicInputField({
     language: "russian",
   });
 
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
 
   const updateIf = useUpdateIfCharacteristic({
     ifCharacteristicId: ifVariationId,

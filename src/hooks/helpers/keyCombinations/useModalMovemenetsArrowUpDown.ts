@@ -26,6 +26,8 @@ export default function useModalMovemenetsArrowUpDown({ length }: ModalMovemenet
 
       if (key === "arrowdown") {
         const nextIndex = (currentIndex + 1) % length;
+        console.log("nextIndex: ", nextIndex);
+
         buttonsRef.current[nextIndex]?.focus();
         focusedIndexRef.current = nextIndex;
       } else if (key === "arrowup") {

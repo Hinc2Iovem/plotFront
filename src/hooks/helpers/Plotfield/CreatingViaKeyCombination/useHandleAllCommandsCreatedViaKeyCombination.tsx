@@ -31,8 +31,6 @@ type HandleAllCommandsCreatedViaKeyCombinationTypes = {
 export default function useHandleAllCommandsCreatedViaKeyCombination({
   topologyBlockId,
 }: HandleAllCommandsCreatedViaKeyCombinationTypes) {
-  useCreateBlankViaKeyCombination({ topologyBlockId });
-
   useCreateAchievementViaKeyCombination({ topologyBlockId });
 
   useCreateAmbientViaKeyCombination({ topologyBlockId });
@@ -80,4 +78,6 @@ export default function useHandleAllCommandsCreatedViaKeyCombination({
   useCreateConditionViaKeyCombination({ topologyBlockId });
 
   useCreateCertainCharacterViaKeyCombination({ topologyBlockId });
+
+  useCreateBlankViaKeyCombination({ topologyBlockId });
 }

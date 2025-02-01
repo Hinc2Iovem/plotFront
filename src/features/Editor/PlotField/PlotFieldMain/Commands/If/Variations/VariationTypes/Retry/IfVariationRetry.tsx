@@ -5,7 +5,7 @@ import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput"
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateIfRetry from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfRetry";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 import IfSignField from "../../IfSignField";
 import IfFieldName from "../shared/IfFieldName";
 
@@ -24,7 +24,7 @@ export default function IfVariationRetry({
   ifVariationId,
 }: IfVariationRetryTypes) {
   const { episodeId } = useParams();
-  const { updateIfVariationValue, getIfVariationById } = useIfVariations();
+  const { updateIfVariationValue, getIfVariationById } = useCommandIf();
 
   const [retryAmount, setRetryAmount] = useState(typeof currentRentryAmount === "number" ? currentRentryAmount : null);
   const [currentSign, setCurrentSign] = useState<ConditionSignTypes>(

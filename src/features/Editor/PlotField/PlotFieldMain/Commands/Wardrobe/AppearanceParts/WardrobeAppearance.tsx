@@ -5,19 +5,25 @@ import WardrobeCharacterAppearancePartForm from "./WardrobeCharacterAppearancePa
 type WardrobeAppearanceTypes = {
   commandWardrobeId: string;
   characterId: string;
+  setCharacterId: React.Dispatch<React.SetStateAction<string>>;
   setAllAppearanceNames: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export default function WardrobeAppearance({
   characterId,
   commandWardrobeId,
+  setCharacterId,
   setAllAppearanceNames,
 }: WardrobeAppearanceTypes) {
   const { data: allAppearancePartBlocks } = useGetAllWardrobeAppearancePartBlocks({ commandWardrobeId });
 
   return (
     <>
-      <WardrobeCharacterAppearancePartForm commandWardrobeId={commandWardrobeId} characterId={characterId} />
+      <WardrobeCharacterAppearancePartForm
+        setCharacterId={setCharacterId}
+        commandWardrobeId={commandWardrobeId}
+        characterId={characterId}
+      />
 
       <div className={`flex flex-col w-full bg-primary-darker rounded-md max-h-[220px]`}>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-[5px] w-full overflow-y-auto px-[5px] | containerScroll">

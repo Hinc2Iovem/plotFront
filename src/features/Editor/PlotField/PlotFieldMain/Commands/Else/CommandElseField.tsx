@@ -1,43 +1,55 @@
 import command from "@/assets/images/Editor/command.png";
 import plus from "@/assets/images/shared/add.png";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import PlotfieldCommandNameField from "../../../../../../ui/Texts/PlotfieldCommandNameField";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import useGetCommandElse from "../../../hooks/If/Else/useGetCommandElse";
 import useCreateBlankCommand from "../../../hooks/useCreateBlankCommand";
+import useCommandIf from "../If/Context/IfContext";
 
 type CommandElseFieldTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
   plotfieldCommandIfId: string;
+  commandOrder: number;
 };
 
 export default function CommandElseField({
   plotFieldCommandId,
   topologyBlockId,
   plotfieldCommandIfId,
+  commandOrder,
 }: CommandElseFieldTypes) {
   const { episodeId } = useParams();
+  const { data: commandElse } = useGetCommandElse({ plotFieldCommandId });
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
-  const { getCurrentAmountOfCommands } = usePlotfieldCommands();
+  console.log("plotFieldCommandId: ", plotFieldCommandId);
+
+  const { getCurrentAmountOfIfCommands, setCurrentAmountOfIfCommands } = useCommandIf();
 
   const createBlankCommand = useCreateBlankCommand({
     topologyBlockId,
     episodeId: episodeId || "",
   });
 
+  useEffect(() => {
+    if (commandElse) {
+      setCurrentAmountOfIfCommands({
+        amountOfCommandsInsideElse: commandElse.amountOfCommandsInsideElse || commandOrder + 1,
+        plotfieldCommandIfId: commandElse.plotfieldCommandIfId,
+      });
+    }
+  }, [commandElse]);
+
   const handleCreateCommand = () => {
     const _id = generateMongoObjectId();
 
-    const commandOrder = getCurrentAmountOfCommands({
-      topologyBlockId,
-    });
-
     createBlankCommand.mutate({
-      commandOrder: commandOrder,
+      commandOrder: getCurrentAmountOfIfCommands({ isElse: true, plotfieldCommandIfId }),
       _id,
       commandName: "" as AllPossiblePlotFieldComamndsTypes,
       isElse: true,

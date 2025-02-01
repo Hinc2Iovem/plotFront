@@ -6,7 +6,7 @@ import KeyPromptsModal from "../../../../Condition/PlotfieldInsideConditionBlock
 import IfFieldName from "../shared/IfFieldName";
 import useSearch from "@/features/Editor/Context/Search/SearchContext";
 import useUpdateIfKey from "@/features/Editor/PlotField/hooks/If/BlockVariations/patch/useUpdateIfKey";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 
 type IfVariationKeyTypes = {
   plotfieldCommandId: string;
@@ -24,7 +24,7 @@ export default function IfVariationKey({
   const { episodeId } = useParams();
   const [commandKeyId, setCommandKeyId] = useState(keyId || "");
   const [initKeyId, setInitKeyId] = useState(keyId || "");
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
 
   const [currentlyActive, setCurrentlyActive] = useState(false);
 

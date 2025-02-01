@@ -6,7 +6,7 @@ import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllCharacteristicsByStoryId from "../../../../../../../../../hooks/Fetching/Translation/Characteristic/useGetAllCharacteristicsByStoryId";
 import useUpdateIfCharacteristic from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfCharacteristic";
-import useIfVariations from "../../../Context/IfContext";
+import useCommandIf from "../../../Context/IfContext";
 
 type CharacteristicsPromptModalTypes = {
   setCurrentCharacteristic: React.Dispatch<React.SetStateAction<string | number>>;
@@ -33,7 +33,7 @@ const IfVariationCharacteristicModal = ({
   const { storyId } = useParams();
   const [showCharacteristicModal, setShowCharacteristicModal] = useState(false);
   const currentInput = useRef<HTMLInputElement>(null);
-  const { updateIfVariationValue } = useIfVariations();
+  const { updateIfVariationValue } = useCommandIf();
 
   const { data: characteristics } = useGetAllCharacteristicsByStoryId({
     storyId: storyId || "",

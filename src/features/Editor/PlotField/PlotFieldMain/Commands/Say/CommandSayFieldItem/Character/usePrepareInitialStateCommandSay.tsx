@@ -85,7 +85,7 @@ export default function usePrepareInitialStateCommandSay({
       setCharacterValue((prev) => ({
         _id: currentCharacter._id || prev._id,
         characterName: prev.characterName ? prev.characterName : characterName,
-        imgUrl: currentCharacter?.img || characterImg || "",
+        imgUrl: currentCharacter?.img || characterImg || prev.imgUrl,
       }));
 
       const currentEmotion = currentCharacter.emotions.find((e) => e._id === emotionId);

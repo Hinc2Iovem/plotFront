@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
 import { toast } from "sonner";
-import { toastNotificationStyles } from "@/components/shared/toastStyles";
+import ActionButton from "./ActionButton";
 
 export type InitMusicValueTypes = {
   musicId: string;
@@ -52,10 +52,6 @@ export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalT
     );
   }, [allMusic]);
 
-  // const createMusic = useCreateMusic({
-  //   storyId,
-  // });
-
   const handleUpdatingMusicState = async ({ mm }: { mm?: string }) => {
     const value = mm?.trim().length ? mm : musicName;
     if (!value?.trim().length) {
@@ -75,9 +71,12 @@ export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalT
       // const musicId = generateMongoObjectId();
       // await createMusic.mutateAsync({ musicId, musicName });
       // await updateMusic.mutateAsync({ commandMusicId, musicId });
-      toast("Музыка не найдена, хотите создать?", toastNotificationStyles);
+      toast("Музыка не найдена, хотите создать?", {
+        action: <ActionButton text={value.trim()} onBlur={onBlur} />,
+
+        className: `flex items-center justify-between`,
+      });
       return;
-      // when onBlur and jumping to a modal
     } else {
       onBlur({ musicId: foundMusic.id, musicName: foundMusic.musicName });
       // just updated music command
