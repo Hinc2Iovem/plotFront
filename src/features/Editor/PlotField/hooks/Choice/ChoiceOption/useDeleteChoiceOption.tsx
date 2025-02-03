@@ -17,7 +17,6 @@ type DeleteChoiceOptionTypes = {
 
 export default function useDeleteChoiceOption({
   choiceOptionId,
-  choiceId,
   episodeId,
   plotfieldCommandId,
   topologyBlockId,
@@ -44,13 +43,13 @@ export default function useDeleteChoiceOption({
       );
     },
     onMutate: () => {
-      const focusedCommandChoice = [""];
+      // const focusedCommandChoice = [""];
       const focusedCommandInsideType = getItem("focusedCommandInsideType")?.split("?").filter(Boolean);
 
       const focusedCommandInsideTypeChoiceIndex = focusedCommandInsideType?.findIndex((i) =>
         i.includes(plotfieldCommandId)
       );
-      const focusedCommandChoiceIndex = focusedCommandChoice?.findIndex((i) => i.includes(choiceId));
+      // const focusedCommandChoiceIndex = focusedCommandChoice?.findIndex((i) => i.includes(choiceId));
 
       const currentlyOpen = getCurrentlyOpenChoiceOption({ plotfieldCommandId });
       const currentChoice = getCommandOnlyByPlotfieldCommandId({ plotfieldCommandId });
@@ -92,8 +91,8 @@ export default function useDeleteChoiceOption({
             return;
           }
 
-          const currentChoiceOptionSplitted = (focusedChoiceOptions || [])[focusedChoiceOptionIndex].split("-");
-          const currentChoiceOptionPlotfieldId = currentChoiceOptionSplitted[3];
+          // const currentChoiceOptionSplitted = (focusedChoiceOptions || [])[focusedChoiceOptionIndex].split("-");
+          // const currentChoiceOptionPlotfieldId = currentChoiceOptionSplitted[3];
 
           if (typeof currentOptionIndex === "number") {
             const amount = getAmountOfChoiceOptions({ plotfieldCommandId });
@@ -108,10 +107,10 @@ export default function useDeleteChoiceOption({
               (focusedCommandInsideTypeChoiceIndex || 0) + 1
             );
 
-            const newFocusedCommandChoice = (focusedCommandChoice || [])?.slice(
-              0,
-              (focusedCommandChoiceIndex || 0) + 1
-            );
+            // const newFocusedCommandChoice = (focusedCommandChoice || [])?.slice(
+            //   0,
+            //   (focusedCommandChoiceIndex || 0) + 1
+            // );
 
             setItem(
               "focusedCommandInsideType",
@@ -186,10 +185,10 @@ export default function useDeleteChoiceOption({
               // just remove and close
               setItem("focusedTopologyBlock", currentChoice?.topologyBlockId || "");
 
-              const newFocusedChoiceOption = removeElementAtIndex({
-                array: focusedChoiceOptions || [],
-                index: focusedChoiceOptionIndex || 0,
-              });
+              // const newFocusedChoiceOption = removeElementAtIndex({
+              //   array: focusedChoiceOptions || [],
+              //   index: focusedChoiceOptionIndex || 0,
+              // });
               // TODO when deleting choiceOption need to refocus
 
               setItem("focusedCommand", `choice-${plotfieldCommandId}`);

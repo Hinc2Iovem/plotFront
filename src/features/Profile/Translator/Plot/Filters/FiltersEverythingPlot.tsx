@@ -59,12 +59,9 @@ export default function FiltersEverythingPlot({
           translateToLanguage={translateToLanguage}
           setStoryId={setStoryId}
         />
-        <SeasonPrompt setSeasonId={setSeasonId} storyId={storyId} />
-        <EpisodePrompt seasonId={seasonId} setEpisodeId={setEpisodeId} />
-        <TopologyBlockPrompt
-          episodeId={episodeId}
-          setTopologyBlockId={setTopologyBlockId}
-        />
+        <SeasonPrompt setSeasonId={setSeasonId} storyId={storyId} seasonId={seasonId} />
+        <EpisodePrompt seasonId={seasonId} setEpisodeId={setEpisodeId} episodeId={episodeId} />
+        <TopologyBlockPrompt episodeId={episodeId} setTopologyBlockId={setTopologyBlockId} />
       </div>
       <main className="w-full flex flex-col gap-[1rem]">
         <FiltersEverythingPlotSay

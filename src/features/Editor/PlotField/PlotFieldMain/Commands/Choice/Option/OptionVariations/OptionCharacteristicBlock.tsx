@@ -20,7 +20,6 @@ export default function OptionCharacteristicBlock({ choiceOptionId, debouncedVal
   });
   const [characteristicId, setCharacteristicId] = useState("");
   const [update, setUpdate] = useState(false);
-  const theme = localStorage.getItem("theme");
 
   useEffect(() => {
     if (optionCharacteristic) {

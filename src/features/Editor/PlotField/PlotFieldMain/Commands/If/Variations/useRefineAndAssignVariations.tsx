@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import useGetAllIfVariationsByIfId, {
   IfVariationResponseTypes,
 } from "../../../../hooks/If/BlockVariations/useGetAllIfVariationsByIfId";
-import useCommandIf, { IfVariationTypes } from "../Context/IfContext";
 import { StatusTypes } from "../../../../../../../types/StoryData/Status/StatusTypes";
+import useCommandIf from "../Context/IfContext";
+import { IfVariationTypes } from "../Context/IfVariationSlice";
 
 type RefineAndAssignVariationsTypes = {
   plotfieldCommandId: string;

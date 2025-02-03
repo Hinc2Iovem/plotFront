@@ -20,30 +20,22 @@ type ProfileRightSideByTypeItemTypes = {
     | undefined;
   imgUrl?: string;
 };
-export default function ProfileRightSideByTypeItem({
-  characterIds,
-  openedStoryId,
-  setCharacterIds,
-  setOpenedStoryId,
-  storiesType,
-  storyId,
-  assignedWorkers,
-  storyStatus,
-  imgUrl,
-}: ProfileRightSideByTypeItemTypes) {
+export default function ProfileRightSideByTypeItem({ storyId, storyStatus, imgUrl }: ProfileRightSideByTypeItemTypes) {
   const { data: translationStory } = useGetTranslationStory({
     id: storyId,
     language: "russian",
   });
 
   const [title, setTitle] = useState("");
-  const [showScriptwriters, setShowScriptwriters] = useState(false);
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     if (translationStory) {
       translationStory.map((d) => {
         if (d.translations[0]?.textFieldName === "storyName") {
           setTitle(d.translations[0]?.text);
+        } else if (d.translations[0]?.textFieldName === "storyDescription") {
+          setDescription(d.translations[0]?.text);
         }
       });
     }
@@ -51,18 +43,11 @@ export default function ProfileRightSideByTypeItem({
 
   return (
     <ProfileRightSideItem
-      characterIds={characterIds}
       imgUrl={imgUrl || ""}
-      setShowScriptwriters={setShowScriptwriters}
-      showScriptwriters={showScriptwriters}
-      openedStoryId={openedStoryId}
-      setCharacterIds={setCharacterIds}
-      setOpenedStoryId={setOpenedStoryId}
-      storiesType={storiesType}
       storyId={storyId}
       title={title}
-      assignedWorkers={assignedWorkers}
       storyStatus={storyStatus}
+      description={description}
     />
   );
 }

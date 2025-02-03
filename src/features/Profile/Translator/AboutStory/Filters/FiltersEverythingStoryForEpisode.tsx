@@ -116,6 +116,7 @@ export default function FiltersEverythingStoryForEpisode({
         <SeasonPrompt
           setSeasonId={setSeasonId}
           storyId={storyId}
+          seasonId={seasonId}
           seasonValue={seasonValue}
           setSeasonValue={setSeasonValue}
           currentLanguage={translateFromLanguage}

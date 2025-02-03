@@ -35,7 +35,7 @@ export default function ProfileLeftSideScriptwriter({
   };
   const { roles } = useGetDecodedJWTValues();
   const [localSearchValue, setLocalSearchValue] = useState("");
-  const [localAssignedSearchValue, setLocalAssignedSearchValue] = useState("");
+  const [, setLocalAssignedSearchValue] = useState("");
 
   const prefetchAllStories = () => {
     queryClient.prefetchQuery({

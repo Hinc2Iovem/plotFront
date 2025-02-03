@@ -29,7 +29,7 @@ export default function PlotField({ command, showUtils, expansionDivDirection }:
     }
   }, [topologyBlockData, currentTopologyBlock._id]);
 
-  const [showAllCommands, setShowAllCommands] = useState<boolean>(false);
+  const [showAllCommands] = useState<boolean>(false);
   return (
     <section
       className={`${command === "expandPlotField" || expansionDivDirection === "right" ? "w-full" : " w-1/2"} ${

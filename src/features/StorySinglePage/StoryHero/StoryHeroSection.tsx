@@ -1,10 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import keyButton from "../../../assets/images/Story/keyButton.png";
-import { getAllCharacters } from "../../../hooks/Fetching/Character/useGetAllCharactersByStoryId";
-import { getSeasonsByStoryId } from "../../../hooks/Fetching/Season/useGetSeasonsByStoryId";
-import { getTranslationCharacters } from "../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
+import { useParams } from "react-router-dom";
 import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import SyncLoad from "../../../ui/Loaders/SyncLoader";
 import PreviewImage from "../../../ui/shared/PreviewImage";
@@ -177,57 +172,57 @@ export default function StoryHeroSection({ setStoryInfo, storyInfo }: StoryHeroS
   );
 }
 
-const KeyBindsBlock = () => {
-  const { storyId } = useParams();
+// const KeyBindsBlock = () => {
+//   const { storyId } = useParams();
 
-  const queryClient = useQueryClient();
+//   const queryClient = useQueryClient();
 
-  const prefetchTranslatedCharacters = () => {
-    queryClient.prefetchQuery({
-      queryKey: ["translation", "russian", "character", "story", storyId],
-      queryFn: () =>
-        getTranslationCharacters({
-          language: "russian",
-          storyId: storyId || "",
-        }),
-    });
-  };
+//   const prefetchTranslatedCharacters = () => {
+//     queryClient.prefetchQuery({
+//       queryKey: ["translation", "russian", "character", "story", storyId],
+//       queryFn: () =>
+//         getTranslationCharacters({
+//           language: "russian",
+//           storyId: storyId || "",
+//         }),
+//     });
+//   };
 
-  const prefetchCharacters = () => {
-    queryClient.prefetchQuery({
-      queryKey: ["story", storyId, "characters"],
-      queryFn: () =>
-        getAllCharacters({
-          storyId: storyId || "",
-        }),
-    });
-  };
+//   const prefetchCharacters = () => {
+//     queryClient.prefetchQuery({
+//       queryKey: ["story", storyId, "characters"],
+//       queryFn: () =>
+//         getAllCharacters({
+//           storyId: storyId || "",
+//         }),
+//     });
+//   };
 
-  const prefetchSeasons = () => {
-    queryClient.prefetchQuery({
-      queryKey: ["stories", storyId, "season", "language", "russian"],
-      queryFn: () =>
-        getSeasonsByStoryId({
-          storyId: storyId || "",
-          language: "russian",
-        }),
-    });
-  };
+//   const prefetchSeasons = () => {
+//     queryClient.prefetchQuery({
+//       queryKey: ["stories", storyId, "season", "language", "russian"],
+//       queryFn: () =>
+//         getSeasonsByStoryId({
+//           storyId: storyId || "",
+//           language: "russian",
+//         }),
+//     });
+//   };
 
-  const handlePrefetches = () => {
-    Promise.all([prefetchTranslatedCharacters(), prefetchCharacters(), prefetchSeasons()]);
-  };
+//   const handlePrefetches = () => {
+//     Promise.all([prefetchTranslatedCharacters(), prefetchCharacters(), prefetchSeasons()]);
+//   };
 
-  return (
-    <div className="flex gap-[10px] mt-[2rem] flex-wrap w-full mb-[10px]">
-      <Link
-        onFocus={handlePrefetches}
-        onMouseOver={handlePrefetches}
-        to={`/stories/${storyId}/keyBinds`}
-        className="w-[15rem] h-[15rem] rounded-2xl hover:bg-primary-darker bg-primary transition-colors"
-      >
-        <img src={keyButton} alt="A" draggable="false" className="" />
-      </Link>
-    </div>
-  );
-};
+//   return (
+//     <div className="flex gap-[10px] mt-[2rem] flex-wrap w-full mb-[10px]">
+//       <Link
+//         onFocus={handlePrefetches}
+//         onMouseOver={handlePrefetches}
+//         to={`/stories/${storyId}/keyBinds`}
+//         className="w-[15rem] h-[15rem] rounded-2xl hover:bg-primary-darker bg-primary transition-colors"
+//       >
+//         <img src={keyButton} alt="A" draggable="false" className="" />
+//       </Link>
+//     </div>
+//   );
+// };

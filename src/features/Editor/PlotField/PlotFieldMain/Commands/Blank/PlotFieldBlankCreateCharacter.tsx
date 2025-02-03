@@ -56,7 +56,6 @@ export default function PlotFieldBlankCreateCharacter({
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId,
-    value: characterName,
     topologyBlockId: currentlyFocusedTopologyBlock || "",
   });
 

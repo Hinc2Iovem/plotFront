@@ -1,6 +1,5 @@
 import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { ConditionValueVariationType } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import { IfVariationTypes, LogicalOperatorTypes } from "../Context/IfContext";
 import DeleteVariationIf from "./DeleteVariationIf";
 import LogicalOperatorIf from "./LogicalOperatorIf";
 import IfVariationAppearance from "./VariationTypes/Appearance/IfVariationAppearance";
@@ -12,6 +11,7 @@ import IfVariationRandom from "./VariationTypes/Random/IfVariationRandom";
 import IfVariationRetry from "./VariationTypes/Retry/IfVariationRetry";
 import IfVariationStatus from "./VariationTypes/Status/IfVariationStatus";
 import { useState } from "react";
+import { IfVariationTypes, LogicalOperatorTypes } from "../Context/IfVariationSlice";
 
 type IfInputFieldItemTypes = {
   type: ConditionValueVariationType;

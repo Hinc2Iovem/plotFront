@@ -1,12 +1,11 @@
 import useUpdateLogicalOperator from "@/features/Editor/PlotField/hooks/If/BlockVariations/logicalOperator/useUpdateLogicalOperator";
-import useCommandIf, {
-  AllIfValueVariationByLogicalOperatorIndexTypes,
-  LogicalOperatorTypes,
-} from "../Context/IfContext";
+
 import { useState } from "react";
 import useDeleteLogicalOperator from "@/features/Editor/PlotField/hooks/If/BlockVariations/logicalOperator/useDeleteLogicalOperator";
 import useDeleteIfVariation from "@/features/Editor/PlotField/hooks/If/BlockVariations/useDeleteIfVariation";
 import LogicalOperatorModal from "../../Condition/PlotfieldInsideConditionBlock/LogicalOperatorModals";
+import useCommandIf from "../Context/IfContext";
+import { AllIfValueVariationByLogicalOperatorIndexTypes, LogicalOperatorTypes } from "../Context/IfVariationSlice";
 
 type LogicalOperatorIfTypes = {
   currentLogicalOperator: LogicalOperatorTypes;

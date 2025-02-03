@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import StoryAttributesSelectAppearanceType from "@/features/StorySinglePage/StoryAttributesSection/shared/StoryAttributesSelectAppearanceType";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { appearancePartColors } from "../../../../../../const/APPEARACE_PARTS";
 import useGetCharacterById from "../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import useUpdateAppearancePartTranslation from "../../../../../../hooks/Patching/Translation/useUpdateAppearancePartTranslation";
 import useUpdateImg from "../../../../../../hooks/Patching/useUpdateImg";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "../../../../../../types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { AppearancePartVariationRusTypes } from "../../../../../../types/StoryData/AppearancePart/AppearancePartTypes";
 import PlotfieldInput from "../../../../../../ui/Inputs/PlotfieldInput";
@@ -35,9 +34,7 @@ export function EditingAppearancePartForm({
   startEditing,
   editingAppearancePart,
 }: EditingAppearancePartFormTypes) {
-  const modalRef = useRef<HTMLDivElement>(null);
   const [currentText, setCurrentText] = useState(editingAppearancePart?.text || "");
-  const [showAllTypes, setShowAllTypes] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(null);
 
   const [typeToRus, setTypeToRus] = useState<AppearancePartVariationRusTypes>(
@@ -132,6 +129,7 @@ export function EditingAppearancePartForm({
       }))
     );
     setStartEditing(false);
+
     await Promise.all([
       updateAppearancePartImg.mutateAsync({}),
       updateAppearancePart.mutateAsync({
@@ -179,12 +177,6 @@ export function EditingAppearancePartForm({
       setCurrentType(editingAppearancePart.type);
     }
   }, [editingAppearancePart]);
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowAllTypes,
-    showModal: showAllTypes,
-  });
 
   return (
     <div
@@ -241,12 +233,10 @@ export function AppearanceCharacterField({ characterValue, setCharacterValue }: 
   return (
     <div className="min-w-[200px] flex-grow relative flex items-center">
       <PlotfieldCharacterPromptMain
-        characterName={characterValue.characterName || ""}
-        currentCharacterId={characterValue._id || ""}
-        characterValue={characterValue}
-        setCharacterValue={setCharacterValue}
         inputClasses="w-full pr-[35px] text-text md:text-[17px]"
         imgClasses="w-[30px] object-cover rounded-md right-0 absolute"
+        initCharacterValue={characterValue}
+        onBlur={(value) => setCharacterValue(value)}
       />
     </div>
   );

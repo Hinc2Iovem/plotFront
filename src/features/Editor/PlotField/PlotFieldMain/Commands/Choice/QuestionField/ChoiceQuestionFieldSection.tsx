@@ -34,7 +34,7 @@ export default function ChoiceQuestionFieldSection({
     setLocalQuestion(question);
   }, [question]);
 
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [, setShowSettingsModal] = useState(false);
   const [currentTextStyle, setCurrentTextStyle] = useState(textStyle);
 
   const { updateValue } = useSearch();
