@@ -66,9 +66,10 @@ export default function PlotFieldMain({
   useHandleAllCommandsCreatedViaKeyCombination({
     topologyBlockId: currentTopologyBlock._id,
   });
-  useHandleDuplicationOfAllCommands({
-    topologyBlockId: currentTopologyBlock._id,
-  });
+  useHandleDuplicationOfAllCommands();
+  // {
+  //   topologyBlockId: currentTopologyBlock._id,
+  // }
   useHandleNavigationThroughCommands();
   useHandleDeletionOfCommand();
 
