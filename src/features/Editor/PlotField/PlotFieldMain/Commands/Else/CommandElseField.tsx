@@ -27,7 +27,6 @@ export default function CommandElseField({
   const { episodeId } = useParams();
   const { data: commandElse } = useGetCommandElse({ plotFieldCommandId });
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
-  console.log("plotFieldCommandId: ", plotFieldCommandId);
 
   const { getCurrentAmountOfIfCommands, setCurrentAmountOfIfCommands } = useCommandIf();
 

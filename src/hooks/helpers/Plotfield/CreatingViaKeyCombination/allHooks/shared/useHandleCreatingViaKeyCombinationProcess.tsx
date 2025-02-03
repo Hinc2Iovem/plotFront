@@ -1,16 +1,15 @@
-import { useCallback, useEffect, useRef } from "react";
-import { preventCreatingCommandsWhenFocus } from "../../../preventCreatingCommandsWhenFocus";
-import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
-import usePlotfieldCommands from "../../../../../../features/Editor/PlotField/Context/PlotFieldContext";
-import useNavigation from "../../../../../../features/Editor/Context/Navigation/NavigationContext";
-import useCreateBlankCommand from "../../../../../../features/Editor/PlotField/hooks/useCreateBlankCommand";
-import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { UseMutationResult } from "@tanstack/react-query";
+import { useCallback, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import useNavigation from "../../../../../../features/Editor/Context/Navigation/NavigationContext";
+import usePlotfieldCommands from "../../../../../../features/Editor/PlotField/Context/PlotFieldContext";
+import { CreateCommandIfBodyTypes } from "../../../../../../features/Editor/PlotField/hooks/If/useCreateCommandIf";
+import useCreateBlankCommand from "../../../../../../features/Editor/PlotField/hooks/useCreateBlankCommand";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import { addItemInUndoSessionStorage } from "../../../../UndoRedo/addItemInUndoSessionStorage";
 import useTypedSessionStorage, { SessionStorageKeys } from "../../../../shared/SessionStorage/useTypedSessionStorage";
-import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import { CreateCommandIfBodyTypes } from "../../../../../../features/Editor/PlotField/hooks/If/useCreateCommandIf";
 
 type HandleCreatingViaKeyCombinationProcessTypes<T> = {
   topologyBlockId: string;
@@ -45,90 +44,91 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
     episodeId: episodeId || "",
   });
 
-  const pressedKeys = useRef<Set<string>>(new Set());
+  const shortcutTriggered = useRef(false);
+  const pressedKeys = useRef(new Set());
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const allowed = preventCreatingCommandsWhenFocus();
-      if (!allowed) {
-        return;
-      }
+  const handleCreateCommand = useCallback(() => {
+    const _id = generateMongoObjectId();
+    const createCommandObject = createCommandData
+      ? {
+          ...createCommandData,
+          plotfieldCommandId: _id,
+        }
+      : { plotfieldCommandId: _id };
 
-      const key = event.key?.toLowerCase();
-      if (key) pressedKeys.current.add(key);
+    createCommand.mutate(createCommandObject as T);
 
+    const focusedTopologyBlockId = getItem("focusedTopologyBlock");
+    const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;
+
+    addItemInUndoSessionStorage({
+      _id,
+      episodeId: episodeId || "",
+      topologyBlockId: currentTopologyBlockId,
+      type: "created",
+    });
+
+    const commandIf = commandName === "if" ? (createCommandObject as CreateCommandIfBodyTypes) : null;
+
+    createPlotfield.mutate({
+      _id,
+      topologyBlockId: currentTopologyBlockId,
+      commandName,
+      isElse: currentlyFocusedCommandId?.isElse,
+      plotfieldCommandElseId: commandIf ? commandIf?.plotFieldCommandElseId : "",
+      plotfieldCommandIfElseEndId: commandIf ? commandIf?.plotFieldCommandIfElseEndId : "",
+      plotfieldCommandIfId:
+        currentlyFocusedCommandId.commandName === "if" ||
+        (currentlyFocusedCommandId.commandName as AllPossiblePlotFieldComamndsTypes) === "else" ||
+        (typeof currentlyFocusedCommandId.isElse === "boolean" && currentlyFocusedCommandId.parentId)
+          ? currentlyFocusedCommandId?.parentId
+          : "",
+      commandOrder:
+        typeof currentlyFocusedCommandId.commandOrder === "number"
+          ? currentlyFocusedCommandId?.commandOrder + 1
+          : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId }),
+      sayType,
+    });
+  }, [
+    commandName,
+    createCommand,
+    createCommandData,
+    createPlotfield,
+    currentlyFocusedCommandId,
+    episodeId,
+    getCurrentAmountOfCommands,
+    getItem,
+    sayType,
+    topologyBlockId,
+  ]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+
+      if (event.repeat) return;
+      pressedKeys.current.add(key);
       if (
         pressedKeys.current.has("shift") &&
         ((pressedKeys.current.has(firstEngLetter) && pressedKeys.current.has(secondEngLetter)) ||
-          (pressedKeys.current.has(firstRusLetter) && pressedKeys.current.has(secondRusLetter)))
+          (pressedKeys.current.has(firstRusLetter) && pressedKeys.current.has(secondRusLetter))) &&
+        !shortcutTriggered.current
       ) {
-        const _id = generateMongoObjectId();
-        const createCommandObject = createCommandData
-          ? {
-              ...createCommandData,
-              plotfieldCommandId: _id,
-            }
-          : { plotfieldCommandId: _id };
+        shortcutTriggered.current = true;
 
-        createCommand.mutate(createCommandObject as T);
-
-        const focusedTopologyBlockId = getItem("focusedTopologyBlock");
-        const currentTopologyBlockId = focusedTopologyBlockId?.trim().length ? focusedTopologyBlockId : topologyBlockId;
-
-        addItemInUndoSessionStorage({
-          _id,
-          episodeId: episodeId || "",
-          topologyBlockId: currentTopologyBlockId,
-          type: "created",
-        });
-
-        const commandIf = commandName === "if" ? (createCommandObject as CreateCommandIfBodyTypes) : null;
-
-        createPlotfield.mutate({
-          _id,
-          topologyBlockId: currentTopologyBlockId,
-          commandName,
-          isElse: currentlyFocusedCommandId?.isElse,
-          plotfieldCommandElseId: commandIf ? commandIf?.plotFieldCommandElseId : "",
-          plotfieldCommandIfElseEndId: commandIf ? commandIf?.plotFieldCommandIfElseEndId : "",
-          plotfieldCommandIfId:
-            currentlyFocusedCommandId.commandName === "if" ||
-            (currentlyFocusedCommandId.commandName as AllPossiblePlotFieldComamndsTypes) === "else" ||
-            (typeof currentlyFocusedCommandId.isElse === "boolean" && currentlyFocusedCommandId.parentId)
-              ? currentlyFocusedCommandId?.parentId
-              : "",
-          commandOrder:
-            typeof currentlyFocusedCommandId.commandOrder === "number"
-              ? currentlyFocusedCommandId?.commandOrder + 1
-              : getCurrentAmountOfCommands({ topologyBlockId: currentTopologyBlockId }),
-          sayType,
-        });
+        handleCreateCommand();
       }
-    },
-    [
-      firstEngLetter,
-      firstRusLetter,
-      secondEngLetter,
-      secondRusLetter,
-      topologyBlockId,
-      createCommand,
-      createCommandData,
-      createPlotfield,
-      getItem,
-      commandName,
-      currentlyFocusedCommandId,
-      episodeId,
-      getCurrentAmountOfCommands,
-      sayType,
-    ]
-  );
+    };
 
-  const handleKeyUp = useCallback((event: KeyboardEvent) => {
-    const key = event.key?.toLowerCase();
-    if (key) pressedKeys.current.delete(key);
-  }, []);
+    const handleKeyUp = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      pressedKeys.current.delete(key);
 
-  useEffect(() => {
+      if (pressedKeys.current.size === 0) {
+        shortcutTriggered.current = false;
+      }
+    };
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
@@ -136,5 +136,5 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [handleKeyDown, handleKeyUp]);
+  }, [firstEngLetter, firstRusLetter, handleCreateCommand, secondEngLetter, secondRusLetter]);
 }

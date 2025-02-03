@@ -6,14 +6,11 @@ type GetCommandNameTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandName({
-  plotFieldCommandId,
-}: GetCommandNameTypes) {
+export default function useGetCommandName({ plotFieldCommandId }: GetCommandNameTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "name"],
     queryFn: async () =>
-      await axiosCustomized
-        .get<NameTypes>(`/plotFieldCommands/${plotFieldCommandId}/names`)
-        .then((r) => r.data),
+      await axiosCustomized.get<NameTypes>(`/plotFieldCommands/${plotFieldCommandId}/names`).then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

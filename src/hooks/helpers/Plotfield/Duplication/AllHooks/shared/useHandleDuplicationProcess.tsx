@@ -1,5 +1,5 @@
 import { UseMutationResult } from "@tanstack/react-query";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import useNavigation from "../../../../../../features/Editor/Context/Navigation/NavigationContext";
 import usePlotfieldCommands from "../../../../../../features/Editor/PlotField/Context/PlotFieldContext";
 import { OmittedCommandNames } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
@@ -34,6 +34,8 @@ export default function useHandleDuplicationProcess({
   const { currentlyFocusedCommandId } = useNavigation();
   const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
   const { getCommandByPlotfieldCommandId, getCurrentAmountOfCommands } = usePlotfieldCommands();
+  const shortcutTriggered = useRef(false);
+  const pressedKeys = useRef(new Set());
 
   const isValidForDuplication = useCallback(() => {
     if (currentlyFocusedCommandId.commandName !== commandName) {
@@ -86,6 +88,8 @@ export default function useHandleDuplicationProcess({
       emotionId: currentCommand?.emotionId,
       emotionImg: currentCommand?.emotionImg,
     });
+
+    pressedKeys.current.clear();
   }, [
     episodeId,
     topologyBlockId,
@@ -97,29 +101,37 @@ export default function useHandleDuplicationProcess({
   ]);
 
   useEffect(() => {
-    const pressedKeys = new Set<string>();
-
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key?.toLowerCase();
-      if (pressedKeys.has(key)) return; // Avoid repeating key press
-      pressedKeys.add(key);
+      if (event.repeat) return;
+      pressedKeys.current.add(key);
 
-      if (pressedKeys.has("control") && (pressedKeys.has("v") || pressedKeys.has("м"))) {
+      if (
+        pressedKeys.current.has("control") &&
+        (pressedKeys.current.has("v") || pressedKeys.current.has("м")) &&
+        !shortcutTriggered.current
+      ) {
         event.preventDefault();
 
         const allowed = preventCreatingCommandsWhenFocus();
         if (!allowed) {
-          return; // Exit early if command creation isn't allowed
+          return;
         }
 
         if (isValidForDuplication()) {
+          shortcutTriggered.current = true;
           handleDuplication();
         }
       }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      pressedKeys.delete(event.key?.toLowerCase());
+      const key = event.key.toLowerCase();
+      pressedKeys.current.delete(key);
+
+      if (pressedKeys.current.size === 0) {
+        shortcutTriggered.current = false;
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
