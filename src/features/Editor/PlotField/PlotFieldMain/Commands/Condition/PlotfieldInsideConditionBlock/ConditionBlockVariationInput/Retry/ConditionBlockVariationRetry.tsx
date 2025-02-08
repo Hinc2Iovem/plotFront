@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { ConditionSignTypes } from "../../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import useConditionBlocks from "../../../Context/ConditionContext";
-import useUpdateConditionRetry from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionRetry";
-import ConditionSignField from "../ConditionSignField";
-import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput";
-import ConditionBlockFieldName from "../shared/ConditionBlockFieldName";
-import useSearch from "../../../../../../../Context/Search/SearchContext";
 import { useParams } from "react-router-dom";
+import { ConditionSignTypes } from "../../../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
+import PlotfieldInput from "../../../../../../../../../ui/Inputs/PlotfieldInput";
+import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
+import useUpdateConditionRetry from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionRetry";
+import useConditionBlocks from "../../../Context/ConditionContext";
+import ConditionSignField from "../ConditionSignField";
+import ConditionBlockFieldName from "../shared/ConditionBlockFieldName";
 
 type ConditionBlockVariationRetryTypes = {
   currentRentryAmount: number | null;
@@ -27,7 +27,8 @@ export default function ConditionBlockVariationRetry({
 }: ConditionBlockVariationRetryTypes) {
   const { episodeId } = useParams();
   const [retryAmount, setRetryAmount] = useState(typeof currentRentryAmount === "number" ? currentRentryAmount : null);
-  const { updateConditionBlockVariationValue, getConditionBlockVariationById } = useConditionBlocks();
+  const getConditionBlockVariationById = useConditionBlocks((state) => state.getConditionBlockVariationById);
+  const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
   const [currentSign, setCurrentSign] = useState<ConditionSignTypes>(
     getConditionBlockVariationById({ conditionBlockId, plotfieldCommandId, conditionBlockVariationId })?.sign ||
       ("" as ConditionSignTypes)

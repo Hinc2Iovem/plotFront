@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import useNavigation from "../../../../../features/Editor/Context/Navigation/NavigationContext";
 import usePlotfieldCommands from "../../../../../features/Editor/PlotField/Context/PlotFieldContext";
 import useChoiceOptions from "../../../../../features/Editor/PlotField/PlotFieldMain/Commands/Choice/Context/ChoiceContext";
-import useConditionBlocks from "../../../../../features/Editor/PlotField/PlotFieldMain/Commands/Condition/Context/ConditionContext";
 import useTypedSessionStorage, { SessionStorageKeys } from "../../../shared/SessionStorage/useTypedSessionStorage";
 import { preventCreatingCommandsWhenFocus } from "../../preventCreatingCommandsWhenFocus";
 import dashInsideCommandIf from "../functions/dashInsideCommandIf";
@@ -12,6 +11,7 @@ import movingAmongChoiceOptions from "../functions/movingAmongChoiceOptions";
 import movingAmongConditionBlocks from "../functions/movingAmongConditionBlocks";
 import navigationBackAndForth from "../functions/navigationBackAndForth";
 import { preventMovingUpAndDownWhenModalOpen } from "../../preventMovingUpAndDownWhenModalOpen";
+import useConditionBlocks from "@/features/Editor/PlotField/PlotFieldMain/Commands/Condition/Context/ConditionContext";
 
 // - focuse inside commands such as condition and choice happens in 2 levels, when shift + arrowDown pressed first time, focus will be directed
 // - on the according block(which means, now creating of commands will work as creating commands on primary field, they will be created at the end of the plot)
@@ -35,37 +35,40 @@ import { preventMovingUpAndDownWhenModalOpen } from "../../preventMovingUpAndDow
 // ---and on contextMenu when chosen
 
 export default function useHandleNavigationThroughCommands() {
+  const { setItem, getItem, hasItem, removeItem } = useTypedSessionStorage<SessionStorageKeys>();
+
   const setCurrentlyFocusedCommandId = useNavigation((state) => state.setCurrentlyFocusedCommandId);
   const currentlyFocusedCommandId = useNavigation((state) => state.currentlyFocusedCommandId);
   const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
 
-  const { setItem, getItem, hasItem, removeItem } = useTypedSessionStorage<SessionStorageKeys>();
-  const {
-    getCommandsByTopologyBlockId,
-    getPreviousCommandByPlotfieldId,
-    getNextCommandByPlotfieldId,
-    getCommandByPlotfieldCommandId,
-    getCommandOnlyByPlotfieldCommandId,
-    getCommandByPlotfieldCommandIfId,
-  } = usePlotfieldCommands();
+  const getCommandByPlotfieldCommandIfId = usePlotfieldCommands((state) => state.getCommandByPlotfieldCommandIfId);
+  const getCommandOnlyByPlotfieldCommandId = usePlotfieldCommands((state) => state.getCommandOnlyByPlotfieldCommandId);
+  const getCommandByPlotfieldCommandId = usePlotfieldCommands((state) => state.getCommandByPlotfieldCommandId);
+  const getNextCommandByPlotfieldId = usePlotfieldCommands((state) => state.getNextCommandByPlotfieldId);
+  const getPreviousCommandByPlotfieldId = usePlotfieldCommands((state) => state.getPreviousCommandByPlotfieldId);
+  const getCommandsByTopologyBlockId = usePlotfieldCommands((state) => state.getCommandsByTopologyBlockId);
 
-  const {
-    getFirstConditionBlockWithTopologyBlockId,
-    updateCurrentlyOpenConditionBlock,
-    getCurrentlyOpenConditionBlock,
-    getConditionBlockByIndex,
-    getAmountOfConditionBlocks,
-    getAllConditionBlocksByPlotfieldCommandId,
-  } = useConditionBlocks();
+  const getAllConditionBlocksByPlotfieldCommandId = useConditionBlocks(
+    (state) => state.getAllConditionBlocksByPlotfieldCommandId
+  );
+  const getFirstConditionBlockWithTopologyBlockId = useConditionBlocks(
+    (state) => state.getFirstConditionBlockWithTopologyBlockId
+  );
+  const updateCurrentlyOpenConditionBlock = useConditionBlocks((state) => state.updateCurrentlyOpenConditionBlock);
+  const getCurrentlyOpenConditionBlock = useConditionBlocks((state) => state.getCurrentlyOpenConditionBlock);
+  const getConditionBlockByIndex = useConditionBlocks((state) => state.getConditionBlockByIndex);
+  const getAmountOfConditionBlocks = useConditionBlocks((state) => state.getAmountOfConditionBlocks);
 
-  const {
-    getFirstChoiceOptionWithTopologyBlockId,
-    updateCurrentlyOpenChoiceOption,
-    getCurrentlyOpenChoiceOption,
-    getAllChoiceOptionsByPlotfieldCommandId,
-    getAmountOfChoiceOptions,
-    getChoiceOptionByIndex,
-  } = useChoiceOptions();
+  const getChoiceOptionByIndex = useChoiceOptions((state) => state.getChoiceOptionByIndex);
+  const getFirstChoiceOptionWithTopologyBlockId = useChoiceOptions(
+    (state) => state.getFirstChoiceOptionWithTopologyBlockId
+  );
+  const updateCurrentlyOpenChoiceOption = useChoiceOptions((state) => state.updateCurrentlyOpenChoiceOption);
+  const getCurrentlyOpenChoiceOption = useChoiceOptions((state) => state.getCurrentlyOpenChoiceOption);
+  const getAllChoiceOptionsByPlotfieldCommandId = useChoiceOptions(
+    (state) => state.getAllChoiceOptionsByPlotfieldCommandId
+  );
+  const getAmountOfChoiceOptions = useChoiceOptions((state) => state.getAmountOfChoiceOptions);
 
   useEffect(() => {
     const pressedKeys = new Set();
@@ -222,15 +225,9 @@ export default function useHandleNavigationThroughCommands() {
     };
   }, [
     getCommandsByTopologyBlockId,
-    getAmountOfConditionBlocks,
-    getAllConditionBlocksByPlotfieldCommandId,
-    getConditionBlockByIndex,
     getPreviousCommandByPlotfieldId,
     getNextCommandByPlotfieldId,
     getCommandByPlotfieldCommandId,
-    getFirstConditionBlockWithTopologyBlockId,
-    getCurrentlyOpenConditionBlock,
-    updateCurrentlyOpenConditionBlock,
     getAllChoiceOptionsByPlotfieldCommandId,
     getAmountOfChoiceOptions,
     getChoiceOptionByIndex,
@@ -244,6 +241,12 @@ export default function useHandleNavigationThroughCommands() {
     removeItem,
     getCommandByPlotfieldCommandIfId,
     getCurrentlyOpenChoiceOption,
+    getAllConditionBlocksByPlotfieldCommandId,
+    getAmountOfConditionBlocks,
+    getConditionBlockByIndex,
+    getCurrentlyOpenConditionBlock,
+    getFirstConditionBlockWithTopologyBlockId,
+    updateCurrentlyOpenConditionBlock,
     currentTopologyBlock,
     currentlyFocusedCommandId,
   ]);

@@ -28,8 +28,8 @@ import useUpdateTopologyBlockAmountOfCommands from "../../PlotField/hooks/Topolo
 import useUpdateCommandName from "../../PlotField/hooks/useUpdateCommandName";
 import useCreateWait from "../../PlotField/hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../../PlotField/hooks/Wardrobe/useCreateWardrobe";
-import useConditionBlocks from "../../PlotField/PlotFieldMain/Commands/Condition/Context/ConditionContext";
 import usePlotfieldCommands from "../../PlotField/Context/PlotFieldContext";
+import useConditionBlocks from "../../PlotField/PlotFieldMain/Commands/Condition/Context/ConditionContext";
 
 type CreateCommandByClickTypes = {
   topologyBlockId: string;
@@ -47,9 +47,10 @@ export default function useCreateCommandByClick({
   topologyBlockId,
 }: CreateCommandByClickTypes) {
   const { storyId, episodeId } = useParams();
-  const { addConditionBlock } = useConditionBlocks();
-  const { getCurrentAmountOfCommands } = usePlotfieldCommands();
-  const { currentTopologyBlock, currentlyFocusedCommandId } = useNavigation();
+  const addConditionBlock = useConditionBlocks((state) => state.addConditionBlock);
+  const getCurrentAmountOfCommands = usePlotfieldCommands((state) => state.getCurrentAmountOfCommands);
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
+  const currentlyFocusedCommandId = useNavigation((state) => state.currentlyFocusedCommandId);
 
   const updateCommandName = useUpdateCommandName({
     plotFieldCommandId: plotfieldCommandId || "",

@@ -12,11 +12,9 @@ type ConditionBlockItemProps = {
   currentTopologyBlockId: string;
   conditionId: string;
   plotfieldCommandId: string;
-  setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
 } & ConditionBlockItemTypes;
 
 export default function ConditionBlockItem({
-  setShowConditionBlockPlot,
   conditionBlockId,
   targetBlockId,
   isElse,
@@ -49,7 +47,6 @@ export default function ConditionBlockItem({
             <ConditionBlockShowPlot
               conditionBlockId={conditionBlockId}
               plotfieldCommandId={plotfieldCommandId}
-              setShowConditionBlockPlot={setShowConditionBlockPlot}
               targetBlockId={targetBlockId}
               isElse={isElse}
             />
@@ -94,7 +91,6 @@ export default function ConditionBlockItem({
           <ConditionBlockShowPlot
             conditionBlockId={conditionBlockId}
             plotfieldCommandId={plotfieldCommandId}
-            setShowConditionBlockPlot={setShowConditionBlockPlot}
             targetBlockId={targetBlockId}
             isElse={isElse}
           />

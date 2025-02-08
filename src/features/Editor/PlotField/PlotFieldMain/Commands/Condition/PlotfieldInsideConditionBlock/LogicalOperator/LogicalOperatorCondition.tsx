@@ -1,12 +1,13 @@
+import useDeleteLogicalOperator from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useDeleteLogicalOperator";
 import useUpdateLogicalOperator from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useUpdateLogicalOperator";
-import useConditionBlocks, {
+import useDeleteConditionBlockVariation from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/useDeleteConditionBlockVariation";
+import { useState } from "react";
+import {
   AllConditionValueVariationByLogicalOperatorIndexTypes,
   LogicalOperatorTypes,
 } from "../../Context/ConditionContext";
+import useConditionBlocks from "../../Context/ConditionContext";
 import LogicalOperatorModal from "../LogicalOperatorModals";
-import useDeleteLogicalOperator from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/logicalOperator/useDeleteLogicalOperator";
-import useDeleteConditionBlockVariation from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/useDeleteConditionBlockVariation";
-import { useState } from "react";
 
 type LogicalOperatorConditionTypes = {
   currentLogicalOperator: LogicalOperatorTypes;
@@ -21,14 +22,18 @@ export default function LogicalOperatorCondition({
   index,
   plotfieldCommandId,
 }: LogicalOperatorConditionTypes) {
-  const { updateLogicalOperator, getAllConditionValueVariationByLogicalOperatorIndex } = useConditionBlocks();
+  const updateLogicalOperator = useConditionBlocks((state) => state.updateLogicalOperator);
+  const getAllConditionValueVariationByLogicalOperatorIndex = useConditionBlocks(
+    (state) => state.getAllConditionValueVariationByLogicalOperatorIndex
+  );
   const updateLogicalOperatorAsync = useUpdateLogicalOperator({ conditionBlockId });
 
   const [allConditionBlockVariations, setAllConditionBlockVariations] = useState<
     AllConditionValueVariationByLogicalOperatorIndexTypes[]
   >([]);
 
-  const { removeLogicalOperator, removeConditionBlockVariation } = useConditionBlocks();
+  const removeLogicalOperator = useConditionBlocks((state) => state.removeLogicalOperator);
+  const removeConditionBlockVariation = useConditionBlocks((state) => state.removeConditionBlockVariation);
   const deleteLogicalOperatorAsync = useDeleteLogicalOperator({ conditionBlockId });
   const deleteConditionValueVariationsAsync = useDeleteConditionBlockVariation({});
 

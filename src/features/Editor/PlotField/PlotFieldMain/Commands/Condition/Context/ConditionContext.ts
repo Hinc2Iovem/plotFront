@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import { removeElementAtIndex } from "../../../../../../../helpers/removeElementAtIndex";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { StatusTypes } from "../../../../../../../types/StoryData/Status/StatusTypes";
 import {
   ConditionSignTypes,
   ConditionValueVariationType,
 } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import { removeElementAtIndex } from "../../../../../../../helpers/removeElementAtIndex";
 
 export type ConditionBlockVariationTypes = {
   conditionBlockVariationId: string;
@@ -323,8 +323,6 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
           .conditions.find((c) => c.plotfieldCommandId === plotfieldCommandId)
           ?.conditionBlocks.find((cb) => cb.conditionBlockId === conditionBlockId)?.conditionBlockVariations;
 
-        console.log("currentConditionBlockVariations: ", currentConditionBlockVariations);
-
         currentConditionBlockVariations?.map((cbv, i) => {
           if (i > index) {
             console.log("removingInsideI: ", i);
@@ -595,13 +593,10 @@ const useConditionBlocks = create<CommandConditionStoreTypes>()(
       updateCurrentlyOpenConditionBlock: ({ plotfieldCommandId, conditionBlockId }) =>
         set((state) => ({
           conditions: state.conditions.map((c) =>
-            c.plotfieldCommandId === plotfieldCommandId
+            c.plotfieldCommandId === plotfieldCommandId && c.currentlyOpenConditionBlockPlotId !== conditionBlockId
               ? {
                   ...c,
                   currentlyOpenConditionBlockPlotId: conditionBlockId,
-                  conditionBlocks: c.conditionBlocks.map((co) =>
-                    co.conditionBlockId === conditionBlockId ? { ...co } : co
-                  ),
                 }
               : c
           ),

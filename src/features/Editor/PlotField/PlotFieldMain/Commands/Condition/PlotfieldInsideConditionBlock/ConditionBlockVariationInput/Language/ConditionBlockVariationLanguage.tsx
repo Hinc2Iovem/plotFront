@@ -4,8 +4,8 @@ import { CurrentlyAvailableLanguagesTypes } from "../../../../../../../../../typ
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateConditionLanguage from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionLanguage";
-import useConditionBlocks from "../../../Context/ConditionContext";
 import SelectLanguage from "./SelectLanguage";
+import useConditionBlocks from "../../../Context/ConditionContext";
 
 type ConditionBlockVariationLanguageTypes = {
   currentLanguage: CurrentlyAvailableLanguagesTypes | null;
@@ -26,7 +26,7 @@ export default function ConditionBlockVariationLanguage({
   const [language, setLanguage] = useState(
     typeof currentLanguage === "string" ? currentLanguage : ("" as CurrentlyAvailableLanguagesTypes)
   );
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
   const updateConditionLanguage = useUpdateConditionLanguage({ conditionBlockLanguageId: conditionBlockVariationId });
 
   const { updateValue } = useSearch();

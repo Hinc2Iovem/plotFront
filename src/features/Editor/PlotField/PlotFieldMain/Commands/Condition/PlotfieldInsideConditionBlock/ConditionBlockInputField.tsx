@@ -1,11 +1,12 @@
 import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { useState } from "react";
 import { ConditionValueVariationType } from "../../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
-import useConditionBlocks, {
+import {
   ConditionBlockItemTypes,
   ConditionBlockVariationTypes,
   LogicalOperatorTypes,
 } from "../Context/ConditionContext";
+import useConditionBlocks from "../Context/ConditionContext";
 import ConditionBlockVariationAppearance from "./ConditionBlockVariationInput/Appearance/ConditionBlockVariationAppearance";
 import ConditionBlockVariationCharacter from "./ConditionBlockVariationInput/Character/ConditionBlockVariationCharacter";
 import ConditionBlockVariationCharacteristic from "./ConditionBlockVariationInput/Characteristic/ConditionBlockVariationCharacteristic";
@@ -32,7 +33,7 @@ export default function ConditionBlockInputField({
   logicalOperators,
   insidePlotfield = false,
 }: ConditionBlockInputFieldTypes) {
-  const { getCurrentlyOpenConditionBlock } = useConditionBlocks();
+  const getCurrentlyOpenConditionBlock = useConditionBlocks((store) => store.getCurrentlyOpenConditionBlock);
 
   return (
     <div

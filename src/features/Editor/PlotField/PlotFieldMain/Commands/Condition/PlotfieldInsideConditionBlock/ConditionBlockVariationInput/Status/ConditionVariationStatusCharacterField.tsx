@@ -18,7 +18,7 @@ export default function ConditionVariationStatusCharacterField({
   characterValue,
   setCharacterValue,
 }: ConditionVariationStatusCharacterFieldTypes) {
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
 
   const updateConditionStatus = useUpdateConditionStatus({ conditionBlockStatusId: conditionBlockVariationId });
 

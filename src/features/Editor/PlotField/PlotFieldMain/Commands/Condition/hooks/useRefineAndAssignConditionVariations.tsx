@@ -1,9 +1,10 @@
 import { useEffect } from "react";
+import { StatusTypes } from "../../../../../../../types/StoryData/Status/StatusTypes";
 import useGetAllConditionBlockVariationsByConditionBlockId, {
   ConditionVariationResponseTypes,
 } from "../../../../hooks/Condition/ConditionBlock/BlockVariations/useGetAllConditionBlockVariationsByConditionBlockId";
-import useConditionBlocks, { ConditionBlockVariationTypes } from "../Context/ConditionContext";
-import { StatusTypes } from "../../../../../../../types/StoryData/Status/StatusTypes";
+import { ConditionBlockVariationTypes } from "../Context/ConditionContext";
+import useConditionBlocks from "../Context/ConditionContext";
 
 type RefineAndAssignConditionVariationsTyps = {
   conditionBlockId: string;
@@ -14,7 +15,7 @@ export default function useRefineAndAssignConditionVariations({
   conditionBlockId,
   plotfieldCommandId,
 }: RefineAndAssignConditionVariationsTyps) {
-  const { setConditionBlockVariations } = useConditionBlocks();
+  const setConditionBlockVariations = useConditionBlocks((state) => state.setConditionBlockVariations);
 
   const { data: variations } = useGetAllConditionBlockVariationsByConditionBlockId({ conditionBlockId });
 

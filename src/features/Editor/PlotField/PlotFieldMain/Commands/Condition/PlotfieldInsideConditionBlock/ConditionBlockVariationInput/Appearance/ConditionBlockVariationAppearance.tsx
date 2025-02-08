@@ -6,8 +6,8 @@ import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateConditionAppearance from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionAppearance";
 import AppearancePartsPromptModal from "../../../../Prompts/AppearanceParts/AppearancePartsPromptModal";
-import useConditionBlocks from "../../../Context/ConditionContext";
 import ConditionBlockFieldName from "../shared/ConditionBlockFieldName";
+import useConditionBlocks from "../../../Context/ConditionContext";
 
 type ConditionBlockVariationAppearanceTypes = {
   plotfieldCommandId: string;
@@ -30,7 +30,7 @@ export default function ConditionBlockVariationAppearance({
   const [appearancePartId, setAppearancePartId] = useState(currentAppearancePartId || "");
   const [initialValue, setInitialValue] = useState("");
 
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
 
   const [currentConditionName, setCurrentConditionName] = useState("");
   const [isDressed, setIsDressed] = useState(currentlyDressed);

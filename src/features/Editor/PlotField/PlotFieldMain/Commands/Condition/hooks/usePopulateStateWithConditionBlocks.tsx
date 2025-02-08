@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import useGetConditionBlocksByCommandConditionId from "../../../../hooks/Condition/ConditionBlock/useGetConditionBlocksByCommandConditionId";
 import useUpdateCurrentlyOpenConditionBlockOnMount from "../../../../hooks/Condition/helpers/useUpdateCurrentlyOpenConditionBlockOnMount";
-import useConditionBlocks, { ConditionBlockItemTypes } from "../Context/ConditionContext";
+import { ConditionBlockItemTypes } from "../Context/ConditionContext";
+import useConditionBlocks from "../Context/ConditionContext";
 
 type PopulateStateWithConditionBlocksTypes = {
   commandConditionId: string;
@@ -12,7 +13,7 @@ export default function usePopulateStateWithConditionBlocks({
   commandConditionId,
   plotFieldCommandId,
 }: PopulateStateWithConditionBlocksTypes) {
-  const { setConditionBlocks } = useConditionBlocks();
+  const setConditionBlocks = useConditionBlocks((state) => state.setConditionBlocks);
 
   const { data: conditionBlocks } = useGetConditionBlocksByCommandConditionId({
     commandConditionId,

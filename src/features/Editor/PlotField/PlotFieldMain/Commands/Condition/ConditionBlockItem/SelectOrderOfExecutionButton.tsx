@@ -18,7 +18,9 @@ export default function SelectOrderOfExecutionButton({
   currentOrder,
   plotfieldCommandId,
 }: SelectOrderOfExecutionButtonTypes) {
-  const { getAmountOfOnlyIfConditionBlocks, updateConditionOrderOfExecution, getAllUsedOrders } = useConditionBlocks();
+  const getAmountOfOnlyIfConditionBlocks = useConditionBlocks((state) => state.getAmountOfOnlyIfConditionBlocks);
+  const updateConditionOrderOfExecution = useConditionBlocks((state) => state.updateConditionOrderOfExecution);
+  const getAllUsedOrders = useConditionBlocks((state) => state.getAllUsedOrders);
 
   const updateExecutionOrder = useUpdateConditionBlockOrderOfExecution({
     conditionBlockId,

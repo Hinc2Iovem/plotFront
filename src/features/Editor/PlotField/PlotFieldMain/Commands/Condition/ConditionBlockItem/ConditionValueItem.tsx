@@ -6,7 +6,8 @@ import AsideScrollableButton from "../../../../../../../ui/Aside/AsideScrollable
 import useUpdateConditionCharacter from "../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacter";
 import useUpdateConditionCharacteristic from "../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
 import useUpdateConditionRetry from "../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionRetry";
-import useConditionBlocks, { ConditionBlockItemTypes } from "../Context/ConditionContext";
+import { ConditionBlockItemTypes } from "../Context/ConditionContext";
+import useConditionBlocks from "../Context/ConditionContext";
 import { ConditionBlockInputFieldItem } from "../PlotfieldInsideConditionBlock/ConditionBlockInputField";
 
 type ConditionValueItemTypes = {
@@ -63,7 +64,7 @@ export function PlotfieldConditionSingsPrompt({
   type,
   setCurrentSign,
 }: PlotfieldSingsPromptTypes) {
-  const { updateConditionBlockVariationSign } = useConditionBlocks();
+  const updateConditionBlockVariationSign = useConditionBlocks((state) => state.updateConditionBlockVariationSign);
   const updateValueCharacter = useUpdateConditionCharacter({ conditionBlockCharacterId: conditionBlockVariationId });
   const updateValueCharacteristic = useUpdateConditionCharacteristic({
     conditionBlockCharacteristicId: conditionBlockVariationId,

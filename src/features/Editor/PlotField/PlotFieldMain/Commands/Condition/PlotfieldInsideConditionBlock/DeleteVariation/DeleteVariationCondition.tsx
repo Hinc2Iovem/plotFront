@@ -1,7 +1,7 @@
-import { ConditionValueVariationType } from "@/types/StoryEditor/PlotField/Condition/ConditionTypes";
-import DeleteVariationModal from "./DeleteVariationModal";
 import useDeleteConditionBlockVariation from "@/features/Editor/PlotField/hooks/Condition/ConditionBlock/BlockVariations/useDeleteConditionBlockVariation";
+import { ConditionValueVariationType } from "@/types/StoryEditor/PlotField/Condition/ConditionTypes";
 import useConditionBlocks from "../../Context/ConditionContext";
+import DeleteVariationModal from "./DeleteVariationModal";
 
 type DeleteVariationConditionTypes = {
   conditionBlockId: string;
@@ -20,7 +20,8 @@ export default function DeleteVariationCondition({
   setSuggestToDeleteVariation,
   variationType,
 }: DeleteVariationConditionTypes) {
-  const { removeConditionBlockVariation, getAmountOfConditionBlockVariations } = useConditionBlocks();
+  const getAmountOfConditionBlockVariations = useConditionBlocks((state) => state.getAmountOfConditionBlockVariations);
+  const removeConditionBlockVariation = useConditionBlocks((state) => state.removeConditionBlockVariation);
   const deleteVariationAsync = useDeleteConditionBlockVariation({
     conditionBlockVariationIdParams: conditionBlockVariationId,
   });

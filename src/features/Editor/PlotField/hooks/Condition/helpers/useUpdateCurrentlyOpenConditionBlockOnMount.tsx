@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import useConditionBlocks from "../../../PlotFieldMain/Commands/Condition/Context/ConditionContext";
 import { ConditionBlockTypes } from "../../../../../../types/StoryEditor/PlotField/Condition/ConditionTypes";
+import useConditionBlocks from "../../../PlotFieldMain/Commands/Condition/Context/ConditionContext";
 
 type UpdateCurrentlyOpenConditionBlockOnMountTypes = {
   conditionBlocks: ConditionBlockTypes[] | undefined;
@@ -14,10 +14,7 @@ export default function useUpdateCurrentlyOpenConditionBlockOnMount({
   const { updateCurrentlyOpenConditionBlock } = useConditionBlocks();
   useEffect(() => {
     if (conditionBlocks) {
-      const focusedConditionBlocks = sessionStorage
-        .getItem("focusedConditionBlock")
-        ?.split("?")
-        .filter(Boolean);
+      const focusedConditionBlocks = sessionStorage.getItem("focusedConditionBlock")?.split("?").filter(Boolean);
 
       const deepLevelConditionBlocks = focusedConditionBlocks?.includes("none")
         ? null
@@ -26,9 +23,7 @@ export default function useUpdateCurrentlyOpenConditionBlockOnMount({
         : null;
 
       if (typeof deepLevelConditionBlocks === "number") {
-        const currentConditionBlock = (focusedConditionBlocks || [])[
-          deepLevelConditionBlocks
-        ].split("-");
+        const currentConditionBlock = (focusedConditionBlocks || [])[deepLevelConditionBlocks].split("-");
         const currentConditionBlockId = currentConditionBlock[1];
 
         updateCurrentlyOpenConditionBlock({

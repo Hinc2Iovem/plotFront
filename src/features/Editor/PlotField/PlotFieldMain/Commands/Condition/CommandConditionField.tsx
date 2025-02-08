@@ -11,7 +11,6 @@ type CommandConditionFieldTypes = {
 
 export default function CommandConditionField({ plotFieldCommandId, topologyBlockId }: CommandConditionFieldTypes) {
   const [isFocusedBackground, setIsFocusedBackground] = useState(false);
-  const [showConditionBlockPlot, setShowConditionBlockPlot] = useState(false);
 
   // useCheckIfShowingPlotfieldInsideConditionOnMount({
   //   plotFieldCommandId,
@@ -38,16 +37,12 @@ export default function CommandConditionField({ plotFieldCommandId, topologyBloc
         commandConditionId={commandConditionId}
         plotFieldCommandId={plotFieldCommandId}
         setIsFocusedBackground={setIsFocusedBackground}
-        setShowConditionBlockPlot={setShowConditionBlockPlot}
-        showConditionBlockPlot={showConditionBlockPlot}
       />
 
       <ConditionBlocksList
         commandConditionId={commandConditionId}
         topologyBlockId={topologyBlockId}
         plotFieldCommandId={plotFieldCommandId}
-        showConditionBlockPlot={showConditionBlockPlot}
-        setShowConditionBlockPlot={setShowConditionBlockPlot}
         isFocusedBackground={isFocusedBackground}
       />
     </div>

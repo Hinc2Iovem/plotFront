@@ -54,9 +54,13 @@ type CommandButtonTypes = {
 };
 
 function CommandButton({ buttonName, src }: CommandButtonTypes) {
-  const { updateCommandInfo, getCurrentAmountOfCommands } = usePlotfieldCommands();
-  const { currentTopologyBlock, currentlyFocusedCommandId } = useNavigation();
   const { episodeId } = useParams();
+
+  const updateCommandInfo = usePlotfieldCommands((state) => state.updateCommandInfo);
+  const getCurrentAmountOfCommands = usePlotfieldCommands((state) => state.getCurrentAmountOfCommands);
+
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
+  const currentlyFocusedCommandId = useNavigation((state) => state.currentlyFocusedCommandId);
   const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
 
   const [create, setCreate] = useState(false);

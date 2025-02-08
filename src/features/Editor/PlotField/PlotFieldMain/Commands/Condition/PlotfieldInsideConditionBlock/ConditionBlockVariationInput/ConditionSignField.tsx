@@ -27,7 +27,7 @@ export default function ConditionSignField({
   currentSign,
   setCurrentSign,
 }: ConditionSignFieldTypes) {
-  const { updateConditionBlockVariationSign } = useConditionBlocks();
+  const updateConditionBlockVariationSign = useConditionBlocks((state) => state.updateConditionBlockVariationSign);
   const updateValueCharacter = useUpdateConditionCharacter({ conditionBlockCharacterId: conditionBlockVariationId });
   const updateValueCharacteristic = useUpdateConditionCharacteristic({
     conditionBlockCharacteristicId: conditionBlockVariationId,

@@ -4,23 +4,26 @@ import useConditionBlocks, { ConditionBlockItemTypes } from "./Context/Condition
 import PlotfieldInsideConditionBlock from "./PlotfieldInsideConditionBlock/PlotfieldInsideConditionBlock";
 
 type ConditionBlocksListTypes = {
-  showConditionBlockPlot: boolean;
   plotFieldCommandId: string;
   topologyBlockId: string;
   commandConditionId: string;
   isFocusedBackground: boolean;
-  setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function ConditionBlocksList({
   plotFieldCommandId,
   commandConditionId,
   topologyBlockId,
-  showConditionBlockPlot,
   isFocusedBackground,
-  setShowConditionBlockPlot,
 }: ConditionBlocksListTypes) {
-  const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } = useConditionBlocks();
+  const getAllConditionBlocksElseOrIfByPlotfieldCommandId = useConditionBlocks(
+    (state) => state.getAllConditionBlocksElseOrIfByPlotfieldCommandId
+  );
+  const showConditionBlockPlot =
+    (useConditionBlocks(
+      (state) =>
+        state.conditions.find((c) => c.plotfieldCommandId === plotFieldCommandId)?.currentlyOpenConditionBlockPlotId
+    )?.trim().length || 0) > 0;
 
   return (
     <div className={`w-full rounded-md p-[5px]`}>
@@ -49,7 +52,6 @@ export default function ConditionBlocksList({
               <ConditionBlockItem
                 key={p.conditionBlockId}
                 {...p}
-                setShowConditionBlockPlot={setShowConditionBlockPlot}
                 currentTopologyBlockId={topologyBlockId}
                 conditionId={commandConditionId}
                 plotfieldCommandId={plotFieldCommandId}
@@ -60,7 +62,6 @@ export default function ConditionBlocksList({
         <div className="min-w-[100px] w-full relative flex gap-[5px] flex-wrap bg-secondary rounded-md">
           <PlotfieldCommandNameField className={`text-[25px]`}>Else</PlotfieldCommandNameField>
           <ConditionBlockElse
-            setShowConditionBlockPlot={setShowConditionBlockPlot}
             plotFieldCommandId={plotFieldCommandId}
             topologyBlockId={topologyBlockId}
             commandConditionId={commandConditionId}
@@ -75,16 +76,12 @@ type ConditionBlockElseTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
   commandConditionId: string;
-  setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function ConditionBlockElse({
-  plotFieldCommandId,
-  topologyBlockId,
-  commandConditionId,
-  setShowConditionBlockPlot,
-}: ConditionBlockElseTypes) {
-  const { getAllConditionBlocksElseOrIfByPlotfieldCommandId } = useConditionBlocks();
+function ConditionBlockElse({ plotFieldCommandId, topologyBlockId, commandConditionId }: ConditionBlockElseTypes) {
+  const getAllConditionBlocksElseOrIfByPlotfieldCommandId = useConditionBlocks(
+    (state) => state.getAllConditionBlocksElseOrIfByPlotfieldCommandId
+  );
 
   return (
     <>
@@ -93,7 +90,6 @@ function ConditionBlockElse({
         isElse: true,
       }) as ConditionBlockItemTypes) ? (
         <ConditionBlockItem
-          setShowConditionBlockPlot={setShowConditionBlockPlot}
           plotfieldCommandId={plotFieldCommandId}
           currentTopologyBlockId={topologyBlockId}
           conditionId={commandConditionId}

@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import useConditionBlocks from "../Context/ConditionContext";
 
 type ConditionBlockShowPlotTypes = {
-  setShowConditionBlockPlot: React.Dispatch<React.SetStateAction<boolean>>;
   targetBlockId: string;
   plotfieldCommandId: string;
   conditionBlockId: string;
@@ -10,20 +9,18 @@ type ConditionBlockShowPlotTypes = {
 };
 
 export default function ConditionBlockShowPlot({
-  setShowConditionBlockPlot,
   targetBlockId,
   plotfieldCommandId,
   conditionBlockId,
   isElse,
 }: ConditionBlockShowPlotTypes) {
-  const { updateCurrentlyOpenConditionBlock } = useConditionBlocks();
+  const updateCurrentlyOpenConditionBlock = useConditionBlocks((state) => state.updateCurrentlyOpenConditionBlock);
   return (
     <div className={`${isElse ? "flex-grow" : ""}`}>
       <Button
         onClick={(e) => {
           e.stopPropagation();
           if (targetBlockId) {
-            setShowConditionBlockPlot(true);
             updateCurrentlyOpenConditionBlock({
               conditionBlockId,
               plotfieldCommandId,

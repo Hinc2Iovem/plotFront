@@ -34,7 +34,7 @@ export default function TopologyBlocksPrompt({
   setTopologyBlockValue,
 }: TopologyBlocksPromptTypes) {
   const { episodeId } = useParams();
-  const { currentTopologyBlock } = useNavigation();
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
   const [showTopologyBlockModal, setShowTopologyBlockModal] = useState(false);
   const currentInput = useRef<HTMLInputElement>(null);
 

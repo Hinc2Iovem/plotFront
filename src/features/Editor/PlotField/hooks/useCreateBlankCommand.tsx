@@ -32,10 +32,11 @@ export default function useCreateBlankCommand({
   episodeId: string;
   commandOrder?: number;
 }) {
-  const { addCommand, updateCommandInfo } = usePlotfieldCommands();
-  const { addItem } = useSearch();
-  const { setNewCommand } = usePlotfieldCommandPossiblyBeingUndo();
-  const { updateCommandIfInfo } = useCommandIf();
+  const addCommand = usePlotfieldCommands((state) => state.addCommand);
+  const updateCommandInfo = usePlotfieldCommands((state) => state.updateCommandInfo);
+  const addItem = useSearch((state) => state.addItem);
+  const setNewCommand = usePlotfieldCommandPossiblyBeingUndo((state) => state.setNewCommand);
+  const updateCommandIfInfo = useCommandIf((state) => state.updateCommandIfInfo);
 
   const queryClient = useQueryClient();
   // TODO need to add here if checks, what command creates, and create according state, for example, if commandIf, we will create command else and command end with it

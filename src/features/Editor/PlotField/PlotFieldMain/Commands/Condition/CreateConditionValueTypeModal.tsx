@@ -16,7 +16,9 @@ export default function CreateConditionValueTypeModal({
   plotfieldCommandId,
 }: CreateConditionValueTypeModalTypes) {
   const { episodeId } = useParams();
-  const { addConditionBlock, getAmountOfOnlyIfConditionBlocks } = useConditionBlocks();
+  const getAmountOfOnlyIfConditionBlocks = useConditionBlocks((state) => state.getAmountOfOnlyIfConditionBlocks);
+  const addConditionBlock = useConditionBlocks((state) => state.addConditionBlock);
+
   const { currentTopologyBlock, updateAmountOfChildBlocks } = useNavigation();
 
   const createCommandinsideCondition = useAddAnotherConditionBlock({

@@ -73,7 +73,7 @@ export default function CreateStory() {
             setImgPreviewLink("");
             setPreview("");
           }}
-          className={`text-[15px] mb-[10px] text-white hover:shadow-brand-gradient-right hover:shadow-sm outline-none active:scale-[0.99] w-full bg-brand-gradient transition-all py-[20px] px-[10px] rounded-md`}
+          className={`text-[15px] justify-center mb-[10px] text-white hover:shadow-brand-gradient-right hover:shadow-sm outline-none active:scale-[0.99] w-full bg-brand-gradient transition-all py-[20px] px-[10px] rounded-md`}
         >
           Создать Историю
         </Button>

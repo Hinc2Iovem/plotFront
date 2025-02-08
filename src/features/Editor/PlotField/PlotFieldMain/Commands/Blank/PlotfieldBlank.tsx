@@ -71,14 +71,15 @@ const AllCommands = [
 
 export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: PlotFieldBlankTypes) {
   const { storyId, episodeId } = useParams();
-  const { addItem } = useSearch();
+  const addItem = useSearch((state) => state.addItem);
 
   const isCommandFocused = useGetCurrentFocusedElement()._id === plotFieldCommandId;
 
   const currentInput = useRef<HTMLInputElement | null>(null);
 
-  const { currentTopologyBlock } = useNavigation();
-  const { addConditionBlock } = useConditionBlocks();
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
+  const addConditionBlock = useConditionBlocks((state) => state.addConditionBlock);
+
   const [showCreateCharacterModal, setShowCreateCharacterModal] = useState(false);
 
   const { data: translatedCharacters } = useGetTranslationCharacters({
@@ -86,7 +87,7 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
     language: "russian",
   });
 
-  const { getCommandOnlyByPlotfieldCommandId } = usePlotfieldCommands();
+  const getCommandOnlyByPlotfieldCommandId = usePlotfieldCommands((state) => state.getCommandOnlyByPlotfieldCommandId);
   const currentCommand = getCommandOnlyByPlotfieldCommandId({ plotfieldCommandId: plotFieldCommandId });
   const promptRef = useRef<HTMLDivElement>(null);
   const [showPromptValues, setShowPromptValues] = useState(false);
@@ -172,7 +173,7 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
     topologyBlockId,
   });
 
-  const { updateCommandName: updateCommandNameOptimistic } = usePlotfieldCommands();
+  const updateCommandNameOptimistic = usePlotfieldCommands((state) => state.updateCommandName);
 
   const handleCreatingOptimisticCommand = ({
     commandName,

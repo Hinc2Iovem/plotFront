@@ -6,10 +6,10 @@ import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateConditionCharacter from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacter";
 import useGetCharacterWithTranslation from "../../../../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
-import useConditionBlocks from "../../../Context/ConditionContext";
 import ConditionSignField from "../ConditionSignField";
 import ConditionBlockFieldName from "../shared/ConditionBlockFieldName";
 import ConditionVariationCharacterField from "./ConditionVariationCharacterField";
+import useConditionBlocks from "../../../Context/ConditionContext";
 
 type ConditionBlockVariationCharacterTypes = {
   plotfieldCommandId: string;
@@ -28,7 +28,7 @@ export default function ConditionBlockVariationCharacter({
 }: ConditionBlockVariationCharacterTypes) {
   const { episodeId } = useParams();
   const [showCharacterPromptModal, setShowCharacterPromptModal] = useState(false);
-  const { getConditionBlockVariationById } = useConditionBlocks();
+  const getConditionBlockVariationById = useConditionBlocks((state) => state.getConditionBlockVariationById);
 
   const [currentSign, setCurrentSign] = useState<ConditionSignTypes>(
     getConditionBlockVariationById({
@@ -133,7 +133,7 @@ function ConditionValueField({
   setCurrentConditionValue,
   setShowCharacterPromptModal,
 }: ConditionValueFieldTypes) {
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
 
   const [currentlyActive, setCurrentlyActive] = useState(false);
 

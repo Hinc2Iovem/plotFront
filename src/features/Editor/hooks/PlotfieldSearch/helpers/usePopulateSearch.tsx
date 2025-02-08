@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function usePopulateSearch({ currentTopologyBlockId }: { currentTopologyBlockId: string }) {
   const { episodeId } = useParams();
-  const { addItem } = useSearch();
+  const addItem = useSearch((state) => state.addItem);
 
   const { data } = useGetDataForPlotfieldSearch({
     episodeId: episodeId || "",

@@ -247,6 +247,7 @@ export default function AllMightySearchMainContentCharacter({
     </>
   );
 }
+
 export type FinedCharacteristicTypes = {
   _id: string;
   characteristicText: string;

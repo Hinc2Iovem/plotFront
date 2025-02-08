@@ -21,13 +21,11 @@ export default function PlotFieldMain({
   showAllCommands,
   renderedAsSubPlotfield = false,
 }: PlotFieldMainTypes) {
-  const { currentTopologyBlock } = useNavigation();
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
 
-  const {
-    getCommandsByTopologyBlockId,
-    setAllCommands,
-    updateCommandOrder: updateCommandOrderOptimistic,
-  } = usePlotfieldCommands();
+  const getCommandsByTopologyBlockId = usePlotfieldCommands((state) => state.getCommandsByTopologyBlockId);
+  const setAllCommands = usePlotfieldCommands((state) => state.setAllCommands);
+  const updateCommandOrderOptimistic = usePlotfieldCommands((state) => state.updateCommandOrder);
 
   const { data: plotfieldCommands } = useGetAllPlotFieldCommands({
     topologyBlockId: renderedAsSubPlotfield ? topologyBlockId : currentTopologyBlock._id,
@@ -104,7 +102,7 @@ export default function PlotFieldMain({
         </Droppable>
       </DragDropContext>
 
-      <div className={`h-[30rem] w-full bg-background`}></div>
+      <div className={`${renderedAsSubPlotfield ? "h-[10rem]" : "h-[20rem]"} w-full bg-background`}></div>
     </main>
   );
 }

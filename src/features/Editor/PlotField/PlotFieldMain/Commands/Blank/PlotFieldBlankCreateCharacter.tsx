@@ -28,7 +28,7 @@ export default function PlotFieldBlankCreateCharacter({
   const { storyId } = useParams();
   const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
   const currentlyFocusedTopologyBlock = getItem("focusedTopologyBlock");
-  const { updateCommandName: updateCommandNameOptimistic } = usePlotfieldCommands();
+  const updateCommandNameOptimistic = usePlotfieldCommands((state) => state.updateCommandName);
 
   const modalRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef<HTMLButtonElement | null>(null);

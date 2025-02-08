@@ -6,9 +6,9 @@ import { isNumeric } from "../../../../../../../../../utils/regExpIsNumeric";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateConditionCharacteristic from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionCharacteristic";
-import useConditionBlocks from "../../../Context/ConditionContext";
 import ConditionSignField from "../ConditionSignField";
 import ConditionVariationCharacteristicModal from "./ConditionVariationCharacteristicModal";
+import useConditionBlocks from "../../../Context/ConditionContext";
 
 type ConditionBlockVariationCharacteristicTypes = {
   plotfieldCommandId: string;
@@ -33,7 +33,8 @@ export default function ConditionBlockVariationCharacteristic({
   const [showSecondCharacteristicPromptModal, setShowSecondCharacteristicPromptModal] = useState(false);
   const [hideModal, setHideModal] = useState<"first" | "second" | null>(null);
 
-  const { getConditionBlockVariationById } = useConditionBlocks();
+  const getConditionBlockVariationById = useConditionBlocks((state) => state.getConditionBlockVariationById);
+
   const [currentSign, setCurrentSign] = useState(
     getConditionBlockVariationById({
       conditionBlockId,
@@ -126,7 +127,7 @@ function CharacteristicInputField({
     language: "russian",
   });
 
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
 
   const updateConditionBlock = useUpdateConditionCharacteristic({
     conditionBlockCharacteristicId: conditionBlockVariationId,

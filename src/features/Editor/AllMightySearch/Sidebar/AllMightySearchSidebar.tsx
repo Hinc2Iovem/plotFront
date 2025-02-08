@@ -315,7 +315,7 @@ function AllMightySearchSidebarCategoryButton({
         }
       }}
       className={`${
-        valueEng === currentCategory ? "bg-accent translate-x-[10px]" : "hover:bg-accent focus-within:bg-accent"
+        valueEng === currentCategory ? "bg-accent" : "hover:bg-accent focus-within:bg-accent"
       } capitalize text-[20px] shadow-none text-left text-paragraph hover:scale-[1.05] transition-all focus-within:scale-[1.05] focus-within:bg-accent focus-visible:scale-[1] hover:translate-x-[10px] active:translate-x-[10px] focus-within:translate-x-[10px]`}
     >
       {valueRus}

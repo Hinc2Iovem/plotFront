@@ -24,7 +24,7 @@ export default function ConditionBlockTopologyBlockField({
 }: ConditionBlockTopologyBlockFieldTpyes) {
   const { episodeId } = useParams();
   const [update, setUpdate] = useState(false);
-  const { updateConditionBlockTargetBlockId } = useConditionBlocks();
+  const updateConditionBlockTargetBlockId = useConditionBlocks((state) => state.updateConditionBlockTargetBlockId);
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId: targetBlockId,
   });

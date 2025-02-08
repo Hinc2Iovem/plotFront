@@ -20,7 +20,7 @@ export default function StatusModal({
   plotfieldCommandId,
   setStatus,
 }: StatusModalTypes) {
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
   const updateConditionStatus = useUpdateConditionStatus({ conditionBlockStatusId: conditionBlockVariationId });
 
   return (

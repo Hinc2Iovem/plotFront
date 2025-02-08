@@ -11,7 +11,8 @@ import "./Flowchart/FlowchartStyles.css";
 
 export default function EpisodeEditor() {
   const { episodeId } = useParams();
-  const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
+  const setCurrentTopologyBlock = useNavigation((state) => state.setCurrentTopologyBlock);
 
   const { data: firstTopologyBlock } = useGetFirstTopologyBlock({
     episodeId: episodeId || "",
@@ -32,8 +33,6 @@ export default function EpisodeEditor() {
 
   usePopulateSearch({ currentTopologyBlockId: currentTopologyBlock._id });
   useInitializeCurrentlyFocusedCommandOnReload();
-
-  console.log("lol");
 
   return (
     <section className="p-[10px] mx-auto flex flex-col gap-[10px] | containerScroll">

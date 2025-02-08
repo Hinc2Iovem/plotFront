@@ -20,7 +20,7 @@ export default function PlotfieldSearch({ setShowAllMightySearch }: PlotfieldSea
   const { getItem } = useTypedSessionStorage<SessionStorageKeys>();
   const [searchValue, setSearchValue] = useState(getItem("plotfieldSearch") || "");
 
-  const { getSearchResults } = useSearch();
+  const getSearchResults = useSearch((state) => state.getSearchResults);
   const debouncedValue = useDebounce({ value: searchValue, delay: 500 });
   const amountOfResults = getSearchResults({ episodeId: episodeId || "", value: debouncedValue }).length;
   return (
@@ -50,7 +50,9 @@ function PlotfieldSearchResultsItem({
 }: PlotfieldSearchResultsItemTypes) {
   const queryClient = useQueryClient();
   const { setItem } = useTypedSessionStorage<SessionStorageKeys>();
-  const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
+  const setCurrentTopologyBlock = useNavigation((state) => state.setCurrentTopologyBlock);
+
   const { data } = useGetTopologyBlockById({ topologyBlockId });
 
   const handlePrefetchPlotfieldCommands = () => {

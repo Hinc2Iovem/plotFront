@@ -20,7 +20,9 @@ export default function FlowchartTopologyBlock({
   isStartingTopologyBlock,
   topologyBlockInfo,
 }: TopologyBlockTypes) {
-  const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
+  const setCurrentTopologyBlock = useNavigation((state) => state.setCurrentTopologyBlock);
+
   const { setItem } = useTypedSessionStorage<SessionStorageKeys>();
 
   const { coordinates, setCoordinates } = useCoordinates();

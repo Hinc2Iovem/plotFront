@@ -14,8 +14,9 @@ export default function CreateConditionVariationButton({
   conditionBlockId,
   plotfieldCommandId,
 }: CreateConditionVariationButtonTypes) {
-  const { addConditionBlockVariation, getAmountOfConditionBlockVariations, addNewLogicalOperator } =
-    useConditionBlocks();
+  const addConditionBlockVariation = useConditionBlocks((state) => state.addConditionBlockVariation);
+  const getAmountOfConditionBlockVariations = useConditionBlocks((state) => state.getAmountOfConditionBlockVariations);
+  const addNewLogicalOperator = useConditionBlocks((state) => state.addNewLogicalOperator);
 
   const createConditionVariation = useAddNewConditionBlockVariation({ conditionBlockId });
   const addLogicalOperator = useAddNewLogicalOperator({ conditionBlockId });

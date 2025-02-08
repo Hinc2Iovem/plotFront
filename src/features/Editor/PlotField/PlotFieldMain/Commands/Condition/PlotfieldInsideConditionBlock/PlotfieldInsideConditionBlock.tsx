@@ -5,8 +5,10 @@ import plus from "../../../../../../../assets/images/shared/add.png";
 import { generateMongoObjectId } from "../../../../../../../utils/generateMongoObjectId";
 import useCreateBlankCommand from "../../../../hooks/useCreateBlankCommand";
 import PlotFieldMain from "../../../PlotFieldMain";
-import useConditionBlocks, { ConditionBlockItemTypes } from "../Context/ConditionContext";
+import { ConditionBlockItemTypes } from "../Context/ConditionContext";
+import useConditionBlocks from "../Context/ConditionContext";
 import ConditionBlockInputField from "./ConditionBlockInputField";
+import usePlotfieldCommands from "@/features/Editor/PlotField/Context/PlotFieldContext";
 
 type PlotfieldInsideConditionBlockTypes = {
   showConditionBlockPlot: boolean;
@@ -22,13 +24,17 @@ export default function PlotfieldInsideConditionBlock({
   isFocusedBackground,
 }: PlotfieldInsideConditionBlockTypes) {
   const { episodeId } = useParams();
-  const {
-    getCurrentlyOpenConditionBlock,
-    getCurrentlyOpenConditionBlockPlotId,
-    getAllConditionBlocksByPlotfieldCommandId,
-    getAllConditionBlocksElseOrIfByPlotfieldCommandId,
-  } = useConditionBlocks();
-
+  const getCurrentAmountOfCommands = usePlotfieldCommands((state) => state.getCurrentAmountOfCommands);
+  const getCurrentlyOpenConditionBlock = useConditionBlocks((state) => state.getCurrentlyOpenConditionBlock);
+  const getCurrentlyOpenConditionBlockPlotId = useConditionBlocks(
+    (state) => state.getCurrentlyOpenConditionBlockPlotId
+  );
+  const getAllConditionBlocksByPlotfieldCommandId = useConditionBlocks(
+    (state) => state.getAllConditionBlocksByPlotfieldCommandId
+  );
+  const getAllConditionBlocksElseOrIfByPlotfieldCommandId = useConditionBlocks(
+    (state) => state.getAllConditionBlocksElseOrIfByPlotfieldCommandId
+  );
   // const [showMessage, setShowMessage] = useState("");
 
   const createCommand = useCreateBlankCommand({
@@ -40,6 +46,9 @@ export default function PlotfieldInsideConditionBlock({
     const _id = generateMongoObjectId();
     createCommand.mutate({
       _id,
+      commandOrder: getCurrentAmountOfCommands({
+        topologyBlockId: getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.targetBlockId || "",
+      }),
       topologyBlockId: getCurrentlyOpenConditionBlock({ plotfieldCommandId })?.targetBlockId || "",
     });
   };
@@ -122,13 +131,19 @@ function OptionVariationButton({
   topologyBlockName,
   orderOfExecution,
 }: OptionVariationButtonTypes) {
-  const { updateCurrentlyOpenConditionBlock, getCurrentlyOpenConditionBlockPlotId } = useConditionBlocks();
+  const updateCurrentlyOpenConditionBlock = useConditionBlocks((state) => state.updateCurrentlyOpenConditionBlock);
+  const getCurrentlyOpenConditionBlockPlotId = useConditionBlocks(
+    (state) => state.getCurrentlyOpenConditionBlockPlotId
+  );
 
   return (
     <Button
       onClick={(e) => {
         e.stopPropagation();
         if (targetBlockId) {
+          if (getCurrentlyOpenConditionBlockPlotId({ plotfieldCommandId }) === conditionBlockId) {
+            return;
+          }
           updateCurrentlyOpenConditionBlock({
             plotfieldCommandId,
             conditionBlockId,

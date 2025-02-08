@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useGetKeyById from "../../../../../../hooks/Key/useGetKeyById";
-import useConditionBlocks from "../../../Context/ConditionContext";
 import ConditionBlockFieldName from "../shared/ConditionBlockFieldName";
 import KeyPromptsModal from "./KeyPromptsModal";
+import useConditionBlocks from "../../../Context/ConditionContext";
 
 type ConditionBlockVariationKeyTypes = {
   plotfieldCommandId: string;
@@ -24,7 +24,7 @@ export default function ConditionBlockVariationKey({
   topologyBlockId,
 }: ConditionBlockVariationKeyTypes) {
   const { episodeId } = useParams();
-  const { updateConditionBlockVariationValue } = useConditionBlocks();
+  const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
 
   const [commandKeyId, setCommandKeyId] = useState(keyId || "");
   const [initKeyId, setInitKeyId] = useState(keyId || "");

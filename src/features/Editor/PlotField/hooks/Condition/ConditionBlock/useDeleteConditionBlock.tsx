@@ -8,14 +8,12 @@ type DeleteConditionBlockTypes = {
 };
 
 export default function useDeleteConditionBlock({ conditionBlockId, plotfieldCommandId }: DeleteConditionBlockTypes) {
-  const {
-    removeConditionBlock,
-    getConditionBlockByIndex,
-    getAmountOfConditionBlocks,
-    getIndexOfConditionBlockById,
-    getCurrentlyOpenConditionBlock,
-    updateCurrentlyOpenConditionBlock,
-  } = useConditionBlocks();
+  const removeConditionBlock = useConditionBlocks((state) => state.removeConditionBlock);
+  const getConditionBlockByIndex = useConditionBlocks((state) => state.getConditionBlockByIndex);
+  const getAmountOfConditionBlocks = useConditionBlocks((state) => state.getAmountOfConditionBlocks);
+  const getIndexOfConditionBlockById = useConditionBlocks((state) => state.getIndexOfConditionBlockById);
+  const getCurrentlyOpenConditionBlock = useConditionBlocks((state) => state.getCurrentlyOpenConditionBlock);
+  const updateCurrentlyOpenConditionBlock = useConditionBlocks((state) => state.updateCurrentlyOpenConditionBlock);
 
   useMutation({
     mutationFn: async () => await axiosCustomized.delete(`/commandConditions/conditionBlocks/${conditionBlockId}`),
