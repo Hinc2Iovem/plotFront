@@ -10,10 +10,12 @@ type HandleResizeOfEditorWindowsTypes = {
   setCommand: React.Dispatch<React.SetStateAction<PossibleCommandsCreatedByCombinationOfKeysTypes>>;
   setHideFlowchartFromScriptwriter: React.Dispatch<React.SetStateAction<boolean | null>>;
   setExpansionDivDirection: React.Dispatch<React.SetStateAction<"right" | "left">>;
+  setShowUtils: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function useHandleResizeOfEditorWindows({
   setCommand,
+  setShowUtils,
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
   command,
@@ -33,6 +35,7 @@ export default function useHandleResizeOfEditorWindows({
     setCommand,
     setHideFlowchartFromScriptwriter,
     setExpansionDivDirection,
+    setShowUtils,
     command,
   });
 
@@ -55,6 +58,7 @@ export default function useHandleResizeOfEditorWindows({
     // when clicked on the shrink btn, changes command to show both plotfield and flowchart
     if (afterFirstRerender && !hideFlowchartFromScriptwriter && command !== "expandFlowchart") {
       setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
+      setShowUtils(false);
     }
   }, [afterFirstRerender, hideFlowchartFromScriptwriter]);
 

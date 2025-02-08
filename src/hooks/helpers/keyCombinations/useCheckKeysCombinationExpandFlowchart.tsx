@@ -6,12 +6,14 @@ type CheckKeysCombinationExpandTypes = {
   setCommand: React.Dispatch<React.SetStateAction<PossibleCommandsCreatedByCombinationOfKeysTypes>>;
   setHideFlowchartFromScriptwriter: React.Dispatch<React.SetStateAction<boolean | null>>;
   setExpansionDivDirection: React.Dispatch<React.SetStateAction<"right" | "left">>;
+  setShowUtils: React.Dispatch<React.SetStateAction<boolean>>;
   command: PossibleCommandsCreatedByCombinationOfKeysTypes;
 };
 
 export default function useCheckKeysCombinationExpandFlowchart({
   command,
   setCommand,
+  setShowUtils,
   setHideFlowchartFromScriptwriter,
   setExpansionDivDirection,
 }: CheckKeysCombinationExpandTypes) {
@@ -23,6 +25,7 @@ export default function useCheckKeysCombinationExpandFlowchart({
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key?.toLowerCase();
       if (event.altKey && (key === "c" || key === "с")) {
+        console.log("lol");
         if (command === "expandFlowchart") {
           setCommand("" as PossibleCommandsCreatedByCombinationOfKeysTypes);
           setExpansionDivDirection("left");
@@ -32,6 +35,7 @@ export default function useCheckKeysCombinationExpandFlowchart({
           setExpansionDivDirection("" as "left" | "right");
           setHideFlowchartFromScriptwriter(false);
         }
+        setShowUtils(false);
       }
     };
 

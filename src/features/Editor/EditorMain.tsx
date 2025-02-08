@@ -28,6 +28,7 @@ export default function EditorMain() {
     setCommand,
     setExpansionDivDirection,
     setHideFlowchartFromScriptwriter,
+    setShowUtils,
   });
 
   const [scale, setScale] = useState(1);
@@ -76,7 +77,13 @@ export default function EditorMain() {
 
           <button
             onClick={() => setShowUtils(true)}
-            className={`${showUtils ? "hidden" : ""} absolute bottom-[0px] right-[0px] w-[35px] rounded-full z-[10]`}
+            className={`${
+              showUtils ||
+              command === "expandFlowchart" ||
+              command === ("" as PossibleCommandsCreatedByCombinationOfKeysTypes)
+                ? "hidden"
+                : ""
+            } absolute bottom-[0px] right-[0px] w-[35px] rounded-full z-[10]`}
           >
             <img src={editorUtils} alt="Утилиты" className="w-full hover:scale-[1.05] transition-all" />
           </button>
