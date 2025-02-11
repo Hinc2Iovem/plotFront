@@ -35,6 +35,7 @@ export default function CommandConditionField({ plotFieldCommandId, topologyBloc
     <div className="flex gap-[10px] w-full rounded-md p-[5px] flex-col relative">
       <ConditionPlotfieldCommandNameField
         commandConditionId={commandConditionId}
+        topologyBlockId={topologyBlockId}
         plotFieldCommandId={plotFieldCommandId}
         setIsFocusedBackground={setIsFocusedBackground}
       />

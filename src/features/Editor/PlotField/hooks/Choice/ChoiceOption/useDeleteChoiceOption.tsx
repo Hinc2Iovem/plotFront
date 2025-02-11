@@ -20,26 +20,25 @@ export default function useDeleteChoiceOption({
   episodeId,
   plotfieldCommandId,
   topologyBlockId,
+  choiceId,
 }: DeleteChoiceOptionTypes) {
   const queryClient = useQueryClient();
 
-  const {
-    removeChoiceOption,
-    getChoiceOptionByIndex,
-    getAmountOfChoiceOptions,
-    getIndexOfChoiceOptionById,
-    getCurrentlyOpenChoiceOption,
-    updateCurrentlyOpenChoiceOption,
-  } = useChoiceOptions();
+  const removeChoiceOption = useChoiceOptions((state) => state.removeChoiceOption);
+  const getChoiceOptionByIndex = useChoiceOptions((state) => state.getChoiceOptionByIndex);
+  const getAmountOfChoiceOptions = useChoiceOptions((state) => state.getAmountOfChoiceOptions);
+  const getIndexOfChoiceOptionById = useChoiceOptions((state) => state.getIndexOfChoiceOptionById);
+  const getCurrentlyOpenChoiceOption = useChoiceOptions((state) => state.getCurrentlyOpenChoiceOption);
+  const updateCurrentlyOpenChoiceOption = useChoiceOptions((state) => state.updateCurrentlyOpenChoiceOption);
 
   const { setItem, getItem } = useTypedSessionStorage<SessionStorageKeys>();
 
-  const { getCommandOnlyByPlotfieldCommandId } = usePlotfieldCommands();
+  const getCommandOnlyByPlotfieldCommandId = usePlotfieldCommands((state) => state.getCommandOnlyByPlotfieldCommandId);
 
   return useMutation({
     mutationFn: async () => {
       await axiosCustomized.delete(
-        `/plotFieldCommands/choices/options/${choiceOptionId}/topologyBlocks/${topologyBlockId}`
+        `/plotFieldCommands/choices/${choiceId}/options/${choiceOptionId}/topologyBlocks/${topologyBlockId}`
       );
     },
     onMutate: () => {

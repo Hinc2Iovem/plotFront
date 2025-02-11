@@ -5,7 +5,7 @@ import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
 import { generateMongoObjectId } from "../../../../../../../../../utils/generateMongoObjectId";
 import usePlotfieldCommands from "../../../../../../Context/PlotFieldContext";
 import useCreateCharacterBlank from "../../../../../../hooks/Character/useCreateCharacterBlank";
-import useUpdateNameOrEmotionOnCondition from "../../../../../../hooks/Say/useUpdateNameOrEmotionOnCondition";
+import useUpdateNameOrEmotionOnCondition from "../../../../../../hooks/Say/patch/useUpdateNameOrEmotionOnCondition";
 import { CharacterValueTypes } from "../CommandSayCharacterFieldItem";
 
 type CommandSayCreateCharacterFieldTypes = {

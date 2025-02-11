@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";
 import "../../../../../../Flowchart/FlowchartStyles.css";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
-import useUpdateNameOrEmotion from "../../../../../hooks/Say/useUpdateNameOrEmotion";
+import useUpdateNameOrEmotion from "../../../../../hooks/Say/patch/useUpdateNameOrEmotion";
 import { EmotionTypes } from "./CommandSayCharacterFieldItem";
 
 type FormEmotionTypes = {

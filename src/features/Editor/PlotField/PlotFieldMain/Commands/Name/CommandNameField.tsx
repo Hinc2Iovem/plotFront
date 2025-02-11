@@ -29,7 +29,11 @@ export default function CommandNameField({ plotFieldCommandId, topologyBlockId }
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col relative">
-      <FocusedPlotfieldCommandNameField nameValue={"name"} plotFieldCommandId={plotFieldCommandId} />
+      <FocusedPlotfieldCommandNameField
+        topologyBlockId={topologyBlockId}
+        nameValue={"name"}
+        plotFieldCommandId={plotFieldCommandId}
+      />
       <div className="flex gap-[5px] sm:flex-row flex-col flex-grow">
         <PlotfieldUnknownCharacterPromptMain
           onBlur={(value) => {

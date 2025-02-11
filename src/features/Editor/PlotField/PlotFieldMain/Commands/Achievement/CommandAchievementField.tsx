@@ -80,7 +80,11 @@ export default function CommandAchievementField({ plotFieldCommandId, topologyBl
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
-      <FocusedPlotfieldCommandNameField nameValue={"achievement"} plotFieldCommandId={plotFieldCommandId} />
+      <FocusedPlotfieldCommandNameField
+        topologyBlockId={topologyBlockId}
+        nameValue={"achievement"}
+        plotFieldCommandId={plotFieldCommandId}
+      />
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
         <PlotfieldInput
           ref={currentInput}

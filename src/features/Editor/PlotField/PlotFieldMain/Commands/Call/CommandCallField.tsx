@@ -77,7 +77,11 @@ export default function CommandCallField({ plotFieldCommandId, topologyBlockId }
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
-      <FocusedPlotfieldCommandNameField nameValue={"call"} plotFieldCommandId={plotFieldCommandId} />
+      <FocusedPlotfieldCommandNameField
+        topologyBlockId={topologyBlockId}
+        nameValue={"call"}
+        plotFieldCommandId={plotFieldCommandId}
+      />
 
       <div className="flex gap-[5px] flex-grow">
         <ChooseTopologyBlock

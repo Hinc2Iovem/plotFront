@@ -30,7 +30,7 @@ import useCreateCommandKey from "../../../hooks/Key/useCreateCommandKey";
 import useCreateMove from "../../../hooks/Move/useCreateMove";
 import useCreateCommandMusic from "../../../hooks/Music/Command/useCreateCommandMusic";
 import useCreateName from "../../../hooks/Name/useCreateName";
-import useCreateSayCommand from "../../../hooks/Say/useCreateSayCommand";
+import useCreateSayCommand from "../../../hooks/Say/post/useCreateSayCommand";
 import useCreateCommandSound from "../../../hooks/Sound/Command/useCreateCommandSound";
 import useCreateSuit from "../../../hooks/Suit/useCreateSuit";
 import useUpdateCommandName from "../../../hooks/useUpdateCommandName";
@@ -38,6 +38,7 @@ import useCreateWait from "../../../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../../../hooks/Wardrobe/useCreateWardrobe";
 import useConditionBlocks from "../Condition/Context/ConditionContext";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
+import DeleteCommandContextMenuWrapper from "../../components/DeleteCommandContextMenuWrapper";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -438,67 +439,75 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
   });
 
   return (
-    <Command
-      className={`${isCommandFocused ? "bg-brand-gradient" : "border-border border-[1px]"} rounded-md relative w-full`}
+    <DeleteCommandContextMenuWrapper
+      className="w-full"
+      plotfieldCommandId={plotFieldCommandId}
+      topologyBlockId={topologyBlockId}
     >
-      <CommandInput
-        ref={currentInput}
-        value={value}
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowPromptValues((prev) => !prev);
-          setShowCreateCharacterModal(false);
-        }}
-        placeholder="ПУСТОТА"
-        onValueChange={(value) => {
-          setValue(value);
-          if (!showPromptValues) {
-            setShowPromptValues(true);
-          }
-        }}
-        className={`${isCommandFocused ? "border-0 shadow-none" : ""} md:text-[17px] text-text w-full`}
-      />
-      <CommandList
-        ref={promptRef}
+      <Command
         className={`${
-          showPromptValues && !showCreateCharacterModal ? "" : "hidden"
-        }  w-full absolute z-[10] translate-y-[40px] bg-secondary left-0 | containerScroll`}
+          isCommandFocused ? "bg-brand-gradient" : "border-border border-[1px]"
+        } rounded-md relative w-full`}
       >
-        <CommandEmpty>Пусто</CommandEmpty>
-        <CommandGroup>
-          {filteredPromptValues.length > 0 ? (
-            filteredPromptValues.map((pv) => (
+        <CommandInput
+          ref={currentInput}
+          value={value}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowPromptValues((prev) => !prev);
+            setShowCreateCharacterModal(false);
+          }}
+          placeholder="ПУСТОТА"
+          onValueChange={(value) => {
+            setValue(value);
+            if (!showPromptValues) {
+              setShowPromptValues(true);
+            }
+          }}
+          className={`${isCommandFocused ? "border-0 shadow-none" : ""} md:text-[17px] text-text w-full`}
+        />
+        <CommandList
+          ref={promptRef}
+          className={`${
+            showPromptValues && !showCreateCharacterModal ? "" : "hidden"
+          }  w-full absolute z-[10] translate-y-[40px] bg-secondary left-0 | containerScroll`}
+        >
+          <CommandEmpty>Пусто</CommandEmpty>
+          <CommandGroup>
+            {filteredPromptValues.length > 0 ? (
+              filteredPromptValues.map((pv) => (
+                <CommandItem
+                  key={pv}
+                  onSelect={() => {
+                    setValue(pv);
+                    setShowPromptValues(false);
+                    handleFormSubmit(pv);
+                  }}
+                  className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 w-full text-[14px] px-[10px] py-[5px] transition-all"
+                >
+                  {pv}
+                </CommandItem>
+              ))
+            ) : (
               <CommandItem
-                key={pv}
                 onSelect={() => {
-                  setValue(pv);
                   setShowPromptValues(false);
-                  handleFormSubmit(pv);
                 }}
                 className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 w-full text-[14px] px-[10px] py-[5px] transition-all"
               >
-                {pv}
+                Такой команды или персонажа не существует
               </CommandItem>
-            ))
-          ) : (
-            <CommandItem
-              onSelect={() => {
-                setShowPromptValues(false);
-              }}
-              className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 w-full text-[14px] px-[10px] py-[5px] transition-all"
-            >
-              Такой команды или персонажа не существует
-            </CommandItem>
-          )}
-        </CommandGroup>
-      </CommandList>
-      <PlotFieldBlankCreateCharacter
-        setShowModal={setShowCreateCharacterModal}
-        characterName={value}
-        plotFieldCommandId={plotFieldCommandId}
-        topologyBlockId={topologyBlockId}
-        showModal={showCreateCharacterModal}
-      />
-    </Command>
+            )}
+          </CommandGroup>
+        </CommandList>
+        <PlotFieldBlankCreateCharacter
+          setShowModal={setShowCreateCharacterModal}
+          characterName={value}
+          plotFieldCommandId={plotFieldCommandId}
+          topologyBlockId={topologyBlockId}
+          showModal={showCreateCharacterModal}
+        />
+      </Command>
+    </DeleteCommandContextMenuWrapper>
   );
 }

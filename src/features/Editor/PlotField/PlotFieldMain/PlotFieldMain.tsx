@@ -1,14 +1,13 @@
 import { DragDropContext, Draggable, Droppable, DroppableProvided, DropResult } from "@hello-pangea/dnd";
 import { useEffect } from "react";
-import usePlotfieldCommands from "../Context/PlotFieldContext";
-import PlotfieldItem from "./Commands/PlotfieldItem";
-import useGetAllPlotFieldCommands from "../hooks/useGetAllPlotFieldCommands";
-import useUpdateCommandOrder from "../hooks/useUpdateCommandOrder";
 import useHandleAllCommandsCreatedViaKeyCombination from "../../../../hooks/helpers/Plotfield/CreatingViaKeyCombination/useHandleAllCommandsCreatedViaKeyCombination";
 import useHandleDuplicationOfAllCommands from "../../../../hooks/helpers/Plotfield/Duplication/useHandleDuplicationOfAllCommands";
 import useHandleNavigationThroughCommands from "../../../../hooks/helpers/Plotfield/navigationHelpers/hooks/useHandleNavigationThroughCommands";
-import useHandleDeletionOfCommand from "../hooks/helpers/useHandleDeletionOfCommand";
 import useNavigation from "../../Context/Navigation/NavigationContext";
+import usePlotfieldCommands from "../Context/PlotFieldContext";
+import useGetAllPlotFieldCommands from "../hooks/useGetAllPlotFieldCommands";
+import useUpdateCommandOrder from "../hooks/useUpdateCommandOrder";
+import PlotfieldItem from "./Commands/PlotfieldItem";
 
 type PlotFieldMainTypes = {
   topologyBlockId: string;
@@ -69,7 +68,6 @@ export default function PlotFieldMain({
   //   topologyBlockId: currentTopologyBlock._id,
   // }
   useHandleNavigationThroughCommands();
-  useHandleDeletionOfCommand();
 
   return (
     <main

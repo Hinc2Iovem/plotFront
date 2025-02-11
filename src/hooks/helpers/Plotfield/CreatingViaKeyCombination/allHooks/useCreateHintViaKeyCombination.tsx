@@ -1,6 +1,6 @@
 import useCreateSayCommandBlank, {
   CreateSayCommandOnMutationTypes,
-} from "../../../../../features/Editor/PlotField/hooks/Say/useCreateSayCommandBlank";
+} from "../../../../../features/Editor/PlotField/hooks/Say/post/useCreateSayCommandBlank";
 import useHandleCreatingViaKeyCombinationProcess from "./shared/useHandleCreatingViaKeyCombinationProcess";
 
 type CreateHintViaKeyCombinationTypes = {

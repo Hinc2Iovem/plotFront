@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 import { CommandSideTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import useAddItemInsideSearch from "../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
-import useGetTranslationSay from "../../../../../hooks/Say/useGetTranslationSay";
+import useGetTranslationSay from "../../../../../hooks/Say/get/useGetTranslationSay";
 import SayFieldItemTextArea from "./SayFieldItemTextArea";
 import SayFieldItemVariationType from "./SayFieldItemVariationType";
 
@@ -62,6 +62,7 @@ export default function CommandSayFieldItem({
     <div className="flex gap-[5px] w-full bg-background border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
       <SayFieldItemVariationType
         episodeId={episodeId || ""}
+        topologyBlockId={topologyBlockId}
         plotFieldCommandId={plotFieldCommandId}
         plotFieldCommandSayId={plotFieldCommandSayId}
         sayVariationType={sayVariationType}

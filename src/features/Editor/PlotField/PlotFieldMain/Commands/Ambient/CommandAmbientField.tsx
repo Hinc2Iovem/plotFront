@@ -64,7 +64,11 @@ export default function CommandAmbientField({ plotFieldCommandId, topologyBlockI
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
-      <FocusedPlotfieldCommandNameField nameValue={"ambient"} plotFieldCommandId={plotFieldCommandId} />
+      <FocusedPlotfieldCommandNameField
+        topologyBlockId={topologyBlockId}
+        nameValue={"ambient"}
+        plotFieldCommandId={plotFieldCommandId}
+      />
 
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
         <PlotfieldInput

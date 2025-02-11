@@ -21,7 +21,7 @@ import useCreateCommandKey from "../../PlotField/hooks/Key/useCreateCommandKey";
 import useCreateMove from "../../PlotField/hooks/Move/useCreateMove";
 import useCreateCommandMusic from "../../PlotField/hooks/Music/Command/useCreateCommandMusic";
 import useCreateName from "../../PlotField/hooks/Name/useCreateName";
-import useCreateSayCommandBlank from "../../PlotField/hooks/Say/useCreateSayCommandBlank";
+import useCreateSayCommandBlank from "../../PlotField/hooks/Say/post/useCreateSayCommandBlank";
 import useCreateCommandSound from "../../PlotField/hooks/Sound/Command/useCreateCommandSound";
 import useCreateSuit from "../../PlotField/hooks/Suit/useCreateSuit";
 import useUpdateTopologyBlockAmountOfCommands from "../../PlotField/hooks/TopologyBlock/useUpdateTopologyBlockAmountOfCommands";
@@ -205,6 +205,7 @@ export default function useCreateCommandByClick({
           plotFieldCommandElseId,
           plotFieldCommandIfElseEndId,
           plotfieldCommandId,
+
           commandOrder,
           topologyBlockId,
         });

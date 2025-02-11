@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../api/axios";
-import { CurrentlyAvailableLanguagesTypes } from "../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
-import { TranslationSayTypes } from "../../../../../types/Additional/TranslationTypes";
+import { axiosCustomized } from "../../../../../../api/axios";
+import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
+import { TranslationSayTypes } from "../../../../../../types/Additional/TranslationTypes";
 
 type GetTranslationSayEnabledTypes = {
   commandId: string;
@@ -16,9 +16,7 @@ export default function useGetTranslationSayEnabled({
     queryKey: ["translation", "command", "say", commandId],
     queryFn: async () =>
       await axiosCustomized
-        .get<TranslationSayTypes>(
-          `/says/${commandId}/translations?currentLanguage=${language}`
-        )
+        .get<TranslationSayTypes>(`/says/${commandId}/translations?currentLanguage=${language}`)
         .then((r) => r.data),
     enabled: !!commandId,
   });

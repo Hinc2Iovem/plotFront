@@ -28,8 +28,10 @@ export default function OptionVariationButton({
   setShowOptionPlot,
 }: OptionVariationButtonTypes) {
   const { episodeId } = useParams();
-  const { updateCurrentlyOpenChoiceOption, getCurrentlyOpenChoiceOptionPlotId, getAmountOfChoiceOptions } =
-    useChoiceOptions();
+
+  const updateCurrentlyOpenChoiceOption = useChoiceOptions((state) => state.updateCurrentlyOpenChoiceOption);
+  const getCurrentlyOpenChoiceOptionPlotId = useChoiceOptions((state) => state.getCurrentlyOpenChoiceOptionPlotId);
+  const getAmountOfChoiceOptions = useChoiceOptions((state) => state.getAmountOfChoiceOptions);
 
   const deleteOption = useDeleteChoiceOption({
     choiceId,

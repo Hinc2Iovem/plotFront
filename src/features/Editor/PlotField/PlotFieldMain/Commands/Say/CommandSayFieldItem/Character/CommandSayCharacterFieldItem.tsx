@@ -8,6 +8,7 @@ import FormCharacter from "./FormCharacter";
 import FormEmotion from "./FormEmotion";
 import SayCharacterFieldItemTextArea from "./SayCharacterFieldItemTextArea";
 import usePrepareInitialStateCommandSay from "./usePrepareInitialStateCommandSay";
+import DeleteCommandContextMenuWrapper from "../../../../components/DeleteCommandContextMenuWrapper";
 
 type CommandSayCharacterFieldItemTypes = {
   plotFieldCommandSayId: string;
@@ -110,16 +111,17 @@ export default function CommandSayCharacterFieldItem({
   return (
     <div className="flex flex-wrap gap-[5px] w-full h-full rounded-md p-[5px] sm:flex-row flex-col relative border-border border-[1px]">
       <div className="flex flex-col gap-[5px] md:w-[300px] w-full">
-        <FormCharacter
-          plotFieldCommandId={plotFieldCommandId}
-          plotFieldCommandSayId={plotFieldCommandSayId}
-          setShowCreateCharacterModal={setShowCreateCharacterModal}
-          showCreateCharacterModal={showCreateCharacterModal}
-          setEmotionValue={setEmotionValue}
-          characterValue={characterValue}
-          setCharacterValue={setCharacterValue}
-        />
-
+        <DeleteCommandContextMenuWrapper topologyBlockId={topologyBlockId} plotfieldCommandId={plotFieldCommandId}>
+          <FormCharacter
+            plotFieldCommandId={plotFieldCommandId}
+            plotFieldCommandSayId={plotFieldCommandSayId}
+            setShowCreateCharacterModal={setShowCreateCharacterModal}
+            showCreateCharacterModal={showCreateCharacterModal}
+            setEmotionValue={setEmotionValue}
+            characterValue={characterValue}
+            setCharacterValue={setCharacterValue}
+          />
+        </DeleteCommandContextMenuWrapper>
         <FormEmotion
           emotionValue={emotionValue}
           emotions={allEmotions}

@@ -1,6 +1,6 @@
 import useGetCurrentFocusedElement from "@/features/Editor/PlotField/hooks/helpers/useGetCurrentFocusedElement";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
-import useUpdateNameOrEmotion from "../../../../../hooks/Say/useUpdateNameOrEmotion";
+import useUpdateNameOrEmotion from "../../../../../hooks/Say/patch/useUpdateNameOrEmotion";
 import PlotfieldCharacterPromptMain from "../../../Prompts/Characters/PlotfieldCharacterPromptMain";
 import { CharacterValueTypes, EmotionTypes } from "./CommandSayCharacterFieldItem";
 

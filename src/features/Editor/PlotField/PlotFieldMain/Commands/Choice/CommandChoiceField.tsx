@@ -65,7 +65,11 @@ export default function CommandChoiceField({ plotFieldCommandId, topologyBlockId
   return (
     <div className="flex gap-[5px] w-full flex-wrap rounded-md flex-col sm:items-start">
       <div className="flex gap-[5px] w-full flex-wrap">
-        <FocusedPlotfieldCommandNameField nameValue={"choice"} plotFieldCommandId={plotFieldCommandId} />
+        <FocusedPlotfieldCommandNameField
+          topologyBlockId={topologyBlockId}
+          nameValue={"choice"}
+          plotFieldCommandId={plotFieldCommandId}
+        />
 
         <div className="flex-grow">
           <ChoiceVariationTypeBlock

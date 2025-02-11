@@ -28,7 +28,7 @@ import useCreateCommandKey from "../hooks/Key/useCreateCommandKey";
 import useCreateMove from "../hooks/Move/useCreateMove";
 import useCreateCommandMusic from "../hooks/Music/Command/useCreateCommandMusic";
 import useCreateName from "../hooks/Name/useCreateName";
-import useCreateSayCommandBlank from "../hooks/Say/useCreateSayCommandBlank";
+import useCreateSayCommandBlank from "../hooks/Say/post/useCreateSayCommandBlank";
 import useCreateCommandSound from "../hooks/Sound/Command/useCreateCommandSound";
 import useCreateSuit from "../hooks/Suit/useCreateSuit";
 import useUpdateTopologyBlockAmountOfCommands from "../hooks/TopologyBlock/useUpdateTopologyBlockAmountOfCommands";

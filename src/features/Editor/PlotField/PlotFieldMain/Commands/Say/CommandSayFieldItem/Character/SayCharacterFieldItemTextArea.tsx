@@ -3,7 +3,7 @@ import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotFi
 import { CommandSideTypes } from "../../../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
-import useUpdateCommandSayText from "../../../../../hooks/Say/useUpdateCommandSayText";
+import useUpdateCommandSayText from "../../../../../hooks/Say/patch/useUpdateCommandSayText";
 import { checkTextSide, checkTextStyle } from "../../../../../utils/checkTextStyleTextSide";
 import TextAreaWithContextMenu from "../shared/TextAreaWithContextMenu";
 import useUpdateTextSideStyle from "../shared/useUpdateTextSideStyle";

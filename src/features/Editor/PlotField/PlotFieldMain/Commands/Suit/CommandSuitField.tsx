@@ -85,7 +85,11 @@ export default function CommandSuitField({ plotFieldCommandId, topologyBlockId }
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col relative">
-      <FocusedPlotfieldCommandNameField nameValue={"suit"} plotFieldCommandId={plotFieldCommandId} />
+      <FocusedPlotfieldCommandNameField
+        topologyBlockId={topologyBlockId}
+        nameValue={"suit"}
+        plotFieldCommandId={plotFieldCommandId}
+      />
 
       <PlotfieldCharacterPromptMain
         initCharacterValue={characterValue}

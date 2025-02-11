@@ -4,7 +4,7 @@ import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
 import useCreateCharacterBlank from "../../../hooks/Character/useCreateCharacterBlank";
-import useCreateSayCommand from "../../../hooks/Say/useCreateSayCommand";
+import useCreateSayCommand from "../../../hooks/Say/post/useCreateSayCommand";
 import useUpdateCommandName from "../../../hooks/useUpdateCommandName";
 import useTypedSessionStorage, {
   SessionStorageKeys,

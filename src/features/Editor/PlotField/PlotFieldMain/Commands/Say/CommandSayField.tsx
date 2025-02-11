@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useGetTranslationCharacterById from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacterById";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import usePlotfieldCommands from "../../../Context/PlotFieldContext";
-import useGetCommandSay from "../../../hooks/Say/useGetCommandSay";
+import useGetCommandSay from "../../../hooks/Say/get/useGetCommandSay";
 import CommandSayCharacterFieldItem from "./CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 import CommandSayFieldItem from "./CommandSayFieldItem/Other/CommandSayFieldItem";
 

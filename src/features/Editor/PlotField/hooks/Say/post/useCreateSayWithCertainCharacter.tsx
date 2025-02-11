@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../api/axios";
-import { AllPossiblePlotFieldComamndsTypes } from "../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
-import usePlotfieldCommands from "../../Context/PlotFieldContext";
-import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import { axiosCustomized } from "../../../../../../api/axios";
+import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
+import usePlotfieldCommands from "../../../Context/PlotFieldContext";
+import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 
 type CreateSayCommandTypes = {
   plotFieldCommandId?: string;

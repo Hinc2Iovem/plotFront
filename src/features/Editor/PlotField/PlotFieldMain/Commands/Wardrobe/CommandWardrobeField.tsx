@@ -43,6 +43,7 @@ export default function CommandWardrobeField({ plotFieldCommandId, topologyBlock
       <FocusedPlotfieldCommandNameField
         classes="w-full"
         nameValue={"wardrobe"}
+        topologyBlockId={topologyBlockId}
         paraghClasses="text-center text-[27px]"
         plotFieldCommandId={plotFieldCommandId}
       />

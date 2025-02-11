@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../api/axios";
+import { axiosCustomized } from "../../../../../../api/axios";
 
 type UpdateNameOrEmotionTypes = {
   plotFieldCommandSayId: string;
@@ -11,18 +11,11 @@ export default function useUpdateNameOrEmotionOnCondition() {
   // const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      plotFieldCommandSayId,
-      characterEmotionId,
-      characterId,
-    }: UpdateNameOrEmotionTypes) =>
-      await axiosCustomized.patch(
-        `/plotFieldCommands/say/${plotFieldCommandSayId}/characterOrEmotionId`,
-        {
-          characterEmotionId,
-          characterId,
-        }
-      ),
+    mutationFn: async ({ plotFieldCommandSayId, characterEmotionId, characterId }: UpdateNameOrEmotionTypes) =>
+      await axiosCustomized.patch(`/plotFieldCommands/say/${plotFieldCommandSayId}/characterOrEmotionId`, {
+        characterEmotionId,
+        characterId,
+      }),
     onSuccess: () => {
       // queryClient.invalidateQueries({
       //   queryKey: ["plotfieldComamnd", plotFieldCommandId, "say"],

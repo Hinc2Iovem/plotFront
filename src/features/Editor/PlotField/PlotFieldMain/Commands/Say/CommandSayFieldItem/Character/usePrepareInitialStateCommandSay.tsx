@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import useSearch from "../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
-import useGetTranslationSayEnabled from "../../../../../hooks/Say/useGetTranslationSayEnabled";
+import useGetTranslationSayEnabled from "../../../../../hooks/Say/get/useGetTranslationSayEnabled";
 import useGetCharacterById from "../../../../../../../../hooks/Fetching/Character/useGetCharacterById";
 import usePlotfieldCommands from "../../../../../Context/PlotFieldContext";
 import { EmotionsTypes } from "../../../../../../../../types/StoryData/Character/CharacterTypes";

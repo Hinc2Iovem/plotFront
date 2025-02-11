@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import useCreateEmotion from "../../../../../../../../../hooks/Posting/Emotion/useCreateEmotion";
 import useOutOfModal from "../../../../../../../../../hooks/UI/useOutOfModal";
 import usePlotfieldCommands from "../../../../../../Context/PlotFieldContext";
-import useUpdateNameOrEmotion from "../../../../../../hooks/Say/useUpdateNameOrEmotion";
+import useUpdateNameOrEmotion from "../../../../../../hooks/Say/patch/useUpdateNameOrEmotion";
 import { EmotionTypes } from "../CommandSayCharacterFieldItem";
 import { generateMongoObjectId } from "../../../../../../../../../utils/generateMongoObjectId";
 

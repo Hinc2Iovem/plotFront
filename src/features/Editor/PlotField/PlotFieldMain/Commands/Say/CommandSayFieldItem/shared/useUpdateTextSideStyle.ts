@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import useUpdateSayTextSide from "../../../../../hooks/Say/useUpdateSayTextSide";
-import useUpdateSayTextStyle from "../../../../../hooks/Say/useUpdateSayTextStyle";
+import useUpdateSayTextSide from "../../../../../hooks/Say/patch/useUpdateSayTextSide";
+import useUpdateSayTextStyle from "../../../../../hooks/Say/patch/useUpdateSayTextStyle";
 import { TextStyleTypes } from "../../../../../../../../types/StoryEditor/PlotField/Choice/ChoiceTypes";
 
 type UpdateTextSideStyleTypes = {

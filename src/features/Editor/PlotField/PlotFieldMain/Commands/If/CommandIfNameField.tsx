@@ -11,6 +11,7 @@ import CreateIfVariationButton from "./CreateIfVariationButton";
 import { IfVariationInputField } from "./Variations/IfVariationInputField";
 import useRefineAndAssignVariations from "./Variations/useRefineAndAssignVariations";
 import { IfVariationTypes } from "./Context/IfVariationSlice";
+import DeleteCommandContextMenuWrapper from "../../components/DeleteCommandContextMenuWrapper";
 
 type CommandIfNameFieldTypes = {
   topologyBlockId: string;
@@ -30,11 +31,12 @@ export default function CommandIfNameField({
 }: CommandIfNameFieldTypes) {
   const { episodeId } = useParams();
 
-  const { getCurrentAmountOfIfCommands } = useCommandIf();
+  const getCurrentAmountOfIfCommands = useCommandIf((state) => state.getCurrentAmountOfIfCommands);
 
   useRefineAndAssignVariations({ ifId: commandIfId, plotfieldCommandId });
 
-  const { getAllIfVariationsByPlotfieldCommandId, getAllLogicalOperators } = useCommandIf();
+  const getAllIfVariationsByPlotfieldCommandId = useCommandIf((state) => state.getAllIfVariationsByPlotfieldCommandId);
+  const getAllLogicalOperators = useCommandIf((state) => state.getAllLogicalOperators);
 
   const createCommand = useCreateBlankCommand({
     topologyBlockId: topologyBlockId || "",
@@ -57,13 +59,17 @@ export default function CommandIfNameField({
 
   return (
     <div className="min-w-[100px] w-full relative flex flex-col items-center gap-[10px]">
-      <div className="min-w-[100px] flex-grow w-full relative flex items-start gap-[10px]">
+      <DeleteCommandContextMenuWrapper
+        className="min-w-[100px] flex-grow w-full relative flex items-start gap-[10px]"
+        plotfieldCommandId={plotfieldCommandId}
+        topologyBlockId={topologyBlockId}
+      >
         <PlotfieldCommandNameField
           className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"} text-[30px] text-center`}
         >
           If
         </PlotfieldCommandNameField>
-      </div>
+      </DeleteCommandContextMenuWrapper>
       <div className="px-[5px] flex gap-[5px] w-full">
         <CreateIfVariationButton ifId={commandIfId} plotfieldCommandId={plotfieldCommandId} />
         <div className={`flex gap-[5px] w-full rounded-md flex-wrap`}>

@@ -76,7 +76,11 @@ export default function CommandKeyField({ plotFieldCommandId, topologyBlockId }:
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
-      <FocusedPlotfieldCommandNameField nameValue={"key"} plotFieldCommandId={plotFieldCommandId} />
+      <FocusedPlotfieldCommandNameField
+        topologyBlockId={topologyBlockId}
+        nameValue={"key"}
+        plotFieldCommandId={plotFieldCommandId}
+      />
       <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow">
         <PlotfieldInput
           ref={currentInput}

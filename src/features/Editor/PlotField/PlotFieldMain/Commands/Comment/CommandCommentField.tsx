@@ -7,6 +7,7 @@ import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/us
 import useGetCommandComment from "../../../hooks/Comment/useGetCommandComment";
 import useUpdateCommentText from "../../../hooks/Comment/useUpdateCommentText";
 import useGetCurrentFocusedElement from "../../../hooks/helpers/useGetCurrentFocusedElement";
+import DeleteCommandContextMenuWrapper from "../../components/DeleteCommandContextMenuWrapper";
 
 type CommandCommentFieldTypes = {
   plotFieldCommandId: string;
@@ -62,12 +63,13 @@ export default function CommandCommentField({ plotFieldCommandId, topologyBlockI
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col">
-      <div className="sm:w-[20%] min-w-[100px] w-full relative">
-        <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
-          comment
-        </PlotfieldCommandNameField>
-      </div>
-
+      <DeleteCommandContextMenuWrapper plotfieldCommandId={plotFieldCommandId} topologyBlockId={topologyBlockId}>
+        <div className="sm:w-[20%] min-w-[100px] w-full relative">
+          <PlotfieldCommandNameField className={`${isCommandFocused ? "bg-brand-gradient" : "bg-secondary"}`}>
+            comment
+          </PlotfieldCommandNameField>
+        </div>
+      </DeleteCommandContextMenuWrapper>
       <form
         onSubmit={(e) => {
           e.preventDefault();

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { axiosCustomized } from "../../../../../api/axios";
-import { CommandSayVariationTypes } from "../../../../../types/StoryEditor/PlotField/Say/SayTypes";
+import { axiosCustomized } from "../../../../../../api/axios";
+import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 
 type CreateSayCommandTypes = {
   plotFieldCommandId?: string;

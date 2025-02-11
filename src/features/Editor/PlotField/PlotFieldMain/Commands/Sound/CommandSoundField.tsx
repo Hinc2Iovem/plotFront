@@ -63,7 +63,11 @@ export default function CommandSoundField({ plotFieldCommandId, topologyBlockId 
 
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col relative">
-      <FocusedPlotfieldCommandNameField nameValue={"sound"} plotFieldCommandId={plotFieldCommandId} />
+      <FocusedPlotfieldCommandNameField
+        topologyBlockId={topologyBlockId}
+        nameValue={"sound"}
+        plotFieldCommandId={plotFieldCommandId}
+      />
 
       <div className={`sm:w-[77%] flex-grow flex-col flex-wrap flex items-center gap-[5px] relative`}>
         <AllSoundsModal

@@ -36,8 +36,10 @@ export default function ChoiceOptionBlock({
 }: ChoiceOptionBlockTypes) {
   const { episodeId } = useParams();
 
-  const { getChoiceOptionText, getChoiceOptionById, updateChoiceOptionOrder, updateChoiceOptionTopologyBlockId } =
-    useChoiceOptions();
+  const getChoiceOptionText = useChoiceOptions((state) => state.getChoiceOptionText);
+  const getChoiceOptionById = useChoiceOptions((state) => state.getChoiceOptionById);
+  const updateChoiceOptionOrder = useChoiceOptions((state) => state.updateChoiceOptionOrder);
+  const updateChoiceOptionTopologyBlockId = useChoiceOptions((state) => state.updateChoiceOptionTopologyBlockId);
 
   const { data: choiceOption } = useGetChoiceOptionById({ choiceOptionId });
   const [sexualOrientationType, setSexualOrientationType] = useState("");

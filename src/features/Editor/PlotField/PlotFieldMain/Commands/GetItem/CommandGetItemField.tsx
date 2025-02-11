@@ -105,7 +105,11 @@ export default function CommandGetItemField({ topologyBlockId, plotFieldCommandI
   return (
     <div className="w-full border-border border-[1px] rounded-md p-[5px] flex flex-col gap-[5px]">
       <div className="flex flex-wrap gap-[5px] w-full sm:flex-row flex-col">
-        <FocusedPlotfieldCommandNameField nameValue={"getItem"} plotFieldCommandId={plotFieldCommandId} />
+        <FocusedPlotfieldCommandNameField
+          topologyBlockId={topologyBlockId}
+          nameValue={"getItem"}
+          plotFieldCommandId={plotFieldCommandId}
+        />
 
         <form onSubmit={(e) => e.preventDefault()} className="sm:w-[77%] flex-grow flex sm:flex-row flex-col gap-[5px]">
           <PlotfieldInput
