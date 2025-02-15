@@ -75,10 +75,8 @@ export default function useCreateBlankViaKeyCombination({ topologyBlockId }: Cre
       }
     };
 
-    const handleKeyUp = (event: KeyboardEvent) => {
-      const key = event.key.toLowerCase();
-      pressedKeys.current.delete(key);
-
+    const handleKeyUp = () => {
+      pressedKeys.current.clear();
       if (pressedKeys.current.size === 0) {
         shortcutTriggered.current = false;
       }

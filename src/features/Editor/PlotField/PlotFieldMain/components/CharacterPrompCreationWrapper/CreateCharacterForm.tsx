@@ -26,6 +26,7 @@ type CreateCharacterFormTypes = {
   onBlur: (value: CharacterValueTypes) => void;
   startCreatingCharacter: boolean;
   creatingCharacterName: string;
+  creatingCharacterUnknownName?: string;
 };
 
 export default function CreateCharacterForm({
@@ -33,11 +34,12 @@ export default function CreateCharacterForm({
   onBlur,
   startCreatingCharacter,
   creatingCharacterName,
+  creatingCharacterUnknownName,
 }: CreateCharacterFormTypes) {
   const { storyId } = useParams();
   const [characterType, setCharacterType] = useState<CharacterTypes>("minorcharacter");
   const [characterName, setCharacterName] = useState(creatingCharacterName || "");
-  const [characterUnknownName, setCharacterUnknownName] = useState("");
+  const [characterUnknownName, setCharacterUnknownName] = useState(creatingCharacterUnknownName || "");
   const [characterDescription, setCharacterDescription] = useState("");
   const [nameTag, setNameTag] = useState("");
 
@@ -48,6 +50,12 @@ export default function CreateCharacterForm({
       setCharacterName(creatingCharacterName);
     }
   }, [creatingCharacterName]);
+
+  useEffect(() => {
+    if (creatingCharacterUnknownName) {
+      setCharacterUnknownName(creatingCharacterUnknownName);
+    }
+  }, [creatingCharacterUnknownName]);
 
   const uploadImgMutation = useUpdateImg({
     path: "/characters",

@@ -3,10 +3,7 @@ import useUpdateBackgroundText from "@/features/Editor/PlotField/hooks/Backgroun
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-  regexCheckDecimalNumberBetweenZeroAndOne,
-  regexCheckDecimalNumberWithoutZeroAtBeginning,
-} from "../../Move/CommandMoveField";
+import { regexCheckDecimalNumber } from "../../Move/CommandMoveField";
 
 type BackgroundPointOfMovementTypes = {
   setMoveValue: React.Dispatch<React.SetStateAction<string>>;
@@ -34,24 +31,18 @@ export default function BackgroundPointOfMovement({
     backgroundId: commandBackgroundId,
   });
 
-  const handleOnBlur = () => {
-    if (localMoveValue.trim().length && currentInput.current && document.activeElement !== currentInput.current) {
-      let correctedValue = localMoveValue;
-      if (regexCheckDecimalNumberWithoutZeroAtBeginning.test(localMoveValue)) {
-        correctedValue = `0${localMoveValue}`;
-      } else {
-        correctedValue = localMoveValue === "0" ? "0.0" : localMoveValue === "1" ? "1.0" : localMoveValue;
-      }
+  const handleBlur = () => {
+    if (!localMoveValue.trim() || !currentInput.current || document.activeElement === currentInput.current) return;
 
-      setLocalMoveValue(correctedValue);
-      setMoveValue(correctedValue);
+    let correctedValue = localMoveValue.startsWith(".") ? `0${localMoveValue}` : localMoveValue;
+    correctedValue = correctedValue === "0" ? "0.0" : correctedValue === "1" ? "1.0" : correctedValue;
 
-      if (regexCheckDecimalNumberBetweenZeroAndOne.test(correctedValue)) {
-        setMoveValue(localMoveValue);
-        updateBackgroundText.mutate();
-      } else {
-        toast("Значение должно быть десятичным числом в промежутке от 0.0 до 1.0", toastErrorStyles);
-      }
+    setLocalMoveValue(correctedValue);
+    if (regexCheckDecimalNumber.test(correctedValue)) {
+      setMoveValue(localMoveValue);
+      updateBackgroundText.mutate();
+    } else {
+      toast("Значение должно быть десятичным числом в промежутке от 0.0 до 1.0", toastErrorStyles);
     }
   };
 
@@ -63,7 +54,7 @@ export default function BackgroundPointOfMovement({
         type="text"
         placeholder="Движение по локации"
         onChange={(e) => setLocalMoveValue(e.target.value)}
-        onBlur={handleOnBlur}
+        onBlur={handleBlur}
       />
     </form>
   );

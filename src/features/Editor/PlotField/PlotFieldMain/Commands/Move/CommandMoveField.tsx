@@ -14,8 +14,7 @@ type CommandMoveFieldTypes = {
   topologyBlockId: string;
 };
 
-export const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
-export const regexCheckDecimalNumberWithoutZeroAtBeginning = /^\.\d$/;
+export const regexCheckDecimalNumber = /^(0(\.\d{1,2})?|1(\.0{1,2})?)$/;
 
 export default function CommandMoveField({ plotFieldCommandId, topologyBlockId }: CommandMoveFieldTypes) {
   const { episodeId } = useParams();
@@ -51,26 +50,24 @@ export default function CommandMoveField({ plotFieldCommandId, topologyBlockId }
   });
 
   const handleBlur = () => {
-    if (moveValue.trim().length && currentInput.current && document.activeElement !== currentInput.current) {
-      let correctedValue = moveValue;
-      if (regexCheckDecimalNumberWithoutZeroAtBeginning.test(moveValue)) {
-        correctedValue = `0${moveValue}`;
-      } else {
-        correctedValue = moveValue === "0" ? "0.0" : moveValue === "1" ? "1.0" : moveValue;
-      }
-      setMoveValue(correctedValue);
+    if (!moveValue.trim() || !currentInput.current || document.activeElement === currentInput.current) return;
 
-      if (episodeId) {
-        updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: correctedValue });
-      }
+    let correctedValue = moveValue.startsWith(".") ? `0${moveValue}` : moveValue;
+    correctedValue = correctedValue === "0" ? "0.0" : correctedValue === "1" ? "1.0" : correctedValue;
 
-      if (regexCheckDecimalNumberBetweenZeroAndOne.test(correctedValue)) {
-        updateMoveText.mutate();
-      } else {
-        toast("Значение должно быть десятичным числом в промежутке от 0.0 до 1.0", toastErrorStyles);
-      }
+    setMoveValue(correctedValue);
+
+    if (episodeId) {
+      updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: correctedValue });
+    }
+
+    if (regexCheckDecimalNumber.test(correctedValue)) {
+      updateMoveText.mutate();
+    } else {
+      toast("Значение должно быть десятичным числом в промежутке от 0.0 до 1.0", toastErrorStyles);
     }
   };
+
   return (
     <div className="flex flex-wrap gap-[5px] w-full border-border border-[1px] rounded-md p-[5px] sm:flex-row flex-col relative">
       <FocusedPlotfieldCommandNameField

@@ -1,4 +1,3 @@
-import { toastNotificationStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useGetTranslationAppearancePartsByStoryId from "@/hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
@@ -7,7 +6,6 @@ import { TranslationTextFieldNameAppearancePartsTypes } from "@/types/Additional
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { toast } from "sonner";
 
 type AppearancePartsPromptModalTypes = {
   currentAppearancePartName: string;

@@ -8,6 +8,11 @@ import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useEffect, useRef, useState } from "react";
 import usePrepareCharacterValuesForNameCommand from "../../../Name/hooks/usePrepareCharacterValuesForNameCommand";
 import useUnknownCharactersHandleLogic from "./useUnknownCharactersHandleLogic";
+import { toast } from "sonner";
+import { toastNotificationStyles } from "@/components/shared/toastStyles";
+import UnknownNameActionButton from "./UnknownNameActionButton";
+import CharacterPromptCreationWrapper from "../../../../components/CharacterPrompCreationWrapper/CharacterPromptCreationWrapper";
+import { CharacterValueTypes } from "../../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 export type UnknownCharacterValueTypes = {
   characterUnknownName: string;
@@ -27,6 +32,7 @@ const PlotfieldUnknownCharacterPromptMain = ({
   plotFieldCommandId,
   topologyBlockId,
 }: PlotfieldUnknownCharacterPromptMainTypes) => {
+  const [startAssigningUnknownName, setStartAssigningUnknownName] = useState(false);
   const [showCharacterModal, setShowCharacterModal] = useState(false);
   const currentInput = useRef<HTMLInputElement>(null);
 
@@ -83,7 +89,13 @@ const PlotfieldUnknownCharacterPromptMain = ({
       )
     );
     if (!tranlsatedCharacter) {
-      console.log("Non-existing character");
+      toast("Назначить/Создать персонажа", {
+        ...toastNotificationStyles,
+        className: "flex text-[18px] text-white justify-between items-center",
+        action: <UnknownNameActionButton setStartAssigningUnknownName={setStartAssigningUnknownName} />,
+        onAutoClose: () => setStartAssigningUnknownName(false),
+        onDismiss: () => setStartAssigningUnknownName(false),
+      });
       return;
     }
 
@@ -121,6 +133,7 @@ const PlotfieldUnknownCharacterPromptMain = ({
             ref={currentInput}
             onBlur={() => updateCharacterOnBlur()}
             value={characterValue.characterUnknownName}
+            disabled={startAssigningUnknownName}
             onChange={(e) => {
               setShowCharacterModal(true);
               setCharacterValue((prev) => ({
@@ -142,7 +155,14 @@ const PlotfieldUnknownCharacterPromptMain = ({
         </form>
       </PopoverTrigger>
 
-      <RealCharacterName characterValue={characterValue} />
+      <RealCharacterName
+        startAssigningUnknownName={startAssigningUnknownName}
+        characterValue={characterValue}
+        commandNameId={commandNameId}
+        plotFieldCommandId={plotFieldCommandId}
+        setCharacterValue={setCharacterValue}
+        setStartAssigningUnknownName={setStartAssigningUnknownName}
+      />
 
       <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={` flex-grow flex flex-col gap-[5px]`}>
         {filteredCharacters?.length ? (
@@ -192,21 +212,78 @@ const PlotfieldUnknownCharacterPromptMain = ({
 
 type RealCharacterNameTypes = {
   characterValue: UnknownCharacterValueTypes;
+  startAssigningUnknownName: boolean;
+  commandNameId: string;
+  plotFieldCommandId: string;
+  setCharacterValue: React.Dispatch<React.SetStateAction<UnknownCharacterValueTypes>>;
+  setStartAssigningUnknownName: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function RealCharacterName({ characterValue }: RealCharacterNameTypes) {
+function RealCharacterName({
+  characterValue,
+  startAssigningUnknownName,
+  commandNameId,
+  plotFieldCommandId,
+  setCharacterValue,
+  setStartAssigningUnknownName,
+}: RealCharacterNameTypes) {
+  const [initCharacterValue, setInitCharacterValue] = useState<CharacterValueTypes>({
+    _id: "",
+    characterName: "",
+    imgUrl: "",
+  });
+
+  const updateNameText = useUpdateNameText({
+    nameId: commandNameId,
+    plotFieldCommandId,
+  });
+
+  const handleOnBlur = (value: CharacterValueTypes) => {
+    setInitCharacterValue(value);
+    setCharacterValue((prev) => ({
+      characterId: value._id || "",
+      characterName: value.characterName || "",
+      characterUnknownName: prev.characterUnknownName,
+      characterImg: value.imgUrl || "",
+    }));
+
+    setStartAssigningUnknownName(false);
+    updateNameText.mutate({
+      characterId: value._id || "",
+    });
+  };
+
+  const onToastClose = () => {
+    setStartAssigningUnknownName(false);
+  };
+
   return (
-    <div className="flex-grow min-w-[150px] min-h-[36.5px] bg-secondary items-center flex gap-[.5rem] border-border rounded-md border-[1px] relative">
-      <p className="text-[17px] text-text rounded-md px-[10px] pr-[5px]">
-        {characterValue.characterName.trim().length ? characterValue.characterName : "Настоящее имя"}
-      </p>
-      <img
-        src={characterValue.characterImg}
-        alt="CharacterImg"
-        className={`${
-          characterValue.characterImg?.trim().length ? "" : "hidden"
-        } w-[30px] object-cover rounded-md absolute right-0`}
-      />
+    <div className="flex-grow min-w-[150px] h-[36.5px] bg-secondary items-center flex gap-[.5rem] border-border rounded-md border-[1px] relative">
+      {startAssigningUnknownName ? (
+        <CharacterPromptCreationWrapper
+          initCharacterValue={initCharacterValue}
+          creatingCharacterUnknownName={characterValue.characterUnknownName}
+          onBlur={handleOnBlur}
+          onToastAutoClose={onToastClose}
+          onToastDismiss={onToastClose}
+          imgClasses="h-full right-0 absolute top-[0px] right-[3px]"
+          containerClasses="h-[36.5px] w-full border-none relative"
+          inputClasses="w-full h-full pr-[35px]"
+        />
+      ) : (
+        <>
+          <p className="text-[17px] text-text rounded-md px-[10px] pr-[5px]">
+            {characterValue.characterName.trim().length ? characterValue.characterName : "Настоящее имя"}
+          </p>
+          <img
+            src={characterValue.characterImg}
+            alt="CharacterImg"
+            className={`${
+              characterValue.characterImg?.trim().length ? "" : "hidden"
+            } w-[30px] object-cover rounded-md absolute right-0`}
+          />
+        </>
+      )}
     </div>
   );
 }

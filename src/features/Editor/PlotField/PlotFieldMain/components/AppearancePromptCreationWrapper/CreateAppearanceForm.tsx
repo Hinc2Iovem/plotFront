@@ -31,7 +31,6 @@ export default function CreateAppearanceForm({
   const { storyId } = useParams();
   const [appearanceName, setAppearanceName] = useState(creatingAppearanceName || "");
   const [appearanceType, setAppearanceType] = useState<TranslationTextFieldNameAppearancePartsTypes | "temp">("temp");
-
   const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(null);
 
   useEffect(() => {
