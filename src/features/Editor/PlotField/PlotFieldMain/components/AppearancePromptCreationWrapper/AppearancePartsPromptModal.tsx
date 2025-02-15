@@ -1,3 +1,4 @@
+import { toastNotificationStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useGetTranslationAppearancePartsByStoryId from "@/hooks/Fetching/Translation/AppearancePart/useGetTranslationAppearancePartsByStoryId";
@@ -6,40 +7,43 @@ import { TranslationTextFieldNameAppearancePartsTypes } from "@/types/Additional
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 type AppearancePartsPromptModalTypes = {
   currentAppearancePartName: string;
-  initialValue: string;
   appearancePartId: string;
   characterId?: string;
   inputClasses?: string;
   appearanceType?: TranslationTextFieldNameAppearancePartsTypes | "temp";
   setCurrentAppearancePartName: React.Dispatch<React.SetStateAction<string>>;
   setAppearancePartId: React.Dispatch<React.SetStateAction<string>>;
-  setInitialValue: React.Dispatch<React.SetStateAction<string>>;
   onValueUpdating?: ({ appearancePartId }: { appearancePartId: string }) => void;
   onChange?: (value: string) => void;
   onClick?: () => void;
   onBlur?: () => void;
+  setCreatingAppearanceName?: React.Dispatch<React.SetStateAction<string>>;
+  setCreateNewAppearance?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function AppearancePartsPromptModal({
   appearancePartId,
   currentAppearancePartName,
-  initialValue,
   inputClasses,
   appearanceType,
   characterId,
   setAppearancePartId,
   setCurrentAppearancePartName,
-  setInitialValue,
   onValueUpdating,
   onChange,
   onClick,
   onBlur,
+  setCreateNewAppearance,
+  setCreatingAppearanceName,
 }: AppearancePartsPromptModalTypes) {
   const { storyId } = useParams();
   const [showAppearanceModal, setShowAppearanceModal] = useState(false);
+  const [localValue, setLocalValue] = useState("");
+
   const currentInput = useRef<HTMLInputElement>(null);
 
   const { data: appearanceParts } = useGetTranslationAppearancePartsByStoryId({
@@ -58,18 +62,16 @@ export default function AppearancePartsPromptModal({
     if (!memoizedByCharacterId) return [];
 
     return memoizedByCharacterId.filter((p) => {
-      const matchesName =
-        !currentAppearancePartName ||
-        p.translations[0]?.text?.toLowerCase().includes(currentAppearancePartName.toLowerCase());
+      const matchesName = !localValue || p.translations[0]?.text?.toLowerCase().includes(localValue.toLowerCase());
 
       const matchesType = !appearanceType?.trim() || p.type === appearanceType;
 
       return matchesName && matchesType;
     });
-  }, [currentAppearancePartName, appearanceType, memoizedByCharacterId]);
+  }, [localValue, appearanceType, memoizedByCharacterId]);
 
   const updateAppearancePartOnBlur = () => {
-    if (initialValue === currentAppearancePartName) {
+    if (localValue === currentAppearancePartName) {
       return;
     }
 
@@ -78,13 +80,19 @@ export default function AppearancePartsPromptModal({
     );
 
     if (existingPart) {
-      setInitialValue((existingPart.translations || [])[0]?.text || "");
+      setCurrentAppearancePartName((existingPart.translations || [])[0]?.text || "");
       handleUpdatingValues({
         id: existingPart?.appearancePartId || "",
         name: (existingPart.translations || [])[0]?.text || "",
       });
+    } else {
+      // suggest to create
+      if (setCreateNewAppearance && setCreatingAppearanceName) {
+        setCreatingAppearanceName(localValue || "");
+        setCreateNewAppearance(true);
+      }
+      console.log("Non-existing appearance");
     }
-    // suggest to create
   };
 
   const handleUpdatingValues = ({ id, name }: { id: string; name: string }) => {
@@ -107,13 +115,10 @@ export default function AppearancePartsPromptModal({
         <div>
           <PlotfieldInput
             ref={currentInput}
-            value={currentAppearancePartName}
+            value={localValue}
             onChange={(e) => {
               setShowAppearanceModal(true);
-              setCurrentAppearancePartName(e.target.value);
-              if (onChange) {
-                onChange(e.target.value);
-              }
+              setLocalValue(e.target.value);
             }}
             onClick={() => {
               if (onClick) {
@@ -122,6 +127,9 @@ export default function AppearancePartsPromptModal({
             }}
             onBlur={() => {
               updateAppearancePartOnBlur();
+              if (onChange) {
+                onChange(localValue);
+              }
               if (onBlur) {
                 onBlur();
               }
@@ -141,7 +149,7 @@ export default function AppearancePartsPromptModal({
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
               onClick={() => {
-                setInitialValue((c.translations || [])[0]?.text || "");
+                setLocalValue((c.translations || [])[0]?.text || "");
                 handleUpdatingValues({ id: c.appearancePartId, name: (c.translations || [])[0]?.text });
                 setShowAppearanceModal(false);
               }}

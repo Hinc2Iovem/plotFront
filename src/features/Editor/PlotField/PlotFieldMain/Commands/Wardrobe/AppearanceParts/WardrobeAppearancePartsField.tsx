@@ -2,7 +2,7 @@ import useCreateWardrobeAppearanceTypeBlock from "@/features/Editor/PlotField/ho
 import StoryAttributesSelectAppearanceType from "@/features/StorySinglePage/StoryAttributesSection/shared/StoryAttributesSelectAppearanceType";
 import { TranslationTextFieldNameAppearancePartsTypes } from "@/types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import { useState } from "react";
-import AppearancePartsPromptModal from "../../Prompts/AppearanceParts/AppearancePartsPromptModal";
+import AppearancePromptCreationWrapper from "../../../components/AppearancePromptCreationWrapper/AppearancePromptCreationWrapper";
 
 type WardrobeAppearancePartsFieldTypes = {
   commandWardrobeId: string;
@@ -19,7 +19,6 @@ export default function WardrobeAppearancePartsField({
   const [appearancePartVariationType, setAppearancePartVariationType] = useState(
     "" as TranslationTextFieldNameAppearancePartsTypes | "temp"
   );
-  const [initValue, setInitValue] = useState("");
 
   const createAppearancePartBlock = useCreateWardrobeAppearanceTypeBlock({
     commandWardrobeId,
@@ -34,15 +33,13 @@ export default function WardrobeAppearancePartsField({
         triggerClasses="capitalize flex-grow md:text-[17px] w-full text-heading relative border-border border-[1px] px-[10px] py-[5px]"
       />
       <div className="w-full relative">
-        <AppearancePartsPromptModal
+        <AppearancePromptCreationWrapper
           appearanceType={appearancePartVariationType}
           appearancePartId={appearancePartId}
           currentAppearancePartName={appearanceName}
-          initialValue={initValue}
           characterId={characterId}
           setAppearancePartId={setAppearancePartId}
           setCurrentAppearancePartName={setAppearanceName}
-          setInitialValue={setInitValue}
           onValueUpdating={({ appearancePartId }) => {
             createAppearancePartBlock.mutate({ appearancePartBodyId: appearancePartId });
             setAppearanceName("");

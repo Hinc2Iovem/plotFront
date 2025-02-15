@@ -85,6 +85,7 @@ export default function CommandMusicField({ plotFieldCommandId, topologyBlockId 
           initMusicValue={initMusicValue}
           onBlur={(value: InitMusicValueTypes) => {
             updateMusicState(value.musicName);
+            setInitMusicValue(value);
             updateMusic.mutate({ commandMusicId, musicId: value.musicId });
           }}
         />

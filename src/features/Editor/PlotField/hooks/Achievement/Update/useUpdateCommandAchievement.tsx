@@ -5,6 +5,7 @@ import { axiosCustomized } from "../../../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { CommandAchievementTypes } from "../../../../../../types/StoryEditor/PlotField/Achievement/AchievementTypes";
 import ActionButton from "./ActionButton";
+import { toastNotificationStyles } from "@/components/shared/toastStyles";
 
 type UpdateCommandAchievementTypes = {
   plotFieldCommandId: string;
@@ -39,6 +40,8 @@ export default function useUpdateCommandAchievement({
           toast("Сервер не отвечает");
         } else if (error.response?.status === 404) {
           toast(`Такой ачивки не существует, хотите создать?`, {
+            ...toastNotificationStyles,
+            className: "flex text-[18px] text-white justify-between items-center",
             action: (
               <ActionButton
                 plotfieldCommandId={plotFieldCommandId}
@@ -46,8 +49,6 @@ export default function useUpdateCommandAchievement({
                 setCurrentAchievement={setCurrentAchievement}
               />
             ),
-
-            className: `flex items-center justify-between`,
           });
         } else {
           toast("Что-то пошло не так");

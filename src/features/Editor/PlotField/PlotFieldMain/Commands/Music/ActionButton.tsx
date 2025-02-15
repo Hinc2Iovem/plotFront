@@ -37,7 +37,7 @@ export default function ActionButton({ text, onBlur }: ActionButtonTypes) {
         }
         toast("Музыка создана", toastSuccessStyles);
       }}
-      className={`outline focus-within:bg-accent hover:bg-accent transition-all`}
+      className={`outline-white focus-within:bg-white focus-within:shadow-md focus-within:animate-pulse focus-within:shadow-white hover:bg-white text-black transition-all`}
       ref={ref}
     >
       Создать

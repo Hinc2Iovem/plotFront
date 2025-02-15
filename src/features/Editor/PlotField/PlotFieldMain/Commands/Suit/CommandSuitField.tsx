@@ -6,8 +6,8 @@ import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/us
 import useGetCharacterWithTranslation from "../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
 import useGetCommandSuit from "../../../hooks/Suit/useGetCommandSuit";
 import useUpdateSuitText from "../../../hooks/Suit/useUpdateSuitText";
+import CharacterPromptCreationWrapper from "../../components/CharacterPrompCreationWrapper/CharacterPromptCreationWrapper";
 import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
-import PlotfieldCharacterPromptMain from "../Prompts/Characters/PlotfieldCharacterPromptMain";
 
 type CommandSuitFieldTypes = {
   plotFieldCommandId: string;
@@ -91,7 +91,7 @@ export default function CommandSuitField({ plotFieldCommandId, topologyBlockId }
         plotFieldCommandId={plotFieldCommandId}
       />
 
-      <PlotfieldCharacterPromptMain
+      <CharacterPromptCreationWrapper
         initCharacterValue={characterValue}
         onBlur={(value) => {
           setCharacterValue(value);

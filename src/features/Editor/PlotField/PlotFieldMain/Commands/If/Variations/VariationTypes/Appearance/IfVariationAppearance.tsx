@@ -5,7 +5,7 @@ import useGetTranslationAppearancePart from "../../../../../../../../../hooks/Fe
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateIfAppearance from "../../../../../../hooks/If/BlockVariations/patch/useUpdateIfAppearance";
-import AppearancePartsPromptModal from "../../../../Prompts/AppearanceParts/AppearancePartsPromptModal";
+import AppearancePartsPromptModal from "../../../../../components/AppearancePromptCreationWrapper/AppearancePartsPromptModal";
 import useCommandIf from "../../../Context/IfContext";
 import IfFieldName from "../shared/IfFieldName";
 

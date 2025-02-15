@@ -1,5 +1,5 @@
 import useUpdateChoice from "../../../../hooks/Choice/useUpdateChoice";
-import PlotfieldCharacterPromptMain from "../../Prompts/Characters/PlotfieldCharacterPromptMain";
+import CharacterPromptCreationWrapper from "../../../components/CharacterPrompCreationWrapper/CharacterPromptCreationWrapper";
 import { CharacterValueTypes } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
 
 type ChoiceQuestionCharacterFieldTypes = {
@@ -30,7 +30,7 @@ export default function ChoiceQuestionCharacterField({
       }}
       className="flex-grow min-w-[200px]"
     >
-      <PlotfieldCharacterPromptMain
+      <CharacterPromptCreationWrapper
         initCharacterValue={characterValue}
         onBlur={handleOnBlur}
         inputClasses="w-full pr-[35px] text-text md:text-[17px]"

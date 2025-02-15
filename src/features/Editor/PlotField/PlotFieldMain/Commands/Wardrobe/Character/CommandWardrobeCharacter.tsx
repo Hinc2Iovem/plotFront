@@ -1,7 +1,7 @@
 import React from "react";
 import useGetCharacterWithTranslation from "../../../../hooks/helpers/CombineTranslationWithSource/useGetCharacterWithTranslation";
 import useUpdateWardrobeCurrentDressedAndCharacterId from "../../../../hooks/Wardrobe/useUpdateWardrobeCurrentDressedAndCharacterId";
-import PlotfieldCharacterPromptMain from "../../Prompts/Characters/PlotfieldCharacterPromptMain";
+import CharacterPromptCreationWrapper from "../../../components/CharacterPrompCreationWrapper/CharacterPromptCreationWrapper";
 
 type CommandWardrobeCharacterTypes = {
   characterId: string;
@@ -22,8 +22,8 @@ export default function CommandWardrobeCharacter({
   });
 
   return (
-    <form className="w-full relative flex gap-[.5rem]">
-      <PlotfieldCharacterPromptMain
+    <form onSubmit={(e) => e.preventDefault()} className="w-full relative flex gap-[.5rem]">
+      <CharacterPromptCreationWrapper
         initCharacterValue={characterValue}
         onBlur={(value) => {
           setCharacterValue(value);

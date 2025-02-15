@@ -123,6 +123,7 @@ export default function CommandSayCharacterFieldItem({
           />
         </DeleteCommandContextMenuWrapper>
         <FormEmotion
+          characterId={characterValue._id || ""}
           emotionValue={emotionValue}
           emotions={allEmotions}
           plotFieldCommandId={plotFieldCommandId}

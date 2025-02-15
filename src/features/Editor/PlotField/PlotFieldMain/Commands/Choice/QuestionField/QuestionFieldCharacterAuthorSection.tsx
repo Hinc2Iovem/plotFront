@@ -4,8 +4,8 @@ import {
   CharacterValueTypes,
   EmotionTypes,
 } from "../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
-import { AllEmotionsModal } from "../../Say/CommandSayFieldItem/Character/FormEmotion";
 import ChoiceQuestionCharacterField from "./ChoiceQuestionCharacterField";
+import EmotionPromptCreationWrapper from "../../../components/EmotionPromptCreationWrapper/EmotionPromptCreationWrapper";
 
 type QuestionFieldCharacterAuthorSectionTypes = {
   isAuthor: boolean;
@@ -41,7 +41,8 @@ export default function QuestionFieldCharacterAuthorSection({
             setCharacterId={setCharacterId}
           />
 
-          <AllEmotionsModal
+          <EmotionPromptCreationWrapper
+            characterId={characterValue._id || ""}
             inputClasses="w-full pr-[35px] text-text md:text-[17px]"
             imgClasses="w-[30px] object-cover rounded-md top-1/2 -translate-y-1/2 right-[3px] absolute"
             containerClasses="flex-grow min-w-[200px] relative"

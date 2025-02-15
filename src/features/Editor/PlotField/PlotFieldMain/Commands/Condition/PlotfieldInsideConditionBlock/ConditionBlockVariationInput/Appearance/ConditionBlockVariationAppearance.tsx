@@ -5,7 +5,7 @@ import useGetTranslationAppearancePart from "../../../../../../../../../hooks/Fe
 import useSearch from "../../../../../../../Context/Search/SearchContext";
 import useAddItemInsideSearch from "../../../../../../../hooks/PlotfieldSearch/helpers/useAddItemInsideSearch";
 import useUpdateConditionAppearance from "../../../../../../hooks/Condition/ConditionBlock/BlockVariations/patch/useUpdateConditionAppearance";
-import AppearancePartsPromptModal from "../../../../Prompts/AppearanceParts/AppearancePartsPromptModal";
+import AppearancePartsPromptModal from "../../../../../components/AppearancePromptCreationWrapper/AppearancePartsPromptModal";
 import ConditionBlockFieldName from "../shared/ConditionBlockFieldName";
 import useConditionBlocks from "../../../Context/ConditionContext";
 

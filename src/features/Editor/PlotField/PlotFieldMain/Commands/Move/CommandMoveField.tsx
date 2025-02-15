@@ -14,8 +14,8 @@ type CommandMoveFieldTypes = {
   topologyBlockId: string;
 };
 
-const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
-const regexCheckDecimalNumberWithoutZeroAtBeginning = /^\.\d$/;
+export const regexCheckDecimalNumberBetweenZeroAndOne = /^(0\.[0-9]|1\.0)$/;
+export const regexCheckDecimalNumberWithoutZeroAtBeginning = /^\.\d$/;
 
 export default function CommandMoveField({ plotFieldCommandId, topologyBlockId }: CommandMoveFieldTypes) {
   const { episodeId } = useParams();
@@ -63,8 +63,6 @@ export default function CommandMoveField({ plotFieldCommandId, topologyBlockId }
       if (episodeId) {
         updateValue({ episodeId, commandName: "move", id: plotFieldCommandId, type: "command", value: correctedValue });
       }
-
-      console.log("correctedValue: ", correctedValue);
 
       if (regexCheckDecimalNumberBetweenZeroAndOne.test(correctedValue)) {
         updateMoveText.mutate();

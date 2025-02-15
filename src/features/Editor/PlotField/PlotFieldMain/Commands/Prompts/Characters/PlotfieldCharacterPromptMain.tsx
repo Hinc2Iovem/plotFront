@@ -14,6 +14,8 @@ type PlotfieldCharacterPromptMainTypes = {
   containerClasses?: string;
   initCharacterValue: CharacterValueTypes;
   onBlur: (value: CharacterValueTypes) => void;
+  setCreateNewCharacter?: React.Dispatch<React.SetStateAction<boolean>>;
+  setCreatingCharacterName?: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const PlotfieldCharacterPromptMain = ({
@@ -22,6 +24,8 @@ const PlotfieldCharacterPromptMain = ({
   inputClasses,
   imgClasses,
   containerClasses,
+  setCreateNewCharacter,
+  setCreatingCharacterName,
 }: PlotfieldCharacterPromptMainTypes) => {
   const { storyId } = useParams();
   const [showCharacterModal, setShowCharacterModal] = useState(false);
@@ -83,8 +87,9 @@ const PlotfieldCharacterPromptMain = ({
   const updateCharacterNameOnBlur = (value?: CharacterValueTypes) => {
     const localCharacterValue = value?._id ? value : characterValue;
     if (
-      localCharacterValue.characterName?.trim().length &&
-      initCharacterValue.characterName === localCharacterValue.characterName
+      (localCharacterValue.characterName?.trim().length &&
+        initCharacterValue.characterName === localCharacterValue.characterName) ||
+      !localCharacterValue.characterName?.trim().length
     ) {
       return;
     }
@@ -98,7 +103,10 @@ const PlotfieldCharacterPromptMain = ({
     );
 
     if (!tranlsatedCharacter) {
-      // TODO give possibility to create a new character here
+      if (setCreateNewCharacter && setCreatingCharacterName) {
+        setCreatingCharacterName(localCharacterValue.characterName || "");
+        setCreateNewCharacter(true);
+      }
       console.log("Non-existing character");
       return;
     }

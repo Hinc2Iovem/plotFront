@@ -5,7 +5,7 @@ import useAddItemInsideSearch from "../../../../hooks/PlotfieldSearch/helpers/us
 import useGetCommandSound from "../../../hooks/Sound/Command/useGetCommandSound";
 import useGetSoundById from "../../../hooks/Sound/useGetSoundById";
 import FocusedPlotfieldCommandNameField from "../../components/FocusedPlotfieldCommandNameField";
-import AllSoundsModal from "./AllSoundsModal";
+import AllSoundsModal from "../../components/SoundPromptCreation/AllSoundsModal";
 import "../Prompts/promptStyles.css";
 
 type CommandSoundFieldTypes = {
@@ -15,9 +15,7 @@ type CommandSoundFieldTypes = {
 
 export default function CommandSoundField({ plotFieldCommandId, topologyBlockId }: CommandSoundFieldTypes) {
   const { storyId, episodeId } = useParams();
-  const [initValue, setInitValue] = useState<string>("");
   const [soundName, setSoundName] = useState<string>("");
-
   const [commandSoundId, setCommandSoundId] = useState("");
 
   const { data: commandSound } = useGetCommandSound({
@@ -37,7 +35,6 @@ export default function CommandSoundField({ plotFieldCommandId, topologyBlockId 
   useEffect(() => {
     if (sound) {
       setSoundName(sound.soundName);
-      setInitValue(sound.soundName);
     }
   }, [sound]);
 
@@ -75,8 +72,6 @@ export default function CommandSoundField({ plotFieldCommandId, topologyBlockId 
           onChange={(value) => updateSoundState(value)}
           soundName={soundName}
           storyId={storyId || ""}
-          setInitValue={setInitValue}
-          initValue={initValue}
           commandSoundId={commandSoundId}
         />
       </div>

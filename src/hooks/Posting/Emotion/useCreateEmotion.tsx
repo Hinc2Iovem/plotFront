@@ -24,6 +24,18 @@ export default function useCreateEmotion({ characterId, emotionName }: CreateEmo
           imgUrl,
         })
         .then((r) => r.data),
+    // TODO invalidate certain queries
+    // onSettled: () => {
+    //   queryClient.invalidateQueries({
+    //     queryKey: ["character", characterId],
+    //   });
+    //   queryClient.invalidateQueries({
+    //     queryKey: ["translation", "russian", "character", "story", storyId],
+    //   });
+    //   queryClient.invalidateQueries({
+    //     queryKey: ["story", storyId, "characters"],
+    //   });
+    // },
   });
 }
 

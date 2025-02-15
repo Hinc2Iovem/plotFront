@@ -33,8 +33,6 @@ export default function AppearanceTypeDropDown({ setAppearanceType }: Appearance
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueToEng]);
 
-  console.log(valueToEng);
-
   useOutOfModal({ modalRef, setShowModal, showModal });
   return (
     <div className="bg-secondary rounded-md shadow-md relative">

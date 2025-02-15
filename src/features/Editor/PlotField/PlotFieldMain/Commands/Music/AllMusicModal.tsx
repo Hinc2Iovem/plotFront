@@ -3,11 +3,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 import { MusicTypes } from "@/types/StoryData/Music/MusicTypes";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useGetAllMusicByStoryId from "../../../hooks/Music/useGetAllMusicByStoryId";
 import { toast } from "sonner";
 import ActionButton from "./ActionButton";
+import { toastNotificationStyles } from "@/components/shared/toastStyles";
 
 export type InitMusicValueTypes = {
   musicId: string;
@@ -22,13 +23,11 @@ type AllMusicModalTypes = {
 export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalTypes) {
   const { storyId } = useParams();
 
-  const [initValue, setInitValue] = useState(initMusicValue.musicName || "");
   const [musicName, setMusicName] = useState(initMusicValue.musicName || "");
 
   useEffect(() => {
-    if (initMusicValue) {
+    if (initMusicValue && !musicName.trim().length) {
       setMusicName(initMusicValue.musicName || "");
-      setInitValue(initMusicValue.musicName || "");
     }
   }, [initMusicValue]);
 
@@ -59,22 +58,17 @@ export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalT
       return;
     }
 
-    if (initValue === value) {
+    if (initMusicValue.musicName === value) {
       return;
     }
 
     const foundMusic = allMusicMemoized?.find((s) => s.musicName.trim().toLowerCase() === value.trim().toLowerCase());
 
-    setInitValue(value);
     if (!foundMusic?.id) {
-      // toast(`Звук был создан`, toastSuccessStyles);
-      // const musicId = generateMongoObjectId();
-      // await createMusic.mutateAsync({ musicId, musicName });
-      // await updateMusic.mutateAsync({ commandMusicId, musicId });
       toast("Музыка не найдена, хотите создать?", {
+        ...toastNotificationStyles,
+        className: "flex text-[18px] text-white justify-between items-center",
         action: <ActionButton text={value.trim()} onBlur={onBlur} />,
-
-        className: `flex items-center justify-between`,
       });
       return;
     } else {

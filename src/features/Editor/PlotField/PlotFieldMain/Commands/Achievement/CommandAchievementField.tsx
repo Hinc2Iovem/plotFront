@@ -58,18 +58,20 @@ export default function CommandAchievementField({ plotFieldCommandId, topologyBl
   });
 
   const onBlur = () => {
-    if (initialTextValue !== currentAchievement.textValue) {
-      if (episodeId) {
-        updateValue({
-          episodeId,
-          commandName: "achievement",
-          id: plotFieldCommandId,
-          type: "command",
-          value: currentAchievement.textValue,
-        });
-      }
-      updateAchievementText({ text: currentAchievement.textValue });
+    if (initialTextValue === currentAchievement.textValue) {
+      // the same value
+      return;
     }
+    if (episodeId) {
+      updateValue({
+        episodeId,
+        commandName: "achievement",
+        id: plotFieldCommandId,
+        type: "command",
+        value: currentAchievement.textValue,
+      });
+    }
+    updateAchievementText({ text: currentAchievement.textValue });
   };
 
   useEffect(() => {
