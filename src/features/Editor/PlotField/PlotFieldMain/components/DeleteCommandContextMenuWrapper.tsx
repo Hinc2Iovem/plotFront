@@ -23,11 +23,15 @@ export default function DeleteCommandContextMenuWrapper({
   const deletePlotfieldCommand = useDeletePlotfieldCommand({ plotfieldCommandId });
 
   const handleDelete = () => {
-    removeCommandItem({ topologyBlockId, id: plotfieldCommandId });
-    updateCommandInfo({ addOrMinus: "minus", topologyBlockId });
-
     const currentCommand = currentPlotfieldCommand({ plotfieldCommandId, topologyBlockId });
+    console.log("currentCommand: ", currentCommand);
+
     if (currentCommand && currentCommand.command === "if") {
+      console.log(
+        `getElseOrEnd({ elseOrEnd: "else", plotfieldCommandIfId: currentCommand.plotfieldCommandIfId || "" }) : `,
+        getElseOrEnd({ elseOrEnd: "else", plotfieldCommandIfId: currentCommand.plotfieldCommandIfId || "" })
+      );
+
       removeCommandItem({
         id:
           getElseOrEnd({ elseOrEnd: "else", plotfieldCommandIfId: currentCommand.plotfieldCommandIfId || "" })?._id ||
@@ -43,6 +47,10 @@ export default function DeleteCommandContextMenuWrapper({
       });
       updateCommandInfo({ addOrMinus: "minus", topologyBlockId });
     }
+
+    removeCommandItem({ topologyBlockId, id: plotfieldCommandId });
+    updateCommandInfo({ addOrMinus: "minus", topologyBlockId });
+
     deletePlotfieldCommand.mutate({});
   };
 

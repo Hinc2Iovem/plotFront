@@ -35,7 +35,7 @@ export default function EpisodeEditor() {
   useInitializeCurrentlyFocusedCommandOnReload();
 
   return (
-    <section className="p-[10px] mx-auto flex flex-col gap-[10px] | containerScroll">
+    <section className="mx-auto flex flex-col gap-[10px] | containerScroll">
       {/* <EditorHeader setShowHeader={setShowHeader} showHeader={showHeader} /> */}
       {currentTopologyBlock._id?.trim().length ? <EditorMain /> : null}
     </section>

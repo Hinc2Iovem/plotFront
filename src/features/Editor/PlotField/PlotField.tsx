@@ -36,7 +36,7 @@ export default function PlotField({ command, showUtils, expansionDivDirection }:
         command === "expandPlotField" || !command ? "" : "hidden"
       } flex-grow ${
         showUtils ? "" : "flex-shrink-0"
-      } border-border border-[1px] rounded-md shadow-md min-h-[200px] h-full relative p-[10px]`}
+      } border-border mt-[10px] border-[1px] rounded-md shadow-md min-h-[200px] h-full relative p-[10px]`}
     >
       {/* {topologyBlockData ? (
         <PlotfieldHeader

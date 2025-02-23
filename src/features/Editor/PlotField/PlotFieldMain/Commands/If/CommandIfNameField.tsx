@@ -49,7 +49,7 @@ export default function CommandIfNameField({
       _id,
       topologyBlockId: topologyBlockId || "",
       commandOrder: getCurrentAmountOfIfCommands({ isElse: false, plotfieldCommandIfId: commandIfId }),
-      plotfieldCommandIfId: commandIfId,
+      plotfieldCommandIfId: _id,
       isElse: false,
     });
   };

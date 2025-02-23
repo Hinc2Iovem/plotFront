@@ -5,11 +5,10 @@ import useResizeEditorWindow from "@/hooks/helpers/Plotfield/ResizeWindow/useRes
 import { useRef, useState } from "react";
 import AllMightySearch from "./AllMightySearch/AllMightySearch";
 import DraggableExpansionDiv from "./components/DraggableExpansionDiv";
-import { CoordinatesProvider } from "./Flowchart/Context/CoordinatesContext";
-import Flowchart from "./Flowchart/Flowchart";
 import PlotField from "./PlotField/PlotField";
 import "./Flowchart/FlowchartStyles.css";
 import UtilsSidebar from "./UtilsSidebar/UtilsSidebar";
+import Flowchart from "./Flowchart/Remake/Flowchart";
 
 export default function EditorMain() {
   const [command, setCommand] = useState<PossibleCommandsCreatedByCombinationOfKeysTypes>(
@@ -31,10 +30,8 @@ export default function EditorMain() {
     setShowUtils,
   });
 
-  const [scale, setScale] = useState(1);
-
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scaleDivPosition, setScaleDivPosition] = useState(0);
+  const [, setScaleDivPosition] = useState(0);
 
   useResizeEditorWindow({ command, containerRef, setScaleDivPosition });
   return (
@@ -55,7 +52,7 @@ export default function EditorMain() {
             />
           ) : // this is a button in the middle of the screen to expand flowchart or plotfield
           null}
-          <div
+          {/* <div
             className={`${
               keyCombinationToExpandPlotField === "expandPlotField" || hideFlowchartFromScriptwriter ? "hidden" : ""
             } fixed top-[20px] text-text-light text-[13px] transition-all bg-secondary text-text px-[10px] py-[5px] rounded-md z-[10]`}
@@ -64,8 +61,8 @@ export default function EditorMain() {
             }}
           >
             {(scale * 100).toFixed(0)}%
-          </div>
-          <CoordinatesProvider>
+          </div> */}
+          {/* <CoordinatesProvider>
             <Flowchart
               expansionDivDirection={expansionDivDirection}
               hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
@@ -73,7 +70,13 @@ export default function EditorMain() {
               scale={scale}
               setScale={setScale}
             />
-          </CoordinatesProvider>
+          </CoordinatesProvider> */}
+
+          <Flowchart
+            keyCombinationToExpandPlotField={keyCombinationToExpandPlotField}
+            hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
+            expansionDivDirection={expansionDivDirection}
+          />
 
           <button
             onClick={() => setShowUtils(true)}
@@ -83,9 +86,9 @@ export default function EditorMain() {
               command === ("" as PossibleCommandsCreatedByCombinationOfKeysTypes)
                 ? "hidden"
                 : ""
-            } absolute bottom-[0px] right-[0px] w-[35px] rounded-full z-[10]`}
+            } absolute bottom-[-10px] right-[0px] w-[35px] rounded-full z-[10]`}
           >
-            <img src={editorUtils} alt="Утилиты" className="w-full hover:scale-[1.05] transition-all" />
+            <img src={editorUtils} alt="Утилиты" className="w-full transition-all" />
           </button>
 
           <UtilsSidebar
