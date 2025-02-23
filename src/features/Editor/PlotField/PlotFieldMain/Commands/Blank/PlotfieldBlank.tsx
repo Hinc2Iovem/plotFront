@@ -39,6 +39,7 @@ import useCreateWardrobe from "../../../hooks/Wardrobe/useCreateWardrobe";
 import useConditionBlocks from "../Condition/Context/ConditionContext";
 import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
 import DeleteCommandContextMenuWrapper from "../../components/DeleteCommandContextMenuWrapper";
+import useCreateStat from "../../../hooks/Stat/useCreateStat";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -167,6 +168,7 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
   const createName = useCreateName({ plotFieldCommandId });
   const createSound = useCreateCommandSound({ plotFieldCommandId });
   const createSuit = useCreateSuit({ plotFieldCommandId });
+  const createStat = useCreateStat({ plotFieldCommandId });
   const createWait = useCreateWait({ plotFieldCommandId });
   const createComment = useCreateComment({ plotFieldCommandId });
   const createWardrobe = useCreateWardrobe({
@@ -383,6 +385,8 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
         createWardrobe.mutate({});
       } else if (allCommands === "comment") {
         createComment.mutate({});
+      } else if (allCommands === "stat") {
+        createStat.mutate({});
       }
 
       handleCreatingOptimisticCommand({

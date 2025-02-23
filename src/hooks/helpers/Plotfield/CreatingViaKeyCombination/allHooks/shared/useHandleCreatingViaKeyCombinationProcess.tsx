@@ -10,6 +10,7 @@ import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/Pl
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
 import { addItemInUndoSessionStorage } from "../../../../UndoRedo/addItemInUndoSessionStorage";
 import useTypedSessionStorage, { SessionStorageKeys } from "../../../../shared/SessionStorage/useTypedSessionStorage";
+import { preventCreatingCommandsWhenFocus } from "../../../preventCreatingCommandsWhenFocus";
 
 type HandleCreatingViaKeyCombinationProcessTypes<T> = {
   topologyBlockId: string;
@@ -104,6 +105,11 @@ export default function useHandleCreatingViaKeyCombinationProcess<T>({
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!preventCreatingCommandsWhenFocus()) {
+        console.log("Not allowed to move on focus");
+        return;
+      }
+
       const key = event.key.toLowerCase();
 
       if (event.repeat) return;

@@ -29,7 +29,6 @@ export default function IfVariationAppearance({
   const { updateIfVariationValue } = useCommandIf();
 
   const [currentIfName, setCurrentIfName] = useState("");
-  const [initValue, setInitValue] = useState("");
   const [appearancePartId, setAppearancePartId] = useState(currentAppearancePartId || "");
   const [isDressed, setIsDressed] = useState(currentlyDressed);
   const [currentlyActive, setCurrentlyActive] = useState(false);
@@ -39,7 +38,6 @@ export default function IfVariationAppearance({
   useEffect(() => {
     if (appearancePart) {
       setCurrentIfName((appearancePart.translations || [])[0]?.text);
-      setInitValue((appearancePart.translations || [])[0]?.text);
     }
   }, [appearancePart, appearancePartId]);
 
@@ -95,10 +93,8 @@ export default function IfVariationAppearance({
           }}
           appearancePartId={appearancePartId}
           currentAppearancePartName={currentIfName}
-          initialValue={initValue}
           setAppearancePartId={setAppearancePartId}
           setCurrentAppearancePartName={setCurrentIfName}
-          setInitialValue={setInitValue}
         />
 
         <IfFieldName currentlyActive={currentlyActive} text="Одежда" />

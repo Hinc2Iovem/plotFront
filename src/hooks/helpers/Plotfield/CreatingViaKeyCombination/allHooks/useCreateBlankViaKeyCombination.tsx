@@ -9,6 +9,7 @@ import { AllPossiblePlotFieldComamndsTypes } from "@/types/StoryEditor/PlotField
 import { generateMongoObjectId } from "@/utils/generateMongoObjectId";
 import { useCallback, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { preventCreatingCommandsWhenFocus } from "../../preventCreatingCommandsWhenFocus";
 
 type CreateBlankViaKeyCombinationTypes = {
   topologyBlockId: string;
@@ -59,6 +60,11 @@ export default function useCreateBlankViaKeyCombination({ topologyBlockId }: Cre
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!preventCreatingCommandsWhenFocus()) {
+        console.log("Not allowed to move on focus");
+        return;
+      }
+
       const key = event.key.toLowerCase();
 
       if (event.repeat) return;

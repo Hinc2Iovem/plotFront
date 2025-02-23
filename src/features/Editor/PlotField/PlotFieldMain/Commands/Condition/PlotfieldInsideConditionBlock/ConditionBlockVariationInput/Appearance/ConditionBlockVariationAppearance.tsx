@@ -28,7 +28,6 @@ export default function ConditionBlockVariationAppearance({
 }: ConditionBlockVariationAppearanceTypes) {
   const { episodeId } = useParams();
   const [appearancePartId, setAppearancePartId] = useState(currentAppearancePartId || "");
-  const [initialValue, setInitialValue] = useState("");
 
   const updateConditionBlockVariationValue = useConditionBlocks((state) => state.updateConditionBlockVariationValue);
 
@@ -45,7 +44,6 @@ export default function ConditionBlockVariationAppearance({
   useEffect(() => {
     if (appearancePart) {
       setCurrentConditionName((appearancePart.translations || [])[0]?.text);
-      setInitialValue((appearancePart.translations || [])[0]?.text);
     }
   }, [appearancePart, appearancePartId]);
 
@@ -99,10 +97,8 @@ export default function ConditionBlockVariationAppearance({
           }}
           appearancePartId={appearancePartId}
           currentAppearancePartName={currentConditionName}
-          initialValue={initialValue}
           setAppearancePartId={setAppearancePartId}
           setCurrentAppearancePartName={setCurrentConditionName}
-          setInitialValue={setInitialValue}
         />
         <ConditionBlockFieldName currentlyActive={currentlyActive} text="Одежда" />
       </div>
