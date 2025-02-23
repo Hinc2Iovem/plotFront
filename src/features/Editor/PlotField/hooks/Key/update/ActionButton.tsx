@@ -39,7 +39,7 @@ export default function ActionButton({ plotfieldCommandId, text, setCurrentKey }
         createKey.mutate({ keyId, storyId: storyId || "", text });
         toast("Ключ создан", toastSuccessStyles);
       }}
-      className={`outline focus-within:bg-accent hover:bg-accent transition-all`}
+      className={`outline-white focus-within:bg-white focus-within:shadow-md focus-within:animate-pulse focus-within:shadow-white hover:bg-white focus-within:text-black hover:text-black text-white transition-all`}
       ref={ref}
     >
       Создать

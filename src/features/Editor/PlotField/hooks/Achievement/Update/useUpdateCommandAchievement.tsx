@@ -40,8 +40,7 @@ export default function useUpdateCommandAchievement({
           toast("Сервер не отвечает");
         } else if (error.response?.status === 404) {
           toast(`Такой ачивки не существует, хотите создать?`, {
-            ...toastNotificationStyles,
-            className: "flex text-[18px] text-white justify-between items-center",
+            className: "flex text-[15px] text-white justify-between items-center",
             action: (
               <ActionButton
                 plotfieldCommandId={plotFieldCommandId}

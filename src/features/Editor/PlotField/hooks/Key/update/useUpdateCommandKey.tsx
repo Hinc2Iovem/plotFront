@@ -31,8 +31,7 @@ export default function useUpdateCommandKey({ plotFieldCommandId, setCurrentKey 
         } else if (error.response?.status === 404) {
           toast(`Ключ не найден, хотите создать?`, {
             action: <ActionButton plotfieldCommandId={plotFieldCommandId} text={text} setCurrentKey={setCurrentKey} />,
-
-            className: `flex items-center justify-between`,
+            className: `flex text-[15px] items-center justify-between`,
           });
         } else {
           toast("Что-то пошло не так");

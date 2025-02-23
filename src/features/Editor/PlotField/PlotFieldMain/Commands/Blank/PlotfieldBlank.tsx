@@ -1,4 +1,7 @@
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
+import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -6,7 +9,6 @@ import {
   AllPossibleSayPlotFieldCommands,
 } from "../../../../../../const/PLOTFIELD_COMMANDS";
 import useGetTranslationCharacters from "../../../../../../hooks/Fetching/Translation/Characters/useGetTranslationCharacters";
-import useOutOfModal from "../../../../../../hooks/UI/useOutOfModal";
 import { AllPossiblePlotFieldComamndsTypes } from "../../../../../../types/StoryEditor/PlotField/PlotFieldTypes";
 import { CommandSayVariationTypes } from "../../../../../../types/StoryEditor/PlotField/Say/SayTypes";
 import { generateMongoObjectId } from "../../../../../../utils/generateMongoObjectId";
@@ -32,14 +34,13 @@ import useCreateCommandMusic from "../../../hooks/Music/Command/useCreateCommand
 import useCreateName from "../../../hooks/Name/useCreateName";
 import useCreateSayCommand from "../../../hooks/Say/post/useCreateSayCommand";
 import useCreateCommandSound from "../../../hooks/Sound/Command/useCreateCommandSound";
+import useCreateStat from "../../../hooks/Stat/useCreateStat";
 import useCreateSuit from "../../../hooks/Suit/useCreateSuit";
 import useUpdateCommandName from "../../../hooks/useUpdateCommandName";
 import useCreateWait from "../../../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../../../hooks/Wardrobe/useCreateWardrobe";
-import useConditionBlocks from "../Condition/Context/ConditionContext";
-import PlotFieldBlankCreateCharacter from "./PlotFieldBlankCreateCharacter";
 import DeleteCommandContextMenuWrapper from "../../components/DeleteCommandContextMenuWrapper";
-import useCreateStat from "../../../hooks/Stat/useCreateStat";
+import useConditionBlocks from "../Condition/Context/ConditionContext";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -91,7 +92,6 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
 
   const getCommandOnlyByPlotfieldCommandId = usePlotfieldCommands((state) => state.getCommandOnlyByPlotfieldCommandId);
   const currentCommand = getCommandOnlyByPlotfieldCommandId({ plotfieldCommandId: plotFieldCommandId });
-  const promptRef = useRef<HTMLDivElement>(null);
   const [showPromptValues, setShowPromptValues] = useState(false);
   const [value, setValue] = useState("");
 
@@ -436,11 +436,7 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
     }
   };
 
-  useOutOfModal({
-    modalRef: promptRef,
-    setShowModal: setShowPromptValues,
-    showModal: showPromptValues,
-  });
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredPromptValues.length });
 
   return (
     <DeleteCommandContextMenuWrapper
@@ -448,70 +444,78 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
       plotfieldCommandId={plotFieldCommandId}
       topologyBlockId={topologyBlockId}
     >
-      <Command
-        className={`${
-          isCommandFocused ? "bg-brand-gradient" : "border-border border-[1px]"
-        } rounded-md relative w-full`}
-      >
-        <CommandInput
-          ref={currentInput}
-          value={value}
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowPromptValues((prev) => !prev);
-            setShowCreateCharacterModal(false);
-          }}
-          placeholder="ПУСТОТА"
-          onValueChange={(value) => {
-            setValue(value);
-            if (!showPromptValues) {
-              setShowPromptValues(true);
-            }
-          }}
-          className={`${isCommandFocused ? "border-0 shadow-none" : ""} md:text-[17px] text-text w-full`}
-        />
-        <CommandList
-          ref={promptRef}
+      <Popover open={showPromptValues} onOpenChange={setShowPromptValues}>
+        <PopoverTrigger asChild>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleFormSubmit(value);
+            }}
+            className={`${
+              isCommandFocused ? "bg-brand-gradient" : "border-border border-[1px]"
+            } rounded-md relative w-full`}
+          >
+            <PlotfieldInput
+              ref={currentInput}
+              value={value}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowPromptValues((prev) => !prev);
+                setShowCreateCharacterModal(false);
+              }}
+              placeholder="ПУСТОТА"
+              onChange={(e) => {
+                setValue(e.target.value);
+                if (!showPromptValues) {
+                  setShowPromptValues(true);
+                }
+              }}
+              className={`${isCommandFocused ? "border-0 shadow-none" : ""} md:text-[17px] text-text w-full`}
+            />
+          </form>
+        </PopoverTrigger>
+        <PopoverContent
+          onOpenAutoFocus={(e) => e.preventDefault()}
           className={`${
             showPromptValues && !showCreateCharacterModal ? "" : "hidden"
-          }  w-full absolute z-[10] translate-y-[40px] bg-secondary left-0 | containerScroll`}
+          } sm:w-[calc(100vw-100px)] flex-grow z-[10] flex flex-col gap-[5px] bg-secondary | containerScroll`}
         >
-          <CommandEmpty>Пусто</CommandEmpty>
-          <CommandGroup>
-            {filteredPromptValues.length > 0 ? (
-              filteredPromptValues.map((pv) => (
-                <CommandItem
-                  key={pv}
-                  onSelect={() => {
-                    setValue(pv);
-                    setShowPromptValues(false);
-                    handleFormSubmit(pv);
-                  }}
-                  className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 w-full text-[14px] px-[10px] py-[5px] transition-all"
-                >
-                  {pv}
-                </CommandItem>
-              ))
-            ) : (
-              <CommandItem
-                onSelect={() => {
+          {filteredPromptValues.length > 0 ? (
+            filteredPromptValues.map((pv, i) => (
+              <Button
+                key={pv}
+                ref={(el) => (buttonsRef.current[i] = el)}
+                onClick={() => {
+                  setValue(pv);
                   setShowPromptValues(false);
+                  handleFormSubmit(pv);
                 }}
-                className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 w-full text-[14px] px-[10px] py-[5px] transition-all"
+                className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 focus-within:bg-secondary w-full text-[14px] px-[10px] py-[5px] shadow-none border-border border-[1px] transition-all"
               >
-                Такой команды или персонажа не существует
-              </CommandItem>
-            )}
-          </CommandGroup>
-        </CommandList>
-        <PlotFieldBlankCreateCharacter
-          setShowModal={setShowCreateCharacterModal}
-          characterName={value}
-          plotFieldCommandId={plotFieldCommandId}
-          topologyBlockId={topologyBlockId}
-          showModal={showCreateCharacterModal}
-        />
-      </Command>
+                {pv}
+              </Button>
+            ))
+          ) : (
+            <Button
+              onClick={() => {
+                setShowPromptValues(false);
+              }}
+              className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 focus-within:bg-secondary w-full text-[14px] px-[10px] py-[5px] shadow-none border-border border-[1px] transition-all"
+            >
+              Такой команды или персонажа не существует
+            </Button>
+          )}
+        </PopoverContent>
+      </Popover>
     </DeleteCommandContextMenuWrapper>
   );
+}
+{
+  /* <PlotFieldBlankCreateCharacter
+setShowModal={setShowCreateCharacterModal}
+characterName={value}
+plotFieldCommandId={plotFieldCommandId}
+topologyBlockId={topologyBlockId}
+showModal={showCreateCharacterModal}
+/> */
 }

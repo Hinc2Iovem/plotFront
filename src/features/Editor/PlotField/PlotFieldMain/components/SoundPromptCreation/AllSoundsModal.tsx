@@ -1,4 +1,3 @@
-import { toastNotificationStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
@@ -71,8 +70,7 @@ const AllSoundsModal = ({ setSoundName, soundName, storyId, commandSoundId, onCh
 
     if (!foundSound) {
       toast("Создать Звук", {
-        ...toastNotificationStyles,
-        className: "flex text-[18px] text-white justify-between items-center",
+        className: "flex text-[15px] text-white justify-between items-center",
         action: <SoundActionButton commandSoundId={commandSoundId} soundName={value} setSoundName={setSoundName} />,
       });
     } else {

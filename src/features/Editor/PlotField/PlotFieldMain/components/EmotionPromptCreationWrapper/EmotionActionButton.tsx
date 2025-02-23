@@ -24,7 +24,7 @@ export default function EmotionActionButton({ setCreateNewEmotion, setStartCreat
         setStartCreatingEmotion(true);
         toast.dismiss();
       }}
-      className={`outline-white focus-within:bg-white focus-within:shadow-md focus-within:animate-pulse focus-within:shadow-white hover:bg-white text-black transition-all`}
+      className={`outline-white focus-within:bg-white focus-within:shadow-md focus-within:animate-pulse focus-within:shadow-white hover:bg-white focus-within:text-black hover:text-black text-white transition-all`}
       ref={ref}
     >
       Создать

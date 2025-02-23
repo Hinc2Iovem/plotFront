@@ -1,4 +1,3 @@
-import { toastNotificationStyles } from "@/components/shared/toastStyles";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
@@ -66,8 +65,7 @@ export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalT
 
     if (!foundMusic?.id) {
       toast("Музыка не найдена, хотите создать?", {
-        ...toastNotificationStyles,
-        className: "flex text-[18px] text-white justify-between items-center",
+        className: "flex text-[15px] text-white justify-between items-center",
         action: <ActionButton text={value.trim()} onBlur={onBlur} />,
       });
       return;

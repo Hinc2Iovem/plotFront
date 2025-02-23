@@ -144,7 +144,7 @@ export default function PlotfieldItem({
           <CommandCommentField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : null}
       </ErrorBoundary>
-      <div className="bg-red text-white text-[20px] w-[40px] text-center rounded-md">{commandOrder}</div>
+      {/* <div className="bg-red text-white text-[20px] w-[40px] text-center rounded-md">{commandOrder}</div> */}
     </li>
   );
 }

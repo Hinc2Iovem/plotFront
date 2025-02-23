@@ -6,13 +6,12 @@ import useUpdateNameText from "@/features/Editor/PlotField/hooks/Name/useUpdateN
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
 import { useEffect, useRef, useState } from "react";
-import usePrepareCharacterValuesForNameCommand from "../../../Name/hooks/usePrepareCharacterValuesForNameCommand";
-import useUnknownCharactersHandleLogic from "./useUnknownCharactersHandleLogic";
 import { toast } from "sonner";
-import { toastNotificationStyles } from "@/components/shared/toastStyles";
-import UnknownNameActionButton from "./UnknownNameActionButton";
 import CharacterPromptCreationWrapper from "../../../../components/CharacterPrompCreationWrapper/CharacterPromptCreationWrapper";
+import usePrepareCharacterValuesForNameCommand from "../../../Name/hooks/usePrepareCharacterValuesForNameCommand";
 import { CharacterValueTypes } from "../../../Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
+import UnknownNameActionButton from "./UnknownNameActionButton";
+import useUnknownCharactersHandleLogic from "./useUnknownCharactersHandleLogic";
 
 export type UnknownCharacterValueTypes = {
   characterUnknownName: string;
@@ -76,6 +75,11 @@ const PlotfieldUnknownCharacterPromptMain = ({
 
   const updateCharacterOnBlur = (val?: UnknownCharacterValueTypes) => {
     const value = val?.characterId ? val : characterValue;
+
+    if (!value.characterUnknownName.trim().length) {
+      return;
+    }
+
     if (initCharacterUnknownName === value.characterUnknownName && value.characterUnknownName.trim().length) {
       // same character no need to update
       return;
@@ -90,8 +94,7 @@ const PlotfieldUnknownCharacterPromptMain = ({
     );
     if (!tranlsatedCharacter) {
       toast("Назначить/Создать персонажа", {
-        ...toastNotificationStyles,
-        className: "flex text-[18px] text-white justify-between items-center",
+        className: "flex text-[15px] text-white justify-between items-center",
         action: <UnknownNameActionButton setStartAssigningUnknownName={setStartAssigningUnknownName} />,
         onAutoClose: () => setStartAssigningUnknownName(false),
         onDismiss: () => setStartAssigningUnknownName(false),

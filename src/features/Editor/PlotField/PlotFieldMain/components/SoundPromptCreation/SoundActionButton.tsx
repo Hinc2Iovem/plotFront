@@ -44,7 +44,7 @@ export default function SoundActionButton({ commandSoundId, soundName, setSoundN
         toast.dismiss();
         createNewSound();
       }}
-      className={`outline-white focus-within:bg-white focus-within:shadow-md focus-within:animate-pulse focus-within:shadow-white hover:bg-white text-black transition-all`}
+      className={`outline-white focus-within:bg-white focus-within:shadow-md focus-within:animate-pulse focus-within:shadow-white hover:bg-white focus-within:text-black hover:text-black text-white transition-all`}
       ref={ref}
     >
       Создать

@@ -2,15 +2,9 @@ import { useRef, useState } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 
 type DraggableExpansionDivTypes = {
-  setExpansionDivDirection: React.Dispatch<
-    React.SetStateAction<"left" | "right">
-  >;
-  setCommand: (
-    value: React.SetStateAction<PossibleCommandsCreatedByCombinationOfKeysTypes>
-  ) => void;
-  setHideFlowchartFromScriptwriter: React.Dispatch<
-    React.SetStateAction<boolean | null>
-  >;
+  setExpansionDivDirection: React.Dispatch<React.SetStateAction<"left" | "right">>;
+  setCommand: (value: React.SetStateAction<PossibleCommandsCreatedByCombinationOfKeysTypes>) => void;
+  setHideFlowchartFromScriptwriter: React.Dispatch<React.SetStateAction<boolean | null>>;
 };
 
 export default function DraggableExpansionDiv({
@@ -48,12 +42,8 @@ export default function DraggableExpansionDiv({
     // If the accumulated movement exceeds the threshold, update the direction and command
     if (Math.abs(totalDeltaX + deltaX) >= dragThreshold) {
       const movementDirection = totalDeltaX + deltaX > 0 ? "right" : "left";
-      setCommand(
-        movementDirection === "right" ? "expandPlotField" : "expandFlowchart"
-      );
-      setHideFlowchartFromScriptwriter(
-        movementDirection === "right" ? true : false
-      );
+      setCommand(movementDirection === "right" ? "expandPlotField" : "expandFlowchart");
+      setHideFlowchartFromScriptwriter(movementDirection === "right" ? true : false);
       setExpansionDivDirection(movementDirection);
       setIsDragging(false);
     }

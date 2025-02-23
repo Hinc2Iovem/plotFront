@@ -50,27 +50,7 @@ export default function EditorMain() {
               setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
               setExpansionDivDirection={setExpansionDivDirection}
             />
-          ) : // this is a button in the middle of the screen to expand flowchart or plotfield
-          null}
-          {/* <div
-            className={`${
-              keyCombinationToExpandPlotField === "expandPlotField" || hideFlowchartFromScriptwriter ? "hidden" : ""
-            } fixed top-[20px] text-text-light text-[13px] transition-all bg-secondary text-text px-[10px] py-[5px] rounded-md z-[10]`}
-            style={{
-              left: `${scaleDivPosition}px`,
-            }}
-          >
-            {(scale * 100).toFixed(0)}%
-          </div> */}
-          {/* <CoordinatesProvider>
-            <Flowchart
-              expansionDivDirection={expansionDivDirection}
-              hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
-              command={command}
-              scale={scale}
-              setScale={setScale}
-            />
-          </CoordinatesProvider> */}
+          ) : null}
 
           <Flowchart
             keyCombinationToExpandPlotField={keyCombinationToExpandPlotField}

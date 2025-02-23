@@ -38,16 +38,6 @@ export default function PlotField({ command, showUtils, expansionDivDirection }:
         showUtils ? "" : "flex-shrink-0"
       } border-border mt-[10px] border-[1px] rounded-md shadow-md min-h-[200px] h-full relative p-[10px]`}
     >
-      {/* {topologyBlockData ? (
-        <PlotfieldHeader
-          setShowAllCommands={setShowAllCommands}
-          showAllCommands={showAllCommands}
-          hideFlowchartFromScriptwriter={hideFlowchartFromScriptwriter}
-          setExpansionDivDirection={setExpansionDivDirection}
-          topologyBlockId={currentTopologyBlock._id}
-          setHideFlowchartFromScriptwriter={setHideFlowchartFromScriptwriter}
-        />
-      ) : null} */}
       <PlotFieldMain showAllCommands={showAllCommands} topologyBlockId={currentTopologyBlock._id} />
     </section>
   );
