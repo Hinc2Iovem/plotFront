@@ -25,6 +25,9 @@ import CommandSuitField from "./Suit/CommandSuitField";
 import CommandWaitField from "./Wait/CommandWaitField";
 import CommandWardrobeField from "./Wardrobe/CommandWardrobeField";
 import CommandChoiceField from "./Choice/CommandChoiceField";
+import CommandStatusField from "./Status/CommandStatusField";
+import CommandStatField from "./Stat/CommandStatField";
+import CommandRelationField from "./Relation/CommandRelationField";
 
 function ErrorFallback({
   error,
@@ -142,9 +145,15 @@ export default function PlotfieldItem({
           <CommandConditionField topologyBlockId={topologyBlockId} plotFieldCommandId={_id} />
         ) : command === "comment" ? (
           <CommandCommentField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "status" ? (
+          <CommandStatusField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "stat" ? (
+          <CommandStatField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+        ) : command === "relation" ? (
+          <CommandRelationField plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : null}
       </ErrorBoundary>
-      {/* <div className="bg-red text-white text-[20px] w-[40px] text-center rounded-md">{commandOrder}</div> */}
+      <div className="bg-red text-white text-[20px] w-[40px] text-center rounded-md">{commandOrder}</div>
     </li>
   );
 }

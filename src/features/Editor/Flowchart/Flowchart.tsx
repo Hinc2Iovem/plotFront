@@ -86,7 +86,7 @@ export default function Flowchart({
         {allConnections ? allConnections.map((c) => <FlowchartArrowList key={c._id} {...c} />) : null}
       </div>
       <Button
-        onClick={() => createTopologyBlock.mutate()}
+        onClick={() => createTopologyBlock.mutate({})}
         className={`fixed bottom-[15px] ${
           command !== "expandFlowchart" ? "left-[calc(50%+.6rem)]" : "left-[20px]"
         } hover:shadow-md hover:shadow-brand-gradient-left active:scale-[.99] transition-all z-[10] px-[10px] py-[5px] text-text bg-brand-gradient rounded-md shadow-sm text-[14px]`}

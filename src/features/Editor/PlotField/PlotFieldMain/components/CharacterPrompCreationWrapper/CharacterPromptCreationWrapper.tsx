@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import PlotfieldCharacterPromptMain from "../../Commands/Prompts/Characters/PlotfieldCharacterPromptMain";
 import { CharacterValueTypes } from "../../Commands/Say/CommandSayFieldItem/Character/CommandSayCharacterFieldItem";
-import { toast } from "sonner";
-import { toastNotificationStyles } from "@/components/shared/toastStyles";
 import ActionButton from "./ActionButton";
 
-import CreateCharacterForm from "./CreateCharacterForm";
 import { Button } from "@/components/ui/button";
+import CreateCharacterForm from "./CreateCharacterForm";
 
 type CharacterPromptCreationWrapperTypes = {
   inputClasses?: string;
@@ -36,8 +35,7 @@ export default function CharacterPromptCreationWrapper({
   useEffect(() => {
     if (createNewCharacter) {
       toast("Создать персонажа", {
-        ...toastNotificationStyles,
-        className: "flex text-[18px] text-white justify-between items-center",
+        className: "flex text-[15px] text-white justify-between items-center",
         action: (
           <ActionButton
             setCreateNewCharacter={setCreateNewCharacter}

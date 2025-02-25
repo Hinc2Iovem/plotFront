@@ -6,14 +6,11 @@ type GetCommandSuitTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandSuit({
-  plotFieldCommandId,
-}: GetCommandSuitTypes) {
+export default function useGetCommandSuit({ plotFieldCommandId }: GetCommandSuitTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "suit"],
     queryFn: async () =>
-      await axiosCustomized
-        .get<SuitTypes>(`/plotFieldCommands/${plotFieldCommandId}/suits`)
-        .then((r) => r.data),
+      await axiosCustomized.get<SuitTypes>(`/plotFieldCommands/${plotFieldCommandId}/suits`).then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

@@ -18,6 +18,8 @@ export const AllPossiblePlotFieldCommands = [
   "wait",
   "comment",
   "wardrobe",
+  "status",
+  "relation",
 ];
 
 export const AllPossiblePlotFieldCommandsWithSayVariations = [
@@ -44,12 +46,9 @@ export const AllPossiblePlotFieldCommandsWithSayVariations = [
   "wait",
   "comment",
   "wardrobe",
+  "status",
+  "relation",
 ];
 
 export const AllPossibleSayPlotFieldCommands = ["author", "hint", "notify"];
-export const AllPossibleSayPlotFieldCommandsBlank = [
-  "author",
-  "hint",
-  "notify",
-  "character",
-];
+export const AllPossibleSayPlotFieldCommandsBlank = ["author", "hint", "notify", "character"];

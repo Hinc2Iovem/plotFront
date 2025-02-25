@@ -11,5 +11,6 @@ export default function useGetCommandStat({ plotFieldCommandId }: GetCommandStat
     queryKey: ["plotfieldCommand", plotFieldCommandId, "stat"],
     queryFn: async () =>
       await axiosCustomized.get<StatTypes>(`/plotFieldCommands/${plotFieldCommandId}/stats`).then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

@@ -6,14 +6,11 @@ type GetCommandGetItemTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandGetItem({
-  plotFieldCommandId,
-}: GetCommandGetItemTypes) {
+export default function useGetCommandGetItem({ plotFieldCommandId }: GetCommandGetItemTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "getItem"],
     queryFn: async () =>
-      await axiosCustomized
-        .get<GetItemTypes>(`/plotFieldCommands/${plotFieldCommandId}/getItems`)
-        .then((r) => r.data),
+      await axiosCustomized.get<GetItemTypes>(`/plotFieldCommands/${plotFieldCommandId}/getItems`).then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

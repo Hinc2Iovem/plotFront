@@ -6,14 +6,11 @@ type GetCommandCommentTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandComment({
-  plotFieldCommandId,
-}: GetCommandCommentTypes) {
+export default function useGetCommandComment({ plotFieldCommandId }: GetCommandCommentTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "comment"],
     queryFn: async () =>
-      await axiosCustomized
-        .get<CommentTypes>(`/plotFieldCommands/${plotFieldCommandId}/comments`)
-        .then((r) => r.data),
+      await axiosCustomized.get<CommentTypes>(`/plotFieldCommands/${plotFieldCommandId}/comments`).then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

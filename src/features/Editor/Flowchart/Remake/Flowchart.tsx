@@ -20,6 +20,7 @@ import useGetAllTopologyBlocksByEpisodeId from "../../PlotField/hooks/TopologyBl
 import "@xyflow/react/dist/style.css";
 import NodeWithToolbar from "./CustomNodes/NodeWithToolbar";
 import { TopologyBlockTypes } from "@/types/TopologyBlock/TopologyBlockTypes";
+import useUpdateTopologyBlockCoordinates from "../../PlotField/hooks/TopologyBlock/useUpdateTopologyBlockCoordinates";
 
 type FlowchartTypes = {
   keyCombinationToExpandPlotField: PossibleCommandsCreatedByCombinationOfKeysTypes;
@@ -98,6 +99,16 @@ export default function Flowchart({
   //     episodeId: episodeId || "",
   //   });
 
+  const updateCooridantes = useUpdateTopologyBlockCoordinates({});
+
+  const onNodeDragStop = useCallback((_: any, node: Node) => {
+    updateCooridantes.mutate({
+      coordinatesX: node.position.x,
+      coordinatesY: node.position.y,
+      topologyBlockBodyId: node.id,
+    });
+  }, []);
+
   return (
     <div
       className={`
@@ -115,6 +126,7 @@ export default function Flowchart({
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        onNodeDragStop={onNodeDragStop}
       >
         <Controls showInteractive={false} />
         <MiniMap bgColor="#1e1e1e" maskColor="#171717" position="top-right" />

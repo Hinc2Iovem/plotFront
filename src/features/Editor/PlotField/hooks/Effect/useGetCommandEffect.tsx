@@ -6,14 +6,11 @@ type GetCommandEffectTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandChoice({
-  plotFieldCommandId,
-}: GetCommandEffectTypes) {
+export default function useGetCommandChoice({ plotFieldCommandId }: GetCommandEffectTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "effect"],
     queryFn: async () =>
-      await axiosCustomized
-        .get<EffectTypes>(`/plotFieldCommands/${plotFieldCommandId}/effects`)
-        .then((r) => r.data),
+      await axiosCustomized.get<EffectTypes>(`/plotFieldCommands/${plotFieldCommandId}/effects`).then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

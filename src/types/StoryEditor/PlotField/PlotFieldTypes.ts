@@ -43,7 +43,9 @@ export type AllPossiblePlotFieldComamndsSaySubVariationsTypes =
   | "suit"
   | "wait"
   | "comment"
-  | "wardrobe";
+  | "wardrobe"
+  | "relation"
+  | "status";
 
 export type AllPossiblePlotFieldComamndsTypes =
   | "achievement"
@@ -69,6 +71,8 @@ export type AllPossiblePlotFieldComamndsTypes =
   | "suit"
   | "wait"
   | "comment"
-  | "wardrobe";
+  | "wardrobe"
+  | "relation"
+  | "status";
 
 export type OmittedCommandNames = Exclude<AllPossiblePlotFieldComamndsTypes, "end" | "else">;

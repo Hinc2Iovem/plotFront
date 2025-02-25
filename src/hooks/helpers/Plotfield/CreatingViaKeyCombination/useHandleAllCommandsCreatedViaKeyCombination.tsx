@@ -19,7 +19,9 @@ import useCreateMoveViaKeyCombination from "./allHooks/useCreateMoveViaKeyCombin
 import useCreateMusicViaKeyCombination from "./allHooks/useCreateMusicViaKeyCombination";
 import useCreateNameViaKeyCombination from "./allHooks/useCreateNameViaKeyCombination";
 import useCreateNotifyViaKeyCombination from "./allHooks/useCreateNotifyViaKeyCombination";
+import useCreateRelationViaKeyCombination from "./allHooks/useCreateRelationViaKeyCombination";
 import useCreateSoundViaKeyCombination from "./allHooks/useCreateSoundViaKeyCombination";
+import useCreateStatusViaKeyCombination from "./allHooks/useCreateStatusViaKeyCombination";
 import useCreateStatViaKeyCombination from "./allHooks/useCreateStatViaKeyCombination";
 import useCreateSuitViaKeyCombination from "./allHooks/useCreateSuitViaKeyCombination";
 import useCreateWaitViaKeyCombination from "./allHooks/useCreateWaitViaKeyCombination";
@@ -55,6 +57,10 @@ export default function useHandleAllCommandsCreatedViaKeyCombination({
   useCreateKeyViaKeyCombination({ topologyBlockId });
 
   useCreateMoveViaKeyCombination({ topologyBlockId });
+
+  useCreateStatusViaKeyCombination({ topologyBlockId });
+
+  useCreateRelationViaKeyCombination({ topologyBlockId });
 
   useCreateStatViaKeyCombination({ topologyBlockId });
 

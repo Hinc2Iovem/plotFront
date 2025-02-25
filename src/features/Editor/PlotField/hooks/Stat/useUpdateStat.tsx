@@ -6,16 +6,16 @@ type UpdateStatTextTypes = {
 };
 
 type UpdateStatBodyTypes = {
-  statName?: string;
+  characteristicId?: string;
   statValue?: number;
 };
 
 export default function useUpdateStat({ statId }: UpdateStatTextTypes) {
   return useMutation({
-    mutationFn: async ({ statName, statValue }: UpdateStatBodyTypes) =>
+    mutationFn: async ({ characteristicId, statValue }: UpdateStatBodyTypes) =>
       await axiosCustomized.patch(`/plotFieldCommands/stats/${statId}`, {
         statValue,
-        statName,
+        characteristicId,
       }),
   });
 }

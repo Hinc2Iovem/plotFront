@@ -74,4 +74,10 @@ export default function useHandleDuplicationOfAllCommands() {
   // useDuplicateFocusedCommandWardrobe({
   //   topologyBlockId: currentTopologyBlockId || topologyBlockId,
   // });
+  // useDuplicateFocusedCommandStatus({
+  //   topologyBlockId: currentTopologyBlockId || topologyBlockId,
+  // })
+  // useDuplicateFocusedCommandRelation({
+  //   topologyBlockId: currentTopologyBlockId || topologyBlockId,
+  // })
 }

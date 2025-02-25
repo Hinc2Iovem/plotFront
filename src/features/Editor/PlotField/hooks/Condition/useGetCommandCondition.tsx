@@ -6,16 +6,13 @@ type GetCommandConditionTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandCondition({
-  plotFieldCommandId,
-}: GetCommandConditionTypes) {
+export default function useGetCommandCondition({ plotFieldCommandId }: GetCommandConditionTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "condition"],
     queryFn: async () =>
       await axiosCustomized
-        .get<ConditionTypes>(
-          `/plotFieldCommands/${plotFieldCommandId}/conditions`
-        )
+        .get<ConditionTypes>(`/plotFieldCommands/${plotFieldCommandId}/conditions`)
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

@@ -21,6 +21,7 @@ export default function CommandGetItemField({ topologyBlockId, plotFieldCommandI
     description: "",
     text: "",
   });
+
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [buttonText, setButtonText] = useState("");

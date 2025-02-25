@@ -2,34 +2,34 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosCustomized } from "../../../../../api/axios";
 
 type UpdateTopologyBlockCoordinatesTypes = {
-  topologyBlockId: string;
-  sourceBlockId?: string;
+  topologyBlockId?: string;
 };
 type UpdateTopologyBlockCoordinatesOnMutationTypes = {
+  topologyBlockBodyId?: string;
   coordinatesX: number;
   coordinatesY: number;
 };
 
-export default function useUpdateTopologyBlockCoordinates({
-  topologyBlockId,
-}: UpdateTopologyBlockCoordinatesTypes) {
+export default function useUpdateTopologyBlockCoordinates({ topologyBlockId }: UpdateTopologyBlockCoordinatesTypes) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       coordinatesX,
       coordinatesY,
+      topologyBlockBodyId,
     }: UpdateTopologyBlockCoordinatesOnMutationTypes) => {
-      await axiosCustomized.patch(
-        `/topologyBlocks/${topologyBlockId}/coordinates`,
-        {
-          coordinatesX,
-          coordinatesY,
-        }
-      );
+      const currentTopologyBlockId = topologyBlockBodyId?.trim().length ? topologyBlockBodyId : topologyBlockId;
+      await axiosCustomized.patch(`/topologyBlocks/${currentTopologyBlockId}/coordinates`, {
+        coordinatesX,
+        coordinatesY,
+      });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      const { topologyBlockBodyId } = variables;
+
+      const currentTopologyBlockId = topologyBlockBodyId?.trim().length ? topologyBlockBodyId : topologyBlockId;
       queryClient.invalidateQueries({
-        queryKey: ["topologyBlock", topologyBlockId],
+        queryKey: ["topologyBlock", currentTopologyBlockId],
         exact: true,
         type: "active",
       });

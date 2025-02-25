@@ -13,5 +13,6 @@ export default function useGetCommandMusic({ plotFieldCommandId }: GetCommandMus
       await axiosCustomized
         .get<MusicCommandTypes>(`/plotFieldCommands/${plotFieldCommandId}/music`)
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

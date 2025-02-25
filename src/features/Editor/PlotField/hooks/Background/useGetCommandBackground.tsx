@@ -7,17 +7,13 @@ type GetCommandBackgroundTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandBackground({
-  plotFieldCommandId,
-}: GetCommandBackgroundTypes) {
+export default function useGetCommandBackground({ plotFieldCommandId }: GetCommandBackgroundTypes) {
   const queryClient = useQueryClient();
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "background"],
     queryFn: async () => {
       const bg = await axiosCustomized
-        .get<BackgroundTypes>(
-          `/plotFieldCommands/${plotFieldCommandId}/backgrounds`
-        )
+        .get<BackgroundTypes>(`/plotFieldCommands/${plotFieldCommandId}/backgrounds`)
         .then((r) => r.data);
       queryClient.prefetchQuery({
         queryKey: ["stories", "music", bg.musicId],
@@ -25,5 +21,6 @@ export default function useGetCommandBackground({
       });
       return bg;
     },
+    enabled: !!plotFieldCommandId,
   });
 }

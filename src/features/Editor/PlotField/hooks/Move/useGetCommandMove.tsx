@@ -6,14 +6,11 @@ type GetCommandMoveTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandMove({
-  plotFieldCommandId,
-}: GetCommandMoveTypes) {
+export default function useGetCommandMove({ plotFieldCommandId }: GetCommandMoveTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "move"],
     queryFn: async () =>
-      await axiosCustomized
-        .get<MoveTypes>(`/plotFieldCommands/${plotFieldCommandId}/moves`)
-        .then((r) => r.data),
+      await axiosCustomized.get<MoveTypes>(`/plotFieldCommands/${plotFieldCommandId}/moves`).then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

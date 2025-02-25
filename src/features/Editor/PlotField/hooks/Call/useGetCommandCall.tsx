@@ -8,10 +8,7 @@ type GetCommandCallTypes = {
   topologyBlockId: string;
 };
 
-export default function useGetCommandCall({
-  plotFieldCommandId,
-  topologyBlockId,
-}: GetCommandCallTypes) {
+export default function useGetCommandCall({ plotFieldCommandId, topologyBlockId }: GetCommandCallTypes) {
   const queryClient = useQueryClient();
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "call"],
@@ -27,5 +24,6 @@ export default function useGetCommandCall({
 
       return call;
     },
+    enabled: !!plotFieldCommandId,
   });
 }

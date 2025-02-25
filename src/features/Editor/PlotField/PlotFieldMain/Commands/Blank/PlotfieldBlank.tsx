@@ -41,6 +41,8 @@ import useCreateWait from "../../../hooks/Wait/useCreateWait";
 import useCreateWardrobe from "../../../hooks/Wardrobe/useCreateWardrobe";
 import DeleteCommandContextMenuWrapper from "../../components/DeleteCommandContextMenuWrapper";
 import useConditionBlocks from "../Condition/Context/ConditionContext";
+import useCreateCommandStatus from "../../../hooks/Status/useCreateCommandStatus";
+import useCreateCommandRelation from "../../../hooks/Relation/Command/useCreateCommandRelation";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
@@ -169,6 +171,8 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
   const createSound = useCreateCommandSound({ plotFieldCommandId });
   const createSuit = useCreateSuit({ plotFieldCommandId });
   const createStat = useCreateStat({ plotFieldCommandId });
+  const createStatus = useCreateCommandStatus({ plotFieldCommandId });
+  const createRelation = useCreateCommandRelation({ plotFieldCommandId });
   const createWait = useCreateWait({ plotFieldCommandId });
   const createComment = useCreateComment({ plotFieldCommandId });
   const createWardrobe = useCreateWardrobe({
@@ -387,6 +391,10 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
         createComment.mutate({});
       } else if (allCommands === "stat") {
         createStat.mutate({});
+      } else if (allCommands === "status") {
+        createStatus.mutate({});
+      } else if (allCommands === "relation") {
+        createRelation.mutate({});
       }
 
       handleCreatingOptimisticCommand({

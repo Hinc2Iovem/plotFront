@@ -6,16 +6,13 @@ type GetCommandWardrobeTypes = {
   plotFieldCommandId: string;
 };
 
-export default function useGetCommandWardrobe({
-  plotFieldCommandId,
-}: GetCommandWardrobeTypes) {
+export default function useGetCommandWardrobe({ plotFieldCommandId }: GetCommandWardrobeTypes) {
   return useQuery({
     queryKey: ["plotfieldCommand", plotFieldCommandId, "wardrobe"],
     queryFn: async () =>
       await axiosCustomized
-        .get<CommandWardrobeTypes>(
-          `/plotFieldCommands/${plotFieldCommandId}/wardrobes`
-        )
+        .get<CommandWardrobeTypes>(`/plotFieldCommands/${plotFieldCommandId}/wardrobes`)
         .then((r) => r.data),
+    enabled: !!plotFieldCommandId,
   });
 }

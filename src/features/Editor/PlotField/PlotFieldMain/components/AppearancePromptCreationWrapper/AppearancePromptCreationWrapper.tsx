@@ -1,11 +1,10 @@
-import { toastNotificationStyles } from "@/components/shared/toastStyles";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AppearanceActionButton from "./AppearanceActionButton";
 
-import CreateAppearanceForm from "./CreateAppearanceForm";
-import AppearancePartsPromptModal from "./AppearancePartsPromptModal";
 import { TranslationTextFieldNameAppearancePartsTypes } from "@/types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
+import AppearancePartsPromptModal from "./AppearancePartsPromptModal";
+import CreateAppearanceForm from "./CreateAppearanceForm";
 
 type AppearancePromptCreationWrapperTypes = {
   currentAppearancePartName: string;
@@ -41,8 +40,7 @@ export default function AppearancePromptCreationWrapper({
   useEffect(() => {
     if (createNewAppearance) {
       toast("Создать внешний вид", {
-        ...toastNotificationStyles,
-        className: "flex text-[18px] text-white justify-between items-center",
+        className: "flex text-[15px] text-white justify-between items-center",
         action: (
           <AppearanceActionButton
             setCreateNewAppearance={setCreateNewAppearance}
