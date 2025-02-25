@@ -86,7 +86,7 @@ export default function TopologyBlocksPrompt({
           if (create) {
             toast(`Блок был создан`, toastSuccessStyles);
             const topologyBlockId = generateMongoObjectId();
-            await createNewTopologyBlock.mutateAsync();
+            await createNewTopologyBlock.mutateAsync({});
             setTopologyBlockValue({
               name: value,
               id: topologyBlockId,

@@ -20,7 +20,7 @@ export default function ProfileLeftSideScriptwriter({
   setStoriesType,
 }: ProfileLeftSideScriptwriterTypes) {
   const queryClient = useQueryClient();
-  const { userId } = useGetDecodedJWTValues();
+  const { userId, roles } = useGetDecodedJWTValues();
   const prefetchAllAssignedStories = (storyStatus: string) => {
     queryClient.prefetchQuery({
       queryKey: ["translation", "assigned", "stories", storyStatus, userId, "search", ""],
@@ -33,7 +33,6 @@ export default function ProfileLeftSideScriptwriter({
         }),
     });
   };
-  const { roles } = useGetDecodedJWTValues();
   const [localSearchValue, setLocalSearchValue] = useState("");
   const [, setLocalAssignedSearchValue] = useState("");
 
@@ -51,9 +50,7 @@ export default function ProfileLeftSideScriptwriter({
   return (
     <div
       className={`${
-        roles?.includes("scriptwriter") || roles?.includes("headscriptwriter") || roles?.includes("editor")
-          ? ""
-          : "hidden"
+        roles?.includes("headscriptwriter") || roles?.includes("editor") ? "" : "hidden"
       } flex gap-[10px] flex-col flex-grow min-w-[200px] p-[10px] justify-center border-[1px] border-border rounded-md`}
     >
       <div className={`w-full flex-grow flex flex-col gap-[10px] py-[10px] p-[5px] rounded-md shadow-md`}>
@@ -76,7 +73,7 @@ export default function ProfileLeftSideScriptwriter({
           />
         </form>
 
-        <ul className="flex flex-col gap-[5px] rounded-md">
+        <ul className={`flex flex-col gap-[5px] rounded-md`}>
           <li>
             <Button
               onMouseEnter={prefetchAllStories}

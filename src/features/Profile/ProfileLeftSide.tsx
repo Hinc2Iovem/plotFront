@@ -68,9 +68,9 @@ export default function ProfileLeftSide({
         )}
       </div>
       <div
-        className={`flex flex-col gap-[5px] border-[1px] border-border rounded-md p-[10px] ${
-          roles?.includes("translator") ? "" : "justify-center flex-grow"
-        }`}
+        className={`flex flex-col gap-[5px] border-[1px] border-border sm:w-auto w-full rounded-md p-[10px] ${
+          roles?.includes("translator") ? "" : "justify-center"
+        } ${roles?.includes("headscriptwriter") ? "flex-grow" : ""} `}
       >
         <div className="w-full rounded-md">
           <h3 className="text-[15px] text-center text-text bg-secondary px-[10px] py-[5px] rounded-md">

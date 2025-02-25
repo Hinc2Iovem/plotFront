@@ -1,158 +1,71 @@
-import { useEffect, useRef } from "react";
-import assignBlack from "../../../assets/images/Profile/assignBlack.svg";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
 import useGetAllScriptwriters from "../../../hooks/Fetching/Staff/useGetAllScriptwriters";
 import useAssignWorker from "../../../hooks/Patching/Story/useAssignWorker";
-import useOutOfModal from "../../../hooks/UI/useOutOfModal";
-import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
 import "../../Editor/Flowchart/FlowchartStyles.css";
-import ButtonHoverPromptModal from "../../../ui/ButtonAsideHoverPromptModal/ButtonHoverPromptModal";
+import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
 
 type AssignScriptwriterModalTypes = {
-  setCharacterIds: React.Dispatch<React.SetStateAction<string[]>>;
-  setOpenedStoryId: React.Dispatch<React.SetStateAction<string>>;
-  characterIds: string[];
-  openedStoryId: string;
-  storyTitle: string;
   storyId: string;
-  showScriptwriters: boolean;
-  setShowScriptwriters: React.Dispatch<React.SetStateAction<boolean>>;
-  assignedWorkers?:
-    | {
-        staffId: string;
-        storyStatus: EpisodeStatusTypes;
-      }[]
-    | undefined;
 };
 
-export default function AssignScriptwriterModal({
-  storyTitle,
-  storyId,
-  openedStoryId,
-  setOpenedStoryId,
-  setCharacterIds,
-  characterIds,
-  assignedWorkers,
-  setShowScriptwriters,
-  showScriptwriters,
-}: AssignScriptwriterModalTypes) {
+export default function AssignScriptwriterModal({ storyId }: AssignScriptwriterModalTypes) {
   const { userId } = useGetDecodedJWTValues();
-  const modalRef = useRef<HTMLDivElement>(null);
-  const theme = localStorage.getItem("theme");
 
-  useEffect(() => {
-    if (showScriptwriters && assignedWorkers) {
-      const allAssignedWorkersIds: string[] = [];
-      assignedWorkers.map((aw) => {
-        allAssignedWorkersIds.push(aw.staffId);
-      });
-      setCharacterIds(allAssignedWorkersIds);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showScriptwriters, assignedWorkers]);
-
-  const { data: allScriptwriters } = useGetAllScriptwriters({
-    showModal: showScriptwriters,
-  });
-
-  console.log(showScriptwriters);
-
-  // useEffect(() => {
-  //   if (storyId === openedStoryId) {
-  //     setShowScriptwriters(true);
-  //   } else {
-  //     setShowScriptwriters(false);
-  //   }
-  // }, [storyId, openedStoryId]);
+  const { data: allScriptwriters } = useGetAllScriptwriters();
 
   const assignWorker = useAssignWorker({
     storyId,
     currentUserId: userId || "",
   });
 
-  const handleSubmit = () => {
-    if (characterIds) {
-      characterIds.map((c) => assignWorker.mutate({ staffId: c }));
-    }
-  };
-
-  useOutOfModal({
-    modalRef,
-    setShowModal: setShowScriptwriters,
-    showModal: showScriptwriters,
-  });
-
   return (
-    <>
-      <div className="absolute bottom-[4.5rem] right-[.5rem] bg-secondary rounded-md shadow-md">
-        <ButtonHoverPromptModal
-          className="bg-secondary w-[3rem] shadow-md"
-          positionByAbscissa="right"
-          contentName="Назначить Сценариста"
-          variant={"rectangle"}
-          asideClasses="text-[1.5rem] text-text-light"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (openedStoryId === storyId) {
-              setOpenedStoryId("");
-            } else {
-              setCharacterIds([""]);
-            }
-            setShowScriptwriters((prev) => !prev);
-          }}
-        >
-          <img src={assignBlack} alt="Назначить Сценариста" className="w-full" />
-        </ButtonHoverPromptModal>
-      </div>
-      <aside
-        ref={modalRef}
-        className={`${
-          showScriptwriters ? "" : "hidden"
-        } z-[10] fixed bottom-[1rem] flex flex-col gap-[1rem] right-[1rem] bg-secondary rounded-md shadow-md p-[1rem] h-[30rem] w-[20rem]`}
-      >
-        <h2 className="text-[1.6rem] text-center text-text-light">{storyTitle || ""}</h2>
-        <ul className="h-[20rem] overflow-auto px-[1rem] py-[.5rem] flex flex-col gap-[1rem] | containerScroll">
+    <DropdownMenu>
+      <DropdownMenuTrigger className="text-text opacity-80 hover:opacity-100 transition-all mt-auto self-end">
+        + Сценарист
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="bg-secondary max-h-[250px] overflow-y-auto -translate-x-[20px] | containerScroll">
+        <DropdownMenuGroup>
           {allScriptwriters ? (
             allScriptwriters?.map((s) => (
-              <button
-                key={s._id}
-                onClick={() => {
-                  if (characterIds.includes(s._id)) {
-                    setCharacterIds((prev) => prev.filter((c) => c !== s._id));
-                  } else {
-                    setCharacterIds((prev) => {
-                      return [...prev, s._id];
-                    });
-                  }
-                }}
-                className={`${
-                  characterIds.includes(s._id) ? "bg-primary  text-text-light" : "text-black bg-secondary"
-                } flex px-[.5rem] gap-[.5rem] py-[.5rem] justify-between w-full items-center rounded-md shadow-md hover:text-text-light text-text-dark hover:bg-primary transition-all`}
-              >
-                {s.imgUrl ? <img src={s.imgUrl} alt={s.username} className="w-[3.5rem] rounded-md" /> : null}
-                <p className="text-[1.5rem] w-full">
-                  {s.username.length > 10 ? s.username.substring(0, 10) + "..." : s.username}
-                </p>
-              </button>
+              <DropdownMenuSub key={s._id}>
+                <DropdownMenuSubTrigger
+                  className={`flex p-[10px] text-text gap-[5px] justify-between w-full items-center rounded-md hover:bg-background transition-all`}
+                >
+                  <p className="text-[15px] text-text w-full">
+                    {s.username.length > 10 ? s.username.substring(0, 10) + "..." : s.username}
+                  </p>
+                  {s.imgUrl ? <img src={s.imgUrl} alt={s.username} className="w-[30px] rounded-md" /> : null}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSeparator />
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent className="bg-secondary">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        assignWorker.mutate({ staffId: s._id });
+                      }}
+                    >
+                      Назначить
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             ))
           ) : (
-            <button className="flex px-[.5rem] gap-[.5rem] py-[.5rem] justify-between w-full items-center rounded-md shadow-md hover:text-text-light text-text-dark hover:bg-primary bg-secondary transition-all">
-              Покамись Пусто
-            </button>
+            <DropdownMenuItem>Покамись Пусто</DropdownMenuItem>
           )}
-        </ul>
-        <button
-          onClick={() => {
-            setShowScriptwriters(false);
-            handleSubmit();
-          }}
-          className={`w-full px-[1rem] py-[.5rem] rounded-md shadow-md ${
-            theme === "light" ? "hover:bg-green-300 bg-secondary" : "bg-primary-darker"
-          }  text-[1.5rem] text-text-dark hover:text-text-light transition-all`}
-        >
-          Назначить
-        </button>
-      </aside>
-    </>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

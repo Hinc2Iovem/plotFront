@@ -11,7 +11,7 @@ export default function Profile() {
   const { roles } = useGetDecodedJWTValues();
   const expandedTranslationSide = useCheckKeysCombinationExpandTranslationSide();
 
-  const [storiesType, setStoriesType] = useState<StoryFilterTypes>("" as StoryFilterTypes);
+  const [storiesType, setStoriesType] = useState<StoryFilterTypes>("all" as StoryFilterTypes);
   const [searchValue, setSearchValue] = useState("");
   const debouncedStory = useDebounce({ value: searchValue, delay: 600 });
 

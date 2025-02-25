@@ -5,7 +5,6 @@ import { axiosCustomized } from "../../../../../../api/axios";
 import { CurrentlyAvailableLanguagesTypes } from "../../../../../../types/Additional/CURRENTLY_AVAILABEL_LANGUAGES";
 import { CommandAchievementTypes } from "../../../../../../types/StoryEditor/PlotField/Achievement/AchievementTypes";
 import ActionButton from "./ActionButton";
-import { toastNotificationStyles } from "@/components/shared/toastStyles";
 
 type UpdateCommandAchievementTypes = {
   plotFieldCommandId: string;

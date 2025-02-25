@@ -5,6 +5,8 @@ import { getSeasonsByStoryId } from "../../../hooks/Fetching/Season/useGetSeason
 import useUpdateImg from "../../../hooks/Patching/useUpdateImg";
 import { EpisodeStatusTypes } from "../../../types/StoryData/Episode/EpisodeTypes";
 import PreviewImage from "../../../ui/shared/PreviewImage";
+import useGetDecodedJWTValues from "@/hooks/Auth/useGetDecodedJWTValues";
+import AssignScriptwriterModal from "./AssignScriptwriterModal";
 
 type ProfileRightSideItemTypes = {
   storyStatus?: EpisodeStatusTypes;
@@ -28,7 +30,7 @@ export default function ProfileRightSideItem({
     preview: imagePreview,
   });
   const [isMounted, setIsMounted] = useState(false);
-
+  const { roles } = useGetDecodedJWTValues();
   useEffect(() => {
     if (isMounted && imagePreview) {
       uploadImgMutation.mutate({});
@@ -51,7 +53,7 @@ export default function ProfileRightSideItem({
     <article
       onMouseEnter={prefetchSeason}
       onFocus={prefetchSeason}
-      className={`w-full h-[210px] rounded-md flex gap-[10px] border-border border-[1px] bg-secondary`}
+      className={`w-[calc(100%+2.5px)] h-[210px] rounded-md flex gap-[10px] border-border border-[1px] bg-secondary`}
     >
       <div className={`relative w-1/2 rounded-md rounded-bl-none rounded-tl-none h-full`}>
         {imgUrl ? (
@@ -66,7 +68,7 @@ export default function ProfileRightSideItem({
         <div
           className={`absolute bottom-[0rem] left-[0rem] ${
             storyStatus === "doing" ? "text-white bg-orange" : "text-white bg-green"
-          } rounded-md rounded-bl-none rounded-tl-none p-[5px]`}
+          } rounded-md rounded-bl-md rounded-tl-none p-[5px]`}
         >
           <p className={`text-[13px]`}>{storyStatus === "doing" ? "В процессе" : "Завершена"}</p>
         </div>
@@ -77,6 +79,7 @@ export default function ProfileRightSideItem({
           {title.length > 25 ? title.substring(0, 25) + "..." : title}
         </Link>
         <p className="text-[15px] text-paragraph">{description}</p>
+        {roles?.includes("headscriptwriter") ? <AssignScriptwriterModal storyId={storyId} /> : null}
       </div>
     </article>
   );

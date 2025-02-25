@@ -1,19 +1,17 @@
+import { toastErrorStyles } from "@/components/shared/toastStyles";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { Eye, EyeClosed } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { axiosCustomized } from "../../../api/axios";
-import useAuth from "../../../hooks/Auth/useAuth";
-import { DecodedTypes } from "../RequireAuth";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Eye, EyeClosed } from "lucide-react";
 import scriptwriter from "../../../assets/images/Auth/scriptwriter.png";
 import translator from "../../../assets/images/Auth/translator.png";
-import { toast } from "sonner";
-import { toastErrorStyles } from "@/components/shared/toastStyles";
+import useAuth from "../../../hooks/Auth/useAuth";
+import { DecodedTypes } from "../RequireAuth";
 
 export default function Register() {
   const { setToken } = useAuth();
@@ -22,7 +20,7 @@ export default function Register() {
   const [secretKey, setSecretKey] = useState("");
   const [role, setRole] = useState("scriptwriter");
   const [showPassword, setShowPassword] = useState(false);
-  const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  // const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   const canSubmit = [login, password, secretKey].every(Boolean);
@@ -48,11 +46,11 @@ export default function Register() {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (!error.response) {
-          toast("No Serve Response", toastErrorStyles);
+          toast("Сервер не отвечает", toastErrorStyles);
         } else if (error.response?.status === 400) {
-          toast("Username or Password is missing", toastErrorStyles);
+          toast("Логин или пароль отсутсвует", toastErrorStyles);
         } else if (error.response?.status === 401) {
-          toast("Wrong Username or Password", toastErrorStyles);
+          toast("Логин или пароль не верен", toastErrorStyles);
         } else {
           toast(`${error.message}`, toastErrorStyles);
         }
@@ -137,17 +135,8 @@ export default function Register() {
             </div>
           </div>
           <div className="self-end flex justify-between items-baseline px-[15px] gap-[30px] pb-[20px]">
-            <div className="gap-[5px] flex items-center self-end">
-              <HoverCard>
-                <HoverCardTrigger className="text-[13px] text-paragraph opacity-60 hover:opacity-100 transition-opacity">
-                  Остаться залогиненным?
-                </HoverCardTrigger>
-                <HoverCardContent className="text-paragraph text-[12px] left-0 border-border bg-secondary px-[10px] w-[200px] py-[10px] rounded-sm z-[10]">
-                  <span className="opacity-70">Вам больше не нужно будет логиниться на этом устройстве</span>
-                </HoverCardContent>
-              </HoverCard>
-              <Checkbox checked={stayLoggedIn} onClick={() => setStayLoggedIn((prev) => !prev)} />
-            </div>
+            {/* <StayLoggedIn setStayLoggedIn={setStayLoggedIn} stayLoggedIn={stayLoggedIn} /> */}
+
             <Button
               type="submit"
               className="w-fit bg-brand-gradient self-end px-[25px] text-[20px] text-white py-[10px] rounded-md hover:opacity-90 active:scale-[0.98] transition-all"
@@ -158,7 +147,7 @@ export default function Register() {
         </form>
       </main>
       <Link
-        className="z-0 w-fit text-[13px] mx-auto text-text opacity-50 hover:opacity-100 transition-opacity -translate-x-3/4"
+        className="z-0 w-fit text-[13px] mx-auto text-text opacity-50 hover:opacity-100 transition-opacity -translate-x-[60%]" //3/4 bilo
         to="/auth/login"
       >
         Есть аккаунта? Логин
