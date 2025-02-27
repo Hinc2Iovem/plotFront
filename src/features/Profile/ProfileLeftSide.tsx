@@ -122,22 +122,20 @@ function RenderStaffRoles({ role }: { role: StaffRoles }) {
   );
 
   return (
-    <>
-      <HoverCard>
-        <HoverCardTrigger className="relative cursor-pointer">
-          {role === "headscriptwriter" && (
-            <img
-              src={crown}
-              alt="Crown"
-              className="w-[20px] absolute -translate-y-1/2 translate-x-[95%] rotate-[35deg]"
-            />
-          )}
-          <img src={currentImg} alt="Scriptwriter" className="w-[35px]" />
-        </HoverCardTrigger>
-        <HoverCardContent className="bg-secondary text-paragraph text-[14px] w-fit">
-          {currentContentName}
-        </HoverCardContent>
-      </HoverCard>
-    </>
+    <HoverCard>
+      <HoverCardTrigger className="relative cursor-pointer">
+        {role === "headscriptwriter" && (
+          <img
+            src={crown}
+            alt="Crown"
+            className="w-[20px] absolute -translate-y-1/2 translate-x-[95%] rotate-[35deg]"
+          />
+        )}
+        <img src={currentImg} alt="Scriptwriter" className="w-[35px]" />
+      </HoverCardTrigger>
+      <HoverCardContent className="bg-secondary text-paragraph text-[14px] w-fit">
+        {currentContentName}
+      </HoverCardContent>
+    </HoverCard>
   );
 }

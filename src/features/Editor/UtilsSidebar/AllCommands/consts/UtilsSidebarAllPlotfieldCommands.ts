@@ -24,35 +24,67 @@ import commandif from "@/assets/images/Editor/Commands/if.png";
 import condition from "@/assets/images/Editor/Commands/condition.png";
 import wait from "@/assets/images/Editor/Commands/wait.png";
 
+export type UtilsCommandDescriptionTypes = {
+  keyCombinationRus: string;
+  keyCombinationEng: string;
+  description: string;
+};
+
+type CommandTypes = {
+  name: AllPossiblePlotFieldComamndsSaySubVariationsTypes;
+  src: string;
+  commandDescription: UtilsCommandDescriptionTypes;
+};
+
 export type UtilsSidebarAllPlotfieldCommandsTypes = {
-  commandNameFirst: {
-    name: AllPossiblePlotFieldComamndsSaySubVariationsTypes;
-    src: string;
-  };
-  commandNameSecond: {
-    name: AllPossiblePlotFieldComamndsSaySubVariationsTypes;
-    src: string;
-  };
+  commandNameFirst: CommandTypes;
+  commandNameSecond: CommandTypes;
+  rowNumber: "1" | "2" | "3" | "4" | "5" | "6";
 };
 
 export const utilsSidebarAllPlotfieldCommands: UtilsSidebarAllPlotfieldCommandsTypes[][] = [
   [
     {
-      commandNameFirst: { name: "blank", src: blank },
+      commandNameFirst: {
+        name: "blank",
+        src: blank,
+        commandDescription: {
+          keyCombinationRus: "shift + т",
+          keyCombinationEng: "shift + n",
+          description: "",
+        },
+      },
       commandNameSecond: {
         name: "comment",
         src: comment,
+        commandDescription: {
+          keyCombinationRus: "shift + с + ь",
+          keyCombinationEng: "shift + c + m",
+          description: "",
+        },
       },
+      rowNumber: "1",
     },
     {
       commandNameFirst: {
         name: "call",
         src: call,
+        commandDescription: {
+          keyCombinationRus: "shift + с + д",
+          keyCombinationEng: "shift + c + l",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "music",
         src: music,
+        commandDescription: {
+          keyCombinationRus: "shift + ь + г",
+          keyCombinationEng: "shift + m + u",
+          description: "",
+        },
       },
+      rowNumber: "1",
     },
   ],
   [
@@ -60,21 +92,43 @@ export const utilsSidebarAllPlotfieldCommands: UtilsSidebarAllPlotfieldCommandsT
       commandNameFirst: {
         name: "author",
         src: author,
+        commandDescription: {
+          keyCombinationRus: "shift + ф + г",
+          keyCombinationEng: "shift + a + u",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "character",
         src: character,
+        commandDescription: {
+          keyCombinationRus: "shift + с + к",
+          keyCombinationEng: "shift + c + r",
+          description: "",
+        },
       },
+      rowNumber: "2",
     },
     {
       commandNameFirst: {
         name: "hint",
         src: hint,
+        commandDescription: {
+          keyCombinationRus: "shift + р + ш",
+          keyCombinationEng: "shift + h + i",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "notify",
         src: notify,
+        commandDescription: {
+          keyCombinationRus: "shift + т + щ",
+          keyCombinationEng: "shift + n + o",
+          description: "",
+        },
       },
+      rowNumber: "2",
     },
   ],
   [
@@ -82,21 +136,43 @@ export const utilsSidebarAllPlotfieldCommands: UtilsSidebarAllPlotfieldCommandsT
       commandNameFirst: {
         name: "achievement",
         src: achievement,
+        commandDescription: {
+          keyCombinationRus: "shift + ф + с",
+          keyCombinationEng: "shift + a + c",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "key",
         src: key,
+        commandDescription: {
+          keyCombinationRus: "shift + л + у",
+          keyCombinationEng: "shift + k + e",
+          description: "",
+        },
       },
+      rowNumber: "3",
     },
     {
       commandNameFirst: {
         name: "name",
         src: name,
+        commandDescription: {
+          keyCombinationRus: "shift + т + ф",
+          keyCombinationEng: "shift + n + a",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "getitem",
         src: getitem,
+        commandDescription: {
+          keyCombinationRus: "shift + п + у",
+          keyCombinationEng: "shift + g + e",
+          description: "",
+        },
       },
+      rowNumber: "3",
     },
   ],
   [
@@ -104,21 +180,43 @@ export const utilsSidebarAllPlotfieldCommands: UtilsSidebarAllPlotfieldCommandsT
       commandNameFirst: {
         name: "effect",
         src: effect,
+        commandDescription: {
+          keyCombinationRus: "shift + у + а",
+          keyCombinationEng: "shift + e + f",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "cutscene",
         src: cutscene,
+        commandDescription: {
+          keyCombinationRus: "shift + с + г",
+          keyCombinationEng: "shift + c + u",
+          description: "",
+        },
       },
+      rowNumber: "4",
     },
     {
       commandNameFirst: {
         name: "ambient",
         src: ambient,
+        commandDescription: {
+          keyCombinationRus: "shift + ф + ь",
+          keyCombinationEng: "shift + a + m",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "sound",
         src: sound,
+        commandDescription: {
+          keyCombinationRus: "shift + ы + щ",
+          keyCombinationEng: "shift + s + o",
+          description: "",
+        },
       },
+      rowNumber: "4",
     },
   ],
   [
@@ -126,21 +224,43 @@ export const utilsSidebarAllPlotfieldCommands: UtilsSidebarAllPlotfieldCommandsT
       commandNameFirst: {
         name: "background",
         src: background,
+        commandDescription: {
+          keyCombinationRus: "shift + и + ф",
+          keyCombinationEng: "shift + b + a",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "move",
         src: move,
+        commandDescription: {
+          keyCombinationRus: "shift + ь + щ",
+          keyCombinationEng: "shift + m + o",
+          description: "",
+        },
       },
+      rowNumber: "5",
     },
     {
       commandNameFirst: {
         name: "wardrobe",
         src: wardrobe,
+        commandDescription: {
+          keyCombinationRus: "shift + ц + ф",
+          keyCombinationEng: "shift + w + a",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "suit",
         src: suit,
+        commandDescription: {
+          keyCombinationRus: "shift + ы + г",
+          keyCombinationEng: "shift + s + u",
+          description: "",
+        },
       },
+      rowNumber: "5",
     },
   ],
   [
@@ -148,21 +268,43 @@ export const utilsSidebarAllPlotfieldCommands: UtilsSidebarAllPlotfieldCommandsT
       commandNameFirst: {
         name: "choice",
         src: choice,
+        commandDescription: {
+          keyCombinationRus: "shift + с + р",
+          keyCombinationEng: "shift + c + h",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "if",
         src: commandif,
+        commandDescription: {
+          keyCombinationRus: "shift + ш + а",
+          keyCombinationEng: "shift + s + o",
+          description: "",
+        },
       },
+      rowNumber: "6",
     },
     {
       commandNameFirst: {
         name: "condition",
         src: condition,
+        commandDescription: {
+          keyCombinationRus: "shift + с + щ",
+          keyCombinationEng: "shift + c + o",
+          description: "",
+        },
       },
       commandNameSecond: {
         name: "wait",
         src: wait,
+        commandDescription: {
+          keyCombinationRus: "shift + ц + ф",
+          keyCombinationEng: "shift + w + a",
+          description: "",
+        },
       },
+      rowNumber: "6",
     },
   ],
 ];
