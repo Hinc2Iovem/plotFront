@@ -28,8 +28,16 @@ export default function SelectOrderOfExecutionButton({
   });
 
   const [showOrderModal, setShowOrderModal] = useState(false);
+
+  const handleSelect = (index: number) => {
+    if (typeof index === "number" && index >= 0) {
+      console.log(index);
+    }
+  };
+
   const buttonsRef = useModalMovemenetsArrowUpDown({
     length: getAmountOfOnlyIfConditionBlocks({ plotfieldCommandId }),
+    onSelect: handleSelect,
   });
 
   return (

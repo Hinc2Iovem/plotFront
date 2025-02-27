@@ -12,8 +12,9 @@ type PlotFieldProps = {
 };
 
 export default function PlotField({ command, showUtils, expansionDivDirection }: PlotFieldProps) {
-  const { currentTopologyBlock, setCurrentTopologyBlock } = useNavigation();
-  const { setCurrentAmountOfCommands } = usePlotfieldCommands();
+  const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
+  const setCurrentTopologyBlock = useNavigation((state) => state.setCurrentTopologyBlock);
+  const setCurrentAmountOfCommands = usePlotfieldCommands((state) => state.setCurrentAmountOfCommands);
 
   const { data: topologyBlockData } = useGetTopologyBlockById({
     topologyBlockId: currentTopologyBlock._id,
@@ -38,7 +39,7 @@ export default function PlotField({ command, showUtils, expansionDivDirection }:
         showUtils ? "" : "flex-shrink-0"
       } border-border mt-[10px] border-[1px] rounded-md shadow-md min-h-[200px] h-full relative p-[10px]`}
     >
-      <PlotFieldMain showAllCommands={showAllCommands} topologyBlockId={currentTopologyBlock._id} />
+      <PlotFieldMain command={command} showAllCommands={showAllCommands} topologyBlockId={currentTopologyBlock._id} />
     </section>
   );
 }

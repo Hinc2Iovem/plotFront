@@ -2,9 +2,10 @@ import { useCallback, useEffect, useRef } from "react";
 
 type ModalMovemenetsArrowUpDownTypes = {
   length: number;
+  onSelect?: (index: number) => void;
 };
 
-export default function useModalMovemenetsArrowUpDown({ length }: ModalMovemenetsArrowUpDownTypes) {
+export default function useModalMovemenetsArrowUpDown({ length, onSelect }: ModalMovemenetsArrowUpDownTypes) {
   const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
   const focusedIndexRef = useRef<number>(-1);
 
@@ -12,7 +13,7 @@ export default function useModalMovemenetsArrowUpDown({ length }: ModalMovemenet
     (event: KeyboardEvent) => {
       const key = event.key?.toLowerCase();
 
-      if (key !== "arrowdown" && key !== "arrowup") return;
+      if (key !== "arrowdown" && key !== "arrowup" && key !== "enter") return;
 
       event.preventDefault();
 
@@ -26,17 +27,21 @@ export default function useModalMovemenetsArrowUpDown({ length }: ModalMovemenet
 
       if (key === "arrowdown") {
         const nextIndex = (currentIndex + 1) % length;
-        console.log("nextIndex: ", nextIndex);
-
         buttonsRef.current[nextIndex]?.focus();
         focusedIndexRef.current = nextIndex;
       } else if (key === "arrowup") {
         const prevIndex = (currentIndex - 1 + length) % length;
         buttonsRef.current[prevIndex]?.focus();
         focusedIndexRef.current = prevIndex;
+      } else if (key === "enter" && onSelect) {
+        if (focusedIndexRef.current >= 0) {
+          onSelect(focusedIndexRef.current);
+        } else {
+          onSelect(0);
+        }
       }
     },
-    [length]
+    [length, onSelect]
   );
 
   useEffect(() => {

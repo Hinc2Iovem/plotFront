@@ -41,11 +41,10 @@ export default function ChoiceVariationTypeBlock({
         setChoiceVariationTypes={setChoiceVariationTypes}
       />
 
-      <form
+      <div
         className={`${
           choiceVariationTypes === "common" || !choiceVariationTypes?.trim().length ? "hidden" : ""
         } flex-grow shadow-md rounded-md relative`}
-        onSubmit={(e) => e.preventDefault()}
       >
         <ChoiceTimeLimitBlock
           choiceId={choiceId}
@@ -66,7 +65,7 @@ export default function ChoiceVariationTypeBlock({
           exitBlockId={exitBlockId}
           setExitBlockId={setExitBlockId}
         />
-      </form>
+      </div>
     </div>
   );
 }

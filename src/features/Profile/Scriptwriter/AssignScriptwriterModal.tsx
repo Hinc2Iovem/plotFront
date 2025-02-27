@@ -8,12 +8,12 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  DropdownMenuSub,
 } from "@/components/ui/dropdown-menu";
 import useGetDecodedJWTValues from "../../../hooks/Auth/useGetDecodedJWTValues";
 import useGetAllScriptwriters from "../../../hooks/Fetching/Staff/useGetAllScriptwriters";
 import useAssignWorker from "../../../hooks/Patching/Story/useAssignWorker";
 import "../../Editor/Flowchart/FlowchartStyles.css";
-import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
 
 type AssignScriptwriterModalTypes = {
   storyId: string;

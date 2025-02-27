@@ -121,7 +121,23 @@ const PlotfieldUnknownCharacterPromptMain = ({
     setCharacterValue(characterObj);
   };
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredCharacters.length });
+  const handleSelect = (index: number) => {
+    const value = filteredCharacters[index];
+    if (value) {
+      setShowCharacterModal(false);
+      if (setCharacterValue) {
+        setCharacterValue({
+          characterId: value.characterId,
+          characterUnknownName: value.characterUnknownName,
+          characterImg: value.characterImg,
+          characterName: value.characterName,
+        });
+      }
+      updateCharacterOnBlur(value);
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredCharacters.length, onSelect: handleSelect });
 
   return (
     <Popover open={showCharacterModal} onOpenChange={setShowCharacterModal}>
@@ -176,17 +192,7 @@ const PlotfieldUnknownCharacterPromptMain = ({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-
-                setShowCharacterModal(false);
-                if (setCharacterValue) {
-                  setCharacterValue({
-                    characterId: c.characterId,
-                    characterUnknownName: c.characterUnknownName,
-                    characterImg: c.characterImg,
-                    characterName: c.characterName,
-                  });
-                }
-                updateCharacterOnBlur(c);
+                handleSelect(i);
               }}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >

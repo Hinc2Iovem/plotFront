@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "../../../const/COMMANDS_CREATED_BY_KEY_COMBINATION";
-import { preventCreatingCommandsWhenFocus } from "../Plotfield/preventCreatingCommandsWhenFocus";
 
 type CheckKeysCombinationExpandTypes = {
   setCommand: React.Dispatch<React.SetStateAction<PossibleCommandsCreatedByCombinationOfKeysTypes>>;
@@ -18,10 +17,6 @@ export default function useCheckKeysCombinationExpandFlowchart({
   setExpansionDivDirection,
 }: CheckKeysCombinationExpandTypes) {
   useEffect(() => {
-    if (!preventCreatingCommandsWhenFocus()) {
-      return;
-    }
-
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key?.toLowerCase();
       if (event.altKey && (key === "c" || key === "с")) {

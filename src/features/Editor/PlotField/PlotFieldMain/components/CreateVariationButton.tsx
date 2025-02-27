@@ -14,6 +14,32 @@ type CreateVariationButtonTypes = {
 
 export default function CreateVariationButton({ buttonClasses, handleCreatingVariation }: CreateVariationButtonTypes) {
   const [showConditionBlockModal, setShowConditionBlockModal] = useState(false);
+
+  const handleSelect = (index: number) => {
+    const value = AllConditionVariationsRus[index];
+    if (value) {
+      const toEng: ConditionValueVariationType =
+        value === "Внешний Вид"
+          ? "appearance"
+          : value === "Ключ"
+          ? "key"
+          : value === "Кол Прохождений"
+          ? "retry"
+          : value === "Персонаж"
+          ? "character"
+          : value === "Рандом"
+          ? "random"
+          : value === "Статус"
+          ? "status"
+          : value === "Характеристика"
+          ? "characteristic"
+          : "language";
+
+      handleCreatingVariation({ value: toEng });
+      setShowConditionBlockModal(false);
+    }
+  };
+
   const buttonsRef = useModalMovemenetsArrowUpDown({ length: AllConditionVariationsRus.length });
 
   return (
@@ -37,25 +63,7 @@ export default function CreateVariationButton({ buttonClasses, handleCreatingVar
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
               onClick={() => {
-                const toEng: ConditionValueVariationType =
-                  c === "Внешний Вид"
-                    ? "appearance"
-                    : c === "Ключ"
-                    ? "key"
-                    : c === "Кол Прохождений"
-                    ? "retry"
-                    : c === "Персонаж"
-                    ? "character"
-                    : c === "Рандом"
-                    ? "random"
-                    : c === "Статус"
-                    ? "status"
-                    : c === "Характеристика"
-                    ? "characteristic"
-                    : "language";
-
-                handleCreatingVariation({ value: toEng });
-                setShowConditionBlockModal(false);
+                handleSelect(i);
               }}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >

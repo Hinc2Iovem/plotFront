@@ -81,7 +81,26 @@ export default function CreateChoiceOptionTypeModal({
   }, [createChoiceOption]);
 
   const [showChoiceOptionModal, setShowChoiceOptionModal] = useState(false);
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: ChoiceOptionVariations.length });
+
+  const handleSelect = (index: number) => {
+    const selectedValue = ChoiceOptionVariationsWithIcons[index];
+
+    if (selectedValue) {
+      const toEng: ChoiceOptionVariationsTypes =
+        selectedValue.variation === "обычный"
+          ? "common"
+          : selectedValue.variation === "отношения"
+          ? "relationship"
+          : selectedValue.variation === "премиум"
+          ? "premium"
+          : "characteristic";
+
+      setShowChoiceOptionModal(false);
+      handleCreatingChoiceOption(toEng);
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: ChoiceOptionVariations.length, onSelect: handleSelect });
 
   return (
     <Popover open={showChoiceOptionModal} onOpenChange={setShowChoiceOptionModal}>
@@ -104,17 +123,7 @@ export default function CreateChoiceOptionTypeModal({
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
               onClick={() => {
-                const toEng: ChoiceOptionVariationsTypes =
-                  c.variation === "обычный"
-                    ? "common"
-                    : c.variation === "отношения"
-                    ? "relationship"
-                    : c.variation === "премиум"
-                    ? "premium"
-                    : "characteristic";
-
-                setShowChoiceOptionModal(false);
-                handleCreatingChoiceOption(toEng);
+                handleSelect(i);
               }}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >

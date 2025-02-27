@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import useUpdateCommandSound from "../../../hooks/Sound/Command/useUpdateCommandSound";
 import useGetAllSoundByStoryIdAndIsGlobal from "../../../hooks/Sound/useGetAllSoundsByStoryIdAndIsGlobal";
@@ -58,7 +58,7 @@ const AllSoundsModal = ({ setSoundName, soundName, storyId, commandSoundId, onCh
       return;
     }
 
-    if (localSoundName === soundName) {
+    if (value === soundName) {
       return;
     }
 
@@ -80,7 +80,36 @@ const AllSoundsModal = ({ setSoundName, soundName, storyId, commandSoundId, onCh
     }
   };
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allSoundFilteredMemoized.length });
+  const arrowDownPressedRef = useRef(false);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "ArrowDown") {
+      arrowDownPressedRef.current = true;
+
+      setTimeout(() => {
+        arrowDownPressedRef.current = false;
+      }, 100);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleSelect = (index: number) => {
+    const value = allSoundFilteredMemoized[index];
+    if (value) {
+      console.log("value: ", value);
+      console.log("soundName: ", soundName);
+
+      setLocalSoundName(value);
+      handleUpdatingSoundState({ mm: value });
+      setShowSoundModal(false);
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allSoundFilteredMemoized.length, onSelect: handleSelect });
 
   return (
     <Popover open={showSoundModal} onOpenChange={setShowSoundModal}>
@@ -97,7 +126,11 @@ const AllSoundsModal = ({ setSoundName, soundName, storyId, commandSoundId, onCh
               setShowSoundModal(true);
               setLocalSoundName(e.target.value);
             }}
-            onBlur={() => handleUpdatingSoundState({})}
+            onBlur={() => {
+              if (!arrowDownPressedRef.current) {
+                handleUpdatingSoundState({});
+              }
+            }}
             placeholder="Звук"
           />
         </form>
@@ -110,11 +143,7 @@ const AllSoundsModal = ({ setSoundName, soundName, storyId, commandSoundId, onCh
               key={mm + i}
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
-              onClick={() => {
-                setLocalSoundName(mm);
-                handleUpdatingSoundState({ mm: mm });
-                setShowSoundModal(false);
-              }}
+              onClick={() => handleSelect(i)}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >
               {mm}

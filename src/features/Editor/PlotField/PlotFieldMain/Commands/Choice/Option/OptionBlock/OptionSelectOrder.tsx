@@ -16,15 +16,24 @@ export default function OptionSelectOrder({
   choiceOptionId,
   amountOfOptions,
 }: OptionSelecteTopologyBlockTypes) {
-  const { updateChoiceOptionOrder, getChoiceOptionById } = useChoiceOptions();
+  const updateChoiceOptionOrder = useChoiceOptions((state) => state.updateChoiceOptionOrder);
+  const getChoiceOptionById = useChoiceOptions((state) => state.getChoiceOptionById);
+
   const updateOptionOrder = useUpdateChoiceOptionOrder({
     choiceOptionId,
     choiceId,
   });
 
   const [showOrderModal, setShowOrderModal] = useState(false);
+
+  const handleSelect = (index: number) => {
+    // TODO: lol
+    console.log(index);
+  };
+
   const buttonsRef = useModalMovemenetsArrowUpDown({
     length: amountOfOptions,
+    onSelect: handleSelect,
   });
 
   return (

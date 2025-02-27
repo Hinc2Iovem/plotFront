@@ -90,7 +90,18 @@ function ConditionVariationCharacteristicModal<T>({
     setUpdate(true);
   };
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedCharacteristics.length });
+  const handleSelect = (index: number) => {
+    const value = memoizedCharacteristics[index];
+    if (value) {
+      handleSubmit({
+        currentCharacteristic: value.translations[0]?.text as T,
+        characteristicId: value.characteristicId,
+      });
+      setShowCharacteristicModal(false);
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedCharacteristics.length, onSelect: handleSelect });
 
   return (
     <Popover open={showCharacteristicModal} onOpenChange={setShowCharacteristicModal}>
@@ -116,11 +127,7 @@ function ConditionVariationCharacteristicModal<T>({
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
               onClick={() => {
-                handleSubmit({
-                  currentCharacteristic: c.translations[0]?.text as T,
-                  characteristicId: c.characteristicId,
-                });
-                setShowCharacteristicModal(false);
+                handleSelect(i);
               }}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >

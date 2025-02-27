@@ -127,10 +127,11 @@ function ChooseReferencedCommandIndex({
   const currentInput = useRef<HTMLInputElement>(null);
   const [showAllReferences, setShowAllReferences] = useState(false);
 
-  const updateReferenceOnBlur = () => {
-    if (typeof currentReferencedCommandIndex === "number" && currentReferencedCommandIndex <= amountOfCommands) {
-      onSelect(currentReferencedCommandIndex);
-      updateCommandIndex.mutate({ commandIndex: currentReferencedCommandIndex });
+  const updateReferenceOnBlur = (value?: number) => {
+    const currentValue = typeof value === "number" ? value : currentReferencedCommandIndex;
+    if (typeof currentValue === "number" && currentValue <= amountOfCommands) {
+      onSelect(currentValue || 0);
+      updateCommandIndex.mutate({ commandIndex: currentValue || 0 });
     }
   };
 
@@ -142,7 +143,18 @@ function ChooseReferencedCommandIndex({
     return refs;
   }, [amountOfCommands, currentReferencedCommandIndex]);
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allReferences.length || 0 });
+  const handleSelect = (index: number) => {
+    const selectedValue = allReferences[index];
+
+    if (selectedValue) {
+      onSelect(Number(selectedValue));
+      setCurrentReferencedCommandIndex(Number(selectedValue));
+      setShowAllReferences(false);
+      updateReferenceOnBlur(Number(selectedValue));
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allReferences.length || 0, onSelect: handleSelect });
 
   return (
     <Popover open={showAllReferences} onOpenChange={setShowAllReferences}>
@@ -165,7 +177,7 @@ function ChooseReferencedCommandIndex({
                 setCurrentReferencedCommandIndex(+e.target.value || null);
               }
             }}
-            onBlur={updateReferenceOnBlur}
+            onBlur={() => updateReferenceOnBlur()}
             className={`w-full text-text md:text-[17px]`}
             placeholder={"Ссылаться на команду"}
           />
@@ -181,9 +193,8 @@ function ChooseReferencedCommandIndex({
               ref={(el) => (buttonsRef.current[Number(r)] = el)}
               type="button"
               onClick={() => {
-                onSelect(Number(r));
-                setCurrentReferencedCommandIndex(Number(r));
-                setShowAllReferences(false);
+                // could use i, but doesn't matter, allReferences its an array of sequentional numbers
+                handleSelect(Number(r));
                 updateCommandIndex.mutate({ commandIndex: Number(r) });
               }}
               className={`${
@@ -244,18 +255,31 @@ function ChooseTopologyBlock({
     episodeId: episodeId || "",
   });
 
-  const updateTopologyBlockNameOnBlur = () => {
-    if (prevTargetBlockId !== targetBlockId && targetBlockId?.trim().length) {
+  const updateTopologyBlockNameOnBlur = (id?: string) => {
+    const newTargetBlockId = id?.trim().length ? id : targetBlockId;
+    if (prevTargetBlockId !== newTargetBlockId && newTargetBlockId?.trim().length) {
       updateCallText.mutate();
     }
   };
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allTopologyBlocks?.length || 0 });
+  const handleSelect = (index: number) => {
+    const selectedValue = (allTopologyBlocks || [])[index];
+
+    if (selectedValue) {
+      setCurrentTopologyBlockName(selectedValue.name || "");
+      setTargetBlockId(selectedValue._id || "");
+      setShowAllTopologyBlocks(false);
+      updateTopologyBlockNameOnBlur(selectedValue._id);
+      setCurrentReferencedCommandIndex(0);
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: allTopologyBlocks?.length || 0, onSelect: handleSelect });
 
   return (
     <Popover open={showAllTopologyBlocks} onOpenChange={setShowAllTopologyBlocks}>
       <PopoverTrigger asChild>
-        <form className="flex-grow flex justify-between items-center relative">
+        <form onSubmit={(e) => e.preventDefault()} className="flex-grow flex justify-between items-center relative">
           <PlotfieldInput
             ref={currentInput}
             value={currentTopologyBlockName || ""}
@@ -266,7 +290,7 @@ function ChooseTopologyBlock({
                 onChange(e.target.value);
               }
             }}
-            onBlur={updateTopologyBlockNameOnBlur}
+            onBlur={() => updateTopologyBlockNameOnBlur()}
             className={`w-full text-text md:text-[17px]`}
             placeholder="Блок"
           />
@@ -281,10 +305,7 @@ function ChooseTopologyBlock({
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
               onClick={() => {
-                setShowAllTopologyBlocks(false);
-                setTargetBlockId(tb._id);
-                setCurrentTopologyBlockName(tb?.name || "");
-                setCurrentReferencedCommandIndex(0);
+                handleSelect(i);
               }}
               className={`${topologyBlockId === tb._id ? "hidden" : ""} ${
                 tb._id === targetBlockId ? "hidden" : ""

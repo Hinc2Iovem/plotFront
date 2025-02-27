@@ -28,6 +28,7 @@ import CommandChoiceField from "./Choice/CommandChoiceField";
 import CommandStatusField from "./Status/CommandStatusField";
 import CommandStatField from "./Stat/CommandStatField";
 import CommandRelationField from "./Relation/CommandRelationField";
+import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "@/const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 
 function ErrorFallback({
   error,
@@ -53,11 +54,12 @@ function ErrorFallback({
 type PlotFieldItemTypes = {
   provided: DraggableProvided;
   currentTopologyBlockId: string;
+  windowState: PossibleCommandsCreatedByCombinationOfKeysTypes;
 } & PlotfieldOptimisticCommandTypes;
 
 export default function PlotfieldItem({
   _id,
-  command,
+  windowState,
   provided,
   characterId,
   characterName,
@@ -70,6 +72,7 @@ export default function PlotfieldItem({
   plotfieldCommandIfId,
   commandOrder,
   currentTopologyBlockId,
+  command,
 }: PlotFieldItemTypes) {
   const topologyBlockId = currentTopologyBlockId;
 
@@ -84,7 +87,7 @@ export default function PlotfieldItem({
     >
       <ErrorBoundary FallbackComponent={(error) => <ErrorFallback commandName={command} {...error} />}>
         {!command ? (
-          <PlotfieldBlank plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
+          <PlotfieldBlank windowState={windowState} plotFieldCommandId={_id} topologyBlockId={topologyBlockId} />
         ) : command === "say" ? (
           <CommandSayField
             topologyBlockId={topologyBlockId}

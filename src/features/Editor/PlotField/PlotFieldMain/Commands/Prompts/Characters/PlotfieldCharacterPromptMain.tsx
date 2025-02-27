@@ -123,8 +123,22 @@ const PlotfieldCharacterPromptMain = ({
     setCharacterValue(characterObj);
   };
 
+  const handleSelect = (index: number) => {
+    const value = filteredCharacters[index];
+    if (value) {
+      const obj = {
+        _id: value?.characterId,
+        characterName: value?.characterName,
+        imgUrl: value?.characterImg,
+      };
+      updateCharacterNameOnBlur(obj);
+      setShowCharacterModal(false);
+    }
+  };
+
   const buttonsRef = useModalMovemenetsArrowUpDown({
     length: filteredCharacters.length,
+    onSelect: handleSelect,
   });
 
   return (
@@ -166,14 +180,7 @@ const PlotfieldCharacterPromptMain = ({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-
-                const obj = {
-                  _id: c?.characterId,
-                  characterName: c?.characterName,
-                  imgUrl: c?.characterImg,
-                };
-                updateCharacterNameOnBlur(obj);
-                setShowCharacterModal(false);
+                handleSelect(i);
               }}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >

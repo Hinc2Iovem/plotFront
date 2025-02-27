@@ -8,17 +8,20 @@ import usePlotfieldCommands from "../Context/PlotFieldContext";
 import useGetAllPlotFieldCommands from "../hooks/useGetAllPlotFieldCommands";
 import useUpdateCommandOrder from "../hooks/useUpdateCommandOrder";
 import PlotfieldItem from "./Commands/PlotfieldItem";
+import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "@/const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 
 type PlotFieldMainTypes = {
   topologyBlockId: string;
   showAllCommands: boolean;
   renderedAsSubPlotfield?: boolean;
+  command: PossibleCommandsCreatedByCombinationOfKeysTypes;
 };
 
 export default function PlotFieldMain({
   topologyBlockId,
   showAllCommands,
   renderedAsSubPlotfield = false,
+  command,
 }: PlotFieldMainTypes) {
   const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
 
@@ -87,6 +90,7 @@ export default function PlotFieldMain({
                     {(provided) => (
                       <PlotfieldItem
                         provided={provided}
+                        windowState={command}
                         currentTopologyBlockId={renderedAsSubPlotfield ? topologyBlockId : p.topologyBlockId}
                         {...p}
                       />

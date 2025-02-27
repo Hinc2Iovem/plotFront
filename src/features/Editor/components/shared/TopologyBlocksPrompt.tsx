@@ -33,6 +33,7 @@ export default function TopologyBlocksPrompt({
   setUpdate,
   setTopologyBlockValue,
 }: TopologyBlocksPromptTypes) {
+  // TODO dermo derma etot component
   const { episodeId } = useParams();
   const currentTopologyBlock = useNavigation((state) => state.currentTopologyBlock);
   const [showTopologyBlockModal, setShowTopologyBlockModal] = useState(false);
@@ -80,6 +81,8 @@ export default function TopologyBlocksPrompt({
       (s) => s?.name?.trim().toLowerCase() === value.trim().toLowerCase()
     );
 
+    console.log("foundTopologyBlock: ", foundTopologyBlock);
+
     if (value.trim().length) {
       if (!foundTopologyBlock?._id) {
         if (showTopologyBlockModal) {
@@ -108,12 +111,33 @@ export default function TopologyBlocksPrompt({
     }
   };
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredTopologyBlocks.length });
+  const handleSelect = (index: number) => {
+    const selectedValue = filteredTopologyBlocks[index];
+
+    if (selectedValue) {
+      setTopologyBlockValue({
+        id: selectedValue._id,
+        name: selectedValue.name || "",
+      });
+      setShowTopologyBlockModal(false);
+      handleUpdatingTopologyBlockState({ mm: selectedValue.name || "", create: false });
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredTopologyBlocks.length, onSelect: handleSelect });
 
   return (
     <Popover open={showTopologyBlockModal} onOpenChange={setShowTopologyBlockModal}>
       <PopoverTrigger asChild>
-        <div className="flex-grow flex justify-between items-center relative">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (filteredTopologyBlocks.length) {
+              handleUpdatingTopologyBlockState({ mm: topologyBlockName, create: false });
+            }
+          }}
+          className="flex-grow flex justify-between items-center relative"
+        >
           <PlotfieldInput
             ref={currentInput}
             value={topologyBlockName}
@@ -128,7 +152,7 @@ export default function TopologyBlocksPrompt({
             className={`${inputClasses ? inputClasses : "w-full text-text md:text-[17px]"}`}
             placeholder="Топологический Блок"
           />
-        </div>
+        </form>
       </PopoverTrigger>
       <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className={`flex-grow flex flex-col gap-[5px]`}>
         {filteredTopologyBlocks?.length ? (

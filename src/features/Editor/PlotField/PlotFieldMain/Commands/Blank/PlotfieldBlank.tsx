@@ -43,10 +43,12 @@ import DeleteCommandContextMenuWrapper from "../../components/DeleteCommandConte
 import useConditionBlocks from "../Condition/Context/ConditionContext";
 import useCreateCommandStatus from "../../../hooks/Status/useCreateCommandStatus";
 import useCreateCommandRelation from "../../../hooks/Relation/Command/useCreateCommandRelation";
+import { PossibleCommandsCreatedByCombinationOfKeysTypes } from "@/const/COMMANDS_CREATED_BY_KEY_COMBINATION";
 
 type PlotFieldBlankTypes = {
   plotFieldCommandId: string;
   topologyBlockId: string;
+  windowState: PossibleCommandsCreatedByCombinationOfKeysTypes;
 };
 
 const AllCommands = [
@@ -74,7 +76,7 @@ const AllCommands = [
   "comment",
 ];
 
-export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: PlotFieldBlankTypes) {
+export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId, windowState }: PlotFieldBlankTypes) {
   const { storyId, episodeId } = useParams();
   const addItem = useSearch((state) => state.addItem);
 
@@ -444,7 +446,17 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
     }
   };
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredPromptValues.length });
+  const handleSelect = (index: number) => {
+    const selectedValue = filteredPromptValues[index];
+
+    if (selectedValue) {
+      setValue(selectedValue);
+      setShowPromptValues(false);
+      handleFormSubmit(selectedValue);
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredPromptValues.length, onSelect: handleSelect });
 
   return (
     <DeleteCommandContextMenuWrapper
@@ -457,7 +469,9 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleFormSubmit(value);
+              if (filteredPromptValues.length) {
+                handleFormSubmit(value);
+              }
             }}
             className={`${
               isCommandFocused ? "bg-brand-gradient" : "border-border border-[1px]"
@@ -482,23 +496,20 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
             />
           </form>
         </PopoverTrigger>
+        {/* TODO here size of windowState will be dynamic based on user resize action of the window */}
         <PopoverContent
           onOpenAutoFocus={(e) => e.preventDefault()}
-          className={`${
-            showPromptValues && !showCreateCharacterModal ? "" : "hidden"
-          } sm:w-[calc(100vw-100px)] flex-grow z-[10] flex flex-col gap-[5px] bg-secondary | containerScroll`}
+          className={`${showPromptValues && !showCreateCharacterModal ? "" : "hidden"} ${
+            windowState === "expandPlotField" ? "sm:w-[calc(100vw-100px)]" : "sm:w-[calc[50vw-100px)]"
+          } flex-grow z-[10] flex flex-col gap-[5px] bg-secondary | containerScroll`}
         >
           {filteredPromptValues.length > 0 ? (
             filteredPromptValues.map((pv, i) => (
               <Button
                 key={pv}
                 ref={(el) => (buttonsRef.current[i] = el)}
-                onClick={() => {
-                  setValue(pv);
-                  setShowPromptValues(false);
-                  handleFormSubmit(pv);
-                }}
-                className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 focus-within:bg-secondary w-full text-[14px] px-[10px] py-[5px] shadow-none border-border border-[1px] transition-all"
+                onClick={() => handleSelect(i)}
+                className="text-text opacity-80 hover:opacity-100 bg-accent focus-within:opacity-100 focus-within:bg-secondary w-full text-[14px] px-[10px] py-[5px] shadow-none border-border border-[1px] transition-all"
               >
                 {pv}
               </Button>
@@ -508,7 +519,7 @@ export default function PlotfieldBlank({ plotFieldCommandId, topologyBlockId }: 
               onClick={() => {
                 setShowPromptValues(false);
               }}
-              className="text-text opacity-80 hover:opacity-100 focus-within:opacity-100 focus-within:bg-secondary w-full text-[14px] px-[10px] py-[5px] shadow-none border-border border-[1px] transition-all"
+              className="text-text opacity-80 hover:opacity-100 bg-accent focus-within:opacity-100 focus-within:bg-secondary w-full text-[14px] px-[10px] py-[5px] shadow-none border-border border-[1px] transition-all"
             >
               Такой команды или персонажа не существует
             </Button>

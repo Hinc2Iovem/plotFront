@@ -75,8 +75,39 @@ export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalT
     }
   };
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleSelect = (index: number) => {
+    const value = allMusicFilteredMemoized[index];
+    if (musicName.trim().length) {
+      setMusicName((value as MusicTypes).musicName);
+      handleUpdatingMusicState({ mm: (value as MusicTypes).musicName });
+    } else {
+      setMusicName(value as string);
+      handleUpdatingMusicState({ mm: value as string });
+    }
+    setShowMusicModal(false);
+  };
+
+  const arrowDownPressedRef = useRef(false);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "ArrowDown") {
+      arrowDownPressedRef.current = true;
+
+      setTimeout(() => {
+        arrowDownPressedRef.current = false;
+      }, 100);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const buttonsRef = useModalMovemenetsArrowUpDown({
     length: allMusicFilteredMemoized.length,
+    onSelect: handleSelect,
   });
 
   return (
@@ -94,7 +125,11 @@ export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalT
               setShowMusicModal(true);
               setMusicName(e.target.value);
             }}
-            onBlur={() => handleUpdatingMusicState({})}
+            onBlur={() => {
+              if (!arrowDownPressedRef.current) {
+                handleUpdatingMusicState({});
+              }
+            }}
             placeholder="Музыка"
           />
         </form>
@@ -111,16 +146,7 @@ export default function AllMusicModal({ initMusicValue, onBlur }: AllMusicModalT
               key={musicName ? (mm as MusicTypes)._id : (mm as string) + i}
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
-              onClick={() => {
-                if (musicName.trim().length) {
-                  setMusicName((mm as MusicTypes).musicName);
-                  handleUpdatingMusicState({ mm: (mm as MusicTypes).musicName });
-                } else {
-                  setMusicName(mm as string);
-                  handleUpdatingMusicState({ mm: mm as string });
-                }
-                setShowMusicModal(false);
-              }}
+              onClick={() => handleSelect(i)}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >
               {musicName ? (mm as MusicTypes).musicName : (mm as string)}

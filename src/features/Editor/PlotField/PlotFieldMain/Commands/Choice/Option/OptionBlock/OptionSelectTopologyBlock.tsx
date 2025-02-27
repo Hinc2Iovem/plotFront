@@ -20,7 +20,10 @@ export default function OptionSelectTopologyBlock({
   choiceId,
   topologyBlockName,
 }: OptionSelecteTopologyBlockTypes) {
-  const { updateChoiceOptionTopologyBlockId } = useChoiceOptions();
+  // TODO zalupa
+  const { episodeId } = useParams();
+  const updateChoiceOptionTopologyBlockId = useChoiceOptions((state) => state.updateChoiceOptionTopologyBlockId);
+
   const [update, setUpdate] = useState(false);
   const [topologyBlockValue, setTopologyBlockValue] = useState<TopologyBlockValueTypes>({
     id: topologyBlockId,
@@ -31,10 +34,8 @@ export default function OptionSelectTopologyBlock({
     name: topologyBlockName,
   });
 
-  const { episodeId } = useParams();
   const { data: topologyBlock } = useGetTopologyBlockById({
     topologyBlockId,
-    moreThanZeroLenShow: topologyBlockName?.length > 0,
   });
 
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function OptionSelectTopologyBlock({
         targetBlockId: topologyBlockValue.id,
         sourceBlockId: topologyBlockId,
       });
+      setUpdate(false);
     }
   }, [update]);
 

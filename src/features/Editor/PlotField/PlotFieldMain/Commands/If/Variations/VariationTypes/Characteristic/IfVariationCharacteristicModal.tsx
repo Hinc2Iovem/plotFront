@@ -102,6 +102,15 @@ const IfVariationCharacteristicModal = ({
       secondCharacteristicId: fieldType === "ifValue" ? characteristicId : null,
     });
   };
+
+  // const handleSelect = (index: number) => {
+  //   const value = memoizedCharacteristics[index];
+  //   if (value) {
+  //     setShowKeyModal(false);
+  //     handleSubmit({ characteristicId: value._id, currentCharacteristic: valuetranslations[0].text });
+  //   }
+  // };
+
   const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedCharacteristics.length });
 
   return (

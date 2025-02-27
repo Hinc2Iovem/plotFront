@@ -24,6 +24,7 @@ export default function StoryAttributesCharacterPrompt({
   const { filteredCharacters, allCharacters, allTranslatedCharacters } = usePrepareCharacterStateForFilter({
     characterName: characterValue.characterName || "",
   });
+  // TODO: ne sdelal enter
   const buttonsRef = useModalMovemenetsArrowUpDown({ length: filteredCharacters.length });
 
   const updateCharacterNameOnBlur = () => {

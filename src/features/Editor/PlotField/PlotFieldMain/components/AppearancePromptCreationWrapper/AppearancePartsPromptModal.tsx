@@ -4,7 +4,7 @@ import useGetTranslationAppearancePartsByStoryId from "@/hooks/Fetching/Translat
 import useModalMovemenetsArrowUpDown from "@/hooks/helpers/keyCombinations/useModalMovemenetsArrowUpDown";
 import { TranslationTextFieldNameAppearancePartsTypes } from "@/types/Additional/TRANSLATION_TEXT_FIELD_NAMES";
 import PlotfieldInput from "@/ui/Inputs/PlotfieldInput";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 type AppearancePartsPromptModalTypes = {
@@ -105,7 +105,34 @@ export default function AppearancePartsPromptModal({
     }
   };
 
-  const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedAppearanceParts.length });
+  const arrowDownPressedRef = useRef(false);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "ArrowDown") {
+      arrowDownPressedRef.current = true;
+
+      // Reset after a short delay to avoid blocking other interactions
+      setTimeout(() => {
+        arrowDownPressedRef.current = false;
+      }, 100);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleSelect = (index: number) => {
+    const value = memoizedAppearanceParts[index];
+    if (value) {
+      setLocalValue((value.translations || [])[0]?.text || "");
+      handleUpdatingValues({ id: value.appearancePartId, name: (value.translations || [])[0]?.text });
+      setShowAppearanceModal(false);
+    }
+  };
+
+  const buttonsRef = useModalMovemenetsArrowUpDown({ length: memoizedAppearanceParts.length, onSelect: handleSelect });
 
   return (
     <Popover open={showAppearanceModal} onOpenChange={setShowAppearanceModal}>
@@ -124,12 +151,14 @@ export default function AppearancePartsPromptModal({
               }
             }}
             onBlur={() => {
-              updateAppearancePartOnBlur();
-              if (onChange) {
-                onChange(localValue);
-              }
-              if (onBlur) {
-                onBlur();
+              if (!arrowDownPressedRef.current) {
+                updateAppearancePartOnBlur();
+                if (onChange) {
+                  onChange(localValue);
+                }
+                if (onBlur) {
+                  onBlur();
+                }
               }
             }}
             className={`${
@@ -146,11 +175,7 @@ export default function AppearancePartsPromptModal({
               key={`${c.appearancePartId}-${i}`}
               ref={(el) => (buttonsRef.current[i] = el)}
               type="button"
-              onClick={() => {
-                setLocalValue((c.translations || [])[0]?.text || "");
-                handleUpdatingValues({ id: c.appearancePartId, name: (c.translations || [])[0]?.text });
-                setShowAppearanceModal(false);
-              }}
+              onClick={() => handleSelect(i)}
               className={`whitespace-nowrap text-text h-fit w-full hover:bg-accent border-border border-[1px] focus-within:bg-accent opacity-80 hover:opacity-100 focus-within:opacity-100 flex-wrap rounded-md flex px-[10px] items-center justify-between transition-all `}
             >
               {c.translations[0]?.text.length > 20
